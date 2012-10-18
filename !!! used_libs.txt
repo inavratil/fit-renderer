@@ -1,0 +1,5 @@
+SDL 1.2
+lib3DS 2.0
+GLM
+GLEW
+AntTweakBar 

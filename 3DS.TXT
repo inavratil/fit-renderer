@@ -1,0 +1,59 @@
+C4D -> 3DS
+----------
+OBMEDZENIA:
+- zadna diakritika ani medzery v nazvoch suborov
+- nazev textury max. 8 znakov
+
+
+Kamera: 
+- pozicia, ciel pohladu
+
+Svetla:
+- farba, pozicia
+
+Model:
+- nazov
+- vertexy, normaly (uroven Phong vyhladenia), texturove koordinaty
+- prideleny material
+
+Material:
+- nazov
+- ambient, diffuse, specular, miera odlesku
+- textury: 
+	- zakladna 1, zakladna 2, bump a environment mapa
+	- dlazdice textury
+	- textury musia byt v zlozke data/tex/ a vo formate TGA
+
+
+
+
+---------------------------------------
+
+
+Lib3dsTextureMap:
+->name - nazov suboru s texturou
+->scale[2] - tileX,tileY
+
+Lib3dsMaterial:
+->name
+->ambient[3] - RGB
+->diffuse[3] - RGB
+->specular[3] - RGB
+->shininess - potrebna uprava z (0..1) na (255..0)
+Textury (Lib3dsTextureMap):
+->texture1_map - BASE
+->texture2_map - BASE
+->bump_map - BUMP
+->reflection_map - ENV
+
+Lib3dsCamera:
+->position[3] - XYZ
+->target[3] - XYZ
+
+Lib3dsLight:
+->color[3] - RGB (diffuse), ambient a specular doplnit na white
+->position[3] - XYZ
+
+Lib3dsMesh: to, co sa cita(vertices, faces...) +
+->faces[0].material - prideleny material (jeho index, indexuju sa podla poradia definicie)
+

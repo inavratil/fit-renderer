@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\glux_engine\camera.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\draw.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\font.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\light.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\load3DS.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\loadScene.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\material.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\material_generator.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\object.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\render_target.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\scene.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\shadow.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\texture.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\glux_engine\camera.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\engine.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\globals.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\light.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\material.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\object.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\scene.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\texture.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main_ui.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\compute.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\shadow.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\timer.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\shaders\progress_bar.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="data\shaders\showDepth.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="data\shaders\showDepth.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="data\shaders\showDepth_omni.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="data\shaders\shadow.frag">
+      <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\shadow.vert">
+      <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\shadow_omni.frag">
+      <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\shadow_omni.vert">
+      <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\shadow_omni_tess.frag">
+      <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\shadow_omni_tess.tc">
+      <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\shadow_omni_tess.te">
+      <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\shadow_omni_tess.vert">
+      <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\bloom_ssao.frag">
+      <Filter>Shaders\HDR/AO</Filter>
+    </None>
+    <None Include="data\shaders\blur.frag">
+      <Filter>Shaders\HDR/AO</Filter>
+    </None>
+    <None Include="data\shaders\quad.frag">
+      <Filter>Shaders\HDR/AO</Filter>
+    </None>
+    <None Include="data\shaders\quad.vert">
+      <Filter>Shaders\HDR/AO</Filter>
+    </None>
+    <None Include="data\shaders\tonemap.frag">
+      <Filter>Shaders\HDR/AO</Filter>
+    </None>
+    <None Include="data\shaders\simple_tess.vert">
+      <Filter>Shaders\tess</Filter>
+    </None>
+    <None Include="data\shaders\simple_tess.te">
+      <Filter>Shaders\tess</Filter>
+    </None>
+    <None Include="data\shaders\simple_tess.tc">
+      <Filter>Shaders\tess</Filter>
+    </None>
+    <None Include="data\shaders\simple_tess.geom">
+      <Filter>Shaders\tess</Filter>
+    </None>
+    <None Include="data\shaders\simple_tess.frag">
+      <Filter>Shaders\tess</Filter>
+    </None>
+    <None Include="data\shaders\func\blur.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+    <None Include="data\shaders\func\env.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+    <None Include="data\shaders\func\light.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+    <None Include="data\shaders\func\shadow.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+    <None Include="data\shaders\func\shadow_omni.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header files">
+      <UniqueIdentifier>{ce323a84-47a9-4210-bfe4-f82414b0a450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{c2f68786-acfa-41df-908c-8077d280ec40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{1bebd64a-fe90-4add-b679-660d0f929c6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\shadows">
+      <UniqueIdentifier>{4e5c3988-b912-463f-bddf-7e86db90f1a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\HDR/AO">
+      <UniqueIdentifier>{d2ed6fcb-deea-48c9-9823-d58890dff030}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\tess">
+      <UniqueIdentifier>{b5a85ebb-ab92-4c37-866d-c25c86881286}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\func">
+      <UniqueIdentifier>{c021cf9b-bda7-4177-b4aa-f1b37b5dcc78}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

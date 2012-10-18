@@ -1,0 +1,12 @@
+
+_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+
+_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+
+_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+
+_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+
+_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+
+_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"

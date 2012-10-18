@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1935FF02-B813-4B6D-8727-AE558393D468}</ProjectGuid>
+    <RootNamespace>gluxEngine</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>FITRenderer</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LIB\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LIB\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LIB\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LIB\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL.lib;SDLmain.lib;opengl32.lib;glu32.lib;lib3ds-2_0.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)bin\$(ProjectName).exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL.lib;SDLmain.lib;opengl32.lib;lib3ds-2_0.lib;glew32.lib;AntTweakBar.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)bin\$(ProjectName).exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\glux_engine\camera.cpp" />
+    <ClCompile Include="src\glux_engine\draw.cpp" />
+    <ClCompile Include="src\glux_engine\font.cpp" />
+    <ClCompile Include="src\glux_engine\light.cpp" />
+    <ClCompile Include="src\glux_engine\load3DS.cpp" />
+    <ClCompile Include="src\glux_engine\loadScene.cpp" />
+    <ClCompile Include="src\glux_engine\material.cpp" />
+    <ClCompile Include="src\glux_engine\material_generator.cpp" />
+    <ClCompile Include="src\glux_engine\object.cpp" />
+    <ClCompile Include="src\glux_engine\render_target.cpp" />
+    <ClCompile Include="src\glux_engine\scene.cpp" />
+    <ClCompile Include="src\glux_engine\shadow.cpp" />
+    <ClCompile Include="src\glux_engine\texture.cpp" />
+    <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\glux_engine\camera.h" />
+    <ClInclude Include="src\glux_engine\compute.h" />
+    <ClInclude Include="src\glux_engine\engine.h" />
+    <ClInclude Include="src\glux_engine\globals.h" />
+    <ClInclude Include="src\glux_engine\light.h" />
+    <ClInclude Include="src\glux_engine\material.h" />
+    <ClInclude Include="src\glux_engine\object.h" />
+    <ClInclude Include="src\glux_engine\scene.h" />
+    <ClInclude Include="src\glux_engine\shadow.h" />
+    <ClInclude Include="src\glux_engine\texture.h" />
+    <ClInclude Include="src\glux_engine\timer.h" />
+    <ClInclude Include="src\main_ui.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\shaders\bloom_ssao.frag" />
+    <None Include="data\shaders\blur.frag" />
+    <None Include="data\shaders\func\blur.frag" />
+    <None Include="data\shaders\func\env.frag" />
+    <None Include="data\shaders\func\light.frag" />
+    <None Include="data\shaders\func\shadow.frag" />
+    <None Include="data\shaders\func\shadow_omni.frag" />
+    <None Include="data\shaders\progress_bar.frag" />
+    <None Include="data\shaders\quad.frag" />
+    <None Include="data\shaders\quad.vert" />
+    <None Include="data\shaders\shadow.frag" />
+    <None Include="data\shaders\shadow.vert" />
+    <None Include="data\shaders\shadow_omni.frag" />
+    <None Include="data\shaders\shadow_omni.vert" />
+    <None Include="data\shaders\shadow_omni_tess.frag" />
+    <None Include="data\shaders\shadow_omni_tess.tc" />
+    <None Include="data\shaders\shadow_omni_tess.te" />
+    <None Include="data\shaders\shadow_omni_tess.vert" />
+    <None Include="data\shaders\showDepth.frag" />
+    <None Include="data\shaders\showDepth.vert" />
+    <None Include="data\shaders\showDepth_omni.frag" />
+    <None Include="data\shaders\simple_tess.frag" />
+    <None Include="data\shaders\simple_tess.geom" />
+    <None Include="data\shaders\simple_tess.tc" />
+    <None Include="data\shaders\simple_tess.te" />
+    <None Include="data\shaders\simple_tess.vert" />
+    <None Include="data\shaders\tonemap.frag" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
