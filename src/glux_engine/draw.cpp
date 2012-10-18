@@ -23,7 +23,7 @@ void TScene::Redraw(bool delete_buffer)
     for(i=0, m_il = m_lights.begin(); m_il != m_lights.end(), i<m_lights.size(); ++m_il, i++)
     {
         ///if light has a shadow, render scene from light view to texture (TScene::RenderShadowMap())
-        if((*m_il)->HasShadow())
+        if((*m_il)->IsCastingShadow())
         {
             //render shadow map
             if((*m_il)->GetType() == OMNI)
