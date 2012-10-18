@@ -51,7 +51,7 @@ TScene::~TScene()
     //delete font
     glDeleteLists(m_font2D, 256);
     //delete buffers
-    GLuint to_delete[] = { m_screen_quad.vao, m_vbos["progress_bar"].vao };
+	GLuint to_delete[] = { m_screen_quad.vao, SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar") };
     glDeleteVertexArrays(2, to_delete);
 
     /*
@@ -124,7 +124,7 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); 
     glBindVertexArray(0);
     
-	m_vbos["progress_bar"] = tmp_vbo;
+	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
 
     AddMaterial("mat_progress_bar", white, white, white, 0.0, 0.0, 0.0, SCREEN_SPACE);
     AddTexture("mat_progress_bar","data/load.tga");

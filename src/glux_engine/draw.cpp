@@ -262,8 +262,8 @@ void TScene::LoadScreen(bool swap)
     
     GLfloat vertattribs[] = { -0.7f,-0.2f, loaded,-0.2f, -0.7f,-0.3f, loaded,-0.3f };
 
-    glBindVertexArray(getVBO(VBO_ARRAY, "progress_bar"));
-    glBindBuffer(GL_ARRAY_BUFFER, getVBO(VBO_BUFFER, "progress_bar"));
+    glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar"));
+    glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "progress_bar"));
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_STREAM_DRAW); 
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);

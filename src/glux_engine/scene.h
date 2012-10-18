@@ -14,9 +14,11 @@
 #include "camera.h"
 #include "shadow.h"
 
+#include "SceneManager.h"
+
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
-enum VBOMembers { VBO_ARRAY, VBO_BUFFER, VBO_INDEX };
+
 /**
 @class TScene
 @brief containts list of objects, inits and draws 3D scene.
@@ -42,10 +44,7 @@ protected:
     map<string,GLuint> m_fbos;
     ///iterator for fbos container
     map<string,GLuint>::iterator m_ifbo;
-	///associative array with all VBOs
-	map<string,VBO> m_vbos;
-    ///iterator for vbos container
-    map<string,VBO>::iterator m_ivbo;
+
     int m_shadow_textures;    //count of shader textures
 
     ///texture cache: all loaded textures are stored here; if there's request for load of already
@@ -563,33 +562,6 @@ public:
         return m_resy; 
     }
 
-	////////////////////////////////////// TODO: zaradit //////////////////////////////////////
-
-	///@brief Return given type of VBO according to its name. The third parameter is used as index for VBO_BUFFER type
-	GLuint getVBO( VBOMembers _type, string _name, int _i = 0 )
-	{
-		assert(_i<4);
-
-		GLuint ret;
-
-		switch(_type)
-		{
-		case VBO_ARRAY:
-			ret = m_vbos[_name].vao;
-			break;
-		case VBO_BUFFER:
-			ret = m_vbos[_name].buffer[_i];
-			break;
-		case VBO_INDEX:
-			ret = m_vbos[_name].indices;
-			break;
-		default:
-			ret = 0;
-			break;
-		}
-		
-		return ret;
-	}
 };
 
 
