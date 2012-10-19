@@ -43,6 +43,12 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\SceneManager.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\Singleton.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -79,6 +85,12 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\timer.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\SceneManager.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\Singleton.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
