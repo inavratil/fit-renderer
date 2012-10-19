@@ -33,7 +33,7 @@ bool InitScene(int resx, int resy)
 		s->SetShadow(0, SHADOW_RES, OMNI, 0.3f, true);
 		s->DPSetPCF(use_pcf);
 		s->DPShadowMethod( dpshadow_method );         
-		s->DPTessellation(dpshadow_tess);
+		s->DPSetTessellation(dpshadow_tess);
 		s->DPDrawSM(drawSM);
 		s->RotateParaboloid(parab_rot);
 #else
@@ -49,8 +49,8 @@ bool InitScene(int resx, int resy)
         s->CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT);
 
         //cast/receive shadows
-        s->CastShadow("sky",false);
-        s->ReceiveShadow("mat_sky",false);
+        s->ObjCastShadow("sky",false);
+        s->MatReceiveShadow("mat_sky",false);
 
         ////General HDR settings
         //s->SetUniform("mat_tonemap","exposure",1.0);
@@ -66,6 +66,26 @@ bool InitScene(int resx, int resy)
         s->CustomShader("show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag");
         s->AddMaterial("show_depth_omni");
         s->CustomShader("show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag");
+
+		//add shadow shader when shadows are enabled (will be sending depth values only)
+		s->AddMaterial("_mat_default_shadow");
+		s->CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
+
+		//and also for omnidirectional lights with dual-paraboloid
+		s->AddMaterial("_mat_default_shadow_omni");
+		s->CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag");
+
+		//optionally, add tessellation for paraboloid projection
+		if(s->DPGetTessellation())
+		{        
+			TShader vert("data/shaders/shadow_omni_tess.vert", "");
+			TShader tcon("data/shaders/shadow_omni_tess.tc", "");
+			TShader teval("data/shaders/shadow_omni_tess.te", "");
+			TShader frag("data/shaders/shadow_omni_tess.frag", "");
+
+			s->AddMaterial("_mat_default_shadow_omni_tess", white, white, white, 64.0, 0.0, 0.0, NONE);
+			s->CustomShader("_mat_default_shadow_omni_tess", &vert, &tcon, &teval, NULL, &frag);
+		}
     }
     catch(int)
     {

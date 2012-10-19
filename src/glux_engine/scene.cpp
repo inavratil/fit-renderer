@@ -51,7 +51,7 @@ TScene::~TScene()
     //delete font
     glDeleteLists(m_font2D, 256);
     //delete buffers
-    GLuint to_delete[] = { m_screen_quad.vao, m_vbos["progress_bar"].vao };
+	GLuint to_delete[] = { m_screen_quad.vao, SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar") };
     glDeleteVertexArrays(2, to_delete);
 
     /*
@@ -124,7 +124,7 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); 
     glBindVertexArray(0);
     
-	m_vbos["progress_bar"] = tmp_vbo;
+	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
 
     AddMaterial("mat_progress_bar", white, white, white, 0.0, 0.0, 0.0, SCREEN_SPACE);
     AddTexture("mat_progress_bar","data/load.tga");
@@ -171,7 +171,7 @@ bool TScene::PostInit()
     int i;
     for(i = 0, m_il = m_lights.begin(); m_il != m_lights.end(); ++m_il, i++)
     {
-        if((*m_il)->HasShadow()) //if yes, create shadow map for current light
+        if((*m_il)->IsCastingShadow()) //if yes, create shadow map for current light
         {         
             if(!CreateShadowMap(m_il))
                 return false;
@@ -218,27 +218,6 @@ bool TScene::PostInit()
 
     //add screen quad for render targets
     AddScreenQuad();
-
-    //add shadow shader when shadows are enabled (will be sending depth values only)
-    AddMaterial("_mat_default_shadow");
-    CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
-
-    //and also for omnidirectional lights with dual-paraboloid
-    AddMaterial("_mat_default_shadow_omni");
-    CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag");
-
-    //optionally, add tessellation for paraboloid projection
-    if(m_dpshadow_tess)
-    {        
-        TShader vert("data/shaders/shadow_omni_tess.vert", "");
-        TShader tcon("data/shaders/shadow_omni_tess.tc", "");
-        TShader teval("data/shaders/shadow_omni_tess.te", "");
-        TShader frag("data/shaders/shadow_omni_tess.frag", "");
-
-        AddMaterial("_mat_default_shadow_omni_tess", white, white, white, 64.0, 0.0, 0.0, NONE);
-        CustomShader("_mat_default_shadow_omni_tess", &vert, &tcon, &teval, NULL, &frag);
-    }
-
 
     //update uniform buffer with projection matrix and camera position
     glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
@@ -528,8 +507,8 @@ void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 sp
     AddMaterial(m_name.c_str(), 2.0f*diff, 2.0f*diff, 2.0f*diff, 0.0, 0.0, 0.0);
     AddObject(m_name.c_str(), "data/obj/light.3ds");
     SetMaterial(m_name.c_str(), m_name.c_str());
-    CastShadow(m_name.c_str(), false);
-    ReceiveShadow(m_name.c_str(), false);
+    ObjCastShadow(m_name.c_str(), false);
+    MatReceiveShadow(m_name.c_str(), false);
 
     //create new and push into list
     TLight *l = new TLight(_lights, amb, diff, spec, lpos, radius);

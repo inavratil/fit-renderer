@@ -14,9 +14,11 @@
 #include "camera.h"
 #include "shadow.h"
 
+#include "SceneManager.h"
+
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
-enum VBOMembers { VBO_ARRAY, VBO_BUFFER, VBO_INDEX };
+
 /**
 @class TScene
 @brief containts list of objects, inits and draws 3D scene.
@@ -30,22 +32,22 @@ protected:
     map<string,TObject*> m_objects;
     ///iterator for objects container
     map<string,TObject*>::iterator m_io;
+
     ///associative array with all materials
     map<string,TMaterial*> m_materials;
     ///iterator for materials container
     map<string,TMaterial*>::iterator m_im;
+
     ///associative array with all lights
     vector<TLight*> m_lights;
     ///iterator for lights container
     vector<TLight*>::iterator m_il, m_il2;
     ///associative array with all FBOs
+
     map<string,GLuint> m_fbos;
     ///iterator for fbos container
     map<string,GLuint>::iterator m_ifbo;
-	///associative array with all VBOs
-	map<string,VBO> m_vbos;
-    ///iterator for vbos container
-    map<string,VBO>::iterator m_ivbo;
+
     int m_shadow_textures;    //count of shader textures
 
     ///texture cache: all loaded textures are stored here; if there's request for load of already
@@ -54,6 +56,7 @@ protected:
     map<string,GLuint> m_tex_cache;
     ///iterator for texture cache container
     map<string,GLuint>::iterator m_it;
+
     ///3DS objects cache - purpose is the same as texture cache
     map<string,VBO> m_obj_cache;
     ///iterator for object cache container
@@ -449,16 +452,18 @@ public:
         }
     }
 
+	//FIXME: NAVRH: presunout asi jinam, napr. do SceneManagera. Lepsi by byl zapis obj->DoCastShadow( flag )
     ///@brief Enable/disable shadow casting by selected object (by name) (see TObject::CastShadow() )
-    void CastShadow(const char *obj_name, bool flag){ 
+    void ObjCastShadow(const char *obj_name, bool flag){ 
         if(m_objects.find(obj_name) == m_objects.end()) 
             cerr<<"WARNING (cast shadow): no object with name"<<obj_name<<"!\n"; 
         else 
             m_objects[obj_name]->CastShadow(flag); 
     } 
 
+	//FIXME: NAVRH:  presunout asi jinam, napr. do SceneManagera. Lepsi by byl zapis mat->DoReceiveShadow( flag )
     ///@brief Enable/disable shadow receiving for selected material (by name) (see TMaterial::ReceiveShadow() )
-    void ReceiveShadow(const char *mat_name, bool flag){ 
+    void MatReceiveShadow(const char *mat_name, bool flag){ 
         if(m_materials.find(mat_name) == m_materials.end()) 
             cerr<<"WARNING (receive shadow): no material with name"<<mat_name<<"!\n"; 
         else 
@@ -502,8 +507,13 @@ public:
         return m_dp_FOV;
     }
 
+	bool DPGetTessellation()
+	{
+		return m_dpshadow_tess; 
+	}
+
     ///@brief toggle tessellation in paraboloid projection
-    void DPTessellation(bool flag){
+    void DPSetTessellation(bool flag){
         if(flag && !GLEW_ARB_gpu_shader5)
         {
             cout<<"OpenGL 4 not supported. Cannot enable tessellation :(\n";
@@ -563,33 +573,6 @@ public:
         return m_resy; 
     }
 
-	////////////////////////////////////// TODO: zaradit //////////////////////////////////////
-
-	///@brief Return given type of VBO according to its name. The third parameter is used as index for VBO_BUFFER type
-	GLuint getVBO( VBOMembers _type, string _name, int _i = 0 )
-	{
-		assert(_i<4);
-
-		GLuint ret;
-
-		switch(_type)
-		{
-		case VBO_ARRAY:
-			ret = m_vbos[_name].vao;
-			break;
-		case VBO_BUFFER:
-			ret = m_vbos[_name].buffer[_i];
-			break;
-		case VBO_INDEX:
-			ret = m_vbos[_name].indices;
-			break;
-		default:
-			ret = 0;
-			break;
-		}
-		
-		return ret;
-	}
 };
 
 
