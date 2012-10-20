@@ -16,6 +16,7 @@ TScene::TScene()
     //FBO's
     m_useHDR = m_useSSAO = m_useNormalBuffer = false;
     m_f_buffer = m_r_buffer_depth = m_f_bufferMSAA = m_r_buffer_colorMSAA = m_r_buffer_depthMSAA = 0;
+    m_aerr_buffer = NULL;
     m_msamples = 0;
 
     //scene
@@ -35,10 +36,16 @@ TScene::TScene()
     m_shadow_textures = 0;
     m_dpshadow_tess = false;
     m_draw_shadow_map = false;
+    m_min_depth = 0.0;
+    m_avg_depth = 100.0;
+    m_max_depth = 1000.0;
+    m_select_buffer = 0;
 
     m_use_pcf = true;
     m_dpshadow_method = DPSM;
+    m_draw_aliasError = false;
     m_parab_angle = glm::vec3(0.0, 0.0, 0.0);
+    m_cut_angle = glm::vec2(0.0);
 }
 
 /**
@@ -51,8 +58,11 @@ TScene::~TScene()
     //delete font
     glDeleteLists(m_font2D, 256);
     //delete buffers
-	GLuint to_delete[] = { m_screen_quad.vao, SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar") };
+    GLuint to_delete[] = { m_screen_quad.vao, m_progress_bar.vao };
     glDeleteVertexArrays(2, to_delete);
+
+    delete [] m_select_buffer;
+    delete [] m_aerr_buffer;
 
     /*
     materials.clear();
@@ -73,6 +83,8 @@ TScene::~TScene()
     delete m_font2D_bkg;
 
     delete m_cam;
+
+    delete m_tmp_cube;
 }
 
 /**
@@ -115,21 +127,17 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
         BuildFont();
     
     //progress bar and background
-	VBO tmp_vbo;
-    glGenVertexArrays(1, &tmp_vbo.vao);
-    glBindVertexArray(tmp_vbo.vao);
+    glGenVertexArrays(1, &m_progress_bar.vao);
+    glBindVertexArray(m_progress_bar.vao);
 
-    glGenBuffers(1, &tmp_vbo.buffer[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, tmp_vbo.buffer[0]);
+    glGenBuffers(1, &m_progress_bar.buffer[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, m_progress_bar.buffer[0]);
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); 
     glBindVertexArray(0);
     
-	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
-
     AddMaterial("mat_progress_bar", white, white, white, 0.0, 0.0, 0.0, SCREEN_SPACE);
     AddTexture("mat_progress_bar","data/load.tga");
     CustomShader("mat_progress_bar","data/shaders/quad.vert", "data/shaders/progress_bar.frag");
-
 
     return true;
 }
@@ -171,9 +179,10 @@ bool TScene::PostInit()
     int i;
     for(i = 0, m_il = m_lights.begin(); m_il != m_lights.end(); ++m_il, i++)
     {
-        if((*m_il)->IsCastingShadow()) //if yes, create shadow map for current light
-        {         
-            if(!CreateShadowMap(m_il))
+        if((*m_il)->HasShadow()) //if yes, create shadow map for current light
+        {
+            if(!CreateShadowMapMultires(m_il))            
+            //if(!CreateShadowMap(m_il))
                 return false;
 
             //add shadow map to all materials (except those who don't receive shadows)
@@ -181,11 +190,25 @@ bool TScene::PostInit()
                 if(m_im->second->GetSceneID() == m_sceneID && !m_im->second->IsScreenSpace())
                     m_im->second->AddShadowMap((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
 
+            CreateDataTexture("select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_TEXTURE_2D);
+            //create render target for depth calculations
+            glGenFramebuffers(1, &m_f_buffer_select);
+            glBindFramebuffer(GL_FRAMEBUFFER, m_f_buffer_select);
+            //attach texture to the frame buffer
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["select_texture"], 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
             //add shader for selecting depth values (IPSM only)
             if((*m_il)->GetType() == OMNI)
             {
                 if(!m_useNormalBuffer)  //normal buffer must be enabled before we can use IPSM
                     CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT, true);
+                AddMaterial("mat_depth_select",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+                AddTexture("mat_depth_select", "normal_texture", RENDER_TEXTURE);
+                CustomShader("mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag");
+                SetUniform("mat_depth_select","near_far",glm::vec2(m_near_p, m_far_p));
+
+                //allocate z-selection buffer
+                m_select_buffer = new float[Z_SELECT_SIZE*Z_SELECT_SIZE];
             }
         }
 
@@ -200,6 +223,8 @@ bool TScene::PostInit()
         GLfloat radius = (*m_il)->GetRadius();
         glBufferSubData(GL_UNIFORM_BUFFER, offset + i*align, sizeof(float), &radius);   //radius
     }
+    
+    CreateAliasErrorTarget();
 
     cout<<"Baking materials...\n";
     //assign light count to all materials and then bake them
@@ -218,6 +243,42 @@ bool TScene::PostInit()
 
     //add screen quad for render targets
     AddScreenQuad();
+
+    //add shadow shader when shadows are enabled (will be sending depth values only)
+    AddMaterial("_mat_default_shadow");
+    CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
+
+    //and also for omnidirectional lights with dual-paraboloid
+    string defines;
+	if(m_dpshadow_method == CUT)
+        defines = "#define PARABOLA_CUT\n";
+
+    AddMaterial("_mat_default_shadow_omni");
+    CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag", defines.c_str());
+
+#ifndef SHADOW_MULTIRES
+    //shader showing shadow map alias error
+    AddMaterial("mat_aliasError");
+    AddTexture("mat_aliasError", "data/tex/error_color.tga");
+    CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
+#endif
+
+    m_tmp_cube = new TObject();
+    VBO vbo_ret = m_tmp_cube->Create("tmp_cube","data/obj/cube.3ds",true);
+
+
+    //optionally, add tessellation for paraboloid projection
+    if(m_dpshadow_tess)
+    {        
+        TShader vert("data/shaders/shadow_omni_tess.vert", "");
+        TShader tcon("data/shaders/shadow_omni_tess.tc", "");
+        TShader teval("data/shaders/shadow_omni_tess.te", "");
+        TShader frag("data/shaders/shadow_omni_tess.frag", "");
+
+        AddMaterial("_mat_default_shadow_omni_tess", white, white, white, 64.0, 0.0, 0.0, NONE);
+        CustomShader("_mat_default_shadow_omni_tess", &vert, &tcon, &teval, NULL, &frag);
+    }
+
 
     //update uniform buffer with projection matrix and camera position
     glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
@@ -273,6 +334,7 @@ void TScene::Destroy(bool delete_cache)
     {
         glDeleteFramebuffers(1, &m_f_buffer);
         glDeleteFramebuffers(1, &m_f_bufferMSAA);
+        glDeleteFramebuffers(1, &m_f_buffer_select);
         glDeleteRenderbuffers(1, &m_r_buffer_depth);
         glDeleteRenderbuffers(1, &m_r_buffer_colorMSAA);
         glDeleteRenderbuffers(1, &m_r_buffer_depthMSAA);
@@ -507,8 +569,8 @@ void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 sp
     AddMaterial(m_name.c_str(), 2.0f*diff, 2.0f*diff, 2.0f*diff, 0.0, 0.0, 0.0);
     AddObject(m_name.c_str(), "data/obj/light.3ds");
     SetMaterial(m_name.c_str(), m_name.c_str());
-    ObjCastShadow(m_name.c_str(), false);
-    MatReceiveShadow(m_name.c_str(), false);
+    CastShadow(m_name.c_str(), false);
+    ReceiveShadow(m_name.c_str(), false);
 
     //create new and push into list
     TLight *l = new TLight(_lights, amb, diff, spec, lpos, radius);

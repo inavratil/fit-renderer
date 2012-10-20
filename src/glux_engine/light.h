@@ -85,7 +85,7 @@ public:
 
     ///////////////// SHADOWS //////////////////////////
     ///@brief Returns light shadow
-    bool IsCastingShadow(){ 
+    bool HasShadow(){ 
         return m_shadow; 
     } 
     ///@brief return shadow map size

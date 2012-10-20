@@ -460,13 +460,18 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                     "uniform float " + m_it->first + "_intensity;\n"
                     "uniform sampler2DArray " + m_it->first + ";\n";
 
+                //do we use parabola cut?
+                if(dpshadow_method == CUT)
+                    frag_vars += "#define PARABOLA_CUT\n";
                 if(use_pcf)
                     frag_vars += "#define USE_PCF\n";
 
                 //insert shadow function (only once)
                 if(m_it->first.find("ShadowOMNI_A") != string::npos)
-					if( dpshadow_method == DPSM )
+					if( dpshadow_method == CUT )
 						frag_func += LoadFunc("shadow_omni");
+					else 
+						frag_func += LoadFunc("shadow_warpdpsm");
 
                 frag_main += "\n  //Shadow map projection\n"
                     "  color *= ShadowOMNI(" + m_it->first + ", " + m_it->first + "_intensity);\n";

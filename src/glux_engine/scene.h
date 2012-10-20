@@ -14,10 +14,7 @@
 #include "camera.h"
 #include "shadow.h"
 
-#include "SceneManager.h"
-
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
-
 
 /**
 @class TScene
@@ -32,22 +29,22 @@ protected:
     map<string,TObject*> m_objects;
     ///iterator for objects container
     map<string,TObject*>::iterator m_io;
-
     ///associative array with all materials
     map<string,TMaterial*> m_materials;
     ///iterator for materials container
     map<string,TMaterial*>::iterator m_im;
-
     ///associative array with all lights
     vector<TLight*> m_lights;
     ///iterator for lights container
     vector<TLight*>::iterator m_il, m_il2;
     ///associative array with all FBOs
-
     map<string,GLuint> m_fbos;
     ///iterator for fbos container
     map<string,GLuint>::iterator m_ifbo;
-
+	///associative array with all VBOs
+	map<string,VBO> m_vbos;
+    ///iterator for vbos container
+    map<string,VBO>::iterator m_ivbo;
     int m_shadow_textures;    //count of shader textures
 
     ///texture cache: all loaded textures are stored here; if there's request for load of already
@@ -56,7 +53,6 @@ protected:
     map<string,GLuint> m_tex_cache;
     ///iterator for texture cache container
     map<string,GLuint>::iterator m_it;
-
     ///3DS objects cache - purpose is the same as texture cache
     map<string,VBO> m_obj_cache;
     ///iterator for object cache container
@@ -92,7 +88,7 @@ protected:
     glm::mat4 m_viewMatrix, m_projMatrix;
 
     //scene render to texture target (FBO) and progress bar
-    VBO m_screen_quad, m_small_quad;
+    VBO m_screen_quad, m_small_quad, m_progress_bar;
 
     ///shall we use HDR, SSAO or shadows?
     bool m_useHDR, m_useSSAO, m_useShadows, m_useNormalBuffer;
@@ -100,7 +96,7 @@ protected:
     bool m_wireframe;
 
     ///framebuffer/renderbuffer objects for color/depth
-    GLuint m_f_buffer, m_r_buffer_depth,
+    GLuint m_f_buffer, m_r_buffer_depth, m_f_buffer_select,
            m_f_bufferMSAA, m_r_buffer_colorMSAA, m_r_buffer_normalMSAA, m_r_buffer_depthMSAA;
 
 
@@ -117,10 +113,14 @@ protected:
     float m_dp_FOV;
     glm::vec3 m_parab_angle;
     bool m_dpshadow_tess, m_draw_shadow_map;
-    bool m_use_pcf;
+    bool m_use_pcf, m_draw_aliasError;
     int m_dpshadow_method;
+    float m_min_depth, m_avg_depth, m_max_depth;
     glm::vec3 m_avg_normal;
+    float *m_select_buffer, *m_aerr_buffer;
+    glm::vec2 m_cut_angle;
     GLuint m_aerr_f_buffer, m_aerr_f_buffer_color, m_aerr_r_buffer_depth;
+    TObject *m_tmp_cube;
 
 public:
     //basic constructor
@@ -139,6 +139,7 @@ public:
     //draw all objects in scene
     void DrawScene(int drawmode);
     void DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix);
+    void DrawAliasError(const char* alias_mat, glm::mat4& lightMatrix);
 
     //draw load screen
     void LoadScreen(bool swap = true);
@@ -431,12 +432,23 @@ public:
 
     ////////////////////////////////////////////SHADOWS ///////////////////////////////////////
 
+    //create render target for alias error 
+    bool CreateAliasErrorTarget();
+    //render alias error
+    void RenderAliasError();
     //create shadow map for selected light
     bool CreateShadowMap(vector<TLight*>::iterator ii);
     //render shadow map (spot)
     void RenderShadowMap(TLight *l);
     //render shadow map (omnidirectional, dual-paraboloid)
     void RenderShadowMapOmni(TLight *l);
+
+    //prepare textures and FBOs for multiresolution rendering
+    bool CreateShadowMapMultires(vector<TLight*>::iterator ii);
+    //render omnidirectional shadow map using multiresolution techniques
+    void RenderShadowMapOmniMultires(TLight *l);
+	//add additional vertex data
+	void AddVertexDataMultires();
 
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()
@@ -452,18 +464,16 @@ public:
         }
     }
 
-	//FIXME: NAVRH: presunout asi jinam, napr. do SceneManagera. Lepsi by byl zapis obj->DoCastShadow( flag )
     ///@brief Enable/disable shadow casting by selected object (by name) (see TObject::CastShadow() )
-    void ObjCastShadow(const char *obj_name, bool flag){ 
+    void CastShadow(const char *obj_name, bool flag){ 
         if(m_objects.find(obj_name) == m_objects.end()) 
             cerr<<"WARNING (cast shadow): no object with name"<<obj_name<<"!\n"; 
         else 
             m_objects[obj_name]->CastShadow(flag); 
     } 
 
-	//FIXME: NAVRH:  presunout asi jinam, napr. do SceneManagera. Lepsi by byl zapis mat->DoReceiveShadow( flag )
     ///@brief Enable/disable shadow receiving for selected material (by name) (see TMaterial::ReceiveShadow() )
-    void MatReceiveShadow(const char *mat_name, bool flag){ 
+    void ReceiveShadow(const char *mat_name, bool flag){ 
         if(m_materials.find(mat_name) == m_materials.end()) 
             cerr<<"WARNING (receive shadow): no material with name"<<mat_name<<"!\n"; 
         else 
@@ -483,6 +493,10 @@ public:
 
     //IMPROVED DUAL-PARABOLOID SHADOWS SETTINGS
 
+    void DPSetCutAngle( glm::vec2 _angle ){
+		m_cut_angle = _angle;
+	}
+
     ///@brief set usage of PCF
     void DPSetPCF(bool flag){
         m_use_pcf = flag;
@@ -494,9 +508,15 @@ public:
         if(type == DPSM)
         {
             m_dp_FOV = 179.0f;
+            m_avg_depth = 1000.0f;
         }
     }
 
+
+    ///@brief Get far point value
+    float DPGetFarPoint(){
+        return m_avg_depth;
+    }
     ///@brief Get average normal
     glm::vec3 DPGetAvgNormal(){
         return m_avg_normal;
@@ -507,13 +527,8 @@ public:
         return m_dp_FOV;
     }
 
-	bool DPGetTessellation()
-	{
-		return m_dpshadow_tess; 
-	}
-
     ///@brief toggle tessellation in paraboloid projection
-    void DPSetTessellation(bool flag){
+    void DPTessellation(bool flag){
         if(flag && !GLEW_ARB_gpu_shader5)
         {
             cout<<"OpenGL 4 not supported. Cannot enable tessellation :(\n";
@@ -526,6 +541,11 @@ public:
     void DPDrawSM(bool flag){
         m_draw_shadow_map = flag;
     }
+
+    void DPDrawAliasError(bool flag){
+        m_draw_aliasError = flag;
+    }
+
 
     ////////////////////////// RENDER TARGETS, HDR AND SSAO ////////////////////////
 
@@ -572,7 +592,6 @@ public:
     int GetResY(){ 
         return m_resy; 
     }
-
 };
 
 

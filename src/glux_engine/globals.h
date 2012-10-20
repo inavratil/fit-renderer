@@ -59,11 +59,10 @@
 #include <cmath>
 #include <algorithm>
 
-// Local classes
-#include "Singleton.h"
-
 ///verbose mode
 //#define VERBOSE
+
+#define SHADOW_MULTIRES
 
 using namespace std;
 ///Error code
@@ -182,5 +181,32 @@ inline void printVec( glm::vec4 v, const char* name = NULL )
         cout << name << endl;
     cout << v.x << ", " << v.y << ", " << v.z << ", " << v.w << endl;
 }
+
+
+    const glm::mat4 cam_matrix = glm::mat4(
+    // katedrala exp 4
+    0.156434f, 0.0860827f, -0.98393f, 0.0f,
+    0, 0.996195f, 0.0871557f, 0.0f,
+    0.987688f, -0.0136342f, 0.155839f, 0.0f,
+    -1.57116f, -63.7559f, -210.799f, 1.0f
+    
+    // scena s autem exp 5
+    //-0.981627f, 0.0133102f, 0.190344f, 0.0f,
+    //0.0f, 0.997564f, -0.0697565f, 0.0f,
+    //-0.190809f, -0.0684748f, -0.979236f, 0.0f,
+    //-52.4424f, -21.0609f, -200.104f, 1.0f
+
+    // scene 5 - dbg_plane     
+    //0.0f, 0.0f, -1.0f, 0.0f,
+    //0.0f, 1.0f, 0.0f, 0.0f,
+    //1.0f, 0.0f, 0.0f, 0.0f,
+    //5.0f, -5.0f, -17.1f, 1.0f
+
+    // scene 5 - dbg_plane - kamera s perspektivni projekci, v pozici svetla
+    //-1.0f, 0.0f, 0.0f, 0.0f,
+    //0.0f, 1.0f, 0.0f, 0.0f,
+    //1.0f, 0.0f, -1.0f, 0.0f,
+    //0.0f, -5.0f, -12.071f, 1.0f
+        );
 
 #endif

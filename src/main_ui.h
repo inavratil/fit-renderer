@@ -1,6 +1,7 @@
 //MAIN APPLICATION VARIABLES, SETTINGS AND TWEAK BARS
 
 #include "glux_engine/engine.h"
+#include "experiments.h"
 
 using namespace std;
 
@@ -19,6 +20,9 @@ int resx = 1024, resy = 640;
 int mem_use = 0;
 bool draw_ui = true;
 
+//scenes
+int scene = 1;
+int ex = -1;
 
 //camera rotation and position
 glm::vec3 rot, pos; 
@@ -35,16 +39,36 @@ bool move_parab = false;
 glm::vec3 parab_rot(0.0, 0.0, 0.0);
 
 //paraboloid shadow map settings
+bool parabola_cut = false;
 bool dpshadow_tess = false;
 bool use_pcf = false;
-int dpshadow_method = DPSM;
+int dpshadow_method = IPSM;//CUT;
+glm::vec2 cut_angle( 0.0, 0.0 );
 float dp_frontFOV = 0.0, dp_farPoint = 0.0;
 
+bool draw_error = false;
 bool drawSM = true;
+
+struct SaveData {
+    glm::vec3 parab_rot;
+    glm::vec2 cut_angle;
+};
+
+SaveData state_switch[2];
+int curr_state = 1;
+
+Experiment exper;
+bool isExperiment = false;
 
 bool show_smaps = true;
 
 int SHADOW_RES = 1024;
+
+//multires settings
+int mip_level = 0;
+float normal_threshold = 1.0;
+float depth_threshold = 15.0;
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,6 +89,10 @@ void TW_CALL twResetParab(void *clientData){
     parab_rot.x = 0.0;
     parab_rot.y = 0.0; 
     s->RotateParaboloid(parab_rot);
+    cut_angle = glm::vec2( 0.0 );
+    s->DPSetCutAngle(cut_angle);
+    state_switch[1].parab_rot = parab_rot;
+    state_switch[1].cut_angle = cut_angle;
 }
 
 /**
@@ -115,6 +143,9 @@ void InitTweakBar()
     TwEnumVal sh_mode[3] = { {DPSM, "DPSM"}, {IPSM, "IPSM"}, {CUT, "CUT"} };
     TwType sh_modes = TwDefineEnum("sh_modes", sh_mode, 3);
     TwAddVarRO(ui, "sh_mode", sh_modes, &dpshadow_method, "label='Mode' group='Shadows'");
+    //parabola cut
+    TwAddVarRO(ui, "parabola_cut", TW_TYPE_BOOLCPP, &parabola_cut, 
+               " label='Parabola cut' group='Shadows' ");
     //near/far point
     TwAddVarRO(ui, "frontFOV", TW_TYPE_FLOAT, &dp_frontFOV, 
                " label='Front FOV' group='Shadows' precision=1");
@@ -127,6 +158,9 @@ void InitTweakBar()
                " label='Moving paraboloid' group='Shadows' key=q");
     //reset paraboloid
     TwAddButton(ui, "reset_parab", twResetParab, NULL, "label='Reset paraboloid' key=r"); 
+    //draw aliasing error
+    TwAddVarRW(ui, "draw_error", TW_TYPE_BOOLCPP, &draw_error, 
+               " label='Show alias error' group='Shadows' key=f ");
     //show shadow maps
     TwAddVarRW(ui, "drawSM", TW_TYPE_BOOLCPP, &drawSM, 
                " label='Show shadow maps' group='Shadows' ");
@@ -143,6 +177,7 @@ void UpdateTweakBar()
 {
     s->Wireframe(wire);
     s->SetCamType(cam_type);
+    s->DPDrawAliasError(draw_error);
     s->DPDrawSM(drawSM);
 }
 

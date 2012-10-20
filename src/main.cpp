@@ -9,35 +9,249 @@ bool InitScene(int resx, int resy)
     if(!s->PreInit(resx, resy, 0.1f, 10000.0f,45.0f, msaa, false, false)) 
         return false;
 
-	try{
-		const char *cubemap[] = {   "data/tex/cubemaps/posx.tga", "data/tex/cubemaps/negx.tga",
-			"data/tex/cubemaps/posy.tga", "data/tex/cubemaps/negy.tga",
-			"data/tex/cubemaps/posz.tga", "data/tex/cubemaps/negz.tga" };
+    try{
+        const char *cubemap[] = {   "data/tex/cubemaps/posx.tga", "data/tex/cubemaps/negx.tga",
+            "data/tex/cubemaps/posy.tga", "data/tex/cubemaps/negy.tga",
+            "data/tex/cubemaps/posz.tga", "data/tex/cubemaps/negz.tga" };
 
-		//skybox
-		s->AddMaterial("mat_sky",white,white,white,0.0,0.0,0.0,NONE);
-		s->AddTexture("mat_sky",cubemap);
-		s->AddObject("sky",CUBE,5000.0,5000.0);
-		s->SetMaterial("sky","mat_sky");
+        //-- Loading experiments settings
+        if( ex >= 0 )
+        {
+            if( ex < EXP_COUNT )
+            {
+                exper = experiments[ex];
+                isExperiment = true;
+                scene = exper.scene;
+                cout << "Experiment loaded." << endl;
+            }
+            else
+            {
+                cerr << "WARNING: Experiment with id " << ex << " out of range." << endl;
+                throw ERR;
+            }
+        }
 
 
-		pos = glm::vec3(-540, -43, 0);
-		rot = glm::vec3(-20, 270, 0.0f);
+        // axes
+        s->AddMaterial("mat_red",red,red,red,0.0,0.0,0.0,NONE);
+        s->AddMaterial("mat_green",green,green,green,0.0,0.0,0.0,NONE);
+        s->AddMaterial("mat_blue",blue,blue,blue,0.0,0.0,0.0,NONE);
 
-		s->LoadScene("data/obj/scenes/sibenik.3ds");
-		s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
-		s->MoveLight(0, glm::vec3(-120, 350, 0));
+        /*
+        // X
+        s->AddObject("axisX",CUBE,1.0,1.0);
+        s->MoveObj("axisX", 600.0, 0.0, 0.0 );
+        s->ResizeObj("axisX", 100.0, 1.0, 1.0 );
+        s->SetMaterial("axisX","mat_red");
+        s->CastShadow("axisX",false);
+        // Y
+        s->AddObject("axisY",CUBE,1.0,1.0);
+        s->MoveObj("axisY", 500.0, 100.0, 0.0 );
+        s->ResizeObj("axisY", 1.0, 100.0, 1.0 );
+        s->SetMaterial("axisY","mat_green");
+        s->CastShadow("axisY",false);
+        // Z
+        s->AddObject("axisZ",CUBE,1.0,1.0);
+        s->MoveObj("axisZ", 500.0, 0.0, 100.0 );
+        s->ResizeObj("axisZ", 1.0, 1.0, 100.0 );
+        s->SetMaterial("axisZ","mat_blue");
+        s->CastShadow("axisZ",false);
+        
+        s->ReceiveShadow("mat_red",false);
+        s->ReceiveShadow("mat_green",false);
+        s->ReceiveShadow("mat_blue",false);
+        */
+
+        //skybox
+        s->AddMaterial("mat_sky",white,white,white,0.0,0.0,0.0,NONE);
+        s->AddTexture("mat_sky",cubemap);
+        s->AddObject("sky",CUBE,5000.0,5000.0);
+        s->SetMaterial("sky","mat_sky");
+
+        //s->AddObject("camera",CUBE, 10, 10);//"data/obj/camera.3ds");
+        //s->AddMaterial("mat_camera", black, green);
+        //s->SetMaterial("camera", "mat_camera");
+
+        //scene 1 - car
+        if(scene == 1)
+        {
+            rot = glm::vec3(7, -40, 0);
+            pos = glm::vec3(-126,-85, -150);
+            
+            s->AddLight(0, dgrey, white, white, glm::vec3(-80, 180, 125));
+            
+            s->LoadScene("data/obj/scenes/car.3ds");
+            //glass
+            s->SetTransparency("sklo",0.7f);
+
+            s->AddTexture("pletivo", "data/tex/alpha/fence.tga",ALPHA);
+            s->AddTexture("body",cubemap, CUBEMAP_ENV, ADD, 0.4f);
+            s->AddTexture("sklo",cubemap, CUBEMAP_ENV, ADD, 0.4f);
+            s->AddTexture("zem",cubemap, CUBEMAP_ENV, ADD, 0.2f);
+            s->AddTexture("chrom",cubemap, CUBEMAP_ENV, ADD, 0.2f);
+            s->AddTexture("zrcatko",cubemap, CUBEMAP_ENV, ADD, 0.2f);
+            s->AddTexture("cihle","data/tex/depth/bricks.tga",PARALLAX,MODULATE,0.0001f);
+        }
+        //scene 2 - cathedral
+        else if(scene == 2)
+        {
+            pos = glm::vec3(-540, -43, 0);
+            rot = glm::vec3(-20, 270, 0.0f);
+
+            s->LoadScene("data/obj/scenes/sibenik.3ds");
+            s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
+            s->MoveLight(0, glm::vec3(-120, 350, 0));
+        }
+        //scene 3 - bad scene
+        else if(scene == 3)
+        {
+            rot = glm::vec3(17.0, 0.0f, 0.0);
+            pos = glm::vec3(0.0f, -30.0, -210.0f);
+
+            //s->LoadScene("../data/obj/scenes/zla_scena.3ds");
+            s->AddLight(0, silver, silver, white, glm::vec3(0.0,75.0,-150.0));
+
+            //s->AddObject("ground",PLANE,1000.0,1000.0);
+	        s->AddObject("ground","data/obj/plane.3ds");            
+            s->AddObject("cube",CUBE,10.0,10.0);
+            s->MoveObj("cube", 100.0, 10.0, 100.0 );
+            s->SetMaterial("cube","mat_green");
+
+            //add materials
+            s->AddMaterial("mat_ground",silver,silver);
+            s->AddMaterial("mat_cone",green,white);            
+            //set materials
+            s->SetMaterial("ground","mat_ground");
+
+            int CONE_COUNT = 10;
+            string cone;
+
+            for(int i=0; i<CONE_COUNT; ++i)
+            {
+                cone = "cone" + num2str(i);
+                s->AddObject(cone.c_str(), "data/obj/cone.3ds");
+
+                float movx = (i%5)*50.0f - 10.0f*CONE_COUNT;
+                float movz = (i/5)*200.0f - 100.0f;
+
+                s->MoveObj(cone.c_str(), movx, 0.0, movz );                
+                s->SetMaterial(cone.c_str(),"mat_cone");
+            }           
+        }
+        //scene 4 - outdoor
+        else if(scene == 4)
+        {
+            rot = glm::vec3(25.0f, 45.0f, 0.0f);
+            pos = glm::vec3(130.0f, -70.0f, -100.0f);
+            s->AddLight(0, lgrey, white, white, glm::vec3(30.0, 40.0, 30.0));
+
+            s->AddObject("ground",PLANE,1000.0,1000.0);
+
+            //add materials
+            s->AddMaterial("mat_bark",lgrey,white);
+            s->AddMaterial("mat_leaf",lgrey,white);
+            s->AddMaterial("mat_ground",silver,silver);
+
+            //add textures
+            s->AddTexture("mat_bark","data/tex/bark4.tga");
+            s->AddTexture("mat_bark","data/tex/normal/bark4_nm.tga",BUMP,MODULATE, 1.0);
+            s->AddTexture("mat_leaf","data/tex/alpha/leafs4.tga",ALPHA);
+            s->AddTexture("mat_ground","data/tex/grass.tga",BASE, MODULATE, 1.0, 50.0, 100.0);
+
+            //set materials
+            s->SetMaterial("ground","mat_ground");
+
+            //trees
+            float rnd;
+            int OBJECT_COUNT = 7;
+            string bark, leaf;
+            for(int i=0; i<OBJECT_COUNT; i++)
+            {
+                for(int j=0; j<OBJECT_COUNT; j++)
+                {
+                    rnd = rand()%100 / 25.0f - 2.0f;
+                    bark = "tree" + num2str(i*OBJECT_COUNT + j) + "_bark";
+                    leaf = "tree" + num2str(i*OBJECT_COUNT + j) + "_leaf";
+                    //two tree types
+                    if( (i*OBJECT_COUNT + j)%2 == 1)
+                    {
+                        s->AddObject(bark.c_str(),"data/obj/trees/tree1_bark.3ds");
+                        s->AddObject(leaf.c_str(),"data/obj/trees/tree1_leaf.3ds");
+                    }
+                    else
+                    {
+                        s->AddObject(bark.c_str(),"data/obj/trees/tree2_bark.3ds");
+                        s->AddObject(leaf.c_str(),"data/obj/trees/tree2_leaf.3ds");
+                    }
+                    float movx = j*50.0f + rnd - 25.0f*OBJECT_COUNT;
+                    float movz = i*50.0f - rnd - 25.0f* OBJECT_COUNT;
+                    float roty = 10.0f * rnd;
+                    s->MoveObj(bark.c_str(), movx, 0.0, movz);
+                    s->MoveObj(leaf.c_str(), movx, 0.0, movz);
+                    s->RotateObj(bark.c_str(), roty, A_Z);
+                    s->RotateObj(leaf.c_str(), roty, A_Z);
+                    s->SetMaterial(bark.c_str(), "mat_bark");
+                    s->SetMaterial(leaf.c_str(), "mat_leaf");
+                }
+            }
+           
+            //big tree
+            s->AddObject("bigtree_bark","data/obj/trees/tree2_bark.3ds");
+            s->ResizeObj("bigtree_bark", 10.0,10.0,10.0);
+            s->AddObject("bigtree_leaves","data/obj/trees/tree2_leaf.3ds");
+            s->ResizeObj("bigtree_leaves", 10.0,10.0,10.0);
+            s->SetMaterial("bigtree_bark","mat_bark");
+            s->SetMaterial("bigtree_leaves","mat_leaf");
+        }      
+        else if(scene == 5)
+        {
+            //pos = glm::vec3(0, -5, 12.071);
+            //rot = glm::vec3(0, 180, 0);
+            pos = glm::vec3(17.1, -5, 5);
+            rot = glm::vec3(0, 90, 0);
+
+            //s->LoadScene("data/obj/scenes/zla_scena.3ds");
+            s->AddObject("cube","data/obj/dbg_plane.3ds");            
+            s->SetMaterial("cube","mat_green");
+
+            s->AddLight(0, silver, silver, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
+            s->MoveLight(0, glm::vec3(0, 5, -1));
+            //s->MoveLight(0, glm::vec3(0, 5, -12.071));
+
+            parab_rot.y = 90.0;
+
+            //rot = glm::vec3(7, -40, 0);
+            //pos = glm::vec3(-126,-85, -150);
+            //s->LoadScene("../data/obj/scenes/skoda_low_poly.3ds");
+            //s->AddLight(0, dgrey, white, white, glm::vec3(-80, 180, 125));
+        }
+
+        if( isExperiment )
+        {
+            s->MoveLight( 0, exper.light_pos );
+            pos = exper.cam_pos;
+            rot = exper.cam_rot;
+            cut_angle = glm::vec2( exper.cut_params.x, exper.cut_params.y );
+            parab_rot.x = exper.cut_params.z;
+            parab_rot.y = exper.cut_params.w;
+
+            //s->MoveObj("camera", pos.x, pos.y, pos.z);
+            //s->RotateObj("camera", rot.x, A_X);
+            //s->RotateObj("camera", rot.y, A_Y);
+        }
 
 #ifdef USE_DP        
-		//dual-paraboloid shadow parameters        
-		s->SetShadow(0, SHADOW_RES, OMNI, 0.3f, true);
-		s->DPSetPCF(use_pcf);
-		s->DPShadowMethod( dpshadow_method );         
-		s->DPSetTessellation(dpshadow_tess);
-		s->DPDrawSM(drawSM);
-		s->RotateParaboloid(parab_rot);
+        //dual-paraboloid shadow parameters        
+        s->SetShadow(0, SHADOW_RES, OMNI, 0.3f, true);
+        s->DPSetPCF(use_pcf);
+        s->DPSetCutAngle( cut_angle );
+        s->DPShadowMethod( dpshadow_method );         
+        s->DPTessellation(dpshadow_tess);
+        s->DPDrawSM(drawSM);
+        s->DPDrawAliasError(draw_error);
+        s->RotateParaboloid(parab_rot);
 #else
-		s->SetShadow(0, SHADOW_RES, SPOT, 0.3f);
+        s->SetShadow(0, SHADOW_RES, SPOT, 0.3f);
 #endif
 
         
@@ -49,8 +263,8 @@ bool InitScene(int resx, int resy)
         s->CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT);
 
         //cast/receive shadows
-        s->ObjCastShadow("sky",false);
-        s->MatReceiveShadow("mat_sky",false);
+        s->CastShadow("sky",false);
+        s->ReceiveShadow("mat_sky",false);
 
         ////General HDR settings
         //s->SetUniform("mat_tonemap","exposure",1.0);
@@ -66,26 +280,17 @@ bool InitScene(int resx, int resy)
         s->CustomShader("show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag");
         s->AddMaterial("show_depth_omni");
         s->CustomShader("show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag");
+        s->AddMaterial("show_aliasError");
+        s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
+        
 
-		//add shadow shader when shadows are enabled (will be sending depth values only)
-		s->AddMaterial("_mat_default_shadow");
-		s->CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
+#ifndef SHADOW_MULTIRES
+        //alias quad
+        s->AddMaterial("mat_alias_quad");
+        s->AddTexture("mat_alias_quad", "data/tex/error_color.tga");
+        s->CustomShader("mat_alias_quad","data/shaders/multires/alias_quad.vert", "data/shaders/multires/alias_quad.frag");
+#endif
 
-		//and also for omnidirectional lights with dual-paraboloid
-		s->AddMaterial("_mat_default_shadow_omni");
-		s->CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag");
-
-		//optionally, add tessellation for paraboloid projection
-		if(s->DPGetTessellation())
-		{        
-			TShader vert("data/shaders/shadow_omni_tess.vert", "");
-			TShader tcon("data/shaders/shadow_omni_tess.tc", "");
-			TShader teval("data/shaders/shadow_omni_tess.te", "");
-			TShader frag("data/shaders/shadow_omni_tess.frag", "");
-
-			s->AddMaterial("_mat_default_shadow_omni_tess", white, white, white, 64.0, 0.0, 0.0, NONE);
-			s->CustomShader("_mat_default_shadow_omni_tess", &vert, &tcon, &teval, NULL, &frag);
-		}
     }
     catch(int)
     {
@@ -114,6 +319,7 @@ void Redraw()
 
     //update info
     dp_frontFOV = s->DPGetFOV();
+    dp_farPoint = s->DPGetFarPoint();
 
     //meminfo (ATI only)
     if(GLEW_ATI_meminfo)
@@ -138,7 +344,37 @@ void KeyInput(SDLKey key)
 
     switch(key)
     {     
-           //WSAD camera movement
+    case SDLK_1:
+        cout << "Saving ..." << endl;
+        state_switch[0].parab_rot = parab_rot;
+        state_switch[0].cut_angle = cut_angle;
+        break;
+    case SDLK_7:
+        cut_angle.y -= 20.0;
+        s->DPSetCutAngle(cut_angle);
+        state_switch[1].parab_rot = parab_rot;
+        state_switch[1].cut_angle = cut_angle;
+        break;
+    case SDLK_8:
+        cut_angle.y += 20.0;
+        s->DPSetCutAngle(cut_angle);
+        state_switch[1].parab_rot = parab_rot;
+        state_switch[1].cut_angle = cut_angle;
+        break;
+    case SDLK_9:
+        cut_angle.x -= 15.0;
+        s->DPSetCutAngle(cut_angle);
+        state_switch[1].parab_rot = parab_rot;
+        state_switch[1].cut_angle = cut_angle;
+        break;
+    case SDLK_0:
+        cut_angle.x += 15.0;
+        s->DPSetCutAngle(cut_angle);
+        state_switch[1].parab_rot = parab_rot;
+        state_switch[1].cut_angle = cut_angle;
+        break;
+
+        //WSAD camera movement
     case SDLK_s:
         rotrad.y = (rot.y / 180 * PI);
         rotrad.x = (rot.x / 180 * PI);
@@ -173,6 +409,21 @@ void KeyInput(SDLKey key)
     case SDLK_o: lpos1.y -= INC; s->MoveLight(0,lpos1); break;
 
 
+
+    case SDLK_SPACE:
+        curr_state = (curr_state+1)%2;
+        cout << "Toggle to["<< curr_state << "]: " 
+            << state_switch[curr_state].cut_angle.x 
+            << ", " << state_switch[curr_state].cut_angle.y  
+            << " | " << state_switch[curr_state].parab_rot.x 
+            << ", " << state_switch[curr_state].parab_rot.y 
+            << endl;
+        parab_rot = state_switch[curr_state].parab_rot;
+        cut_angle = state_switch[curr_state].cut_angle;
+        s->RotateParaboloid(parab_rot);
+        s->DPSetCutAngle(cut_angle);
+        break;
+
     case SDLK_ESCAPE:        //ESCAPE - quit
         delete s;
         SDL_Quit();
@@ -182,8 +433,9 @@ void KeyInput(SDLKey key)
     default:
         break;
     }
-  
-    //s->PrintCamera();
+    cout << "Params: " << cut_angle.x << ", " << cut_angle.y << " | " << parab_rot.x << ", " << parab_rot.y << endl;
+    cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
+    s->PrintCamera();
 
     //camera object position
     //s->MoveObjAbs("camera", pos.x, pos.y, pos.z);
@@ -232,6 +484,8 @@ void MouseMotion(SDL_Event event)
             s->RotateParaboloid(parab_rot);
 
         }
+        state_switch[1].parab_rot = parab_rot;
+        state_switch[1].cut_angle = cut_angle;
     }
     //camera movement
     else
@@ -320,9 +574,41 @@ int main(int argc, char **argv)
             else
                 WrongParams();
         }
+        ///////////////////////////////////////////////
+        //scene selection
+        else if(param == "-scene")
+        {
+            if(i+1 < argc)
+            {
+                scene = atoi(argv[i+1]);
+                i++;
+            }
+            else
+                WrongParams();
+        }
+        ///////////////////////////////////////////////
+        //experiment selection
+        else if(param == "-exp")
+        {
+            if(i+1 < argc)
+            {
+                ex = atoi(argv[i+1]);
+                i++;
+            }
+            else
+                WrongParams();
+        }
+        ///////////////////////////////////////////
+        //parabola cut
+        else if(param == "-cut")
+        {
+            parabola_cut = true;
+            dpshadow_method = CUT;
+        }
         else if(param == "-dpsm")
             dpshadow_method = DPSM;
-
+        else if(param == "-ipsm")
+            dpshadow_method = IPSM;
         ///////////////////////////////////////////
         //use PCF
         else if(param == "-pcf")
@@ -358,7 +644,7 @@ int main(int argc, char **argv)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, msaa);
 
-    SDL_WM_SetCaption("FITRenderer v0.0", 0);
+    SDL_WM_SetCaption("IPSM v2", 0);
 
     //set video mode
     int mode = SDL_OPENGL;

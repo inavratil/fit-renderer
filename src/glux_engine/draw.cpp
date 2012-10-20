@@ -18,22 +18,110 @@ void TScene::Redraw(bool delete_buffer)
 {
     GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
+//#define TEST_DPSM
+#if 0
+	glm::vec2 res_cut_angle;
+	glm::vec2 res_parab_angle;
+
+	float min_sum = 1000.0f;
+
+    static bool first = true;
+    if( first )
+    {
+#ifdef TEST_DPSM
+        float d_cutx = 0.0;
+        float d_cuty = 0.0;
+#else
+        for( float d_cuty = -64.0; d_cuty < 64.0; d_cuty += 10 )
+            for( float d_cutx = -64.0; d_cutx < 64.0; d_cutx += 10 )
+#endif
+            {
+                cout << "Cut angles:" << d_cutx << "-" << d_cuty << endl;
+                for( float d_roty = 0; d_roty <= 180; d_roty += 18 )
+                {
+                    for( float d_rotx = 0; d_rotx <= 180; d_rotx += 18 )
+                    {
+                        cut_angle.x = d_cutx;
+                        cut_angle.y = d_cuty;
+                        parab_angle.x = d_rotx;
+                        parab_angle.y = d_roty;
+                        //cut_tgangle = -1.5;
+                        //parab_angle.x = 54;
+                        //parab_angle.y = 162;
+                        ///draw all lights
+                        unsigned i;
+                        for(i=0, il = lights.begin(); il != lights.end(), i<lights.size(); il++, i++)
+                        {
+                            ///if light has a shadow, render scene from light view to texture (TScene::RenderShadowMap())
+                            if(il->HasShadow())
+                            {
+                                //render shadow map
+                                if(il->GetType() == OMNI)
+                                    RenderShadowMapOmni(&(*il));
+                                else 
+                                    RenderShadowMap(&(*il));
+                            }
+                        }
+
+                        RenderAliasError();
+                        glBindTexture(GL_TEXTURE_2D, tex_cache["aliaserr_texture"]);
+                        glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, aerr_buffer);
+
+                        float sum = 0.0;
+                        int count = 0;
+                        for( int i=0; i<(resx*resy); ++i )
+                        {
+                            if( aerr_buffer[i] > 0.0 )
+                            {
+                                sum += aerr_buffer[i];
+                                count++;
+                            }
+                        }
+
+                        //cout << ""<< sum/count << ";" << cut_angle.x << ";" << parab_angle.x << ";" << parab_angle.y << endl;
+                        cout << sum/count << " ";
+
+                        if( sum/count < min_sum )
+                        {
+                            min_sum = sum/count;
+                            res_cut_angle.x = cut_angle.x;
+                            res_cut_angle.y = cut_angle.y;
+                            res_parab_angle.x = parab_angle.x;
+                            res_parab_angle.y = parab_angle.y;
+                        }
+                    }
+                    cout << endl;
+                }
+            }
+
+        cout << "Res: "<< min_sum << ", " << res_cut_angle.x << ", " << res_cut_angle.y << ", " << res_parab_angle.x << ", " << res_parab_angle.y << endl;
+        first = false;
+    } //-- first
+#else
+
     ///draw all lights
     unsigned i;
     for(i=0, m_il = m_lights.begin(); m_il != m_lights.end(), i<m_lights.size(); ++m_il, i++)
     {
         ///if light has a shadow, render scene from light view to texture (TScene::RenderShadowMap())
-        if((*m_il)->IsCastingShadow())
+        if((*m_il)->HasShadow())
         {
             //render shadow map
             if((*m_il)->GetType() == OMNI)
             {
-				RenderShadowMapOmni(*m_il);
+                RenderShadowMapOmniMultires(*m_il); 
+				//RenderShadowMapOmni(*m_il);
             }
             else 
                 RenderShadowMap(*m_il);
         }
     }
+#endif
+
+
+#ifndef SHADOW_MULTIRES
+    
+    //RenderAliasError();
 
     //HDR/SSAO renderer - render to texture
     if(m_useHDR || m_useSSAO)
@@ -129,6 +217,67 @@ void TScene::Redraw(bool delete_buffer)
         RenderPass("mat_tonemap");
     }
 
+    //GET CAMERA DISTANCE TO NEAREST OBJECT FROM Z-BUFFER
+    if(m_dpshadow_method >= IPSM)
+    {
+        glViewport(0, 0, Z_SELECT_SIZE, Z_SELECT_SIZE);     //scale down using HW interpolation
+        glBindFramebuffer(GL_FRAMEBUFFER, m_f_buffer_select);
+        RenderPass("mat_depth_select");
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //copy depth values to buffer (from GPU to CPU)
+        glBindTexture(GL_TEXTURE_2D, m_tex_cache["select_texture"]);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, m_select_buffer);
+        //minimum, maximum and average depth
+        m_avg_depth = m_max_depth = 0.0;
+        m_min_depth = m_far_p;
+        int select_size = Z_SELECT_SIZE*Z_SELECT_SIZE;
+        vector<float> sorted_buffer;
+
+        //filter out values beyond far plane (where are no vertices) and push into vector for sorting
+        for(int i=0; i<select_size; i++)
+        {
+            if(m_select_buffer[i] > 1.0 && m_select_buffer[i] < m_far_p)
+                sorted_buffer.push_back(m_select_buffer[i]);
+        }
+        //sort by z-value
+        std::sort(sorted_buffer.begin(), sorted_buffer.end());
+
+        //run through 90% of pixels sorted by z-value
+        select_size = int(0.9*sorted_buffer.size());
+        for(int i=0; i<select_size; i++)
+        {
+            //depth values
+            float curr_depth = sorted_buffer[i];
+            if(curr_depth < m_min_depth)  //minimum
+                m_min_depth = curr_depth;
+            if(curr_depth > m_max_depth)  //maximum
+                m_max_depth = curr_depth;
+            m_avg_depth += curr_depth;    //average
+        }
+        m_avg_depth /= select_size;
+
+        //cout<<"MIN: "<<m_min_depth<<" | AVG: "<<m_avg_depth<<" | MAX:"<<m_max_depth<<endl;
+
+        //restore viewport
+        glViewport(0,0,m_resx,m_resy);
+    }
+
+    //show alias error
+    if(m_draw_aliasError)
+    {
+        glActiveTexture(GL_TEXTURE1); // FIXME
+        glBindTexture(GL_TEXTURE_2D, m_tex_cache["aliaserr_texture"]);                
+        SetUniform("show_aliasError", "tex", 0);
+        SetUniform("mat_alias_quad", "errorTex", 0);
+        SetUniform("mat_alias_quad", "tex", 1);
+        SetUniform("mat_alias_quad", "matrix", m_projMatrix * m_viewMatrix);
+        TLight *l = m_lights[0];
+        glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(0.0f, 0.0f, m_far_p ), glm::vec3(0.0f, 1.0f, 0.0f) );
+        SetUniform("mat_alias_quad", "lightMatrix", lightViewMatrix);
+        //RenderSmallQuad("show_aliasError", 0.0, 0.0, 2.0);
+        RenderPass("mat_alias_quad");
+    }
+
     //show shadow maps
     if(m_draw_shadow_map)
     {
@@ -149,7 +298,7 @@ void TScene::Redraw(bool delete_buffer)
             }
         }
     }
-
+#endif
     //finish drawing, restore buffers
     glBindVertexArray(0);
 }
@@ -183,8 +332,11 @@ void TScene::DrawScene(int drawmode)
                 if(m_io->second->GetSceneID() == m_sceneID && m_io->second->GetMatID() == matID)
                 {
                     //update matrix
+#ifdef SHADOW_MULTIRES
+                    glm::mat4 m = cam_matrix * m_io->second->GetMatrix();
+#else
                     glm::mat4 m = m_viewMatrix * m_io->second->GetMatrix();
-
+#endif
                     m_im->second->SetUniform("in_ModelViewMatrix", m);
                     m_io->second->Draw(m_im->second->IsTessellated()); //draw object
                 }
@@ -238,6 +390,41 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
 }
 
 
+void TScene::DrawAliasError(const char* alias_mat, glm::mat4& lightMatrix)
+{
+    //then other with depth-only shader
+    m_materials[alias_mat]->RenderMaterial();
+    bool tess = m_materials[alias_mat]->IsTessellated();
+
+    //draw objects in mode according to their material
+    for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
+    {
+        if(!m_im->second->IsScreenSpace() && m_im->second->GetTransparency() == 0.0)
+        {
+            ///get material ID and render all objects attached to this material
+            unsigned matID = m_im->second->GetID();
+            for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
+            {
+                if(m_io->second->IsShadow() && m_io->second->GetSceneID() == m_sceneID && m_io->second->GetMatID() == matID)
+                {
+                    //update matrix
+                    glm::mat4 m = lightMatrix * m_io->second->GetMatrix();
+                    m_materials[alias_mat]->SetUniform("in_ModelViewMatrix", m);
+
+                    //TODO: hack na zobrazeni kamery
+                    if(m_io->first == "camera")
+                        m_materials[alias_mat]->SetUniform("is_camera",1);
+                    else
+                        m_materials[alias_mat]->SetUniform("is_camera",0);
+
+                    m_io->second->Draw(tess);
+                }
+            }
+        }
+    }
+}
+
+
 /**
 ****************************************************************************************************
 @brief Draw loading screen
@@ -262,8 +449,8 @@ void TScene::LoadScreen(bool swap)
     
     GLfloat vertattribs[] = { -0.7f,-0.2f, loaded,-0.2f, -0.7f,-0.3f, loaded,-0.3f };
 
-    glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar"));
-    glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "progress_bar"));
+    glBindVertexArray(m_progress_bar.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_progress_bar.buffer[0]);
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_STREAM_DRAW); 
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);

@@ -4,6 +4,7 @@ in vec4 o_vertex;       //input vertex
 uniform vec2 near_far; // near and far plane for cm-cams
 const int cascades = 2;   //number of cascades
 uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
+uniform mat4 in_CutMatrix[2];
 
 uniform float ZOOM[MAX_CASCADES];    //zoom for both sides of paraboloid
 
@@ -11,6 +12,9 @@ uniform float ZOOM[MAX_CASCADES];    //zoom for both sides of paraboloid
 #define PCF_STEP 0.001
 #define POLY_OFFSET 100.0
 
+#ifdef PARABOLA_CUT
+uniform vec4 cut_params; //-- min/max values for cut (on x-axis)
+#endif
 vec3 DPCoordsFront(out int cascade)
 {
   /*
@@ -22,7 +26,7 @@ vec3 DPCoordsFront(out int cascade)
   
     vec4 texCoords;
 
-    texCoords = lightModelView[0] * o_vertex;
+    texCoords = in_CutMatrix[1] * in_CutMatrix[0] * lightModelView[0] * o_vertex;
 
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
@@ -43,7 +47,12 @@ vec3 DPCoordsFront(out int cascade)
       cascade = 2;
     */
 
+#ifdef PARABOLA_CUT
+    texCoords.x = ((texCoords.x - cut_params.x)/(cut_params.y - cut_params.x)) * 2.0 - 1.0;
+    texCoords.y = ((texCoords.y - cut_params.z)/(cut_params.w - cut_params.z)) * 2.0 - 1.0;
+#else
     texCoords.xy /= ZOOM[cascade];    //zoom-in
+#endif
 
     texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
     texCoords.w = 1.0;
@@ -55,7 +64,7 @@ vec3 DPCoordsFront(out int cascade)
 vec3 DPCoordsBack()
 {
     vec4 texCoords;
-    texCoords = lightModelView[1] * o_vertex;
+    texCoords = inverse( in_CutMatrix[1] ) * in_CutMatrix[0] * lightModelView[1] * o_vertex;
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
 
@@ -65,6 +74,10 @@ vec3 DPCoordsBack()
     texCoords.z += 1.0;
     texCoords.x /= texCoords.z;
     texCoords.y /= texCoords.z;
+#ifdef PARABOLA_CUT
+    texCoords.x = ((texCoords.x + cut_params.y)/(cut_params.y - cut_params.x)) * 2.0 - 1.0; // Nutne prohodit parametry Cutu, protoze se to nikde nedela
+    texCoords.y = ((texCoords.y - cut_params.z)/(cut_params.w - cut_params.z)) * 2.0 - 1.0; // TADY TO NUTNE NENI
+#endif
 
     texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
     texCoords.w = 1.0;
