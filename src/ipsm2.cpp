@@ -123,7 +123,7 @@ void TScene::AddVertexDataMultires()
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_STATIC_DRAW); 
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
-	m_vbos["polys_coeff_horiz"] = tmp_vbo;
+	SceneManager::Instance()->setVBO("polys_coeff_horiz", tmp_vbo);
 
 	//vertex attributes for screen quad
     vertattribs[0]++;
@@ -140,7 +140,7 @@ void TScene::AddVertexDataMultires()
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_STATIC_DRAW); 
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
-	m_vbos["polys_coeff_vert"] = tmp_vbo;
+	SceneManager::Instance()->setVBO("polys_coeff_vert", tmp_vbo);
 
     glBindVertexArray(0);
 

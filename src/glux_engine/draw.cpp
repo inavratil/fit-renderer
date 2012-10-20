@@ -97,14 +97,14 @@ void TScene::Redraw(bool delete_buffer)
         cout << "Res: "<< min_sum << ", " << res_cut_angle.x << ", " << res_cut_angle.y << ", " << res_parab_angle.x << ", " << res_parab_angle.y << endl;
         first = false;
     } //-- first
-#else
+#endif
 
     ///draw all lights
     unsigned i;
     for(i=0, m_il = m_lights.begin(); m_il != m_lights.end(), i<m_lights.size(); ++m_il, i++)
     {
         ///if light has a shadow, render scene from light view to texture (TScene::RenderShadowMap())
-        if((*m_il)->HasShadow())
+        if((*m_il)->IsCastingShadow())
         {
             //render shadow map
             if((*m_il)->GetType() == OMNI)
@@ -116,12 +116,6 @@ void TScene::Redraw(bool delete_buffer)
                 RenderShadowMap(*m_il);
         }
     }
-#endif
-
-
-#ifndef SHADOW_MULTIRES
-    
-    //RenderAliasError();
 
     //HDR/SSAO renderer - render to texture
     if(m_useHDR || m_useSSAO)
@@ -298,7 +292,7 @@ void TScene::Redraw(bool delete_buffer)
             }
         }
     }
-#endif
+
     //finish drawing, restore buffers
     glBindVertexArray(0);
 }
@@ -449,8 +443,8 @@ void TScene::LoadScreen(bool swap)
     
     GLfloat vertattribs[] = { -0.7f,-0.2f, loaded,-0.2f, -0.7f,-0.3f, loaded,-0.3f };
 
-    glBindVertexArray(m_progress_bar.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, m_progress_bar.buffer[0]);
+    glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar"));
+    glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "progress_bar"));
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_STREAM_DRAW); 
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);

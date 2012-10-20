@@ -49,6 +49,9 @@
     <ClCompile Include="src\glux_engine\Singleton.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ipsm2.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -91,6 +94,12 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\Singleton.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ellipse_params.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\experiments.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

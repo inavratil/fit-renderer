@@ -59,6 +59,9 @@
 #include <cmath>
 #include <algorithm>
 
+// Local classes
+#include "Singleton.h"
+
 ///verbose mode
 //#define VERBOSE
 

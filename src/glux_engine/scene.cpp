@@ -58,7 +58,7 @@ TScene::~TScene()
     //delete font
     glDeleteLists(m_font2D, 256);
     //delete buffers
-    GLuint to_delete[] = { m_screen_quad.vao, m_progress_bar.vao };
+    GLuint to_delete[] = { m_screen_quad.vao, SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar") };
     glDeleteVertexArrays(2, to_delete);
 
     delete [] m_select_buffer;
@@ -127,13 +127,17 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
         BuildFont();
     
     //progress bar and background
-    glGenVertexArrays(1, &m_progress_bar.vao);
-    glBindVertexArray(m_progress_bar.vao);
+	VBO tmp_vbo;
+  	
+	glGenVertexArrays(1, &tmp_vbo.vao);	  	
+	glBindVertexArray(tmp_vbo.vao);
 
-    glGenBuffers(1, &m_progress_bar.buffer[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, m_progress_bar.buffer[0]);
+	glGenBuffers(1, &tmp_vbo.buffer[0]);
+  	glBindBuffer(GL_ARRAY_BUFFER, tmp_vbo.buffer[0]);
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); 
     glBindVertexArray(0);
+
+	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
     
     AddMaterial("mat_progress_bar", white, white, white, 0.0, 0.0, 0.0, SCREEN_SPACE);
     AddTexture("mat_progress_bar","data/load.tga");
@@ -179,7 +183,7 @@ bool TScene::PostInit()
     int i;
     for(i = 0, m_il = m_lights.begin(); m_il != m_lights.end(); ++m_il, i++)
     {
-        if((*m_il)->HasShadow()) //if yes, create shadow map for current light
+        if((*m_il)->IsCastingShadow()) //if yes, create shadow map for current light
         {
             if(!CreateShadowMapMultires(m_il))            
             //if(!CreateShadowMap(m_il))
@@ -569,8 +573,8 @@ void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 sp
     AddMaterial(m_name.c_str(), 2.0f*diff, 2.0f*diff, 2.0f*diff, 0.0, 0.0, 0.0);
     AddObject(m_name.c_str(), "data/obj/light.3ds");
     SetMaterial(m_name.c_str(), m_name.c_str());
-    CastShadow(m_name.c_str(), false);
-    ReceiveShadow(m_name.c_str(), false);
+    ObjCastShadow(m_name.c_str(), false);
+    MatReceiveShadow(m_name.c_str(), false);
 
     //create new and push into list
     TLight *l = new TLight(_lights, amb, diff, spec, lpos, radius);
