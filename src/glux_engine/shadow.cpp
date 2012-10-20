@@ -34,6 +34,8 @@ bool TScene::CreateAliasErrorTarget()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     m_aerr_buffer = new float[m_resx*m_resy];
+
+	return true;
 }
 
 void TScene::RenderAliasError()
@@ -47,11 +49,7 @@ void TScene::RenderAliasError()
     glViewport( 0, 0, m_resx, m_resy );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#ifdef SHADOW_MULTIRES
-    glm::mat4 m = cam_matrix;
-#else
     glm::mat4 m = m_viewMatrix;
-#endif
     DrawAliasError("mat_aliasError", m);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

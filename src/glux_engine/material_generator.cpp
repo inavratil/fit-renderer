@@ -470,7 +470,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                 if(m_it->first.find("ShadowOMNI_A") != string::npos)
 					if( dpshadow_method == CUT )
 						frag_func += LoadFunc("shadow_omni");
-					else 
+					else if ( dpshadow_method == WARP_DPSM )
 						frag_func += LoadFunc("shadow_warpdpsm");
 
                 frag_main += "\n  //Shadow map projection\n"

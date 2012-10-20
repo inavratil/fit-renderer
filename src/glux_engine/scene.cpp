@@ -83,8 +83,6 @@ TScene::~TScene()
     delete m_font2D_bkg;
 
     delete m_cam;
-
-    delete m_tmp_cube;
 }
 
 /**
@@ -247,42 +245,6 @@ bool TScene::PostInit()
 
     //add screen quad for render targets
     AddScreenQuad();
-
-    //add shadow shader when shadows are enabled (will be sending depth values only)
-    AddMaterial("_mat_default_shadow");
-    CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
-
-    //and also for omnidirectional lights with dual-paraboloid
-    string defines;
-	if(m_dpshadow_method == CUT)
-        defines = "#define PARABOLA_CUT\n";
-
-    AddMaterial("_mat_default_shadow_omni");
-    CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag", defines.c_str());
-
-#ifndef SHADOW_MULTIRES
-    //shader showing shadow map alias error
-    AddMaterial("mat_aliasError");
-    AddTexture("mat_aliasError", "data/tex/error_color.tga");
-    CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
-#endif
-
-    m_tmp_cube = new TObject();
-    VBO vbo_ret = m_tmp_cube->Create("tmp_cube","data/obj/cube.3ds",true);
-
-
-    //optionally, add tessellation for paraboloid projection
-    if(m_dpshadow_tess)
-    {        
-        TShader vert("data/shaders/shadow_omni_tess.vert", "");
-        TShader tcon("data/shaders/shadow_omni_tess.tc", "");
-        TShader teval("data/shaders/shadow_omni_tess.te", "");
-        TShader frag("data/shaders/shadow_omni_tess.frag", "");
-
-        AddMaterial("_mat_default_shadow_omni_tess", white, white, white, 64.0, 0.0, 0.0, NONE);
-        CustomShader("_mat_default_shadow_omni_tess", &vert, &tcon, &teval, NULL, &frag);
-    }
-
 
     //update uniform buffer with projection matrix and camera position
     glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);

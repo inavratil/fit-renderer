@@ -326,11 +326,8 @@ void TScene::DrawScene(int drawmode)
                 if(m_io->second->GetSceneID() == m_sceneID && m_io->second->GetMatID() == matID)
                 {
                     //update matrix
-#ifdef SHADOW_MULTIRES
-                    glm::mat4 m = cam_matrix * m_io->second->GetMatrix();
-#else
                     glm::mat4 m = m_viewMatrix * m_io->second->GetMatrix();
-#endif
+
                     m_im->second->SetUniform("in_ModelViewMatrix", m);
                     m_io->second->Draw(m_im->second->IsTessellated()); //draw object
                 }

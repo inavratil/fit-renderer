@@ -99,7 +99,7 @@ bool InitScene(int resx, int resy)
             rot = glm::vec3(-20, 270, 0.0f);
 
             s->LoadScene("data/obj/scenes/sibenik.3ds");
-            s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
+            s->AddLight(0, dgrey, white, white, glm::vec3(0.0,50.0,0.0), 1000.0f);
             s->MoveLight(0, glm::vec3(-120, 350, 0));
         }
         //scene 3 - bad scene
@@ -109,7 +109,7 @@ bool InitScene(int resx, int resy)
             pos = glm::vec3(0.0f, -30.0, -210.0f);
 
             //s->LoadScene("../data/obj/scenes/zla_scena.3ds");
-            s->AddLight(0, silver, silver, white, glm::vec3(0.0,75.0,-150.0));
+            s->AddLight(0, dgrey, white, white, glm::vec3(0.0,75.0,-150.0));
 
             //s->AddObject("ground",PLANE,1000.0,1000.0);
 	        s->AddObject("ground","data/obj/plane.3ds");            
@@ -143,7 +143,7 @@ bool InitScene(int resx, int resy)
         {
             rot = glm::vec3(25.0f, 45.0f, 0.0f);
             pos = glm::vec3(130.0f, -70.0f, -100.0f);
-            s->AddLight(0, lgrey, white, white, glm::vec3(30.0, 40.0, 30.0));
+            s->AddLight(0, dgrey, white, white, glm::vec3(30.0, 40.0, 30.0));
 
             s->AddObject("ground",PLANE,1000.0,1000.0);
 
@@ -214,7 +214,7 @@ bool InitScene(int resx, int resy)
             s->AddObject("cube","data/obj/dbg_plane.3ds");            
             s->SetMaterial("cube","mat_green");
 
-            s->AddLight(0, silver, silver, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
+            s->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
             s->MoveLight(0, glm::vec3(0, 5, -1));
             //s->MoveLight(0, glm::vec3(0, 5, -12.071));
 
@@ -283,18 +283,23 @@ bool InitScene(int resx, int resy)
         s->AddMaterial("show_aliasError");
         s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
         
-
-#ifndef SHADOW_MULTIRES
         //alias quad
         s->AddMaterial("mat_alias_quad");
         s->AddTexture("mat_alias_quad", "data/tex/error_color.tga");
         s->CustomShader("mat_alias_quad","data/shaders/multires/alias_quad.vert", "data/shaders/multires/alias_quad.frag");
-#endif
 
+		//shader showing shadow map alias error
+		s->AddMaterial("mat_aliasError");
+		s->AddTexture("mat_aliasError", "data/tex/error_color.tga");
+		s->CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
 	  	
 		//add shadow shader when shadows are enabled (will be sending depth values only)
 		s->AddMaterial("_mat_default_shadow");
 		s->CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
+
+		string defines;
+		if(dpshadow_method == CUT)
+			defines = "#define PARABOLA_CUT\n";
 
 		//and also for omnidirectional lights with dual-paraboloid
 		s->AddMaterial("_mat_default_shadow_omni");
@@ -364,34 +369,21 @@ void KeyInput(SDLKey key)
 
     switch(key)
     {     
-    case SDLK_1:
-        cout << "Saving ..." << endl;
-        state_switch[0].parab_rot = parab_rot;
-        state_switch[0].cut_angle = cut_angle;
-        break;
     case SDLK_7:
         cut_angle.y -= 20.0;
         s->DPSetCutAngle(cut_angle);
-        state_switch[1].parab_rot = parab_rot;
-        state_switch[1].cut_angle = cut_angle;
         break;
     case SDLK_8:
         cut_angle.y += 20.0;
         s->DPSetCutAngle(cut_angle);
-        state_switch[1].parab_rot = parab_rot;
-        state_switch[1].cut_angle = cut_angle;
         break;
     case SDLK_9:
         cut_angle.x -= 15.0;
         s->DPSetCutAngle(cut_angle);
-        state_switch[1].parab_rot = parab_rot;
-        state_switch[1].cut_angle = cut_angle;
         break;
     case SDLK_0:
         cut_angle.x += 15.0;
         s->DPSetCutAngle(cut_angle);
-        state_switch[1].parab_rot = parab_rot;
-        state_switch[1].cut_angle = cut_angle;
         break;
 
         //WSAD camera movement
@@ -428,22 +420,6 @@ void KeyInput(SDLKey key)
     case SDLK_u: lpos1.y += INC; s->MoveLight(0,lpos1); break;
     case SDLK_o: lpos1.y -= INC; s->MoveLight(0,lpos1); break;
 
-
-
-    case SDLK_SPACE:
-        curr_state = (curr_state+1)%2;
-        cout << "Toggle to["<< curr_state << "]: " 
-            << state_switch[curr_state].cut_angle.x 
-            << ", " << state_switch[curr_state].cut_angle.y  
-            << " | " << state_switch[curr_state].parab_rot.x 
-            << ", " << state_switch[curr_state].parab_rot.y 
-            << endl;
-        parab_rot = state_switch[curr_state].parab_rot;
-        cut_angle = state_switch[curr_state].cut_angle;
-        s->RotateParaboloid(parab_rot);
-        s->DPSetCutAngle(cut_angle);
-        break;
-
     case SDLK_ESCAPE:        //ESCAPE - quit
         delete s;
         SDL_Quit();
@@ -453,9 +429,7 @@ void KeyInput(SDLKey key)
     default:
         break;
     }
-    cout << "Params: " << cut_angle.x << ", " << cut_angle.y << " | " << parab_rot.x << ", " << parab_rot.y << endl;
-    cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
-    s->PrintCamera();
+    //s->PrintCamera();
 
     //camera object position
     //s->MoveObjAbs("camera", pos.x, pos.y, pos.z);
@@ -504,8 +478,6 @@ void MouseMotion(SDL_Event event)
             s->RotateParaboloid(parab_rot);
 
         }
-        state_switch[1].parab_rot = parab_rot;
-        state_switch[1].cut_angle = cut_angle;
     }
     //camera movement
     else

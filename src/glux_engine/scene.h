@@ -122,7 +122,6 @@ protected:
     float *m_select_buffer, *m_aerr_buffer;
     glm::vec2 m_cut_angle;
     GLuint m_aerr_f_buffer, m_aerr_f_buffer_color, m_aerr_r_buffer_depth;
-    TObject *m_tmp_cube;
 
 public:
     //basic constructor

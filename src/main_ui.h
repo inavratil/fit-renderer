@@ -42,20 +42,12 @@ glm::vec3 parab_rot(0.0, 0.0, 0.0);
 bool parabola_cut = false;
 bool dpshadow_tess = false;
 bool use_pcf = false;
-int dpshadow_method = IPSM;//CUT;
+int dpshadow_method = WARP_DPSM;//CUT;
 glm::vec2 cut_angle( 0.0, 0.0 );
 float dp_frontFOV = 0.0, dp_farPoint = 0.0;
 
 bool draw_error = false;
 bool drawSM = true;
-
-struct SaveData {
-    glm::vec3 parab_rot;
-    glm::vec2 cut_angle;
-};
-
-SaveData state_switch[2];
-int curr_state = 1;
 
 Experiment exper;
 bool isExperiment = false;
@@ -91,8 +83,6 @@ void TW_CALL twResetParab(void *clientData){
     s->RotateParaboloid(parab_rot);
     cut_angle = glm::vec2( 0.0 );
     s->DPSetCutAngle(cut_angle);
-    state_switch[1].parab_rot = parab_rot;
-    state_switch[1].cut_angle = cut_angle;
 }
 
 /**

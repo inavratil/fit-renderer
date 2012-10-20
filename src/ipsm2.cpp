@@ -331,11 +331,7 @@ void TScene::RenderShadowMapOmniMultires(TLight *l)
     //SetUniform("mat_aliasError", "lightModelView[1]", lightViewMatrix);
     //SetUniform("mat_aliasError", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 
-#ifdef SHADOW_MULTIRES
-    SetUniform("mat_aliasError", "matrix", m_projMatrix * cam_matrix );
-#else
 	SetUniform("mat_aliasError", "matrix", m_projMatrix * m_viewMatrix );
-#endif
     SetUniform("mat_aliasError", "lightMatrix", lightViewMatrix);
     SetUniform("mat_aliasError", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 
