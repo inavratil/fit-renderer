@@ -9,6 +9,8 @@ Loading TGA texture code adapted from: http://nehe.gamedev.net/data/lessons/less
 ***************************************************************************************************/
 #include "texture.h"
 
+bool Texture::isILInitialized = false;
+
 /**
 ****************************************************************************************************
 @brief reset basic values (null name and texture data)
@@ -60,7 +62,7 @@ GLint Texture::Load(const char *texname, int textype, const char *filename, int 
     }
     else      //load texture from file
     {
-        if(!LoadTGA(filename))
+        if(!LoadImage(filename))
             return ERR;
 
         //texture generation
@@ -157,7 +159,7 @@ GLint Texture::Load(const char *texname, int textype,
         //load 6 images for cube map
         for(int i = 0; i < 6; i++)
         {
-            if(!LoadTGA(cube_files[i]))
+            if(!LoadImage(cube_files[i]))
                 return ERR;
 
             //texture with anisotropic filtering
@@ -279,232 +281,58 @@ GLint Texture::Load(const char *texname, int textype, const void *texdata, glm::
 @param filename file with image data
 @return success/fail of texture loading
 ****************************************************************************************************/
-bool Texture::LoadTGA(const char* filename)
+bool Texture::LoadImage(const char* filename)
 {
-    FILE* fTGA;											//file
-    int type;
+	if(!filename)
+		return false;
 
-    GLubyte tgaheader[12];                             //TGA header
-
-    //headers: for compressed and for uncompressed images
-    GLubyte uTGAcompare[12] = { 0,0, 2,0,0,0,0,0,0,0,0,0 };
-    GLubyte cTGAcompare[12] = { 0,0,10,0,0,0,0,0,0,0,0,0 };
-
-    //open file
-    fTGA = fopen(filename, "rb");
-    if(fTGA == NULL)
+	//Opens image
+	if(!Texture::isILInitialized)
     {
-        string err = "Can't open texture file ";
-        err += filename;
-        err += " !";
-        ShowMessage(err.c_str(), false);
+		ilInit();
+		Texture::isILInitialized = true;
+	}
+
+	ILuint id = 0;
+	ilGenImages(1, &id);
+	ilBindImage(id);
+	
+	if(!ilLoadImage(filename))
+	{
+		ShowMessage("Cannot open texture file!");
+		return false;
+	}
+
+	//Get image attributes
+	m_width = ilGetInteger(IL_IMAGE_WIDTH);
+	m_height = ilGetInteger(IL_IMAGE_HEIGHT);
+	m_bpp = ilGetInteger(IL_IMAGE_BPP);
+
+	if((m_width <= 0) || (m_height <= 0) || ((m_bpp != 3) && (m_bpp != 4)) )
+    {
+        ShowMessage("Unknown image type!");
         return false;
     }
 
-    cout<<"Loading image "<<filename<<"...";
-
-    ///read and check file header
-    if(fread(&tgaheader, 12, 1, fTGA) == 0)
-    {
-        ShowMessage("Can't read image header!");
-        if(fTGA != NULL) fclose(fTGA);
-        return false;
-    }
-
-    ///find out from image, whether data are compressed or not
-    if(memcmp(uTGAcompare, &tgaheader, sizeof(tgaheader)) == 0)
-        type = UNCOMPRESSED;
-    else if(memcmp(cTGAcompare, &tgaheader, sizeof(tgaheader)) == 0)
-        type = COMPRESSED;
-    //else error
-    else
-    {
-        ShowMessage("Unknown TGA image type!");
-        fclose(fTGA);
-        return false;
-    }
-
-    //read further bytes of header
-    if(fread(tgaheader, 6, 1, fTGA) == 0)
-    {
-        ShowMessage("Can't read image header!");
-        if(fTGA != NULL) fclose(fTGA);
-        return false;
-    }
-
-    ///extract width, height and bpp of image
-    m_width = tgaheader[1] * 256 + tgaheader[0];
-    m_height = tgaheader[3] * 256 + tgaheader[2];
-    m_bpp = tgaheader[4];
-
-    cout<<m_width<<"x"<<m_height<<"x"<<m_bpp<<"...";
-
-    //check values
-    if((m_width <= 0) || (m_height <= 0) || ((m_bpp != 24) && (m_bpp != 32)) )
-    {
-        ShowMessage("Unknown TGA image type!");
-        if(fTGA != NULL) fclose(fTGA);
-        return false;
-    }
-    /*
-    //set color depth
-    int gl_textype;
-    if(m_bpp == 24)
-    gl_textype = GL_RGB;
-    else
-    gl_textype = GL_RGBA;
-    */
-    ///allocate memory for image data
-    unsigned bytesPerPixel = (m_bpp / 8);
-    unsigned imageSize = (bytesPerPixel * m_width * m_height);
+	//Allocate memory for image
+    unsigned imageSize = (m_bpp * m_width * m_height);
     m_imageData = new GLubyte[imageSize];
     if(m_imageData == NULL)
     {
         ShowMessage("Can't allocate image data!");
-        fclose(fTGA);
         return false;
     }
 
-    ///load from file according to compression
-    if(type == UNCOMPRESSED)
-    {
-        ///uncompressed image - read data directly from file
-        if(fread(m_imageData, 1, imageSize, fTGA) != imageSize)
-        {
-            ShowMessage("Can't read image data!");
-            if(m_imageData != NULL) delete [] m_imageData;
-            fclose(fTGA);
-            return false;
-        }
-#ifndef _LINUX_
-        //conversion from BGR to RGB
-        for(unsigned cswap = 0; cswap < imageSize; cswap += bytesPerPixel)
-            m_imageData[cswap] ^= m_imageData[cswap+2] ^= m_imageData[cswap] ^= m_imageData[cswap+2];
-#endif
-    }
+	//Copy pixels
+	if(m_bpp==3)
+		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_RGB, IL_UNSIGNED_BYTE, m_imageData);
+	else
+		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_RGBA, IL_UNSIGNED_BYTE, m_imageData);
 
-    ///compressed image - decode using RLE compression
-    else if(type == COMPRESSED)
-    {
-        GLuint pixelcount = m_height * m_width;			//pixel count
-        GLuint currentpixel = 0;					//actual pixel
-        GLuint currentbyte = 0;						//actual byte
-
-        //allocate memory for image pixel
-        GLubyte* colorbuffer = new GLubyte[bytesPerPixel];
-        if(colorbuffer == NULL)
-        {
-            ShowMessage("Can't allocate color buffer data!");
-            fclose(fTGA);
-            return false;
-        }
-
-        do
-        {
-            //find out header type: RLE or RAW
-            GLubyte chunkheader = 0;
-            if(fread(&chunkheader, sizeof(GLubyte), 1, fTGA) == 0)
-            {
-                ShowMessage("Can't read RLE header!");
-                if(fTGA != NULL) fclose(fTGA);
-                if(m_imageData != NULL) delete [] m_imageData;
-                if(colorbuffer != NULL) delete [] colorbuffer;
-                return false;
-            }
-
-            //1. RAW part of file
-            if(chunkheader < 128)
-            {
-                chunkheader++;				//count pixels before other header
-                //nactavame kazdy pixel
-                for(short counter = 0; counter < chunkheader; counter++)
-                {
-                    if(fread(colorbuffer, 1, bytesPerPixel, fTGA) != bytesPerPixel)
-                    {
-                        ShowMessage("Can't read image data!");
-                        if(fTGA != NULL) fclose(fTGA);
-                        if(colorbuffer != NULL) delete [] colorbuffer;
-                        if(m_imageData != NULL) delete [] m_imageData;
-                        return false;
-                    }
-                    //write to memory, conversion to RGB
-#ifdef _LINUX_
-                    m_imageData[currentbyte] = colorbuffer[0];
-                    m_imageData[currentbyte + 1] = colorbuffer[1];
-                    m_imageData[currentbyte + 2] = colorbuffer[2];
-#else
-                    m_imageData[currentbyte] = colorbuffer[2];
-                    m_imageData[currentbyte + 1] = colorbuffer[1];
-                    m_imageData[currentbyte + 2] = colorbuffer[0];
-#endif
-                    ///@todo alpha channel
-                    //if(bytesPerPixel == 4) m_imageData[currentbyte + 3] = colorbuffer[3];
-                    //move to next byte
-                    currentbyte += bytesPerPixel;
-                    currentpixel++;
-
-                    //check pixel count, if it's according to image dimensions
-                    if(currentpixel > pixelcount)
-                    {
-                        ShowMessage("Wrong image format - too many pixels.");
-                        if(fTGA != NULL) fclose(fTGA);
-                        if(colorbuffer != NULL) delete [] colorbuffer;
-                        if(m_imageData != NULL) delete [] m_imageData;
-                        return false;
-                    }
-                }
-            }
-            //2. RLE part of image
-            else
-            {
-                chunkheader -= 127;						//pixel count in section
-                //read pixel after pixel
-                if(fread(colorbuffer, 1, bytesPerPixel, fTGA) != bytesPerPixel)
-                {
-                    ShowMessage("Can't read image data!");
-                    if(fTGA != NULL) fclose(fTGA);
-                    if(colorbuffer != NULL) delete [] colorbuffer;
-                    if(m_imageData != NULL) delete [] m_imageData;
-                    return false;
-                }
-                //pixel copy
-                for(short counter = 0; counter < chunkheader; counter++)
-                {
-                    //write to memory, conversion to RGB
-#ifdef _LINUX_
-                    m_imageData[currentbyte] = colorbuffer[0];
-                    m_imageData[currentbyte + 1] = colorbuffer[1];
-                    m_imageData[currentbyte + 2] = colorbuffer[2];
-#else
-                    m_imageData[currentbyte] = colorbuffer[2];
-                    m_imageData[currentbyte + 1] = colorbuffer[1];
-                    m_imageData[currentbyte + 2] = colorbuffer[0];
-#endif
-                    //TODO: alpha channel
-                    //if(bytesPerPixel == 4) m_imageData[currentbyte + 3] = colorbuffer[3];
-                    //move to next byte
-                    currentbyte += bytesPerPixel;
-                    currentpixel++;
-
-                    //check pixel count, if it's according to image dimensions
-                    if(currentpixel > pixelcount)
-                    {
-                        ShowMessage("Wrong image format - too many pixels.");
-                        if(fTGA != NULL) fclose(fTGA);
-                        if(colorbuffer != NULL) delete [] colorbuffer;
-                        if(m_imageData != NULL) delete [] m_imageData;
-                        return false;
-                    }
-                }
-            }
-        }while(currentpixel < pixelcount);
-
-        //clear up memory
-        if(colorbuffer != NULL) delete [] colorbuffer;
-    }
-
-    //done
-    fclose(fTGA);
+	//Unbind and free
+	ilBindImage(0);
+	ilDeleteImage(id);
+	
     cout<<"OK\n";
     return true;
 }

@@ -32,6 +32,8 @@ private:
     //shader uniform variables
     GLint m_texLoc, m_tileXLoc, m_tileYLoc, m_intensityLoc;
 
+	static bool isILInitialized;
+
 public:    
     Texture();
     ~Texture();
@@ -58,7 +60,7 @@ public:
                int texmode, GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso);
 
     //load TGA texture from file
-    bool LoadTGA(const char *filename);
+    bool LoadImage(const char *filename);
 
     ///@brief do we have image data?
     bool Empty(){ 

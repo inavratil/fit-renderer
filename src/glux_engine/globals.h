@@ -62,6 +62,14 @@
 // Local classes
 #include "Singleton.h"
 
+//DevIL
+#include <IL/il.h>
+
+//Assimp
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 ///verbose mode
 //#define VERBOSE
 
