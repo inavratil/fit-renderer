@@ -3,11 +3,15 @@
 # Compiler Type: MingW 3
 
 CPP       = g++
-OBJ       = bordel/main.o bordel/ipsm2.o bordel/font.o bordel/light.o bordel/material.o bordel/object.o bordel/scene.o bordel/shadow.o bordel/texture.o bordel/render_target.o bordel/camera.o bordel/material_generator.o bordel/load3DS.o bordel/compute.o bordel/loadScene.o bordel/draw.o
-LINKOBJ   = bordel/main.o bordel/ipsm2.o bordel/font.o bordel/light.o bordel/material.o bordel/object.o bordel/scene.o bordel/shadow.o bordel/texture.o bordel/render_target.o bordel/camera.o bordel/material_generator.o bordel/load3DS.o bordel/compute.o bordel/loadScene.o bordel/draw.o
+OBJ       = bordel/main.o bordel/font.o bordel/light.o bordel/material.o bordel/object.o bordel/scene.o bordel/shadow.o bordel/texture.o bordel/render_target.o bordel/camera.o bordel/material_generator.o bordel/load3DS.o bordel/compute.o bordel/loadScene.o bordel/draw.o
+LINKOBJ   = bordel/main.o bordel/font.o bordel/light.o bordel/material.o bordel/object.o bordel/scene.o bordel/shadow.o bordel/texture.o bordel/render_target.o bordel/camera.o bordel/material_generator.o bordel/load3DS.o bordel/compute.o bordel/loadScene.o bordel/draw.o
 LIBS      = -lGL -lGLU -lX11 -L/usr/X11R6/lib -L/usr/lib/nvidia -L/usr/local/lib -lOpenCL `sdl-config --cflags --libs` -l3ds -lGLEW -lAntTweakBar 
 BIN       = gluxEngine
-CXXFLAGS  = -I./LIB/include 
+ifeq ($(OS), Windows_NT)
+	CXXFLAGS  = -I./LIB/include -I./LIB/include/system
+else
+	CXXFLAGS = -I./LIB/include
+endif
 RM        = rm -f
 LINK      = g++
 
@@ -70,4 +74,7 @@ bordel/compute.o: src/glux_engine/compute.cpp
 
 bordel/loadScene.o: src/glux_engine/loadScene.cpp
 	$(CPP) -c src/glux_engine/loadScene.cpp -o bordel/loadScene.o $(CXXFLAGS)
+
+run: ${BIN}
+	./bin/gluxengine
 
