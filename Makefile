@@ -2,9 +2,15 @@
 # Compiler: Default GCC compiler
 # Compiler Type: MingW 3
 
+SOURCE=${wildcard src/glux_engine/*.cpp}
+HEADER=${wildcard src/*.h src/glux_engine/*.h}
+MYLIB=${SOURCE:src/glux_engine/%.cpp=bordel/%.o}
+
 CPP       = g++
-OBJ       = bordel/main.o bordel/font.o bordel/light.o bordel/material.o bordel/object.o bordel/scene.o bordel/shadow.o bordel/texture.o bordel/render_target.o bordel/camera.o bordel/material_generator.o bordel/load3DS.o bordel/compute.o bordel/loadScene.o bordel/draw.o
-LINKOBJ   = bordel/main.o bordel/font.o bordel/light.o bordel/material.o bordel/object.o bordel/scene.o bordel/shadow.o bordel/texture.o bordel/render_target.o bordel/camera.o bordel/material_generator.o bordel/load3DS.o bordel/compute.o bordel/loadScene.o bordel/draw.o
+
+OBJ=${MYLIB} bordel/main.o
+LINKOBJ=${MYLIB} bordel/main.o
+
 LIBS      = -lGL -lGLU -lX11 -L/usr/X11R6/lib -L/usr/lib/nvidia -L/usr/local/lib -lOpenCL `sdl-config --cflags --libs` -l3ds -lGLEW -lAntTweakBar 
 BIN       = gluxEngine
 ifeq ($(OS), Windows_NT)
@@ -75,6 +81,13 @@ bordel/compute.o: src/glux_engine/compute.cpp
 bordel/loadScene.o: src/glux_engine/loadScene.cpp
 	$(CPP) -c src/glux_engine/loadScene.cpp -o bordel/loadScene.o $(CXXFLAGS)
 
+bordel/SceneManager.o: src/glux_engine/SceneManager.cpp
+	$(CPP) -c src/glux_engine/SceneManager.cpp -o bordel/SceneManager.o $(CXXFLAGS)
+
+bordel/Singleton.o: src/glux_engine/Singleton.cpp
+	$(CPP) -c src/glux_engine/Singleton.cpp -o bordel/Singleton.o $(CXXFLAGS)
+
+
 run: ${BIN}
-	./bin/gluxengine
+	./bin/gluxEngine
 
