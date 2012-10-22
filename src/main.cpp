@@ -455,7 +455,7 @@ int main(int argc, char **argv)
             else    //update values bound with tweak bar
             {
                 //if(event.type != SDL_MOUSEMOTION)
-                    UpdateTweakBar();
+                    //UpdateTweakBar();
             }
         }
 

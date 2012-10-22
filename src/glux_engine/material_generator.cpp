@@ -224,7 +224,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
         vert_vars += "out vec4 v_color;\n"
             "out vec3 normal, eyeVec;\n";
 
-        vert_func += LoadFunc("light");
+        vert_func += LoadFunc((char*)"light");
         vert_main +=
             "  normal = mat3(in_ModelViewMatrix) * dNormal;  //surface normal\n"
             "  eyeVec = -vec3(in_ModelViewMatrix * vertex);            //eyeview vector\n"
@@ -394,7 +394,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     if(m_lightModel == PHONG)    //PHONG, per-pixel
     {  
         frag_vars +=  "in vec3 normal, eyeVec;\n";
-        frag_func += LoadFunc("light");
+        frag_func += LoadFunc((char*)"light");
 
         ///3.3.1.1 if is present bump texture, modify normal (bump mapping)
         tmp = m_name; tmp += "BumpA";
@@ -449,7 +449,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 
                 //insert shadow function (only once)
                 if(m_it->first.find("ShadowA") != string::npos)
-                    frag_func += LoadFunc("shadow");
+                    frag_func += LoadFunc((char*)"shadow");
 
                 frag_main += "\n  //Shadow map projection\n"
                     "  color *= PCFShadow(" + m_it->first + "," + m_it->first + "_projShadow, " + m_it->first + "_intensity);\n";
@@ -466,7 +466,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                 //insert shadow function (only once)
                 if(m_it->first.find("ShadowOMNI_A") != string::npos)
 					if( dpshadow_method == DPSM )
-						frag_func += LoadFunc("shadow_omni");
+						frag_func += LoadFunc((char*)"shadow_omni");
 
                 frag_main += "\n  //Shadow map projection\n"
                     "  color *= ShadowOMNI(" + m_it->first + ", " + m_it->first + "_intensity);\n";
@@ -489,7 +489,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                         if(m_lightModel != PHONG)
                             frag_vars += "in vec3 eyeVec;\n";
                         //add environment map computation
-                        frag_func += LoadFunc("env");
+                        frag_func += LoadFunc((char*)"env");
                     }
                 }
 

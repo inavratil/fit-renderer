@@ -347,7 +347,7 @@ void TScene::CreateHDRRenderTarget(int resX, int resY, GLint tex_format, GLenum 
 void TScene::ResizeHDRRenderTarget(int resX, int resY, GLint tex_format, GLenum tex_type )
 {
     //FBO must be attached, otherwise return
-    if(m_f_buffer == NULL) return;
+    if(m_f_buffer == 0) return;
 
     //resize texture - for original image
     glBindTexture(GL_TEXTURE_2D, m_tex_cache["render_texture"]);
