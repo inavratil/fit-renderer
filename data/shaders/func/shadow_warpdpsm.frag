@@ -1,3 +1,5 @@
+////////////////////////////////////////////////////////////////////////////////
+//-- Warp dpsm - fragment shader
 
 in vec4 o_vertex;       //input vertex
 uniform vec2 near_far; // near and far plane for cm-cams
@@ -85,3 +87,5 @@ float ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
       return result;
 
 }
+
+////////////////////////////////////////////////////////////////////////////////

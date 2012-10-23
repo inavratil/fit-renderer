@@ -11,12 +11,13 @@
 @param func shader function source file 
 @return string with shader function source
 ***************************************************************************************************/
-string LoadFunc(char* func)
+
+string LoadFunc(char* func, char* type = ".frag" )
 {
     string file;
     file += "data/shaders/func/";
     file += func;
-    file += ".frag";
+    file += type;
     ifstream fin(file.c_str());
     if(!fin) 
         return "null";
@@ -142,7 +143,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     //finish uniform block and add texture coordinates
     vert_vars +=    "};\n"
         "//texture coordinate\n"
-        "out vec2 fragTexCoord;\n"
+        "out vec2 fragTexCoord;\n\n"
         "//depth of vertex\n"
         "out float v_depth;\n";
 
@@ -257,8 +258,8 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
         //dual-paraboloid shadow map - insert output vertex (only once)
         if(m_it->second->GetType() == SHADOW_OMNI && m_it->first.find("ShadowOMNI_A") != string::npos)
         {
-			
-			//vert_func += LoadFunc("shadow_warpdpsm");
+			if ( dpshadow_method == WARP_DPSM )
+				vert_func += LoadFunc("shadow_warpdpsm", ".vert");
 
             vert_vars += "out vec4 o_vertex;\n";
             vert_main += "  o_vertex = vertex;   //vertex object-space position\n";
@@ -301,7 +302,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
         "}\n"
         "\n";
 
-    string vertex_shader = "#version " + version + " compatibility\n";
+    string vertex_shader = "#version " + version + " core\n";
     vertex_shader += vert_vars + vert_func + vert_main;
 
 
