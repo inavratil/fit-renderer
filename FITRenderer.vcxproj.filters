@@ -185,6 +185,39 @@
     <None Include="data\shaders\func\shadow_omni.frag">
       <Filter>Shaders\func</Filter>
     </None>
+    <None Include="data\shaders\warping\aliasblur.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\aliasgradient.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\camAndLightCoords_afterDP.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\camAndLightCoords_afterDP.vert">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\compute2DPolynomialsCoefficients.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\computeNewPoints.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\computePolynomialsCoefficients.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\drawDepthWith2Dpoly.vert">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\drawDepthWithWarping.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\drawDepthWithWarping.vert">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\grid.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header files">
@@ -207,6 +240,9 @@
     </Filter>
     <Filter Include="Shaders\func">
       <UniqueIdentifier>{c021cf9b-bda7-4177-b4aa-f1b37b5dcc78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\warp">
+      <UniqueIdentifier>{56db86c2-b00e-4267-b42d-fa5467e408c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
