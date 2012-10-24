@@ -197,16 +197,10 @@
     <None Include="data\shaders\warping\camAndLightCoords_afterDP.vert">
       <Filter>Shaders\warp</Filter>
     </None>
-    <None Include="data\shaders\warping\compute2DPolynomialsCoefficients.frag">
-      <Filter>Shaders\warp</Filter>
-    </None>
     <None Include="data\shaders\warping\computeNewPoints.frag">
       <Filter>Shaders\warp</Filter>
     </None>
     <None Include="data\shaders\warping\computePolynomialsCoefficients.frag">
-      <Filter>Shaders\warp</Filter>
-    </None>
-    <None Include="data\shaders\warping\drawDepthWith2Dpoly.vert">
       <Filter>Shaders\warp</Filter>
     </None>
     <None Include="data\shaders\warping\drawDepthWithWarping.frag">
@@ -217,6 +211,18 @@
     </None>
     <None Include="data\shaders\warping\grid.frag">
       <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\get2DfuncValues.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\computeAliasError.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\warping\computeAliasError.vert">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\func\shadow_warpdpsm.frag">
+      <Filter>Shaders\func</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

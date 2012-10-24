@@ -42,7 +42,7 @@ glm::vec3 parab_rot(0.0, 0.0, 0.0);
 bool parabola_cut = false;
 bool dpshadow_tess = false;
 bool use_pcf = false;
-int dpshadow_method = WARP_DPSM;//CUT;
+int dpshadow_method = WARP_DPSM;
 glm::vec2 cut_angle( 0.0, 0.0 );
 float dp_frontFOV = 0.0, dp_farPoint = 0.0;
 

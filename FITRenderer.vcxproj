@@ -138,6 +138,7 @@
     <None Include="data\shaders\func\light.frag" />
     <None Include="data\shaders\func\shadow.frag" />
     <None Include="data\shaders\func\shadow_omni.frag" />
+    <None Include="data\shaders\func\shadow_warpdpsm.frag" />
     <None Include="data\shaders\progress_bar.frag" />
     <None Include="data\shaders\quad.frag" />
     <None Include="data\shaders\quad.vert" />
@@ -162,10 +163,11 @@
     <None Include="data\shaders\warping\aliasgradient.frag" />
     <None Include="data\shaders\warping\camAndLightCoords_afterDP.frag" />
     <None Include="data\shaders\warping\camAndLightCoords_afterDP.vert" />
-    <None Include="data\shaders\warping\compute2DPolynomialsCoefficients.frag" />
+    <None Include="data\shaders\warping\computeAliasError.frag" />
+    <None Include="data\shaders\warping\computeAliasError.vert" />
+    <None Include="data\shaders\warping\get2DfuncValues.frag" />
     <None Include="data\shaders\warping\computeNewPoints.frag" />
     <None Include="data\shaders\warping\computePolynomialsCoefficients.frag" />
-    <None Include="data\shaders\warping\drawDepthWith2Dpoly.vert" />
     <None Include="data\shaders\warping\drawDepthWithWarping.frag" />
     <None Include="data\shaders\warping\drawDepthWithWarping.vert" />
     <None Include="data\shaders\warping\grid.frag" />

@@ -1,12 +1,8 @@
 
-#define MAX_CASCADES 2
 in vec4 o_vertex;       //input vertex
 uniform vec2 near_far; // near and far plane for cm-cams
-const int cascades = 2;   //number of cascades
 uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
 uniform mat4 in_CutMatrix[2];
-
-uniform float ZOOM[MAX_CASCADES];    //zoom for both sides of paraboloid
 
 #define PCF_SAMPLES 3
 #define PCF_STEP 0.001
@@ -15,15 +11,9 @@ uniform float ZOOM[MAX_CASCADES];    //zoom for both sides of paraboloid
 #ifdef PARABOLA_CUT
 uniform vec4 cut_params; //-- min/max values for cut (on x-axis)
 #endif
-vec3 DPCoordsFront(out int cascade)
-{
-  /*
-    float ZOOM[3];
-    ZOOM[0] = 1.0;
-    ZOOM[1] = 0.5;
-    ZOOM[2] = 0.25;
-  */
-  
+
+vec3 DPCoordsFront()
+{  
     vec4 texCoords;
 
     texCoords = in_CutMatrix[1] * in_CutMatrix[0] * lightModelView[0] * o_vertex;
@@ -38,20 +28,9 @@ vec3 DPCoordsFront(out int cascade)
     texCoords.x /= texCoords.z;
     texCoords.y /= texCoords.z;
 
-    //determine cascade
-    cascade = 0;
-    /*
-    if(length(texCoords.xy) < 0.5)
-      cascade = 1;
-    if(length(texCoords.xy) > 0.25)
-      cascade = 2;
-    */
-
 #ifdef PARABOLA_CUT
     texCoords.x = ((texCoords.x - cut_params.x)/(cut_params.y - cut_params.x)) * 2.0 - 1.0;
     texCoords.y = ((texCoords.y - cut_params.z)/(cut_params.w - cut_params.z)) * 2.0 - 1.0;
-#else
-    texCoords.xy /= ZOOM[cascade];    //zoom-in
 #endif
 
     texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
@@ -89,8 +68,7 @@ vec3 DPCoordsBack()
 float ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
 {
     //calculate front and back coordinates
-    int cascade = 0;
-    vec3 front_coords = DPCoordsFront(cascade);
+    vec3 front_coords = DPCoordsFront();
     vec3 back_coords = DPCoordsBack();
 
     //calculate split plane position between paraboloids

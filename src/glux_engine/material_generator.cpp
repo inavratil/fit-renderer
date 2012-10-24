@@ -258,9 +258,6 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
         //dual-paraboloid shadow map - insert output vertex (only once)
         if(m_it->second->GetType() == SHADOW_OMNI && m_it->first.find("ShadowOMNI_A") != string::npos)
         {
-			if ( dpshadow_method == WARP_DPSM )
-				vert_func += LoadFunc("shadow_warpdpsm", ".vert");
-
             vert_vars += "out vec4 o_vertex;\n";
             vert_main += "  o_vertex = vertex;   //vertex object-space position\n";
         }
@@ -469,7 +466,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 
                 //insert shadow function (only once)
                 if(m_it->first.find("ShadowOMNI_A") != string::npos)
-					if( dpshadow_method == CUT )
+					if( dpshadow_method == CUT || dpshadow_method == DPSM  )
 						frag_func += LoadFunc("shadow_omni");
 					else if ( dpshadow_method == WARP_DPSM )
 						frag_func += LoadFunc("shadow_warpdpsm");

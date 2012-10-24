@@ -14,6 +14,8 @@ out vec4 res;
 #define POLY_OFFSET 100.0
 
 uniform sampler2D polynomials;
+uniform mat4 coeffsX;
+uniform mat4 coeffsY;
 
 const float SCREEN_X = 128.0;
 const float SCREEN_Y = 128.0;
@@ -61,24 +63,43 @@ void main(void)
 
 	position = vertexEyeSpace;
 
-
+#if 0
 	//------------------------------------------------------------------------------------
 	// Polynomial warping
 
 	res = vec4( 0.0 );
 
 	vec4 range = vec4( 41.0, 83.0, 11.0, 41.0 );
-	vec2 c = vec2( 62.0, 26.0 );
-	vec2 h = vec2( 21.0, 15.0 );
 
 	vec2 p = position.xy;
 	p = p*0.5 + 0.5;
-	p = p * vec2( SCREEN_X, SCREEN_Y );
+	p = p * vec2( 128.0, 128.0 );
 
 	int code = computeCode(p, range);
 
+	float dx,dy;
+	if ( code == INSIDE )
+	{
+		float new_x = (p.x - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
+		float new_y = (p.y - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
+
+		vec4 X = vec4( 1.0, new_x, pow(new_x, 2.0), pow(new_x,3.0) );
+		vec4 Y = vec4( 1.0, new_y, pow(new_y, 2.0), pow(new_y,3.0) );
+		
+		vec4 temp = X * coeffsX;
+		dx = dot(temp, Y) * 25.0/1024.0;
+		temp = X * coeffsY;
+		dy = dot(temp, Y) * 25.0/1024.0;
+		//dx = dx * 2.0 - 1.0;
+		//dy = dy * 2.0 - 1.0;
+
+		//vertexEyeSpace.x += dx;
+		//vertexEyeSpace.y += dy;
+	}
+
 	vec4 P = vec4( 0.0 );
 	float new_val = 0.0, new_range = 0.0;
+
 	if( code == TOP )
 	{
 		P = textureOffset( polynomials, vec2(0.0), ivec2(3,0) );
@@ -90,7 +111,7 @@ void main(void)
 		vertexEyeSpace.y = new_val;
 		res.a = 1.0;
 	}
-#if 0
+
 	else if ( code == BOTTOM )
 	{
 		P = textureOffset( polynomials, vec2(0.0), ivec2(0,0) );

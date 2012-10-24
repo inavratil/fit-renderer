@@ -183,9 +183,10 @@ bool TScene::PostInit()
     {
         if((*m_il)->IsCastingShadow()) //if yes, create shadow map for current light
         {
-            if(!CreateShadowMapMultires(m_il))            
-            //if(!CreateShadowMap(m_il))
-                return false;
+			if( m_dpshadow_method == CUT || m_dpshadow_method == DPSM )
+				if(!CreateShadowMap(m_il)) return false;
+			if( m_dpshadow_method == WARP_DPSM )
+				if(!CreateShadowMapWarped(m_il)) return false;
 
             //add shadow map to all materials (except those who don't receive shadows)
             for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)

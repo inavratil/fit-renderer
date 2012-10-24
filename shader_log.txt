@@ -1,12 +1,10 @@
 
-_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+mat_depth_with_warping:0(12) : error C0000: syntax error, unexpected floating point constant, expecting ',' or ')' at token "<float-const>"
 
-_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+mat_depth_with_warping:0(12) : error C0000: syntax error, unexpected floating point constant, expecting ',' or ')' at token "<float-const>"
 
-_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+mat_depth_with_warping:0(12) : error C0000: syntax error, unexpected floating point constant, expecting ',' or ')' at token "<float-const>"
 
-_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+mat_depth_with_warping:0(12) : error C0000: syntax error, unexpected floating point constant, expecting ',' or ')' at token "<float-const>"
 
-_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
-
-_mat_default_shadow_omni:0(23) : error C1008: undefined variable "in_CutMatrix"
+mat_depth_with_warping:0(12) : error C0000: syntax error, unexpected floating point constant, expecting ',' or ')' at token "<float-const>"

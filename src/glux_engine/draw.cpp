@@ -109,8 +109,11 @@ void TScene::Redraw(bool delete_buffer)
             //render shadow map
             if((*m_il)->GetType() == OMNI)
             {
-                RenderShadowMapOmniMultires(*m_il); 
-				//RenderShadowMapOmni(*m_il);
+				if( m_dpshadow_method == CUT || m_dpshadow_method == DPSM )
+					RenderShadowMapOmni(*m_il);
+				if( m_dpshadow_method == WARP_DPSM )
+					RenderShadowMapOmniWarped(*m_il); 
+				
             }
             else 
                 RenderShadowMap(*m_il);

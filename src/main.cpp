@@ -283,10 +283,11 @@ bool InitScene(int resx, int resy)
         s->AddMaterial("show_aliasError");
         s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
         
+		//FIXME: co to je, proc to tu je, jak se to lisi od show_aliasError
         //alias quad
         s->AddMaterial("mat_alias_quad");
         s->AddTexture("mat_alias_quad", "data/tex/error_color.tga");
-        s->CustomShader("mat_alias_quad","data/shaders/multires/alias_quad.vert", "data/shaders/multires/alias_quad.frag");
+        s->CustomShader("mat_alias_quad","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
 
 		//shader showing shadow map alias error
 		s->AddMaterial("mat_aliasError");
@@ -601,6 +602,8 @@ int main(int argc, char **argv)
             dpshadow_method = DPSM;
         else if(param == "-ipsm")
             dpshadow_method = IPSM;
+		else if(param == "-warp")
+            dpshadow_method = WARP_DPSM;
         ///////////////////////////////////////////
         //use PCF
         else if(param == "-pcf")

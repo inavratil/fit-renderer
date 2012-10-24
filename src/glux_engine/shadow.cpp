@@ -309,7 +309,7 @@ void TScene::RenderShadowMapOmni(TLight *l)
             //look point at original DPSM
             lightViewMatrix[i] = glm::lookAt(
                 l->GetPos(), 
-                l_pos + glm::vec3(glm::vec4(glm::vec3(m_far_p*z_direction, 0.0f, 0.0f), 1.0f)),                   
+                l_pos + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f),                   
                 glm::vec3(0.0f, 1.0f, 0.0f) );
             FOV = m_dp_FOV;
 
@@ -402,13 +402,12 @@ void TScene::RenderShadowMapOmni(TLight *l)
         m_im->second->SetUniform("ZOOM[1]", zoom[1]);
         //im->second.SetUniform("ZOOM[2]", zoom[2]);
 
-        m_im->second->SetUniform("in_CutMatrix[0]", cut_matrix_X);
-        m_im->second->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
-        m_im->second->SetUniform("cut_params", cut_params);
-
+			m_im->second->SetUniform("in_CutMatrix[0]", cut_matrix_X);
+			m_im->second->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
+			m_im->second->SetUniform("cut_params", cut_params);
     }
 
-    m_materials["mat_aliasError"]->SetUniform("in_CutMatrix[0]", cut_matrix_X);
-    m_materials["mat_aliasError"]->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
-    m_materials["mat_aliasError"]->SetUniform("cut_params", cut_params);
+		m_materials["mat_aliasError"]->SetUniform("in_CutMatrix[0]", cut_matrix_X);
+		m_materials["mat_aliasError"]->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
+		m_materials["mat_aliasError"]->SetUniform("cut_params", cut_params);
 }

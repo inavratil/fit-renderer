@@ -445,11 +445,11 @@ public:
     void RenderShadowMapOmni(TLight *l);
 
     //prepare textures and FBOs for multiresolution rendering
-    bool CreateShadowMapMultires(vector<TLight*>::iterator ii);
+    bool CreateShadowMapWarped(vector<TLight*>::iterator ii);
     //render omnidirectional shadow map using multiresolution techniques
-    void RenderShadowMapOmniMultires(TLight *l);
+    void RenderShadowMapOmniWarped(TLight *l);
 	//add additional vertex data
-	void AddVertexDataMultires();
+	void AddVertexDataWarped();
 
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()
