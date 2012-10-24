@@ -32,6 +32,7 @@ const float COVERAGE[100] = { 0.2525314589560607, 0.2576326279264187, 0.26283603
 0.9136357166693593, 0.9210153086167311, 0.9281269295161807, 0.9349595375079411, 0.9415023695886816, 0.9477449771968978, 0.9536772614690937, 0.9592895079717747, 0.9645724207097471, 0.9695171552121149, 0.9741153504974227, 0.9783591597219075, 0.9822412793198499, 0.9857549764505119, 0.9888941145749449, 0.991653176994985, 0.9940272881980572, 0.9960122328654299, 0.9976044724143962, 0.9988011589619574,
 0.9996001466136796, 1 };
 
+//-- initials coordinates of the grid, in 128x128 texture
 const float points[32] = { 
 	41.0, 11.0,		41.0, 31.0, 
 	55.0, 11.0,		55.0, 31.0, 
@@ -243,8 +244,8 @@ bool TScene::CreateShadowMapMultires(vector<TLight*>::iterator ii)
         //add shaders handling multiresolution rendering
 	    
 		// aliasing error
-        AddMaterial("mat_aliasError");
-        CustomShader("mat_aliasError","data/shaders/multires/aliaserr.vert", "data/shaders/multires/aliaserr.frag");
+        AddMaterial("mat_camAndLightCoords_afterDP");
+        CustomShader("mat_camAndLightCoords_afterDP","data/shaders/multires/camAndLightCoords_afterDP.vert", "data/shaders/multires/camAndLightCoords_afterDP.frag");
 
 		//blur
 		AddMaterial("mat_aliasblur_horiz",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
@@ -292,11 +293,11 @@ bool TScene::CreateShadowMapMultires(vector<TLight*>::iterator ii)
         CustomShader("mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag");
         
         //alias quad
-        AddMaterial("mat_alias_quad",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        AddTexture("mat_alias_quad","MTEX_coords",RENDER_TEXTURE);
-        AddTexture("mat_alias_quad", "data/tex/error_color.tga");
-        //AddTexture("mat_alias_quad","MTEX_coverage",RENDER_TEXTURE);
-        CustomShader("mat_alias_quad","data/shaders/multires/alias_quad.vert", "data/shaders/multires/alias_quad.frag");
+        AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+        AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
+        AddTexture("mat_compute_aliasError", "data/tex/error_color.tga");
+        //AddTexture("mat_compute_aliasError","MTEX_coverage",RENDER_TEXTURE);
+        CustomShader("mat_compute_aliasError","data/shaders/multires/computeAliasError.vert", "data/shaders/multires/computeAliasError.frag");
     }
     catch(int)
     {
@@ -312,204 +313,210 @@ bool TScene::CreateShadowMapMultires(vector<TLight*>::iterator ii)
 ****************************************************************************************************/
 void TScene::RenderShadowMapOmniMultires(TLight *l)
 {
-    int sh_res = l->ShadowSize();
-    GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	int sh_res = l->ShadowSize();
+	GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 
-    //set light projection and light view matrix
-    glm::mat4 lightProjMatrix = glm::perspective(90.0f, 1.0f, 1.0f, 1000.0f);
-    glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
-    //glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+	//set light projection and light view matrix
+	glm::mat4 lightProjMatrix = glm::perspective(90.0f, 1.0f, 1.0f, 1000.0f);
+	glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+	//glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
-    glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightProjMatrix));
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightProjMatrix));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-        //SetUniform("mat_aliasError", "in_CutMatrix[0]", glm::mat4( 1.0 ));
-    //SetUniform("mat_aliasError", "in_CutMatrix[1]", glm::mat4( 1.0 ));
-    //SetUniform("mat_aliasError", "cut_params", glm::vec4(-1, 1, -1, 1));
-    //SetUniform("mat_aliasError", "lightModelView[0]", lightViewMatrix);
-    //SetUniform("mat_aliasError", "lightModelView[1]", lightViewMatrix);
-    //SetUniform("mat_aliasError", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-
-	SetUniform("mat_aliasError", "matrix", m_projMatrix * m_viewMatrix );
-    SetUniform("mat_aliasError", "lightMatrix", lightViewMatrix);
-    SetUniform("mat_aliasError", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+	SetUniform("mat_camAndLightCoords_afterDP", "matrix", m_projMatrix * m_viewMatrix );
+	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix);
+	SetUniform("mat_camAndLightCoords_afterDP", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 
 	glClearColor(99.0, 0.0, 0.0, 0.0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
-    glDrawBuffers(1, mrt);
+	///////////////////////////////////////////////////////////////////////////////
+	//-- 1. Render scene from light point of view and store per pixel camera 
+	//--	coordinates and light coordinates
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
+	glDrawBuffers(1, mrt);
 
-    glViewport( 0, 0, sh_res, sh_res );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //if(m_wireframe)
-    //    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    glEnable( GL_CLIP_PLANE0 );
-    
-////////////////////////////////////////////////////////////////////////////////
-    //glEnable( GL_CULL_FACE);
-    glCullFace(GL_FRONT);
+	glViewport( 0, 0, sh_res, sh_res );
 
-    //DrawSceneDepth("mat_aliasError", lightViewMatrix);
-    DrawAliasError("mat_aliasError", lightViewMatrix);
+	//if(m_wireframe)
+	//    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	glEnable( GL_CLIP_PLANE0 );
+
+	//glEnable( GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+
+	//DrawSceneDepth("mat_aliasError", lightViewMatrix);
+	DrawAliasError("mat_camAndLightCoords_afterDP", lightViewMatrix);
 
 	//if(!m_wireframe)
 	//	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
-    glCullFace(GL_BACK);
-    glDisable( GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glDisable( GL_CULL_FACE);
 
-	glViewport( 0, 0, sh_res, sh_res );
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	    glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_ping"]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 8, 1, 0, GL_RGBA, GL_FLOAT, points);
-		glBindTexture(GL_TEXTURE_2D, 0);
+	///////////////////////////////////////////////////////////////////////////////
+	//-- 2. Fill the texture with initial grid points position in 128x128 viewport
+	glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_ping"]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 8, 1, 0, GL_RGBA, GL_FLOAT, points);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-    //if(m_draw_aliasError)
-        glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
-        glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
-        glDrawBuffers(1, mrt);
+	///////////////////////////////////////////////////////////////////////////////
+	//-- 3. Compute alias error based on the coordinates data computed in step 1
+	//--	Input: MTEX_coords (error texture)
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
+	glDrawBuffers(1, mrt);
 
-		glViewport( 0, 0, sh_res/8, sh_res/8 );
-		
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        SetUniform("mat_alias_quad", "tex_coords", 0);
-        SetUniform("mat_alias_quad", "tex_error", 1);
-        //SetUniform("mat_alias_quad", "tex_coverage", 1); // musi byt 1, protoze tex_error je ze souboru (asi?)
-        RenderPass("mat_alias_quad");
+	glViewport( 0, 0, sh_res/8, sh_res/8 );
 
-		glDisable(GL_DEPTH_TEST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		RenderPass("mat_aliasblur_horiz");
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_pong"], 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		RenderPass("mat_aliasblur_vert");
-       	
-		//Compute gradient and store the result into 128x128 texture
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		RenderPass("mat_aliasgradient");
+	SetUniform("mat_compute_aliasError", "tex_coords", 0);
+	SetUniform("mat_compute_aliasError", "tex_error", 1);
+	//SetUniform("mat_compute_aliasError", "tex_coverage", 1); // musi byt 1, protoze tex_error je ze souboru (asi?)
+	RenderPass("mat_compute_aliasError");
+
+	///////////////////////////////////////////////////////////////////////////////
+	//-- 4. Blur the alias error
+
+	glDisable(GL_DEPTH_TEST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	RenderPass("mat_aliasblur_horiz");
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_pong"], 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	RenderPass("mat_aliasblur_vert");
+
+	///////////////////////////////////////////////////////////////////////////////
+	//-- 5. Compute gradient and store the result per-pixel into 128x128 texture
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	RenderPass("mat_aliasgradient");
 
 #if 0
-		//grid
-		glViewport(0,0,8,1);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_pong"], 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		SetUniform("mat_compute_new_points", "scaleRes", glm::vec2( 15.0, 128.0 ) );
-		SetUniform("mat_compute_new_points", "grid_points", 0);
-		SetUniform("mat_compute_new_points", "gradient_map", 1);
-		RenderPass("mat_compute_new_points");
-		
-		//polynomials coefficients
-		glViewport(0,0,8,1);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_ping"], 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		m_materials["mat_compute_polys_coeffs_horiz"]->RenderMaterial();
-		glBindVertexArray(m_vbos["polys_coeff_horiz"].vao);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		m_materials["mat_compute_polys_coeffs_vert"]->RenderMaterial();
-		glBindVertexArray(m_vbos["polys_coeff_vert"].vao);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		glBindVertexArray(0);
+	//grid
+	glViewport(0,0,8,1);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_pong"], 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	SetUniform("mat_compute_new_points", "scaleRes", glm::vec2( 15.0, 128.0 ) );
+	SetUniform("mat_compute_new_points", "grid_points", 0);
+	SetUniform("mat_compute_new_points", "gradient_map", 1);
+	RenderPass("mat_compute_new_points");
+
+	//polynomials coefficients
+	glViewport(0,0,8,1);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_ping"], 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	m_materials["mat_compute_polys_coeffs_horiz"]->RenderMaterial();
+	glBindVertexArray(m_vbos["polys_coeff_horiz"].vao);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	m_materials["mat_compute_polys_coeffs_vert"]->RenderMaterial();
+	glBindVertexArray(m_vbos["polys_coeff_vert"].vao);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
 #endif
-		//2D polynomials coefficients
-		glViewport(0,0,4,4);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dpolys_coeffs"], 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		SetUniform("mat_compute_2Dpolys_coeffs", "range", glm::vec4(11.0, 10.0, 41.0, 14.0));
-		RenderPass("mat_compute_2Dpolys_coeffs");
-		
-		float z_values[32];
-		/*
-		= {
-			0, 0,
-			0, 0,
-			0, 0,
-			0, 0,
-			0, 0,
-			-2, -2,
-			2, 2, 
-			0, 0,
-			0, 0,
-			-2, -2,
-			2, 2,
-			0, 0,
-			0, 0,
-			0, 0,
-			0, 0,
-			0, 0
-		};
-		*/
-		
-		glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_2Dpolys_coeffs"]);
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
-		glBindTexture(GL_TEXTURE_2D, 0 ); 
-		glm::mat4 coeffsX = compute2DPolynomialCoeffsX( z_values );
-		glm::mat4 coeffsY = compute2DPolynomialCoeffsY( z_values );
+	///////////////////////////////////////////////////////////////////////////////
+	//-- 6. 2D polynomials coefficients
 
-		//printMatrix( coeffsX );
-		glEnable(GL_DEPTH_TEST);
+	glViewport(0,0,4,4);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dpolys_coeffs"], 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	SetUniform("mat_compute_2Dpolys_coeffs", "range", glm::vec4(11.0, 10.0, 41.0, 14.0));
+	RenderPass("mat_compute_2Dpolys_coeffs");
 
-		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["depth_map"]);
-		glDrawBuffers(1, mrt);
+	float z_values[32];
+	/*
+	= {
+	0, 0,
+	0, 0,
+	0, 0,
+	0, 0,
+	0, 0,
+	-2, -2,
+	2, 2, 
+	0, 0,
+	0, 0,
+	-2, -2,
+	2, 2,
+	0, 0,
+	0, 0,
+	0, 0,
+	0, 0,
+	0, 0
+	};
+	*/
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_2Dpolys_coeffs"]);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
+	glBindTexture(GL_TEXTURE_2D, 0 ); 
+	glm::mat4 coeffsX = compute2DPolynomialCoeffsX( z_values );
+	glm::mat4 coeffsY = compute2DPolynomialCoeffsY( z_values );
 
-		glViewport( 0, 0, sh_res, sh_res );
-		SetUniform("mat_depth_with_warping", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-		SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
-		SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
+	//printMatrix( coeffsX );
+	glEnable(GL_DEPTH_TEST);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["depth_map"]);
+	glDrawBuffers(1, mrt);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glViewport( 0, 0, sh_res, sh_res );
+	SetUniform("mat_depth_with_warping", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+	SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
+	SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
 
 
-		glEnable(GL_CLIP_PLANE0);
-		if(m_wireframe)
-			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	glEnable(GL_CLIP_PLANE0);
+	if(m_wireframe)
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
-		DrawAliasError("mat_depth_with_warping", lightViewMatrix);
+	DrawAliasError("mat_depth_with_warping", lightViewMatrix);
 
-		if(!m_wireframe)
-			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	if(!m_wireframe)
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
-		glDisable(GL_CLIP_PLANE0);
+	glDisable(GL_CLIP_PLANE0);
 
-        glBindFramebuffer( GL_FRAMEBUFFER, 0);
+	glBindFramebuffer( GL_FRAMEBUFFER, 0);
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glViewport(0,0,sh_res,sh_res);
-        RenderPass("mat_quad");
-//end draw_aliaserror
+	glViewport(0,0,sh_res,sh_res);
+	RenderPass("mat_quad");
+	//end draw_aliaserror
 
-    /*
-    //Finish, restore values
-    glCullFace(GL_BACK);
-    glColorMask(1, 1, 1, 1);
-    glViewport(0, 0, m_resx, m_resy);         //reset viewport
+	/*
+	//Finish, restore values
+	glCullFace(GL_BACK);
+	glColorMask(1, 1, 1, 1);
+	glViewport(0, 0, m_resx, m_resy);         //reset viewport
 
-    ///3. Calculate shadow texture matrix
-    glm::mat4 shadowMatrix = biasMatrix * lightProjMatrix * lightViewMatrix * glm::inverse(m_viewMatrix);
+	///3. Calculate shadow texture matrix
+	glm::mat4 shadowMatrix = biasMatrix * lightProjMatrix * lightViewMatrix * glm::inverse(m_viewMatrix);
 
-    //restore projection matrix and set shadow matrices
-    glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(m_projMatrix));
-    glBufferSubData(GL_UNIFORM_BUFFER, (l->GetOrd() + 1) * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(shadowMatrix));
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    */
+	//restore projection matrix and set shadow matrices
+	glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(m_projMatrix));
+	glBufferSubData(GL_UNIFORM_BUFFER, (l->GetOrd() + 1) * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(shadowMatrix));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	*/
 
-	    //set light matrices and near/far planes to all materials
-    for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
-    {
-        m_im->second->SetUniform("lightModelView[0]", lightViewMatrix);
-        m_im->second->SetUniform("lightModelView[1]", lightViewMatrix);
-        m_im->second->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+	//set light matrices and near/far planes to all materials
+	for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
+	{
+		m_im->second->SetUniform("lightModelView[0]", lightViewMatrix);
+		m_im->second->SetUniform("lightModelView[1]", lightViewMatrix);
+		m_im->second->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 		m_im->second->SetUniform("coeffsX", coeffsX );
 		m_im->second->SetUniform("coeffsY", coeffsY );
-    }
+	}
 }

@@ -158,6 +158,17 @@
     <None Include="data\shaders\simple_tess.te" />
     <None Include="data\shaders\simple_tess.vert" />
     <None Include="data\shaders\tonemap.frag" />
+    <None Include="data\shaders\warping\aliasblur.frag" />
+    <None Include="data\shaders\warping\aliasgradient.frag" />
+    <None Include="data\shaders\warping\camAndLightCoords_afterDP.frag" />
+    <None Include="data\shaders\warping\camAndLightCoords_afterDP.vert" />
+    <None Include="data\shaders\warping\compute2DPolynomialsCoefficients.frag" />
+    <None Include="data\shaders\warping\computeNewPoints.frag" />
+    <None Include="data\shaders\warping\computePolynomialsCoefficients.frag" />
+    <None Include="data\shaders\warping\drawDepthWith2Dpoly.vert" />
+    <None Include="data\shaders\warping\drawDepthWithWarping.frag" />
+    <None Include="data\shaders\warping\drawDepthWithWarping.vert" />
+    <None Include="data\shaders\warping\grid.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
