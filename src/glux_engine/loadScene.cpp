@@ -6,145 +6,177 @@
 ****************************************************************************************************
 ***************************************************************************************************/
 #include "scene.h"
-#include <lib3ds/lib3ds.h>
+#include <sstream>
+#include <iostream>
+//#include <lib3ds/lib3ds.h>
 
 
 /**
 ****************************************************************************************************
-@brief Loads entire scene from 3DS file
-@param file 3DS file with scene
+@brief Loads entire scene from file using Assimp
+@param file file with scene, almost any format recognized by Assimp
 @param load_materials shall we load materials?
-@param load_lights shall we load lights?
+@param load_lights shall we load lights? Currently ignored
 @param name_space prefix in object name (when using same model scene in different scenes)
 ****************************************************************************************************/
 void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, string name_space)
 {
-    int i;
-    //Load 3DS scene using lib3ds
-    cout<<"\nLoading scene "<<file<<":";
-    Lib3dsFile *scene;
-    scene = lib3ds_file_open(file);
-    if(!scene)
-    {
-        ShowMessage("Cannot open 3DS file with scene!\n",false);
+	Assimp::Importer importer;
+
+	//Do not import line and point meshes
+	importer.SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE, aiPrimitiveType_LINE | aiPrimitiveType_POINT);
+
+	const aiScene* scene = importer.ReadFile(file,	aiProcess_JoinIdenticalVertices|
+													aiProcess_LimitBoneWeights|
+													aiProcess_RemoveRedundantMaterials|
+													aiProcess_PreTransformVertices |
+													aiProcess_Triangulate|
+													aiProcess_GenUVCoords|
+													aiProcess_SortByPType|
+													aiProcess_FindDegenerates|
+													aiProcess_FindInvalidData|
+													aiProcess_FixInfacingNormals|
+													aiProcess_GenNormals);
+
+	if(!scene)
+	{
+		ShowMessage("Cannot open file with scene!\n",false);
         throw ERR;
-    }
+	}
 
-    //update load list
-    UpdateLoadList(scene->nmeshes + 2*scene->nmaterials);
 
-    //Setup camera(if any)
-    if(scene->cameras != NULL)
-    {
-        Lib3dsCamera *cam = scene->cameras[0];
-        MoveCamera(-cam->position[0], -cam->position[2], cam->position[1]);
-        //LookCameraAt(cam->target[0], cam->target[1], cam->target[2]);
-    }
-
-    //Setup lights
-    if(load_lights)
-    {
-        cout<<scene->nlights<<" lights, ";
-        for(i = 0; i < scene->nlights; i++)
-        {
-            Lib3dsLight *l = scene->lights[i];
-            glm::vec3 l_color(l->color[0], l->color[1], l->color[2]);
-            glm::vec3 l_position(l->position[0], l->position[2], l->position[1]);
-            AddLight(i, black, l_color, l_color, l_position);
-            MoveLight(i, l_position);
-        }
-    }
-
-    //Load materials&textures
-    vector<string> mats;						//array with materials (to index them)
+	//Load materials
+	vector<string> mats;						//array with materials (to index them)
     if(load_materials)
     {
-        cout<<scene->nmaterials<<" materials. Loading textures:\n";
-        for(i = 0; i < scene->nmaterials; i++)
+		cout<<scene->mNumMaterials<<" materials. Loading textures:\n";
+        for(unsigned int i = 0; i < scene->mNumMaterials; i++)
         {
             //materials
-            Lib3dsMaterial *m = scene->materials[i];
+			aiMaterial *m = scene->mMaterials[i];
+
+			//get material name
+			aiString name; 
+			m->Get(AI_MATKEY_NAME,name);
 
             //remove not-allowed chars from name
-            string m_name = name_space + m->name;
+			string m_name = name_space + name.C_Str();
             for(unsigned i=0; i<m_name.length(); i++)
             {
                 if(m_name[i] < 0 || (!isalpha(m_name[i]) && !isdigit(m_name[i])) || m_name[i] > 128)
-                    m_name.replace(i,1,"");
+                {
+					m_name.replace(i,1,"");
+					--i;
+				}
             }
             cout<<"Adding material "<<m_name<<endl;
 
+			//get material properties
+			aiColor3D ambient,diffuse,specular;
+			float shininess;
+
+			m->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+			m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+			m->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+			m->Get(AI_MATKEY_SHININESS, shininess);
+
             AddMaterial(
-                m_name.c_str(),												//material name
-                glm::vec3(m->ambient[0], m->ambient[1], m->ambient[2]),		//ambient color
-                glm::vec3(m->diffuse[0], m->diffuse[1], m->diffuse[2]),		//diffuse color
-                glm::vec3(m->specular[0], m->specular[1], m->specular[2]),	//specular color
-                256.0f - 256.0f*m->shininess								//shininess
+                m_name.c_str(),									//material name
+				glm::vec3(ambient.r, ambient.g, ambient.b),		//ambient color
+                glm::vec3(diffuse.r, diffuse.g, diffuse.b),		//diffuse color
+                glm::vec3(specular.r, specular.g, specular.b),	//specular color
+                256.0f - 256.0f*shininess						//shininess
                 );
             mats.push_back(m_name);
 
-            //textures
+            //Textures
             string path;
-            //1. BASE texture 
-            if(strlen(m->texture1_map.name) > 0)
-            {
-                path = "data/tex/";
-                path += m->texture1_map.name;
-                path.replace(path.find_last_of('.') + 1,3,"tga");
-                AddTexture(m_name.c_str(), path.c_str(), BASE, MODULATE, m->texture1_map.percent, m->texture1_map.scale[0], m->texture1_map.scale[1], true, true);
-            }
-            //2. BASE texture 
-            if(strlen(m->texture2_map.name) > 0)
-            {
-                path = "data/tex/";
-                path += m->texture2_map.name;
-                path.replace(path.find_last_of('.') + 1,3,"tga");
-                AddTexture(m_name.c_str(), path.c_str(), BASE, MODULATE, m->texture2_map.percent, m->texture2_map.scale[0], m->texture2_map.scale[1]);
-            }
-            //BUMP texture 
-            if(strlen(m->bump_map.name) > 0)
-            {
-                path = "data/tex/normal/";
-                path += m->bump_map.name;
-                path.replace(path.find_last_of('.') + 1,3,"tga");
-                AddTexture(m_name.c_str(), path.c_str(), BUMP, MODULATE, m->bump_map.percent, m->bump_map.scale[0], m->bump_map.scale[1]);
-            }
-            //ENV texture 
-            if(strlen(m->reflection_map.name) > 0)
-            {
-                path = "data/tex/";
-                path += m->reflection_map.name;
-                path.replace(path.find_last_of('.') + 1,3,"tga");
-                AddTexture(m_name.c_str(), path.c_str(), ENV, ADD, m->reflection_map.percent, m->reflection_map.scale[0], m->reflection_map.scale[1]);
-            }
-        }
-    }
+			aiString pth;
+			aiReturn texFound;
+			unsigned int i=0;
 
-    cout<<"Adding "<<scene->nmeshes<<" objects, ";
-    //Load objects
-    int polygons = 0;
-    for(i = 0; i < scene->nmeshes; i++)
-    {
-        //skip empty objects
-        if(scene->meshes[i]->nfaces > 0)
-        {
-            polygons += scene->meshes[i]->nfaces;
-            Lib3dsMesh *m = scene->meshes[i];
-            //create object from mesh
-            string oname = name_space + m->name;
-            TObject *o = new TObject();
-            m_objects[oname] = o;
-            m_obj_cache[oname] = m_objects[oname]->Create(scene->meshes[i]);
-            //assign material (by first face index)
-            if(load_materials)
-            {
-                if(m->faces[0].material >= 0)
-                    SetMaterial(oname.c_str(), mats[m->faces[0].material].c_str());
-            }
-            //set sceneID
-            m_objects[oname]->SetSceneID(m_sceneID);
-        }
-        LoadScreen();	//update loading screen
-    }
-    cout<<polygons<<" polygons.\nScene loaded.\n\n";
+			//Loads up base textures for material
+			if(m->GetTextureCount(aiTextureType_DIFFUSE)>0)
+			{
+				unsigned int numTex = m->GetTextureCount(aiTextureType_DIFFUSE);
+				for(i=0; i<numTex; ++i)
+				{
+					//Get ambient textures
+					texFound = m->GetTexture(aiTextureType_DIFFUSE, i, &pth);
+					if(texFound==AI_FAILURE)
+						break;
+
+					path = "data/tex/";
+					path += pth.C_Str();
+
+					AddTexture(m_name.c_str(), path.c_str(), BASE, MODULATE, 1.0f, 1.0f, 1.0f, true, true);
+				}
+			}
+
+			//bump texture
+			if(m->GetTextureCount(aiTextureType_NORMALS)>0)
+			{
+				unsigned int numTex = m->GetTextureCount(aiTextureType_NORMALS);
+				for(i=0; i<numTex; ++i)
+				{
+					//Get ambient textures
+					texFound = m->GetTexture(aiTextureType_NORMALS, i, &pth);
+					if(texFound==AI_FAILURE)
+						break;
+
+					path = "data/tex/";
+					path += pth.C_Str();
+
+					AddTexture(m_name.c_str(), path.c_str(), BUMP, MODULATE, 1.0f, 1.0f, 1.0f, true, true);
+				}
+			}
+		}
+	}//if(load_materials)
+
+	 //update load list
+	UpdateLoadList(scene->mNumMeshes + 2*scene->mNumMaterials);
+
+    cout<<"Adding "<<scene->mNumMeshes<<" objects, ";
+
+	//Load meshes
+	aiMesh * mesh;
+	unsigned int nVertices;
+	unsigned int polygons = 0;
+	for(unsigned int i=0; i<scene->mNumMeshes; ++i)
+	{
+		mesh = scene->mMeshes[i];
+		
+		if(mesh->mNumFaces==0)
+			continue;
+
+		nVertices = mesh->mNumVertices;
+		polygons += mesh->mNumFaces;
+
+		//Create object from mesh
+		string oname = name_space + mesh->mName.C_Str();
+
+		if(oname.length()==0)
+		{
+			stringstream ss;
+			ss << "FITMesh" << i;
+			oname.assign(ss.str().c_str());
+		}
+
+		TObject *o = new TObject();
+        m_objects[oname] = o;
+
+		m_obj_cache[oname] = m_objects[oname]->Create(mesh);
+
+		//assign material
+		if(load_materials)
+		{
+			SetMaterial(oname.c_str(), mats[mesh->mMaterialIndex].c_str());
+		}
+		//set sceneID
+		m_objects[oname]->SetSceneID(m_sceneID);
+
+		LoadScreen();
+	}
+
+	cout<<polygons<<" polygons.\nScene loaded.\n\n";
 }

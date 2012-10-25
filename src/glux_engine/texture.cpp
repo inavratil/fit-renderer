@@ -333,7 +333,7 @@ bool Texture::LoadImage(const char* filename)
 	ilBindImage(0);
 	ilDeleteImage(id);
 	
-    cout<<"OK\n";
+    cout<<"Image Loaded: "<< filename <<"\n";
     return true;
 }
 

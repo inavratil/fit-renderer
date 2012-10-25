@@ -3,5 +3,6 @@ lib3DS 2.0
 GLM
 GLEW
 AntTweakBar 
-
+assimp
+DevIL
 test

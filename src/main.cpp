@@ -21,11 +21,13 @@ bool InitScene(int resx, int resy)
 		s->SetMaterial("sky","mat_sky");
 
 
-		pos = glm::vec3(-540, -43, 0);
+		//pos = glm::vec3(-540, -43, 0);
+		pos = glm::vec3(0, 0, 0);
 		rot = glm::vec3(-20, 270, 0.0f);
 
-		s->LoadScene("data/obj/scenes/sibenik.3ds");
-		s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
+		s->LoadScene("data/obj/scenes/vasili.3ds");
+		//s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
+		s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,0.0,0.0), 1000.0f);
 		s->MoveLight(0, glm::vec3(-120, 350, 0));
 
 #ifdef USE_DP        
@@ -126,7 +128,7 @@ void Redraw()
 
 //*****************************************************************************
 //Keyboard input
-const float INC = 1.0;
+const float INC = 10.0;
 void KeyInput(SDLKey key)
 {
     glm::vec3 lpos1 = s->GetLightPos(0);
@@ -142,26 +144,26 @@ void KeyInput(SDLKey key)
     case SDLK_s:
         rotrad.y = (rot.y / 180 * PI);
         rotrad.x = (rot.x / 180 * PI);
-        pos.x += 5*INC*float(sin(rotrad.y));
-        pos.z -= 5*INC*float(cos(rotrad.y));
-        pos.y -= 5*INC*float(sin(rotrad.x));
+        pos.x += INC*float(sin(rotrad.y));
+        pos.z -= INC*float(cos(rotrad.y));
+        pos.y -= INC*float(sin(rotrad.x));
         break;
     case SDLK_w: 
         rotrad.y = (rot.y / 180 * PI);
         rotrad.x = (rot.x / 180 * PI);
-        pos.x -= 5*INC*float(sin(rotrad.y));
-        pos.z += 5*INC*float(cos(rotrad.y));
-        pos.y += 5*INC*float(sin(rotrad.x));
+        pos.x -= INC*float(sin(rotrad.y));
+        pos.z += INC*float(cos(rotrad.y));
+        pos.y += INC*float(sin(rotrad.x));
         break;
     case SDLK_d:
         rotrad.y = (rot.y / 180 * PI);
-        pos.x -= 5*INC*float(cos(rotrad.y));
-        pos.z -= 5*INC*float(sin(rotrad.y));
+        pos.x -= INC*float(cos(rotrad.y));
+        pos.z -= INC*float(sin(rotrad.y));
         break;
     case SDLK_a:
         rotrad.y = (rot.y / 180 * PI);
-        pos.x += 5*INC*float(cos(rotrad.y));
-        pos.z += 5*INC*float(sin(rotrad.y));
+        pos.x += INC*float(cos(rotrad.y));
+        pos.z += INC*float(sin(rotrad.y));
         break;
 
         //main light movement
