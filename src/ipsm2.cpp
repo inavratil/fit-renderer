@@ -206,14 +206,14 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
             return false;
         }
 
-		glGenTextures(1, &texid);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, texid);
+		glGenTextures(1, (*ii)->GetShadowTexID());
+		glBindTexture(GL_TEXTURE_2D_ARRAY, *(*ii)->GetShadowTexID());
 		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT, sh_res, sh_res, 2, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		m_tex_cache["MTEX_warped_depth_map"] = texid;
+		//m_tex_cache["MTEX_warped_depth_map"] = texid;
 
 		//glGenRenderbuffers(1, &r_buffer);
         //glBindRenderbuffer(GL_RENDERBUFFER, r_buffer);
@@ -221,7 +221,7 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 
 		glGenFramebuffers(1, &fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_tex_cache["MTEX_warped_depth_map"], 0, 0);	    
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *(*ii)->GetShadowTexID(), 0, 0);	    
 		glDrawBuffer(GL_NONE); 
         glReadBuffer(GL_NONE);
 		m_fbos["fbo_warped_depth"] = fbo;
@@ -278,7 +278,7 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 
 		//draw depth with warping
 		AddMaterial("mat_depth_with_warping");
-		AddTexture("mat_depth_with_warping","MTEX_grid_points_ping", RENDER_TEXTURE );
+		//FIXME: delete? AddTexture("mat_depth_with_warping","MTEX_grid_points_ping", RENDER_TEXTURE );
         CustomShader("mat_depth_with_warping","data/shaders/warping/drawDepthWithWarping.vert", "data/shaders/warping/drawDepthWithWarping.frag");
 
 		//draw quad
@@ -312,7 +312,8 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 	//set light projection and light view matrix
 	glm::mat4 lightProjMatrix = glm::perspective(90.0f, 1.0f, 1.0f, 1000.0f);
-	glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+	glm::mat4 lightViewMatrix[2];
+	lightViewMatrix[1] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 	//glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
 	//glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
@@ -320,7 +321,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	SetUniform("mat_camAndLightCoords_afterDP", "matrix", m_projMatrix * m_viewMatrix );
-	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix);
+	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
 	SetUniform("mat_camAndLightCoords_afterDP", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 
 	glm::mat4 coeffsX;
@@ -349,7 +350,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		glCullFace(GL_FRONT);
 
 		//DrawSceneDepth("mat_aliasError", lightViewMatrix);
-		DrawAliasError("mat_camAndLightCoords_afterDP", lightViewMatrix);
+		DrawAliasError("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
 
 		//if(!m_wireframe)
 		//	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -469,7 +470,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	for(int i=0; i<2; i++)
     {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_warped_depth"]);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_tex_cache["MTEX_warped_depth_map"], 0, i);	    
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *l->GetShadowTexID(), 0, i);	    
 	//glDrawBuffers(1, mrt);
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -478,6 +479,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	SetUniform("mat_depth_with_warping", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 	SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
 	SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
+
 
 	    glCullFace(GL_FRONT);
         glColorMask(0, 0, 0, 0);      //disable colorbuffer write
@@ -491,9 +493,9 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	float z_direction = 1.0;
 	if(i == 1)
 		z_direction = -1.0;  
-	lightViewMatrix = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+	lightViewMatrix[i] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
-	DrawSceneDepth("mat_depth_with_warping", lightViewMatrix);
+	DrawSceneDepth("mat_depth_with_warping", lightViewMatrix[i]);
 
 	if(!m_wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -532,8 +534,8 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	//set light matrices and near/far planes to all materials
 	for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
 	{
-		m_im->second->SetUniform("lightModelView[0]", lightViewMatrix);
-		m_im->second->SetUniform("lightModelView[1]", lightViewMatrix);
+		m_im->second->SetUniform("lightModelView[0]", lightViewMatrix[0]);
+		m_im->second->SetUniform("lightModelView[1]", lightViewMatrix[1]);
 		m_im->second->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 		m_im->second->SetUniform("coeffsX", coeffsX );
 		m_im->second->SetUniform("coeffsY", coeffsY );

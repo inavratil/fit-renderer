@@ -214,6 +214,7 @@ void TScene::Redraw(bool delete_buffer)
         RenderPass("mat_tonemap");
     }
 
+#if 0
     //GET CAMERA DISTANCE TO NEAREST OBJECT FROM Z-BUFFER
     if(m_dpshadow_method >= IPSM)
     {
@@ -258,6 +259,7 @@ void TScene::Redraw(bool delete_buffer)
         //restore viewport
         glViewport(0,0,m_resx,m_resy);
     }
+#endif
 
     //show alias error
     if(m_draw_aliasError)

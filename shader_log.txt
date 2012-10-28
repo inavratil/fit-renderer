@@ -8,3 +8,5 @@ mat_depth_with_warping:0(12) : error C0000: syntax error, unexpected floating po
 mat_depth_with_warping:0(12) : error C0000: syntax error, unexpected floating point constant, expecting ',' or ')' at token "<float-const>"
 
 mat_depth_with_warping:0(12) : error C0000: syntax error, unexpected floating point constant, expecting ',' or ')' at token "<float-const>"
+
+show_depth_omni:0(12) : error C1008: undefined variable "showDepth_omniShadowA"

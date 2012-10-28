@@ -280,14 +280,14 @@ bool InitScene(int resx, int resy)
         s->CustomShader("show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag");
         s->AddMaterial("show_depth_omni");
         s->CustomShader("show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag");
-        s->AddMaterial("show_aliasError");
-        s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
+        //s->AddMaterial("show_aliasError");
+        //s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
         
 		//FIXME: co to je, proc to tu je, jak se to lisi od show_aliasError
         //alias quad
-        s->AddMaterial("mat_alias_quad");
-        s->AddTexture("mat_alias_quad", "data/tex/error_color.tga");
-        s->CustomShader("mat_alias_quad","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
+        //s->AddMaterial("mat_alias_quad");
+        //s->AddTexture("mat_alias_quad", "data/tex/error_color.tga");
+        //s->CustomShader("mat_alias_quad","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
 
 		//shader showing shadow map alias error
 		s->AddMaterial("mat_aliasError");
@@ -624,7 +624,7 @@ int main(int argc, char **argv)
     }
 
     //initialize SDL video
-    //SDL_putenv("SDL_VIDEO_CENTERED=center");
+    //SDL_putenv("SDL_VIDEO_WINDOW=center");
     if(SDL_Init(SDL_INIT_VIDEO) < 0) 
         exit(1);
 

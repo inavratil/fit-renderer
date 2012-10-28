@@ -13,7 +13,6 @@ out vec4 res;
 
 #define POLY_OFFSET 100.0
 
-uniform sampler2D polynomials;
 uniform mat4 coeffsX;
 uniform mat4 coeffsY;
 
@@ -63,7 +62,7 @@ void main(void)
 
 	position = vertexEyeSpace;
 
-#if 0
+
 	//------------------------------------------------------------------------------------
 	// Polynomial warping
 
@@ -93,10 +92,11 @@ void main(void)
 		//dx = dx * 2.0 - 1.0;
 		//dy = dy * 2.0 - 1.0;
 
-		//vertexEyeSpace.x += dx;
-		//vertexEyeSpace.y += dy;
+		vertexEyeSpace.x += dx;
+		vertexEyeSpace.y += dy;
 	}
 
+#if 0
 	vec4 P = vec4( 0.0 );
 	float new_val = 0.0, new_range = 0.0;
 
