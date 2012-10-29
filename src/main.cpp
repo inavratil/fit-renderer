@@ -21,14 +21,14 @@ bool InitScene(int resx, int resy)
 		s->SetMaterial("sky","mat_sky");
 
 
-		//pos = glm::vec3(-540, -43, 0);
-		pos = glm::vec3(0, 0, 0);
-		rot = glm::vec3(-20, 270, 0.0f);
+		s->SetFreelookCamera(glm::vec3(100, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 0, 0));
 
-		s->LoadScene("data/obj/scenes/vasili.3ds");
+		s->LoadScene("data/obj/scenes/novysibenik.3ds");
 		//s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
 		s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,0.0,0.0), 1000.0f);
-		s->MoveLight(0, glm::vec3(-120, 350, 0));
+		
+		//s->MoveLight(0, glm::vec3(-120, 350, 0));
+		s->MoveLight(0, glm::vec3(0, 200, 0));
 
 #ifdef USE_DP        
 		//dual-paraboloid shadow parameters        
@@ -94,7 +94,7 @@ bool InitScene(int resx, int resy)
         cerr<<"Initialization failed.";
         return false;
     }
-    s->SetCamType(cam_type);
+    //s->SetCamType(cam_type);
     return s->PostInit();
 }
 
@@ -103,13 +103,8 @@ string name;
 //Main drawing function
 void Redraw()
 {
-    //update FPS camera
-    if(cam_type == FPS)
-    {
-        s->MoveCameraAbs(pos.x, pos.y, pos.z);
-        s->RotateCameraAbs(rot.x, A_X);
-        s->RotateCameraAbs(rot.y, A_Y);
-    }
+	s->updateCamera();
+	s->updateLightPosition();
 
     s->Redraw();
     cycle++;                          //increment draw counter 
@@ -124,71 +119,6 @@ void Redraw()
         glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, meminfo);
         mem_use = 1024 - meminfo[0]/1024;
     }
-}
-
-//*****************************************************************************
-//Keyboard input
-const float INC = 10.0;
-void KeyInput(SDLKey key)
-{
-    glm::vec3 lpos1 = s->GetLightPos(0);
-
-    //camera rotation and position
-    glm::vec2 rotrad;
-    rot = s->GetCameraRot();
-    pos = s->GetCameraPos();
-
-    switch(key)
-    {     
-           //WSAD camera movement
-    case SDLK_s:
-        rotrad.y = (rot.y / 180 * PI);
-        rotrad.x = (rot.x / 180 * PI);
-        pos.x += INC*float(sin(rotrad.y));
-        pos.z -= INC*float(cos(rotrad.y));
-        pos.y -= INC*float(sin(rotrad.x));
-        break;
-    case SDLK_w: 
-        rotrad.y = (rot.y / 180 * PI);
-        rotrad.x = (rot.x / 180 * PI);
-        pos.x -= INC*float(sin(rotrad.y));
-        pos.z += INC*float(cos(rotrad.y));
-        pos.y += INC*float(sin(rotrad.x));
-        break;
-    case SDLK_d:
-        rotrad.y = (rot.y / 180 * PI);
-        pos.x -= INC*float(cos(rotrad.y));
-        pos.z -= INC*float(sin(rotrad.y));
-        break;
-    case SDLK_a:
-        rotrad.y = (rot.y / 180 * PI);
-        pos.x += INC*float(cos(rotrad.y));
-        pos.z += INC*float(sin(rotrad.y));
-        break;
-
-        //main light movement
-    case SDLK_i: lpos1.z -= INC; s->MoveLight(0,lpos1); break;
-    case SDLK_k: lpos1.z += INC; s->MoveLight(0,lpos1); break;
-    case SDLK_j: lpos1.x -= INC; s->MoveLight(0,lpos1); break;
-    case SDLK_l: lpos1.x += INC; s->MoveLight(0,lpos1); break;
-    case SDLK_u: lpos1.y += INC; s->MoveLight(0,lpos1); break;
-    case SDLK_o: lpos1.y -= INC; s->MoveLight(0,lpos1); break;
-
-
-    case SDLK_ESCAPE:        //ESCAPE - quit
-        delete s;
-        SDL_Quit();
-        exit(0);
-        break;
-
-    default:
-        break;
-    }
-  
-    //s->PrintCamera();
-
-    //camera object position
-    //s->MoveObjAbs("camera", pos.x, pos.y, pos.z);
 }
 
 /**
@@ -232,36 +162,18 @@ void MouseMotion(SDL_Event event)
             else
                 parab_rot.x += event.motion.yrel; 
             s->RotateParaboloid(parab_rot);
-
         }
     }
-    //camera movement
     else
     {
-        //camera movement
-        if(cam_type == FPS && status == SDL_BUTTON_LEFT)  //FPS camera
-        {
-            rot.x += event.motion.yrel;     //set the xrot to xrot with the addition of the difference in the y position
-            rot.y += event.motion.xrel;     //set the xrot to yrot with the addition of the difference in the x position
-        }
-        else    //orbiting camera
-        {
-            int x = event.motion.xrel;
-            int y = event.motion.yrel;
-            if(status == SDL_BUTTON_LEFT)   //rotate
-            {
-                s->RotateCamera(float(y), A_X);
-                s->RotateCamera(float(x), A_Y);
-            }
-            else if(status == 4)  //zoom.  proc nefuguje??SDL_BUTTON_RIGHT
-                s->MoveCamera(0.0f, 0.0f, float(x));
-            else if(status == SDL_BUTTON_MIDDLE)  //position
-                s->MoveCamera( float(x), -float(y), 0.0f);
-        }
+        //camera rotation
+        //rot.x += event.motion.yrel;     //set the xrot to xrot with the addition of the difference in the y position
+        //rot.y += event.motion.xrel;     //set the xrot to yrot with the addition of the difference in the x position
 
         //camera object rotation
         //s->RotateObjAbs("camera", rot.x, A_X);
         //s->RotateObjAbs("camera", -rot.y, A_Y);
+		s->adjustFreelookCamera(event.motion.yrel, event.motion.xrel);
     }
 }
 
@@ -409,6 +321,7 @@ int main(int argc, char **argv)
     while(true)
     {
         //measure time
+		/*
         time_now = SDL_GetTicks();
 
         if(time_now >= time_nextMS) //increment animation after 10ms
@@ -423,6 +336,7 @@ int main(int argc, char **argv)
             fps = cycle;
             cycle = 0;
         }
+		*/
 
         //call drawing functions
         Redraw();
@@ -440,18 +354,99 @@ int main(int argc, char **argv)
                     break;
                 //keyboard events
                 else if(event.type == SDL_KEYDOWN)
-                {
-                    keypress = true;
-                    last_keypress = time_now;
-                    key = event.key.keysym.sym;		//store pressed key
+                {	
+					switch(event.key.keysym.sym)
+					{
+						case SDLK_w:
+							s->handleCameraInputMessage(TFreelookCamera::CAMERA_FORWARD_DOWN);
+							break;
+						case SDLK_s:
+							s->handleCameraInputMessage(TFreelookCamera::CAMERA_BACKWARD_DOWN);
+							break;
+						case SDLK_a:
+							s->handleCameraInputMessage(TFreelookCamera::CAMERA_LEFT_DOWN);
+							break;
+						case SDLK_d:
+							s->handleCameraInputMessage(TFreelookCamera::CAMERA_RIGHT_DOWN);
+							break;
+
+						case SDLK_i:
+							s->handleLightInputMessage(TScene::LIGHT_FORWARD_DOWN);
+							break;
+						case SDLK_k:
+							s->handleLightInputMessage(TScene::LIGHT_BACKWARD_DOWN);
+							break;
+						case SDLK_j:
+							s->handleLightInputMessage(TScene::LIGHT_LEFT_DOWN);
+							break;
+						case SDLK_l:
+							s->handleLightInputMessage(TScene::LIGHT_RIGHT_DOWN);
+							break;
+						case SDLK_u:
+							s->handleLightInputMessage(TScene::LIGHT_UPWARD_DOWN);
+							break;
+						case SDLK_o:
+							s->handleLightInputMessage(TScene::LIGHT_DOWNWARD_DOWN);
+							break;
+						default:
+							break;
+					}
+
                 }
                 else if(event.type == SDL_KEYUP)
-                    keypress = false;
+				{
+					switch(event.key.keysym.sym)
+					{
+						case SDLK_ESCAPE:
+							delete s;
+							SDL_Quit();
+							exit(0);
+							break;
+						case SDLK_w:
+							s->handleCameraInputMessage(TFreelookCamera::CAMERA_FORWARD_UP);
+							break;
+						case SDLK_s:
+							s->handleCameraInputMessage(TFreelookCamera::CAMERA_BACKWARD_UP);
+							break;
+						case SDLK_a:
+							s->handleCameraInputMessage(TFreelookCamera::CAMERA_LEFT_UP);
+							break;
+						case SDLK_d:
+							s->handleCameraInputMessage(TFreelookCamera::CAMERA_RIGHT_UP);
+							break;
+						
+						case SDLK_i: 
+							s->handleLightInputMessage(TScene::LIGHT_FORWARD_UP);
+							break;
+						case SDLK_k: 
+							s->handleLightInputMessage(TScene::LIGHT_BACKWARD_UP);
+							break;
+						case SDLK_j: 
+							s->handleLightInputMessage(TScene::LIGHT_LEFT_UP);
+							break;
+						case SDLK_l: 
+							s->handleLightInputMessage(TScene::LIGHT_RIGHT_UP);
+							break;
+						case SDLK_u: 
+							s->handleLightInputMessage(TScene::LIGHT_UPWARD_UP);
+							break;
+						case SDLK_o: 
+							s->handleLightInputMessage(TScene::LIGHT_DOWNWARD_UP);
+							break;
+						default:
+							break;
+					}
+
+				}
                 //mouse events
                 else if(event.type == SDL_MOUSEMOTION)
                 {
-                    MouseMotion(event);
-                    MouseClick(event);
+					if(event.button.button == SDL_BUTTON_LEFT)
+					{
+						s->adjustFreelookCamera(event.motion.yrel, event.motion.xrel);
+					}
+                    //MouseClick(event);
+					//MouseMotion(event);
                 }
             }
             else    //update values bound with tweak bar
@@ -460,10 +455,6 @@ int main(int argc, char **argv)
                     UpdateTweakBar();
             }
         }
-
-        //call keyboard handle when key pressed
-        if(keypress && (time_now - last_keypress > 150 || last_keypress == time_now) ) 
-            KeyInput(key);
     }
 
     //deinitialize SDL and scene

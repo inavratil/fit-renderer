@@ -84,13 +84,16 @@
     <ClInclude Include="src\glux_engine\shadow.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\timer.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\SceneManager.h">
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\Singleton.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\hires_timer.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\bitops.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

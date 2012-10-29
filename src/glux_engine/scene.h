@@ -8,11 +8,14 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
+#define LIGHT_MOVEMENT_SPEED 150.0f
+
 #include "globals.h"
 #include "material.h"
 #include "light.h"
 #include "camera.h"
 #include "shadow.h"
+#include "hires_timer.h"
 
 #include "SceneManager.h"
 
@@ -40,10 +43,15 @@ protected:
 
     ///associative array with all lights
     vector<TLight*> m_lights;
+
+	//Bitmask for light position manipulation
+	unsigned int m_light_flags;
+	unsigned int m_selected_light;
+	HRTimer m_light_timer;
+
     ///iterator for lights container
     vector<TLight*>::iterator m_il, m_il2;
     ///associative array with all FBOs
-
     map<string,GLuint> m_fbos;
     ///iterator for fbos container
     map<string,GLuint>::iterator m_ifbo;
@@ -82,7 +90,7 @@ protected:
     GLfloat m_fovy;
 
     ///scene camera
-    TCamera *m_cam;
+    TFreelookCamera *m_cam;
     ///do we use custom camera?
     bool m_custom_cam;
     ///number of multisaples in antialiasing
@@ -123,6 +131,8 @@ protected:
     GLuint m_aerr_f_buffer, m_aerr_f_buffer_color, m_aerr_r_buffer_depth;
 
 public:
+	enum light_events{LIGHT_FORWARD_DOWN=0, LIGHT_BACKWARD_DOWN, LIGHT_LEFT_DOWN, LIGHT_RIGHT_DOWN, LIGHT_UPWARD_DOWN, LIGHT_DOWNWARD_DOWN, LIGHT_FORWARD_UP, LIGHT_BACKWARD_UP, LIGHT_LEFT_UP, LIGHT_RIGHT_UP, LIGHT_UPWARD_UP, LIGHT_DOWNWARD_UP};
+
     //basic constructor
     TScene();
     //free dynamic data
@@ -178,58 +188,113 @@ public:
                              glm::value_ptr(glm::vec3(m_viewMatrix * glm::vec4((*m_il)->GetPos(), 1.0))) );
     }
 
-    ///@brief Move camera to new position(relative)
-    void MoveCamera(GLfloat wx, GLfloat wy, GLfloat wz){ 
-        m_viewMatrix = m_cam->Move(wx,wy,wz);
-        UpdateCameraUniform();
-    }
-    ///@brief Move camera to new position(absolute)
-    void MoveCameraAbs(GLfloat wx, GLfloat wy, GLfloat wz){ 
-        m_viewMatrix = m_cam->MoveAbs(wx,wy,wz); 
-        UpdateCameraUniform();
+	void handleCameraInputMessage(TFreelookCamera::cam_events e)
+	{ 
+		m_cam->handleInputMessage(e);
     }
 
-    ///@brief Camera look
-    void LookCameraAt(GLfloat wx, GLfloat wy, GLfloat wz){
-        m_viewMatrix = m_cam->LookAt(wx,wy,wz); 
-        UpdateCameraUniform();
-    }
+	void adjustFreelookCamera(float pitch, float yaw)
+	{
+		m_cam->adjustOrientation(pitch, yaw);
+	}
 
-    ///@brief Rotate camera around axis(A_X, A_Y or A_Z) by angle(relative)
-    void RotateCamera(GLfloat angle, GLint axis){ 
-        m_viewMatrix =  m_cam->Rotate(angle,axis);
-        UpdateCameraUniform();
-    }
-    ///@brief Rotate camera around axis(A_X, A_Y or A_Z) by angle(absolute)
-    void RotateCameraAbs(GLfloat angle, GLint axis){ 
-        m_viewMatrix =  m_cam->RotateAbs(angle,axis); 
-        UpdateCameraUniform();
-    }
+	void handleLightInputMessage(light_events e)
+	{
+		switch(e)
+		{
+			case LIGHT_FORWARD_DOWN:
+				SetBit(m_light_flags, 0);
+				break;
+			case LIGHT_FORWARD_UP:
+				ClearBit(m_light_flags, 0);
+				break;
+			case LIGHT_BACKWARD_DOWN:
+				SetBit(m_light_flags, 1);
+				break;
+			case LIGHT_BACKWARD_UP:
+				ClearBit(m_light_flags, 1);
+				break;
+			case LIGHT_LEFT_DOWN:
+				SetBit(m_light_flags, 2);
+				break;
+			case LIGHT_LEFT_UP:
+				ClearBit(m_light_flags, 2);
+				break;
+			case LIGHT_RIGHT_DOWN:
+				SetBit(m_light_flags, 3);
+				break;
+			case LIGHT_RIGHT_UP:
+				ClearBit(m_light_flags, 3);
+				break;
+			case LIGHT_UPWARD_DOWN:
+				SetBit(m_light_flags, 4);
+				break;
+			case LIGHT_UPWARD_UP:
+				ClearBit(m_light_flags, 4);
+				break;
+			case LIGHT_DOWNWARD_DOWN:
+				SetBit(m_light_flags, 5);
+				break;
+			case LIGHT_DOWNWARD_UP:
+				ClearBit(m_light_flags, 5);
+				break;
+			default:
+				break;
+		}
+	}
 
-    ///@brief Switch between custom and scene camera
-    void SwitchCamera(){ 
-        m_custom_cam = !m_custom_cam; 
-    }
+	//Sets selected light index and zeroes flags
+	void selectLight(unsigned int index)
+	{
+		if(index>=m_lights.size())
+			return;
+
+		m_selected_light = index;
+		m_light_flags = 0;
+	}
+
+	//Updates position of currently selected light
+	void updateLightPosition()
+	{
+		float t = (float) m_light_timer.GetElapsedTimeSeconds();
+		
+		glm::vec3 l_pos;
+
+		l_pos = m_lights[m_selected_light]->GetPos();
+
+		if( (m_light_flags & 0x80000000) == 0x80000000 ) l_pos += LIGHT_MOVEMENT_SPEED * t * glm::vec3(1, 0, 0);	//+x
+		if( (m_light_flags & 0x40000000) == 0x40000000 ) l_pos -= LIGHT_MOVEMENT_SPEED * t * glm::vec3(1, 0, 0);	//-x
+		if( (m_light_flags & 0x20000000) == 0x20000000 ) l_pos -= LIGHT_MOVEMENT_SPEED * t * glm::vec3(0, 0, 1);	//+z
+		if( (m_light_flags & 0x10000000) == 0x10000000 ) l_pos += LIGHT_MOVEMENT_SPEED * t * glm::vec3(0, 0, 1);	//-z
+		if( (m_light_flags & 0x08000000) == 0x08000000 ) l_pos += LIGHT_MOVEMENT_SPEED * t * glm::vec3(0, 1, 0);	//+y
+		if( (m_light_flags & 0x04000000) == 0x04000000 ) l_pos -= LIGHT_MOVEMENT_SPEED * t * glm::vec3(0, 1, 0);	//-y
+
+		MoveLight(m_selected_light, l_pos);
+
+		m_light_timer.Reset();
+	}
+
+
+	//MUST be called before drawing
+	void updateCamera()
+	{
+		m_viewMatrix = m_cam->UpdateMatrix();
+		UpdateCameraUniform();
+	}
+    
+	void SetFreelookCamera(glm::vec3 pos, glm::vec3 up, glm::vec3 focusPoint)
+	{
+		m_cam->setFreelookCamera(pos, up, focusPoint);
+	}
 
     ///@brief Print out camera position
-    void PrintCamera(){ 
-        cout<<"POS: "<<m_cam->GetPos().x<<","<<m_cam->GetPos().y<<","<<m_cam->GetPos().z<<"\n"
-            <<"ROT: "<<m_cam->GetRot().x<<","<<m_cam->GetRot().y<<","<<m_cam->GetRot().z<<"\n"; 
+    void PrinTFreelookCamera(){ 
+        cout<<"POS: "<<m_cam->GetPos().x<<","<<m_cam->GetPos().y<<","<<m_cam->GetPos().z<<"\n";
     }
 
     ///@brief Get screen-space camera position
-    glm::vec3 GetCameraPos(){ 
+    glm::vec3 GeTFreelookCameraPos(){ 
         return m_cam->GetPos(); 
-    }
-
-    ///@brief Get camera rotation
-    glm::vec3 GetCameraRot(){ 
-        return m_cam->GetRot();
-    }
-
-    ///@brief Change camera type
-    void SetCamType(int type){
-        m_cam->SetType(type);
     }
 
     //Save camera into file

@@ -21,7 +21,7 @@ bool draw_ui = true;
 
 
 //camera rotation and position
-glm::vec3 rot, pos; 
+//glm::vec3 rot, pos; 
 int cam_type = FPS;
 
 
@@ -142,7 +142,7 @@ void InitTweakBar()
 void UpdateTweakBar()
 {
     s->Wireframe(wire);
-    s->SetCamType(cam_type);
+    //s->SetCamType(cam_type);
     s->DPDrawSM(drawSM);
 }
 

@@ -11,111 +11,22 @@
 ****************************************************************************************************
 @brief Initialize camera, sets all vectors to identity
 ***************************************************************************************************/
-TCamera::TCamera()
+TFreelookCamera::TFreelookCamera()
 {
     m_pos = glm::vec3(0.0);
-    m_rot = glm::vec3(0.0);
     m_look = glm::vec3(0.0);
-    m_type = ORBIT;
-}
+	m_up = glm::vec3(0.0);
 
-/**
-****************************************************************************************************
-@brief Rotate camera around axis(relative)
-@param angle rotation angle in degrees
-@param axis rotation axis (can be A_X, A_Y, A_Z)
-@return new transformation matrix
-****************************************************************************************************/
-glm::mat4& TCamera::Rotate(GLfloat angle, GLint axis)
-{
-    switch(axis)
-    {
-    case A_X: m_rot.x += angle;
-        break;
-    case A_Y: m_rot.y += angle;
-        break;
-    case A_Z: m_rot.z += angle;
-        break;
-    default:
-        break;
-    }
-    UpdateMatrix();
-    return m_viewMatrix;
-}
+	pitch = 0.0f;
+	yaw = 0.0f;
+	flags = 0;
+	movementSpeed = 50.0f;
 
-/**
-****************************************************************************************************
-@brief Rotate camera around axis(absolute)
-@param angle rotation angle in degrees
-@param axis rotation axis (can be A_X, A_Y, A_Z)
-@return new transformation matrix
-****************************************************************************************************/
-glm::mat4& TCamera::RotateAbs(GLfloat angle, GLint axis)
-{
-    switch(axis)
-    {
-    case A_X: m_rot.x = angle;
-        break;
-    case A_Y: m_rot.y = angle;
-        break;
-    case A_Z: m_rot.z = angle;
-        break;
-    default:
-        break;
-    }
-    UpdateMatrix();
-    return m_viewMatrix;
-}
+	dU = glm::vec3(0.0f, 1.0f, 0.0f);
+	dL = glm::vec3(0.0f, 0.0f, -1.0f);
 
-/**
-****************************************************************************************************
-@brief Move camera to new position(relative)
-@param wx new X-coordinate
-@param wy new Y-coordinate
-@param wz new Z-coordinate
-@return new transformation matrix
-****************************************************************************************************/
-glm::mat4& TCamera::Move(GLfloat wx, GLfloat wy, GLfloat wz)
-{
-    m_pos.x += wx;
-    m_pos.y += wy;
-    m_pos.z += wz;
-    UpdateMatrix();
-    return m_viewMatrix;
-}
-
-/**
-****************************************************************************************************
-@brief Move camera to new position(absolute)
-@param wx new X-coordinate
-@param wy new Y-coordinate
-@param wz new Z-coordinate
-@return new transformation matrix
-****************************************************************************************************/
-glm::mat4& TCamera::MoveAbs(GLfloat wx, GLfloat wy, GLfloat wz)
-{
-    m_pos.x = wx;
-    m_pos.y = wy;
-    m_pos.z = wz;
-    UpdateMatrix();
-    return m_viewMatrix;
-}
-
-/**
-****************************************************************************************************
-@brief Look camera at target.
-@param wx target X-coordinate
-@param wy target Y-coordinate
-@param wz target Z-coordinate
-@return new transformation matrix
-****************************************************************************************************/
-glm::mat4& TCamera::LookAt(GLfloat wx, GLfloat wy, GLfloat wz)
-{
-    m_look.x = wx;
-    m_look.y = wy;
-    m_look.z = wz;
-    UpdateMatrix();
-    return m_viewMatrix;
+	m_up = glm::vec3(0.0);
+	m_right = glm::vec3(0.0);
 }
 
 
@@ -123,38 +34,46 @@ glm::mat4& TCamera::LookAt(GLfloat wx, GLfloat wy, GLfloat wz)
 ****************************************************************************************************
 @brief Update camera matrix by translating and rotating viewport
 ****************************************************************************************************/
-void TCamera::UpdateMatrix()
+glm::mat4 TFreelookCamera::UpdateMatrix()
 {
-    
-    m_viewMatrix = glm::mat4(1.0);
-    //move camera absolute or
-    if(m_look == glm::vec3(0.0) )
-    {
-        if(m_type == ORBIT)
-            m_viewMatrix = glm::translate(m_viewMatrix, m_pos);
-        m_viewMatrix = glm::rotate(m_viewMatrix, m_rot.x, glm::vec3(1.0,0.0,0.0) );
-        m_viewMatrix = glm::rotate(m_viewMatrix, m_rot.y, glm::vec3(0.0,1.0,0.0) );
-        if(m_type == FPS)
-            m_viewMatrix = glm::translate(m_viewMatrix, m_pos);
+	float t = (float) timer.GetElapsedTimeSeconds();
 
-    }
-    //by looking position
-    else
-    {
-        m_viewMatrix = glm::lookAt(m_pos, m_look, glm::vec3(0.0,1.0,0.0));
-    }
+	//we will use quaternions to rotate
+	glm::quat q = glm::quat(1, 0, 0, 0);
+	q = glm::rotate(q, -yaw, glm::vec3(0, 1, 0));
+	q = glm::rotate(q, -pitch, m_right);
+
+	glm::mat3 m = glm::mat3_cast(q);
+
+	m_up = m * m_up;
+	m_look = m * m_look;
+	m_right = glm::cross(m_look, m_up);
+
+	pitch = 0.0f;
+	yaw = 0.0f;
+
+	if( (flags & 0x80000000) == 0x80000000 ) m_pos += movementSpeed * t * m_look;	//forward
+	if( (flags & 0x40000000) == 0x40000000 ) m_pos -= movementSpeed * t * m_look;	//back
+	if( (flags & 0x20000000) == 0x20000000 ) m_pos -= movementSpeed * t * m_right;	//left
+	if( (flags & 0x10000000) == 0x10000000 ) m_pos += movementSpeed * t * m_right;	//right
+
+	m_viewMatrix = glm::lookAt(m_pos, m_look+m_pos, m_up);
+
+	timer.Reset();
+
+	return m_viewMatrix;
 }
 
 /**
 ****************************************************************************************************
 @brief Save camera into file
 ****************************************************************************************************/
-void TCamera::Save()
+void TFreelookCamera::Save()
 {
     ofstream fout("camera.ini");
     if(!fout){ cerr<<"Can't save camera position"; return; }
-    fout<<"POS: "<<m_pos.x<<","<<m_pos.y<<","<<m_pos.z<<"\n"
-        <<"ROT: "<<m_rot.x<<","<<m_rot.y<<","<<m_rot.z<<"\n";
+    fout<<"POS: "<<m_pos.x<<","<<m_pos.y<<","<<m_pos.z<<"\n";
+        //<<"ROT: "<<m_rot.x<<","<<m_rot.y<<","<<m_rot.z<<"\n";
     fout.close();
 }
 
@@ -163,9 +82,10 @@ void TCamera::Save()
 @brief Load camera from file and 
 @return new transformation matrix
 ****************************************************************************************************/
-glm::mat4& TCamera::Load()
+glm::mat4& TFreelookCamera::Load()
 {
-    ifstream fin("camera.ini");
+    /*
+	ifstream fin("camera.ini");
     if(!fin){ cerr<<"Can't load camera position"; return m_viewMatrix; }
     string line; getline(fin, line);
     sscanf(line.c_str(), "POS: %f,%f,%f", &m_pos.x, &m_pos.y, &m_pos.z);
@@ -173,5 +93,77 @@ glm::mat4& TCamera::Load()
     sscanf(line.c_str(), "ROT: %f,%f,%f", &m_rot.x, &m_rot.y, &m_rot.z);
     fin.close();
     UpdateMatrix();
+	*/
     return m_viewMatrix;
+}
+
+void TFreelookCamera::setFreelookCamera(glm::vec3 vPos, glm::vec3 vUp, glm::vec3 vFocusPoint)
+{
+	m_pos = vPos;
+	m_up = vUp;
+
+	m_look = vFocusPoint - vPos;
+	m_look = glm::normalize(m_look);
+
+	m_right = glm::cross(m_look, m_up);
+	m_up = glm::normalize(glm::cross(m_right, m_look));
+
+
+	//Its necessary to calculate pitch and yaw agains dL and dU
+	//Project dV on XZ plane
+
+
+
+	//now we have 3 necessary vectors set (look, up, focus point), set view matrix
+	m_viewMatrix = glm::lookAt(m_pos, m_look, m_up);
+}
+
+void TFreelookCamera::handleInputMessage(cam_events e)
+{
+	switch(e)
+	{
+		case CAMERA_FORWARD_DOWN:
+			SetBit(flags, 0);
+			break;
+		case CAMERA_FORWARD_UP:
+			ClearBit(flags, 0);
+			break;
+		case CAMERA_BACKWARD_DOWN:
+			SetBit(flags, 1);
+			break;
+		case CAMERA_BACKWARD_UP:
+			ClearBit(flags, 1);
+			break;
+		case CAMERA_LEFT_DOWN:
+			SetBit(flags, 2);
+			break;
+		case CAMERA_LEFT_UP:
+			ClearBit(flags, 2);
+			break;
+		case CAMERA_RIGHT_DOWN:
+			SetBit(flags, 3);
+			break;
+		case CAMERA_RIGHT_UP:
+			ClearBit(flags, 3);
+			break;
+		default:
+			break;
+	}
+}
+
+void TFreelookCamera::adjustOrientation(float p, float y)
+{
+	pitch += p;
+	yaw += y;
+
+	//Clamping to <0 ; 360>
+	if(pitch > 360.0f)
+		pitch -= 360.0f;
+	else if(pitch < 0.0f)
+		pitch += 360.0f;
+
+	if(yaw > 360.0f)
+		yaw -= 360.0f;
+	else if(yaw < 0.0f)
+		yaw += 360.0f;
 }

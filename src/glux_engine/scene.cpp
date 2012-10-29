@@ -26,7 +26,7 @@ TScene::TScene()
     m_font2D_bkg = 0;
     m_lights.clear();
     m_sceneID = 0;
-    m_cam = new TCamera();
+    m_cam = new TFreelookCamera();
     m_custom_cam = false;
     m_msamples = 1;
 
@@ -39,6 +39,9 @@ TScene::TScene()
     m_use_pcf = true;
     m_dpshadow_method = DPSM;
     m_parab_angle = glm::vec3(0.0, 0.0, 0.0);
+
+	m_light_flags = 0;
+	m_selected_light = 0;
 }
 
 /**
@@ -102,7 +105,7 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
     m_msamples = msamples;
     if(msamples < 1) msamples = 1;              //don't accept 0 for multisample count
 
-    glClearColor(1.0, 0.0, 0.0, 0.5); //clear color and depth
+    glClearColor(0.0, 0.0, 0.0, 0.5); //clear color and depth
     glEnable(GL_DEPTH_TEST);          //enable depth buffer
     glDepthFunc(GL_LEQUAL);
     //glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -279,8 +282,11 @@ void TScene::Destroy(bool delete_cache)
     }
 
     //reset camera
-    m_cam->Reset();
-    //delete buffers
+    //m_cam->Reset(); //TOTO OPRAVIT! treba prepisat reset
+    
+	
+	
+	//delete buffers
     //GLuint to_delete[] = { m_screen_quad, m_progress_bar, m_uniform_matrices, m_uniform_lights };
     //glDeleteBuffers(4, to_delete);
 }
@@ -512,7 +518,8 @@ void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 sp
 
     //create new and push into list
     TLight *l = new TLight(_lights, amb, diff, spec, lpos, radius);
-    m_lights.push_back(l); 
+    m_lights.push_back(l);
+
     //update position
     MoveLight(_lights, lpos);
 }

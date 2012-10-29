@@ -276,19 +276,19 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
             vert_vars += "out vec3 r_normal, r_eyeVec;\n";
             vert_main += 
                 "\n  //Camera rotation can be found in transposed modelview matrix\n"
-                "   mat3 tcamerarot;\n"
-                "   tcamerarot[0][0] = in_ModelViewMatrix[0][0];\n"
-                "   tcamerarot[0][1] = in_ModelViewMatrix[1][0];\n"
-                "   tcamerarot[0][2] = in_ModelViewMatrix[2][0];\n"
-                "   tcamerarot[1][0] = in_ModelViewMatrix[0][1];\n"
-                "   tcamerarot[1][1] = in_ModelViewMatrix[1][1];\n"
-                "   tcamerarot[1][2] = in_ModelViewMatrix[2][1];\n"
-                "   tcamerarot[2][0] = in_ModelViewMatrix[0][2];\n"
-                "   tcamerarot[2][1] = in_ModelViewMatrix[1][2];\n"
-                "   tcamerarot[2][2] = in_ModelViewMatrix[2][2];\n\n"
+                "   mat3 TFreelookCamerarot;\n"
+                "   TFreelookCamerarot[0][0] = in_ModelViewMatrix[0][0];\n"
+                "   TFreelookCamerarot[0][1] = in_ModelViewMatrix[1][0];\n"
+                "   TFreelookCamerarot[0][2] = in_ModelViewMatrix[2][0];\n"
+                "   TFreelookCamerarot[1][0] = in_ModelViewMatrix[0][1];\n"
+                "   TFreelookCamerarot[1][1] = in_ModelViewMatrix[1][1];\n"
+                "   TFreelookCamerarot[1][2] = in_ModelViewMatrix[2][1];\n"
+                "   TFreelookCamerarot[2][0] = in_ModelViewMatrix[0][2];\n"
+                "   TFreelookCamerarot[2][1] = in_ModelViewMatrix[1][2];\n"
+                "   TFreelookCamerarot[2][2] = in_ModelViewMatrix[2][2];\n\n"
                 "\n  //Coordinates for cubemap reflexion\n"
-                "  r_normal = tcamerarot * (in_ModelViewMatrix * vec4(dNormal,0.0)).xyz;\n"
-                "  r_eyeVec = tcamerarot * (in_ModelViewMatrix * vertex).xyz;\n\n";
+                "  r_normal = TFreelookCamerarot * (in_ModelViewMatrix * vec4(dNormal,0.0)).xyz;\n"
+                "  r_eyeVec = TFreelookCamerarot * (in_ModelViewMatrix * vertex).xyz;\n\n";
         }
     }
 
