@@ -93,7 +93,16 @@ class CStreetNet{
  */
 typedef struct{
 	CRandRange XSize,YSize,ZSize;/// size of the building
+	CRandRange BuildingSpacing;/// distance between buildings
 }SBuildingTemplate;
+
+typedef struct{
+	float Height;/// height of the lights
+	float Distance;/// distance from center of the street
+	CRandRange LightSpacing;/// distance between lights
+	CRandRange Range;/// range of the light
+	CRandRange Hue;/// hue of the light
+}SLightTemplate;
 
 /**
  * @brief This class represents one building
@@ -131,6 +140,25 @@ class CBuilding{
 };
 
 /**
+ * @brief This class represents light
+ */
+class CLight{
+	public:
+		glm::vec3 Pos;/// position of the light
+		glm::vec3 Color;/// color of the light
+		float Range;/// range of the light
+		/**
+		 * @brief Constructor of the light
+		 *
+		 * @param Pos position of the light
+		 * @param Color color of the light
+		 * @param Range range of the light
+		 */
+		CLight(glm::vec3 Pos,glm::vec3 Color,float Range);
+		void Draw();
+};
+
+/**
  * @brief This class represents city
  */
 class CCity{
@@ -143,12 +171,21 @@ class CCity{
 		 */
 		CCity(CStreetNet*Net,SBuildingTemplate Template);
 		/**
+		 * @brief This method generates ligths into the streets
+		 *
+		 * @param Template template of the lights
+		 */
+		void GenerateLights(SLightTemplate Template);
+		/**
 		 * @brief Destructor
 		 */
 		~CCity();
 		void Draw();
 		CStreetNet*Net;
 		vector<CBuilding*>Buildings;
+		vector<CLight*>Lights;
+	private:
+		int IsLightStreetCollision(glm::vec3 S,float Distance);
 };
 
 #endif//_CCITY_H_

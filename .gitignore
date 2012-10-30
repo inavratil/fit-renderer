@@ -83,3 +83,7 @@ Desktop.ini
 *.lai
 *.la
 *.a
+
+# VIM
+.*
+!/.gitignore
