@@ -572,3 +572,29 @@ void TScene::ChangeLightColor(GLint light, GLint component, glm::vec3 color)
         glBufferSubData(GL_UNIFORM_BUFFER, component*offset1 + offset2, sizeof(glm::vec3), glm::value_ptr(color)); 
     }
 }
+
+void TScene::drawBoundingVolumes()
+{
+	//set wireframe render
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glDisable(GL_CULL_FACE);
+
+	//draw all bounding volumes
+	map<string,TObject*>::iterator it;
+	m_materials["__bv_mat"]->RenderMaterial();
+
+	for(it=m_objects.begin(); it!=m_objects.end(); ++it)
+	{
+		//make MVP
+		glm::mat4 m = m_viewMatrix * it->second->GetMatrix();
+        
+		//attach as uniform
+		m_materials["__bv_mat"]->SetUniform("in_ModelViewMatrix", m);
+
+		//Draw BV
+		it->second->drawBV();
+	}
+
+	//set fill mode back to GL_FILL
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}

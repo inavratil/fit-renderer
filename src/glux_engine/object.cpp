@@ -38,6 +38,8 @@ TObject::TObject()
     //ID's
     m_sceneID = 0;
     m_matID = 0;
+
+	OBB = NULL;
 }
 
 
@@ -54,6 +56,8 @@ TObject::~TObject()
         glDeleteVertexArrays(1, &m_vbo.vao);
         glDeleteBuffers(4, m_vbo.buffer);
     }
+
+	delete OBB;
 
 }
 
@@ -131,6 +135,9 @@ void TObject::Create(const char* name, int primitive, GLfloat size, GLfloat heig
 
             GLuint faces_f[] = { 11,5,2,  8,11,2,  14,10,7, 12,14,7, 19,15,13, 17,19,13, 4,18,16, 1,4,16,14,18,3,  3,9,14,  6,0,16,  12,6,16 };
 
+			//OBB
+			OBB = new BoundingVolume(vertices_f, verts);
+
             vertices = vector<GLfloat>(vertices_f, vertices_f + verts*3);
             texcoords = vector<GLfloat>(texcoords_f, texcoords_f + verts*2);
             normals = vector<GLfloat>(normals_f, normals_f + verts*3);
@@ -148,6 +155,8 @@ void TObject::Create(const char* name, int primitive, GLfloat size, GLfloat heig
             GLfloat texcoords_f[] = { 0.0,0.0,  1.0,0.0,   0.0,1.0,  1.0,1.0 };
             GLfloat normals_f[] = { 0.0,1.0,0.0,  0.0,1.0,0.0,  0.0,1.0,0.0,  0.0,1.0,0.0 };
             GLuint faces_f[] = { 0,1,2,3 };
+
+			OBB = new BoundingVolume(vertices_f, verts);
 
             vertices = vector<GLfloat>(vertices_f, vertices_f + 12);
             texcoords = vector<GLfloat>(texcoords_f, texcoords_f + 8);
@@ -183,6 +192,9 @@ void TObject::Create(const char* name, int primitive, GLfloat size, GLfloat heig
                     faces.push_back(shift + j); faces.push_back(shift + j + sliceX + 1); faces.push_back(shift + j + 1);
                 }
             }
+
+			OBB = new BoundingVolume(&vertices[0], verts);
+
             verts = sliceX * sliceY;
             m_vbo.indices = faces.size();
             m_drawmode = GL_TRIANGLES;
@@ -240,6 +252,8 @@ void TObject::Create(const char* name, int primitive, GLfloat size, GLfloat heig
                     } 
                 }
             }
+
+			OBB = new BoundingVolume(&vertices[0], verts);
         }
         break;
         ///torus: 4 params: innerRadius, outerRadius, nsides, rings
@@ -290,6 +304,8 @@ void TObject::Create(const char* name, int primitive, GLfloat size, GLfloat heig
 
             verts = m_vbo.indices;
             m_drawmode = GL_TRIANGLE_STRIP;
+
+			OBB = new BoundingVolume(&vertices[0], verts);
         }
         break;  
     default:

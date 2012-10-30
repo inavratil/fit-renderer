@@ -49,6 +49,21 @@
     <ClCompile Include="src\glux_engine\Singleton.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\ViewFrustum.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\dito.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\BoundingSphere.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\Box.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\BoundingVolume.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -94,6 +109,24 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\bitops.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\box.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\dito.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\Plane.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\ViewFrustum.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\BoundingSphere.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\BoundingVolume.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

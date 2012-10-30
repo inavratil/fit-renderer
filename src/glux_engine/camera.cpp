@@ -108,12 +108,6 @@ void TFreelookCamera::setFreelookCamera(glm::vec3 vPos, glm::vec3 vUp, glm::vec3
 	m_right = glm::cross(m_look, m_up);
 	m_up = glm::normalize(glm::cross(m_right, m_look));
 
-
-	//Its necessary to calculate pitch and yaw agains dL and dU
-	//Project dV on XZ plane
-
-
-
 	//now we have 3 necessary vectors set (look, up, focus point), set view matrix
 	m_viewMatrix = glm::lookAt(m_pos, m_look, m_up);
 }

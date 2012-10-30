@@ -3,7 +3,6 @@
 ****************************************************************************************************
 @file: load3DS.cpp
 @brief loads 3DS object from file
-Uses lib3DS to load 3D objects/scenes: http://code.google.com/p/lib3ds/
 ****************************************************************************************************
 ***************************************************************************************************/
 #include "object.h"
@@ -71,15 +70,7 @@ VBO TObject::Create(aiMesh *mesh)
         FinishedFaces++;
     }
 
-    //swap Y and Z coordinate in normals and vertices (3ds BUG)
-	/*
-    for(unsigned i=0; i<m_vbo.indices * 3; i++)
-    {
-        std::swap(*(vertices[i]+1),*(vertices[i]+2));
-        *(vertices[i]+2) *= -1.0;
-        std::swap(*(normals[i]+1),*(normals[i]+2));
-        *(normals[i]+2) *= -1.0;
-    }*/
+	OBB = new BoundingVolume((float*)vertices, 3*mesh->mNumFaces);
 
     //Vertex array
     glGenVertexArrays(1, &m_vbo.vao);
@@ -237,16 +228,8 @@ VBO TObject::Create(const char *name, const char *file, bool load)
         }
     }
 
-	/*
-    //swap Y and Z coordinate in normals and vertices (3ds BUG)
-    for(unsigned i=0; i<m_vbo.indices * 3; i++)
-    {
-        std::swap(*(vertices[i]+1),*(vertices[i]+2));
-        *(vertices[i]+2) *= -1.0;
-        std::swap(*(normals[i]+1),*(normals[i]+2));
-        *(normals[i]+2) *= -1.0;
-    }
-	*/
+	OBB = new BoundingVolume((float*)vertices, 3 * m_vbo.indices);
+
     //Vertex array
     glGenVertexArrays(1, &m_vbo.vao);
     glBindVertexArray(m_vbo.vao);

@@ -10,7 +10,7 @@ Uses lib3DS to load 3D objects/scenes: http://code.google.com/p/lib3ds/
 #define _OBJECT_H_
 
 #include "globals.h"
-//#include <lib3ds/lib3ds.h>
+#include "BoundingVolume.h"
 
 ///Object types
 enum Obj_types{PRIMITIVE,EXTERN,INSTANCE};
@@ -54,10 +54,10 @@ private:
     glm::mat4 m_transform;
 
     int m_type;
-    string m_name;     //object name
-    unsigned m_matID;  //attached material ID
-    VBO m_vbo;         //vertex buffer object
-    GLenum m_drawmode; //VBO drawing mode
+    string m_name;					//object name
+    unsigned m_matID;				//attached material ID
+    VBO m_vbo;						//vertex buffer object
+    GLenum m_drawmode;				//VBO drawing mode
     bool m_element_indices;			//do we  have element indices instead of vertex array?
 
     //object instances used for geometry instancing
@@ -65,6 +65,9 @@ private:
 
     //scene ID - when drawing more scenes than 1
     int m_sceneID;
+
+	//Object's OBB
+	BoundingVolume* OBB;
 
 public:
 
@@ -114,6 +117,12 @@ public:
     void DrawObject(bool flag){ 
         m_draw_object = flag; 
     }
+
+	void drawBV()
+	{
+		if(OBB)
+			OBB->drawBV();
+	}
 
     //object transformation
     void Move(GLfloat wx, GLfloat wy, GLfloat wz);

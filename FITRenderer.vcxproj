@@ -96,7 +96,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\glux_engine\BoundingSphere.cpp" />
+    <ClCompile Include="src\glux_engine\BoundingVolume.cpp" />
+    <ClCompile Include="src\glux_engine\Box.cpp" />
     <ClCompile Include="src\glux_engine\camera.cpp" />
+    <ClCompile Include="src\glux_engine\dito.cpp" />
     <ClCompile Include="src\glux_engine\draw.cpp" />
     <ClCompile Include="src\glux_engine\font.cpp" />
     <ClCompile Include="src\glux_engine\light.cpp" />
@@ -111,23 +115,30 @@
     <ClCompile Include="src\glux_engine\shadow.cpp" />
     <ClCompile Include="src\glux_engine\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
+    <ClCompile Include="src\glux_engine\ViewFrustum.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\bitops.h" />
+    <ClInclude Include="src\glux_engine\BoundingSphere.h" />
+    <ClInclude Include="src\glux_engine\BoundingVolume.h" />
+    <ClInclude Include="src\glux_engine\box.h" />
     <ClInclude Include="src\glux_engine\camera.h" />
     <ClInclude Include="src\glux_engine\compute.h" />
+    <ClInclude Include="src\glux_engine\dito.h" />
     <ClInclude Include="src\glux_engine\engine.h" />
     <ClInclude Include="src\glux_engine\globals.h" />
     <ClInclude Include="src\glux_engine\hires_timer.h" />
     <ClInclude Include="src\glux_engine\light.h" />
     <ClInclude Include="src\glux_engine\material.h" />
     <ClInclude Include="src\glux_engine\object.h" />
+    <ClInclude Include="src\glux_engine\Plane.h" />
     <ClInclude Include="src\glux_engine\scene.h" />
     <ClInclude Include="src\glux_engine\SceneManager.h" />
     <ClInclude Include="src\glux_engine\shadow.h" />
     <ClInclude Include="src\glux_engine\Singleton.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
+    <ClInclude Include="src\glux_engine\ViewFrustum.h" />
     <ClInclude Include="src\main_ui.h" />
   </ItemGroup>
   <ItemGroup>

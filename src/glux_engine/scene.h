@@ -46,7 +46,11 @@ protected:
 
 	//Bitmask for light position manipulation
 	unsigned int m_light_flags;
+	
+	//index of selected light
 	unsigned int m_selected_light;
+
+	//timer used for light manipulation
 	HRTimer m_light_timer;
 
     ///iterator for lights container
@@ -148,6 +152,7 @@ public:
     void Redraw(bool delete_buffer = true);
     //draw all objects in scene
     void DrawScene(int drawmode);
+	void drawBoundingVolumes();
     void DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix);
 
     //draw load screen
@@ -187,6 +192,13 @@ public:
             glBufferSubData( GL_UNIFORM_BUFFER, i*align, sizeof(glm::vec3), 
                              glm::value_ptr(glm::vec3(m_viewMatrix * glm::vec4((*m_il)->GetPos(), 1.0))) );
     }
+
+	void setCameraMovementSpeed(float s)
+	{
+		if(s<=0.0f)
+			return;
+		m_cam->setMovementSpeed(s);
+	}
 
 	void handleCameraInputMessage(TFreelookCamera::cam_events e)
 	{ 

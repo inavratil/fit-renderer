@@ -160,6 +160,8 @@ void TScene::Redraw(bool delete_buffer)
 ***************************************************************************************************/
 void TScene::DrawScene(int drawmode)
 {
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
     for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
     {
         if(!m_im->second->IsScreenSpace()) //don't render shaders working in screen space!

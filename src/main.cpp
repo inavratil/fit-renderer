@@ -21,9 +21,10 @@ bool InitScene(int resx, int resy)
 		s->SetMaterial("sky","mat_sky");
 
 
-		s->SetFreelookCamera(glm::vec3(100, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 0, 0));
+		s->SetFreelookCamera(glm::vec3(10, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 0, 0));
+		s->setCameraMovementSpeed(10.0f);
 
-		s->LoadScene("data/obj/scenes/novysibenik.3ds");
+		s->LoadScene("data/obj/scenes/sphere.3ds");
 		//s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
 		s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,0.0,0.0), 1000.0f);
 		
@@ -77,6 +78,10 @@ bool InitScene(int resx, int resy)
 		s->AddMaterial("_mat_default_shadow_omni");
 		s->CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag");
 
+		//Create material for wireframe bounding volume visualization
+		s->AddMaterial("__bv_mat");
+		s->CustomShader("__bv_mat", "data/shaders/bounding_volumes.vert", "data/shaders/bounding_volumes.frag");
+
 		//optionally, add tessellation for paraboloid projection
 		if(s->DPGetTessellation())
 		{        
@@ -101,12 +106,17 @@ bool InitScene(int resx, int resy)
 string name;
 //*****************************************************************************
 //Main drawing function
+bool drawBVs = false;
 void Redraw()
 {
 	s->updateCamera();
 	s->updateLightPosition();
 
     s->Redraw();
+
+	if(drawBVs)
+		s->drawBoundingVolumes();
+
     cycle++;                          //increment draw counter 
 
     //update info
@@ -118,62 +128,6 @@ void Redraw()
         static int meminfo[4];
         glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, meminfo);
         mem_use = 1024 - meminfo[0]/1024;
-    }
-}
-
-/**
-****************************************************************************************************
-@brief Handles mouse clicks
-@param button pressed mouse button
-@param state pouse button state
-@param x X-coordinate of click
-@param y Y-coordinate of click
-****************************************************************************************************/
-int status;                                     //which button?
-void MouseClick(SDL_Event event)
-{ 
-    status = event.button.button;
-
-    //hide cursor at moving
-    if(status == SDL_BUTTON_LEFT)
-        SDL_ShowCursor(SDL_DISABLE);
-    else
-        SDL_ShowCursor(SDL_ENABLE);
-}
-
-/**
-****************************************************************************************************
-@brief Handles mouse motion
-@param event of the mouse
-****************************************************************************************************/
-void MouseMotion(SDL_Event event)
-{
-    if(move_parab)
-    {
-        if(status == SDL_BUTTON_LEFT)
-        {
-            if( SDL_GetModState() & KMOD_LCTRL )
-                parab_rot.y += 0;
-            else
-                parab_rot.y += event.motion.xrel;
-
-            if( SDL_GetModState() & KMOD_LSHIFT )
-                parab_rot.x += 0;
-            else
-                parab_rot.x += event.motion.yrel; 
-            s->RotateParaboloid(parab_rot);
-        }
-    }
-    else
-    {
-        //camera rotation
-        //rot.x += event.motion.yrel;     //set the xrot to xrot with the addition of the difference in the y position
-        //rot.y += event.motion.xrel;     //set the xrot to yrot with the addition of the difference in the x position
-
-        //camera object rotation
-        //s->RotateObjAbs("camera", rot.x, A_X);
-        //s->RotateObjAbs("camera", -rot.y, A_Y);
-		s->adjustFreelookCamera(event.motion.yrel, event.motion.xrel);
     }
 }
 
@@ -433,6 +387,9 @@ int main(int argc, char **argv)
 						case SDLK_o: 
 							s->handleLightInputMessage(TScene::LIGHT_DOWNWARD_UP);
 							break;
+						case SDLK_b:
+							drawBVs = !drawBVs;
+							break;
 						default:
 							break;
 					}
@@ -443,10 +400,8 @@ int main(int argc, char **argv)
                 {
 					if(event.button.button == SDL_BUTTON_LEFT)
 					{
-						s->adjustFreelookCamera(event.motion.yrel, event.motion.xrel);
+						s->adjustFreelookCamera(0.5f*event.motion.yrel, 0.5f*event.motion.xrel);
 					}
-                    //MouseClick(event);
-					//MouseMotion(event);
                 }
             }
             else    //update values bound with tweak bar
