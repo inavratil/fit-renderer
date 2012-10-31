@@ -163,6 +163,32 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
     //create data textures
     try{
 
+		//create renderbuffers
+		GLuint fbo, tmp;
+
+		CreateDataTexture("MTEX_debug_output", 1024, 1024, GL_RGBA16F, GL_FLOAT);
+
+		glGenRenderbuffers(1, &tmp);
+		glBindRenderbuffer(GL_RENDERBUFFER, tmp);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+
+		glGenFramebuffers(1, &fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    
+		//attach texture to the frame buffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["MTEX_debug_output"], 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, tmp);
+
+		
+		//check FBO creation
+        if(!CheckFBO())
+        {
+            ShowMessage("ERROR: FBO creation for shadow map failed!",false);
+            return false;
+        }
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		CreateDataTexture("MTEX_debug", sh_res, sh_res, GL_RGBA16F, GL_FLOAT);
         //cam coords
         CreateDataTexture("MTEX_coords", sh_res, sh_res, GL_RGBA32F, GL_FLOAT/*, GL_TEXTURE_2D, true*/);
@@ -201,12 +227,6 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, m_aerr_r_buffer_depth);
 
-		//check FBO creation
-        if(!CheckFBO())
-        {
-            ShowMessage("ERROR: FBO creation for shadow map failed!",false);
-            return false;
-        }
 
 		glGenTextures(1, (*ii)->GetShadowTexID());
 		glBindTexture(GL_TEXTURE_2D_ARRAY, *(*ii)->GetShadowTexID());
