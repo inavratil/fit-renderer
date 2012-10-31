@@ -264,17 +264,10 @@ void TScene::Redraw(bool delete_buffer)
     //show alias error
     if(m_draw_aliasError)
     {
-        glActiveTexture(GL_TEXTURE1); // FIXME
-        glBindTexture(GL_TEXTURE_2D, m_tex_cache["aliaserr_texture"]);                
-        SetUniform("show_aliasError", "tex", 0);
-        SetUniform("mat_alias_quad", "errorTex", 0);
-        SetUniform("mat_alias_quad", "tex", 1);
-        SetUniform("mat_alias_quad", "matrix", m_projMatrix * m_viewMatrix);
-        TLight *l = m_lights[0];
-        glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(0.0f, 0.0f, m_far_p ), glm::vec3(0.0f, 1.0f, 0.0f) );
-        SetUniform("mat_alias_quad", "lightMatrix", lightViewMatrix);
-        //RenderSmallQuad("show_aliasError", 0.0, 0.0, 2.0);
-        RenderPass("mat_alias_quad");
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_debug"]);                
+        RenderPass("mat_quad");
+		glBindTexture(GL_TEXTURE_2D, 0);                
     }
 
     //show shadow maps

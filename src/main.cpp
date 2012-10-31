@@ -283,11 +283,10 @@ bool InitScene(int resx, int resy)
         //s->AddMaterial("show_aliasError");
         //s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
         
-		//FIXME: co to je, proc to tu je, jak se to lisi od show_aliasError
-        //alias quad
-        //s->AddMaterial("mat_alias_quad");
-        //s->AddTexture("mat_alias_quad", "data/tex/error_color.tga");
-        //s->CustomShader("mat_alias_quad","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
+		//draw quad
+        s->AddMaterial("mat_quad",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+        s->CustomShader("mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag");
+        
 
 		//shader showing shadow map alias error
 		s->AddMaterial("mat_aliasError");

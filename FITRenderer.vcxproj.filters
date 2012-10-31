@@ -224,6 +224,12 @@
     <None Include="data\shaders\func\shadow_warpdpsm.frag">
       <Filter>Shaders\func</Filter>
     </None>
+    <None Include="data\shaders\debug_draw.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="data\shaders\debug_draw.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header files">

@@ -162,6 +162,8 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 
     //create data textures
     try{
+
+		CreateDataTexture("MTEX_debug", sh_res, sh_res, GL_RGBA16F, GL_FLOAT);
         //cam coords
         CreateDataTexture("MTEX_coords", sh_res, sh_res, GL_RGBA32F, GL_FLOAT/*, GL_TEXTURE_2D, true*/);
 		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
@@ -213,7 +215,14 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		//m_tex_cache["MTEX_warped_depth_map"] = texid;
+		
+		//FIXME: temporary color texture
+		glGenTextures(1, &texid);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, texid);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA16F, sh_res, sh_res, 2, 0, GL_RGBA, GL_FLOAT, NULL);
+        m_tex_cache["MTEX_warped_depth_color"] = texid;
 
 		//glGenRenderbuffers(1, &r_buffer);
         //glBindRenderbuffer(GL_RENDERBUFFER, r_buffer);
@@ -221,9 +230,10 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 
 		glGenFramebuffers(1, &fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_tex_cache["MTEX_warped_depth_color"], 0, 0);	    
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *(*ii)->GetShadowTexID(), 0, 0);	    
-		glDrawBuffer(GL_NONE); 
-        glReadBuffer(GL_NONE);
+		//glDrawBuffer(GL_NONE); 
+        //glReadBuffer(GL_NONE);
 		m_fbos["fbo_warped_depth"] = fbo;
 
 		//check FBO creation
@@ -236,6 +246,10 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //add shaders handling multiresolution rendering
+
+		//FIXME: debug shader
+		AddMaterial("mat_debug_draw");
+        CustomShader("mat_debug_draw","data/shaders/debug_draw.vert", "data/shaders/debug_draw.frag");
 	    
 		// aliasing error
         AddMaterial("mat_camAndLightCoords_afterDP");
@@ -281,11 +295,6 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 		//FIXME: delete? AddTexture("mat_depth_with_warping","MTEX_grid_points_ping", RENDER_TEXTURE );
         CustomShader("mat_depth_with_warping","data/shaders/warping/drawDepthWithWarping.vert", "data/shaders/warping/drawDepthWithWarping.frag");
 
-		//draw quad
-        //AddMaterial("mat_quad",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        //AddTexture("mat_quad","MTEX_warped_depth_map",RENDER_TEXTURE);
-        //CustomShader("mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag");
-        
         //alias quad
         AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
         AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
@@ -313,7 +322,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	//set light projection and light view matrix
 	glm::mat4 lightProjMatrix = glm::perspective(90.0f, 1.0f, 1.0f, 1000.0f);
 	glm::mat4 lightViewMatrix[2];
-	lightViewMatrix[1] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+	lightViewMatrix[1] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(-m_far_p, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 	//glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
 	//glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
@@ -470,6 +479,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	for(int i=0; i<2; i++)
     {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_warped_depth"]);
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_tex_cache["MTEX_warped_depth_color"], 0, i);
 	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *l->GetShadowTexID(), 0, i);	    
 	//glDrawBuffers(1, mrt);
 
@@ -482,8 +492,8 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 
 	    glCullFace(GL_FRONT);
-        glColorMask(0, 0, 0, 0);      //disable colorbuffer write
-        glClear(GL_DEPTH_BUFFER_BIT);
+        //glColorMask(0, 0, 0, 0);      //disable colorbuffer write
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport( 0, 0, sh_res, sh_res );
 	glEnable(GL_CLIP_PLANE0);
@@ -508,6 +518,29 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0);
 
+	///////////////////////////////////////////////////////////////////////////////
+	//-- DEBUG DRAW
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_debug"], 0);
+	glDrawBuffers(1, mrt);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glViewport( 0, 0, sh_res, sh_res );
+
+	SetUniform("mat_debug_draw", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+	SetUniform("mat_debug_draw", "lightViewMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
+
+	glEnable(GL_CLIP_PLANE0);
+
+	DrawAliasError("mat_debug_draw",m_viewMatrix);
+
+	glDisable(GL_CLIP_PLANE0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	///////////////////////////////////////////////////////////////////////////////
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glViewport(0,0,sh_res,sh_res);

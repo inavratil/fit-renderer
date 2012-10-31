@@ -178,6 +178,7 @@ void main(void)
 
 	//------------------------------------------------------------------------------------
 #endif
-
+	
+	res = vertexEyeSpace;
     gl_Position = vertexEyeSpace;
 }

@@ -126,7 +126,7 @@ vec3 DPCoordsBack()
 }
 
 //Compute shadow using dual-paraboloid projection
-float ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
+vec4 ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
 {
     //calculate front and back coordinates
     vec3 front_coords = DPCoordsFront();
@@ -157,7 +157,7 @@ float ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
       else
           result += 1.0;
 
-      return result;
+      return vec4( depth, mydepth, result, 1.0 );
 
 }
 
