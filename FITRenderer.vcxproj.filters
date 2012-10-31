@@ -64,6 +64,21 @@
     <ClCompile Include="src\glux_engine\BoundingVolume.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\city\CCity.cpp">
+      <Filter>Source files\city</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\Gen_BlendFce.cpp">
+      <Filter>Source files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\Gen_Color.cpp">
+      <Filter>Source files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\Gen_Random.cpp">
+      <Filter>Source files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\Gen_Range.cpp">
+      <Filter>Source files\gen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -128,6 +143,24 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\BoundingVolume.h">
       <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\city\CCity.h">
+      <Filter>Header files\city</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen\Gen.h">
+      <Filter>Header files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen\Gen_BlendFce.h">
+      <Filter>Header files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen\Gen_Color.h">
+      <Filter>Header files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen\Gen_Random.h">
+      <Filter>Header files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen\Gen_Range.h">
+      <Filter>Header files\gen</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +267,18 @@
     </Filter>
     <Filter Include="Shaders\func">
       <UniqueIdentifier>{c021cf9b-bda7-4177-b4aa-f1b37b5dcc78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\city">
+      <UniqueIdentifier>{30b1e367-e628-4509-9523-3a4ca4bed369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\city">
+      <UniqueIdentifier>{517be49e-3bc0-4dcb-9c7d-e838616a7495}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\gen">
+      <UniqueIdentifier>{bc0f705a-e942-4579-85fd-32a870c992c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\gen">
+      <UniqueIdentifier>{672af7ff-d84a-4b74-b4a7-db2b8638357c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,10 +1,42 @@
 #include "main_ui.h"
+#include "CCity.h"
 
+CStreetNet*StreetNet;
+CCity*City;
 
 //*****************************************************************************
 //Initialize OpenGL settings for scene
 bool InitScene(int resx, int resy)
 { 
+		//template of net of streets
+		SStreetNetTemplate SNT={
+			3,//seed
+			20,//num of streets
+			.3,.3,.1,//don't change!
+			CRandRange(.02,.01,RR_LINEAR)//width of the streets
+		};
+		//template of the building
+		SBuildingTemplate BT={
+			CRandRange(0.01,0.005,RR_LINEAR),//x size
+			CRandRange(0.02,0.009,RR_LINEAR),//y size
+			CRandRange(0.01,0.005,RR_LINEAR),//z size
+			CRandRange(.001,0.0005,RR_LINEAR)//building spacing
+		};
+		//template of the light
+		SLightTemplate LT={
+			0.02,//height of the light
+			0.8,//0-1 distance from the center of the street
+			CRandRange(.03,0.015,RR_LINEAR),//spacing
+			CRandRange(0.03,0.027,RR_LINEAR),//range of the lieght
+			CRandRange(180,180,RR_LINEAR)//color
+		};
+
+		StreetNet=new CStreetNet(SNT);
+		City=new CCity(StreetNet,BT);
+		City->GenerateLights(LT);
+
+
+		std::cout<<City->Lights.size()<<endl;
     s = new TScene();
     if(!s->PreInit(resx, resy, 0.1f, 10000.0f,45.0f, msaa, false, false)) 
         return false;
@@ -22,14 +54,38 @@ bool InitScene(int resx, int resy)
 
 
 		s->SetFreelookCamera(glm::vec3(10, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 0, 0));
-		s->setCameraMovementSpeed(10.0f);
+		s->setCameraMovementSpeed(100.0f);
 
-		s->LoadScene("data/obj/scenes/sphere.3ds");
-		//s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
-		s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,0.0,0.0), 1000.0f);
+		//s->LoadScene("data/obj/scenes/sibenik.3ds");
+		s->AddLight(0, dgrey, silver, grey, glm::vec3(0.0,50.0,0.0), 1000.0f);
+		s->MoveLight(0, glm::vec3(-120, 350, 0));
+		s->AddLight(1,dgrey,silver,grey,glm::vec3(0,50,0),10000);
+		s->MoveLight(1,glm::vec3(-120,2000,0));
+		s->AddMaterial("cubemat",white,white,white,20,1,0,PHONG);
+
 		
-		//s->MoveLight(0, glm::vec3(-120, 350, 0));
-		s->MoveLight(0, glm::vec3(0, 200, 0));
+		//now we will push all the buildings of the city into the scene
+		for(unsigned b=0;b<City->Buildings.size();++b){
+			string BuildingName="DormonBudka";
+			for(unsigned i=0;i<sizeof(unsigned)*8;++i)
+				BuildingName+="01"[(b>>(sizeof(unsigned)*8-1-i))&1];
+			s->AddObject(BuildingName.data(),CUBE,1,1,1,1);
+			s->SetMaterial(BuildingName.data(),"cubemat");
+			float Scale=1000;//size of the city
+			s->MoveObj(BuildingName.data(),City->Buildings[b]->Start[0]*Scale,City->Buildings[b]->Start[1]*Scale,City->Buildings[b]->Start[2]*Scale);
+			glm::vec3 Half=City->Buildings[b]->Size[0]+City->Buildings[b]->Size[1]+City->Buildings[b]->Size[2];
+			Half*=.5;
+			s->MoveObj(BuildingName.data(),Half[0]*Scale,Half[1]*Scale,Half[2]*Scale);
+			glm::vec3 X=City->Buildings[b]->Size[0];
+			glm::vec3 Y=City->Buildings[b]->Size[1];
+			glm::vec3 Z=City->Buildings[b]->Size[2];
+			s->RotateObj(BuildingName.data(),glm::degrees(City->Buildings[b]->AngleY()),1);
+			s->ResizeObj(BuildingName.data(),glm::length(X)*Scale/2,glm::length(Y)*Scale/2,glm::length(Z)*Scale/2);
+			s->DrawObject(BuildingName.data(),true);
+		}
+
+
+
 
 #ifdef USE_DP        
 		//dual-paraboloid shadow parameters        
@@ -129,6 +185,20 @@ void Redraw()
         glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, meminfo);
         mem_use = 1024 - meminfo[0]/1024;
     }
+
+		//ugly test draws
+		glUseProgram(0);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(45,1.*resx/resy,.01,1000);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(.5,1,.5,.5,.5,.5,1,0,0);
+		//glRotatef(s->GetCameraRot()[1],0,1,0);
+		//glRotatef(s->GetCameraPos()[0],1,0,0);
+		//glTranslatef(-s->GetCameraPos()[0],-s->GetCameraPos()[1],-s->GetCameraPos()[2]);
+//		StreetNet->Draw();
+		City->Draw();
 }
 
 /**
@@ -275,7 +345,6 @@ int main(int argc, char **argv)
     while(true)
     {
         //measure time
-		/*
         time_now = SDL_GetTicks();
 
         if(time_now >= time_nextMS) //increment animation after 10ms
@@ -290,7 +359,7 @@ int main(int argc, char **argv)
             fps = cycle;
             cycle = 0;
         }
-		*/
+		
 
         //call drawing functions
         Redraw();
@@ -299,11 +368,9 @@ int main(int argc, char **argv)
         SDL_GL_SwapBuffers();
 
         //handle events with SDL
-        if(SDL_PollEvent(&event))
-        {
+        while(SDL_PollEvent(&event)){
             int handled = TwEventSDL(&event, SDL_MAJOR_VERSION, SDL_MINOR_VERSION);
-            if(!handled)
-            {
+            if(!handled){
                 if(event.type == SDL_QUIT)
                     break;
                 //keyboard events
@@ -407,7 +474,7 @@ int main(int argc, char **argv)
             else    //update values bound with tweak bar
             {
                 //if(event.type != SDL_MOUSEMOTION)
-                    UpdateTweakBar();
+                    //UpdateTweakBar();
             }
         }
     }

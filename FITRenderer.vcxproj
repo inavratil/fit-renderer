@@ -44,9 +44,9 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LIB\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LIB\include;LIB\include\system;src\city;src\gen;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LIB\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LIB\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LIB\include;LIB\include\system;src\city;src\gen;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LIB\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -96,6 +96,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\city\CCity.cpp" />
+    <ClCompile Include="src\gen\Gen_BlendFce.cpp" />
+    <ClCompile Include="src\gen\Gen_Color.cpp" />
+    <ClCompile Include="src\gen\Gen_Random.cpp" />
+    <ClCompile Include="src\gen\Gen_Range.cpp" />
     <ClCompile Include="src\glux_engine\BoundingSphere.cpp" />
     <ClCompile Include="src\glux_engine\BoundingVolume.cpp" />
     <ClCompile Include="src\glux_engine\Box.cpp" />
@@ -119,6 +124,12 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\city\CCity.h" />
+    <ClInclude Include="src\gen\Gen.h" />
+    <ClInclude Include="src\gen\Gen_BlendFce.h" />
+    <ClInclude Include="src\gen\Gen_Color.h" />
+    <ClInclude Include="src\gen\Gen_Random.h" />
+    <ClInclude Include="src\gen\Gen_Range.h" />
     <ClInclude Include="src\glux_engine\bitops.h" />
     <ClInclude Include="src\glux_engine\BoundingSphere.h" />
     <ClInclude Include="src\glux_engine\BoundingVolume.h" />
