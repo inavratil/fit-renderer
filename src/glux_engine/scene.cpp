@@ -252,6 +252,34 @@ bool TScene::PostInit()
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(m_projMatrix));
     UpdateCameraUniform();
 
+	
+	//create renderbuffers
+	GLuint fbo, tmp;
+
+	CreateDataTexture("MTEX_debug_output", 1024, 1024, GL_RGBA16F, GL_FLOAT);
+
+	glGenRenderbuffers(1, &tmp);
+	glBindRenderbuffer(GL_RENDERBUFFER, tmp);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    
+	//attach texture to the frame buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["MTEX_debug_output"], 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, tmp);
+	m_fbos["debug_fbo"] = fbo;
+
+		
+	//check FBO creation
+    if(!CheckFBO())
+    {
+        ShowMessage("ERROR: FBO creation for shadow map failed!",false);
+        return false;
+    }
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     cout<<"Post Init OK\n";
     return true;
 }

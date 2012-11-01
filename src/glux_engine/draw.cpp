@@ -153,6 +153,12 @@ void TScene::Redraw(bool delete_buffer)
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
+	GLenum bufs[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glBindFramebuffer( GL_FRAMEBUFFER, m_fbos["debug_fbo"] );
+	glDrawBuffers(1, bufs);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glViewport(0,0,m_RT_resX,m_RT_resY);
 
     //render all opaque objects
@@ -163,6 +169,8 @@ void TScene::Redraw(bool delete_buffer)
     glEnable(GL_BLEND);
     DrawScene(DRAW_TRANSPARENT);
     glDisable(GL_BLEND);
+
+	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -260,12 +268,16 @@ void TScene::Redraw(bool delete_buffer)
         glViewport(0,0,m_resx,m_resy);
     }
 #endif
+	    glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_debug_output"]);                
+        RenderPass("mat_quad");
+		glBindTexture(GL_TEXTURE_2D, 0);         
 
     //show alias error
     if(m_draw_aliasError)
     {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_debug"]);                
+        glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_ping"]);                
         RenderPass("mat_quad");
 		glBindTexture(GL_TEXTURE_2D, 0);                
     }

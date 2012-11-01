@@ -157,7 +157,7 @@ vec4 ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
       else
           result += 1.0;
 
-      return vec4( depth, mydepth, result, 1.0 );
+      return vec4( depth, mydepth, floor(back_coords.xy * 1024.0) );
 
 }
 

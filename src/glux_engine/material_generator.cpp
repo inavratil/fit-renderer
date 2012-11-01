@@ -538,7 +538,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
         else
         {
             frag_main += alpha_test + 
-                "  out_FragData[0].rgb = color.rgb; //color;\n"
+                "  out_FragData[0].rgba = color.rgba; //color;\n"
                 "  out_FragData[1].rgb = normal;    //normal;\n";
             frag_main += "  out_FragData[1].a = v_depth;    //depth\n";
         }
