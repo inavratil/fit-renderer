@@ -18,3 +18,42 @@ mat_debug_draw:0(25) : error C0000: syntax error, unexpected identifier, expecti
 mat_debug_draw:0(26) : error C1008: undefined variable "POLY_OFFSET"
 
 mat_debug_draw:0(25) : error C0000: syntax error, unexpected identifier, expecting ',' or ';' at token "cam_position"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_shadow_warp_tess:0(62) : error C1008: undefined variable "in_CutMatrix"
+0(78) : error C1008: undefined variable "res"

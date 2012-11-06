@@ -499,7 +499,18 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		z_direction = -1.0;  
 	lightViewMatrix[i] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
-	DrawSceneDepth("mat_depth_with_warping", lightViewMatrix[i]);
+	if(m_dpshadow_tess)
+	{
+		SetUniform("_mat_shadow_warp_tess", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+		SetUniform("_mat_shadow_warp_tess", "coeffsX", coeffsX );
+		SetUniform("_mat_shadow_warp_tess", "coeffsY", coeffsY );
+
+		DrawSceneDepth("_mat_shadow_warp_tess", lightViewMatrix[i]);
+	}
+	else
+	{
+		DrawSceneDepth("mat_depth_with_warping", lightViewMatrix[i]);
+	}
 
 	if(!m_wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);

@@ -36,9 +36,12 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
     //Setup camera(if any)
     if(scene->cameras != NULL)
     {
+		ShowMessage("Loading camera\n", false);
+		throw ERR;
+
         Lib3dsCamera *cam = scene->cameras[0];
         MoveCamera(-cam->position[0], -cam->position[2], cam->position[1]);
-        //LookCameraAt(cam->target[0], cam->target[1], cam->target[2]);
+        LookCameraAt(cam->target[0], cam->target[1], cam->target[2]);
     }
 
     //Setup lights

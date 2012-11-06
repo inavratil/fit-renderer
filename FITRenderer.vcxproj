@@ -152,6 +152,10 @@
     <None Include="data\shaders\shadow_omni_tess.tc" />
     <None Include="data\shaders\shadow_omni_tess.te" />
     <None Include="data\shaders\shadow_omni_tess.vert" />
+    <None Include="data\shaders\shadow_warp_tess.frag" />
+    <None Include="data\shaders\shadow_warp_tess.tc" />
+    <None Include="data\shaders\shadow_warp_tess.te" />
+    <None Include="data\shaders\shadow_warp_tess.vert" />
     <None Include="data\shaders\showDepth.frag" />
     <None Include="data\shaders\showDepth.vert" />
     <None Include="data\shaders\showDepth_omni.frag" />

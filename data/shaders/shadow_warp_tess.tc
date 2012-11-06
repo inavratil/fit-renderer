@@ -1,0 +1,29 @@
+//TessControl
+layout(vertices = 3) out;
+
+in vec4 vPosition[];
+in vec2 vCoord[];
+out vec4 tcPosition[];
+out vec2 tcCoord[];
+
+const float maxTess = 4.0;
+
+uniform mat4 in_ModelViewMatrix;
+
+
+void main()
+{
+	    tcPosition[gl_InvocationID] = vPosition[gl_InvocationID];
+	    tcCoord[gl_InvocationID] = vCoord[gl_InvocationID];
+	    if (gl_InvocationID == 0)
+        {
+            float t_size = distance(vPosition[0], vPosition[1]) * distance(vPosition[0], vPosition[2]);
+            float eyeDist = length(-vec3(in_ModelViewMatrix* vPosition[0]));
+            float tessLevel = max(min(maxTess, 1.0 + 0.01*t_size) - 0.01*eyeDist, 1.0);
+
+	        gl_TessLevelInner[0] = tessLevel;
+	        gl_TessLevelOuter[0] = tessLevel;
+	        gl_TessLevelOuter[1] = tessLevel;
+	        gl_TessLevelOuter[2] = tessLevel;
+	    }
+}

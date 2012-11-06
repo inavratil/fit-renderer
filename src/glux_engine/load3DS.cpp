@@ -50,6 +50,7 @@ VBO TObject::Create(Lib3dsMesh *mesh)
         }
         FinishedFaces++;
     }
+	
     //swap Y and Z coordinate in normals and vertices (3ds BUG)
     for(unsigned i=0; i<m_vbo.indices * 3; i++)
     {

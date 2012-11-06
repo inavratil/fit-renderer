@@ -98,7 +98,7 @@ bool InitScene(int resx, int resy)
             pos = glm::vec3(-540, -43, 0);
             rot = glm::vec3(-20, 270, 0.0f);
 
-            s->LoadScene("data/obj/scenes/sibenik.3ds");
+            s->LoadScene("data/obj/scenes/tes_sibenik.3ds");
             s->AddLight(0, dgrey, white, white, glm::vec3(0.0,50.0,0.0), 1000.0f);
             s->MoveLight(0, glm::vec3(-120, 350, 0));
         }
@@ -316,6 +316,17 @@ bool InitScene(int resx, int resy)
 			s->AddMaterial("_mat_default_shadow_omni_tess", white, white, white, 64.0, 0.0, 0.0, NONE);
 			s->CustomShader("_mat_default_shadow_omni_tess", &vert, &tcon, &teval, NULL, &frag);
 		}
+
+		if(dpshadow_method == WARP_DPSM)
+		{
+			TShader vert("data/shaders/shadow_warp_tess.vert", "");
+			TShader tcon("data/shaders/shadow_warp_tess.tc", "");
+			TShader teval("data/shaders/shadow_warp_tess.te", "");
+			TShader frag("data/shaders/shadow_warp_tess.frag", "");
+
+			s->AddMaterial("_mat_shadow_warp_tess", white, white, white, 64.0, 0.0, 0.0, NONE);
+			s->CustomShader("_mat_shadow_warp_tess", &vert, &tcon, &teval, NULL, &frag);
+		}
     }
     catch(int)
     {
@@ -429,7 +440,7 @@ void KeyInput(SDLKey key)
     default:
         break;
     }
-    //s->PrintCamera();
+    s->PrintCamera();
 
     //camera object position
     //s->MoveObjAbs("camera", pos.x, pos.y, pos.z);
@@ -613,7 +624,7 @@ int main(int argc, char **argv)
             dpshadow_tess = true;
         //////////////////////////////////////////
         //draw tweak bar
-        else if(param == "-no_ui")
+        else if(param == "-noui")
             draw_ui = false;
 
         ///////////////////////////////////////////

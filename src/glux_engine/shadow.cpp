@@ -334,49 +334,37 @@ void TScene::RenderShadowMapOmni(TLight *l)
         glViewport(0, 0, l->ShadowSize(), l->ShadowSize());
         glEnable(GL_CLIP_PLANE0);
 
+		glm::vec4 tmp_params = cut_params;
+		glm::mat4 tmp_mat = cut_matrix_Y;
+		if( m_dpshadow_method==CUT )
+		{
+			if(i == 1)
+			{
+				tmp_params.x = -1.0f*cut_params.y;
+				tmp_params.y = -1.0f*cut_params.x;
+				tmp_mat = glm::inverse( tmp_mat );
+			}
+		}
+
+		tmp_mat = tmp_mat * cut_matrix_X;
+
         ///All scene is drawn without materials and lighting (only depth values and alpha tests are needed)
         //set light position and zoom        
         if(m_dpshadow_tess)
         {
             m_materials["_mat_default_shadow_omni_tess"]->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
             m_materials["_mat_default_shadow_omni_tess"]->SetUniform("ZOOM", zoom[i]);
+            m_materials["_mat_default_shadow_omni_tess"]->SetUniform("cut_params", tmp_params);
+            m_materials["_mat_default_shadow_omni_tess"]->SetUniform("in_CutMatrix", tmp_mat );
 
-			if( m_dpshadow_method==CUT )
-            {
-                glm::vec4 tmp_params = cut_params;
-                glm::mat4 tmp_mat = cut_matrix_Y;
-                if(i == 1)
-                {
-                    tmp_params.x = -1.0f*cut_params.y;
-                    tmp_params.y = -1.0f*cut_params.x;
-                    tmp_mat = glm::inverse( tmp_mat );
-                }
-                tmp_mat = tmp_mat * cut_matrix_X;
-
-                m_materials["_mat_default_shadow_omni_tess"]->SetUniform("cut_params", tmp_params);
-                m_materials["_mat_default_shadow_omni_tess"]->SetUniform("in_CutMatrix", tmp_mat );
-
-            }
+			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
             DrawSceneDepth("_mat_default_shadow_omni_tess", lightViewMatrix[i]);
+			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
         }
         else
         {
             m_materials["_mat_default_shadow_omni"]->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
             m_materials["_mat_default_shadow_omni"]->SetUniform("ZOOM", zoom[i]);
-
-            glm::vec4 tmp_params = cut_params;
-            glm::mat4 tmp_mat = cut_matrix_Y;
-			if( m_dpshadow_method == CUT )
-            {
-                if(i == 1)
-                {
-                    tmp_params.x = -1.0f*cut_params.y;
-                    tmp_params.y = -1.0f*cut_params.x;
-                    tmp_mat = glm::inverse( tmp_mat );
-                }
-            }
-            tmp_mat = tmp_mat * cut_matrix_X;
-
             m_materials["_mat_default_shadow_omni"]->SetUniform("cut_params", tmp_params);
             m_materials["_mat_default_shadow_omni"]->SetUniform("in_CutMatrix", tmp_mat);
 

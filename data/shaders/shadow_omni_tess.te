@@ -4,13 +4,14 @@ in vec4 tcPosition[];
 in vec2 tcCoord[];
 
 uniform mat4 in_ModelViewMatrix;
+uniform mat4 in_CutMatrix;
 
 uniform vec2 near_far; // near and far plane for cm-cams
 uniform float ZOOM;
-/*
-const vec2 near_far = vec2(0.1, 1000.0);
-const float ZOOM = 1.0;
-*/
+
+#ifdef PARABOLA_CUT
+uniform vec4 cut_params; //-- min/max values for cut (on x-axis)
+#endif
 
 out vec2 teCoord;
 out vec4 tePosition;
@@ -30,29 +31,26 @@ void main()
     
     //paraboloid projection
     vec4 vertexEyeSpace = in_ModelViewMatrix * tePosition;
-#ifdef PARABOLA_CUT
-    gl_ClipDistance[0] = -0.75*vertexEyeSpace.x - vertexEyeSpace.z;
-#else
     gl_ClipDistance[0] = -vertexEyeSpace.z;
-#endif
 
+    vertexEyeSpace = in_CutMatrix * vertexEyeSpace;
+    
     float Length = length( vertexEyeSpace.xyz );
     vertexEyeSpace.z *= -1.0;
     vertexEyeSpace.xyz = normalize( vertexEyeSpace.xyz );
 
     vertexEyeSpace.z += 1.0;
-    vertexEyeSpace.x /= vertexEyeSpace.z;
-    vertexEyeSpace.y /= vertexEyeSpace.z;
+    vertexEyeSpace.xy /= vertexEyeSpace.z;
 
 #ifdef PARABOLA_CUT
-    //FIXME: transform from [-2 .. 1/2] to [-1 .. 1]
-    vertexEyeSpace.x = (vertexEyeSpace.x + 2.0) * 0.8 /* 2 / 5/2 == 4/5 */ - 1.0;
+    vertexEyeSpace.x = ((vertexEyeSpace.x - cut_params.x)/(cut_params.y - cut_params.x)) * 2.0 - 1.0;
+    vertexEyeSpace.y = ((vertexEyeSpace.y - cut_params.z)/(cut_params.w - cut_params.z)) * 2.0 - 1.0;
+#else
+    vertexEyeSpace.xy /= ZOOM;   //zoom-in
 #endif
 
-    vertexEyeSpace.xy /= ZOOM;   //zoom-in
-
-    vertexEyeSpace.z = (Length - near_far.x)/(near_far.y - near_far.x);
-    vertexEyeSpace.w = 1.0;
+    vertexEyeSpace.z = (Length - near_far.x)/(near_far.y  - near_far.x);
+    vertexEyeSpace.w = 1.0; 
 
     tePosition = vertexEyeSpace;
 
