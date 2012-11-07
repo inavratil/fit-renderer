@@ -68,8 +68,8 @@ const Experiment experiments[EXP_COUNT] =
         glm::vec4( 0.0 ), //glm::vec4( 56, 36, 54, 54 ),
         glm::vec3( 256,206,-23 ),
 		// puvodni pohled zezadu
-		glm::vec3(0.0), // 210.533,-82.6701,-34.9359 ),
-		glm::vec3(0.0), // 5,81,0 )
+		glm::vec3( 210.533,-82.6701,-34.9359 ),
+		glm::vec3( 5,81,0 )
 		// pohled na stred
 		//glm::vec3( 99.1987,-153.125,15.3984 ),
 		//glm::vec3( 41,92,0 )

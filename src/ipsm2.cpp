@@ -491,8 +491,6 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 	glViewport( 0, 0, sh_res, sh_res );
 	glEnable(GL_CLIP_PLANE0);
-	if(m_wireframe)
-		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 	float z_direction = 1.0;
 	if(i == 1)
@@ -511,9 +509,6 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	{
 		DrawSceneDepth("mat_depth_with_warping", lightViewMatrix[i]);
 	}
-
-	if(!m_wireframe)
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	}
 
 	 //Finish, restore values

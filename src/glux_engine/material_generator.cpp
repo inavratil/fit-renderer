@@ -472,7 +472,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 						frag_func += LoadFunc("shadow_warpdpsm");
 
                 frag_main += "\n  //Shadow map projection\n"
-                    "  color *= ShadowOMNI(" + m_it->first + ", " + m_it->first + "_intensity);\n";
+                    "  color = ShadowOMNI(" + m_it->first + ", " + m_it->first + "_intensity);\n";
             }
 
             //other texture types

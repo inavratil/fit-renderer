@@ -57,3 +57,11 @@ _mat_default_shadow_omni_tess:(0) : error C0000: syntax error, unexpected $end a
 
 _mat_shadow_warp_tess:0(62) : error C1008: undefined variable "in_CutMatrix"
 0(78) : error C1008: undefined variable "res"
+
+_mat_shadow_warp_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_shadow_warp_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_shadow_warp_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+_mat_shadow_warp_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"

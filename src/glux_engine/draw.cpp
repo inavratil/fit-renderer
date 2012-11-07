@@ -55,6 +55,7 @@ void TScene::Redraw(bool delete_buffer)
                             ///if light has a shadow, render scene from light view to texture (TScene::RenderShadowMap())
                             if(il->HasShadow())
                             {
+
                                 //render shadow map
                                 if(il->GetType() == OMNI)
                                     RenderShadowMapOmni(&(*il));
@@ -109,11 +110,14 @@ void TScene::Redraw(bool delete_buffer)
             //render shadow map
             if((*m_il)->GetType() == OMNI)
             {
+				if(m_wireframe)
+					glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 				if( m_dpshadow_method == CUT || m_dpshadow_method == DPSM )
 					RenderShadowMapOmni(*m_il);
 				if( m_dpshadow_method == WARP_DPSM )
 					RenderShadowMapOmniWarped(*m_il); 
-				
+				if(!m_wireframe)
+					glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
             }
             else 
                 RenderShadowMap(*m_il);
