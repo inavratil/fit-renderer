@@ -102,7 +102,7 @@ vec3 DPCoordsFront()
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
 
-vec3 DPCoordsBack()
+vec3 DPCoordsBack(out vec2 d)
 {
     vec4 texCoords;
     texCoords = lightModelView[1] * o_vertex;
@@ -119,18 +119,19 @@ vec3 DPCoordsBack()
     texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
     texCoords.w = 1.0;
 
-	vec2 d = computeDiff( texCoords );
+	d = computeDiff( texCoords );
 	texCoords.xy += d;
 
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
 
 //Compute shadow using dual-paraboloid projection
-vec4 ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
+float ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
 {
     //calculate front and back coordinates
+	vec2 delta_back;
     vec3 front_coords = DPCoordsFront();
-    vec3 back_coords = DPCoordsBack();
+    vec3 back_coords = DPCoordsBack(delta_back);
 
     //calculate split plane position between paraboloids
     float split_plane = vec4(lightModelView[0] * o_vertex).z;
@@ -157,7 +158,7 @@ vec4 ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
       else
           result += 1.0;
 
-      return vec4( depth, mydepth, floor(back_coords.xy * 1024.0) );
+      return result; // vec4( delta_back, floor(back_coords.xy * 1024.0) );
 
 }
 

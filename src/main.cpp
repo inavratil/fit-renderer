@@ -428,6 +428,10 @@ void KeyInput(SDLKey key)
     case SDLK_u: lpos1.y += INC; s->MoveLight(0,lpos1); break;
     case SDLK_o: lpos1.y -= INC; s->MoveLight(0,lpos1); break;
 
+	case SDLK_t:
+		drawSM = !drawSM;
+		s->DPDrawSM(drawSM);
+        break;
     case SDLK_ESCAPE:        //ESCAPE - quit
         delete s;
         SDL_Quit();

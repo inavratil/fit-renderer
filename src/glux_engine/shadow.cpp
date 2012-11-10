@@ -368,7 +368,12 @@ void TScene::RenderShadowMapOmni(TLight *l)
             m_materials["_mat_default_shadow_omni"]->SetUniform("cut_params", tmp_params);
             m_materials["_mat_default_shadow_omni"]->SetUniform("in_CutMatrix", tmp_mat);
 
+			
+			if(m_wireframe)
+				glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
             DrawSceneDepth("_mat_default_shadow_omni", lightViewMatrix[i]);
+			if(!m_wireframe)
+				glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
         }
     }
 

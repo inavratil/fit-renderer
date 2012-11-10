@@ -9,5 +9,6 @@ void main()
 	gl_FragDepth = position.z;
 	vec4 pos = res*0.5 + 0.5;
 
-	frag_Color = vec4( pos.xy, 0.0, 1.0 );
+	frag_Color = vec4( 10.0 * position.z );
+	frag_Color.a = 1.0;
 }

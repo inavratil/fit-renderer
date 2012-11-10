@@ -143,6 +143,16 @@ void TScene::AddVertexDataWarped()
     glEnableVertexAttribArray(0);
 	SceneManager::Instance()->setVBO("polys_coeff_vert", tmp_vbo);
 
+	glGenVertexArrays( 1, &tmp_vbo.vao );
+	glBindVertexArray( tmp_vbo.vao );
+
+	glGenBuffers( 1, &tmp_vbo.buffer[0] );
+	glBindBuffer( GL_ARRAY_BUFFER, tmp_vbo.buffer[0] );
+	glBufferData( GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW );
+	glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+	SceneManager::Instance()->setVBO("polynomials_grid", tmp_vbo);
+
     glBindVertexArray(0);
 
 
@@ -463,6 +473,32 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"]);
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
 		glBindTexture(GL_TEXTURE_2D, 0 ); 
+		z_values[0] = 0.0;
+		z_values[1] = 0.0;
+		z_values[2] = 0.0;
+		z_values[3] = 0.0;
+		z_values[4] = 0.0;
+		z_values[5] = 0.0;
+		z_values[6] = 0.0;
+		z_values[7] = 0.0;
+		z_values[8] = 0.0;
+		z_values[9] = 0.0;
+		z_values[14] = 0.0;
+		z_values[15] = 0.0;
+		z_values[16] = 0.0;
+		z_values[17] = 0.0;
+		z_values[22] = 0.0;
+		z_values[23] = 0.0;
+
+		z_values[24] = 0.0;
+		z_values[25] = 0.0;
+		z_values[26] = 0.0;
+		z_values[27] = 0.0;
+		z_values[28] = 0.0;
+		z_values[29] = 0.0;
+		z_values[30] = 0.0;
+		z_values[31] = 0.0;
+
 		coeffsX = compute2DPolynomialCoeffsX( z_values );
 		coeffsY = compute2DPolynomialCoeffsY( z_values );
 
@@ -492,6 +528,9 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	glViewport( 0, 0, sh_res, sh_res );
 	glEnable(GL_CLIP_PLANE0);
 
+	if(m_wireframe)
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+
 	float z_direction = 1.0;
 	if(i == 1)
 		z_direction = -1.0;  
@@ -509,6 +548,9 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	{
 		DrawSceneDepth("mat_depth_with_warping", lightViewMatrix[i]);
 	}
+	if(!m_wireframe)
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
 	}
 
 	 //Finish, restore values
