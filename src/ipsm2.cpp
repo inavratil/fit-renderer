@@ -254,7 +254,11 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 		//FIXME: debug shader
 		AddMaterial("mat_debug_draw");
         CustomShader("mat_debug_draw","data/shaders/debug_draw.vert", "data/shaders/debug_draw.frag");
-	    
+
+		//FIXME: draw polynomials grid
+	    AddMaterial("mat_debug_draw_grid");
+        CustomShader("mat_debug_draw_grid","data/shaders/quad.vert", "data/shaders/warping/dbg_polynomials_grid.frag");
+
 		// aliasing error
         AddMaterial("mat_camAndLightCoords_afterDP");
         CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag");
@@ -473,6 +477,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"]);
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
 		glBindTexture(GL_TEXTURE_2D, 0 ); 
+		/*
 		z_values[0] = 0.0;
 		z_values[1] = 0.0;
 		z_values[2] = 0.0;
@@ -498,9 +503,28 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		z_values[29] = 0.0;
 		z_values[30] = 0.0;
 		z_values[31] = 0.0;
+		*/
 
 		coeffsX = compute2DPolynomialCoeffsX( z_values );
 		coeffsY = compute2DPolynomialCoeffsY( z_values );
+
+		vector<GLfloat> vertices;
+		GLuint num = 0;
+
+		vertices.push_back( -0.5 );	vertices.push_back( 0.5 );
+		vertices.push_back( 0.5 );	vertices.push_back( 0.5 );
+
+		vertices.push_back( 0.5 );	vertices.push_back( 0.5 );
+		vertices.push_back( 0.5 );	vertices.push_back( -0.5 );
+		
+		vertices.push_back( 0.5 );	vertices.push_back( -0.5 );
+		vertices.push_back( -0.5 );	vertices.push_back( -0.5 );
+		
+		vertices.push_back( -0.5 );	vertices.push_back( -0.5 );
+		vertices.push_back( -0.5 );	vertices.push_back( 0.5 );
+
+		glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "polynomials_grid"));
+		glBufferData(GL_ARRAY_BUFFER, 8 * 2 * sizeof(GLfloat), &vertices[0], GL_DYNAMIC_DRAW);   //update vertex data
 
 		//printMatrix( coeffsX );
 		glEnable(GL_DEPTH_TEST);

@@ -242,6 +242,9 @@
     <None Include="data\shaders\shadow_warp_tess.vert">
       <Filter>Shaders\shadows</Filter>
     </None>
+    <None Include="data\shaders\warping\dbg_polynomials_grid.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header files">

@@ -171,6 +171,7 @@
     <None Include="data\shaders\warping\camAndLightCoords_afterDP.vert" />
     <None Include="data\shaders\warping\computeAliasError.frag" />
     <None Include="data\shaders\warping\computeAliasError.vert" />
+    <None Include="data\shaders\warping\dbg_polynomials_grid.frag" />
     <None Include="data\shaders\warping\get2DfuncValues.frag" />
     <None Include="data\shaders\warping\computeNewPoints.frag" />
     <None Include="data\shaders\warping\computePolynomialsCoefficients.frag" />

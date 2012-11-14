@@ -65,3 +65,7 @@ _mat_shadow_warp_tess:(0) : error C0000: syntax error, unexpected $end at token 
 _mat_shadow_warp_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
 
 _mat_shadow_warp_tess:(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
+
+mat_debug_draw_grid:(0) : error C0000: syntax error, unexpected $end, expecting "::" at token "<EOF>"
+
+mat_debug_draw_grid:(0) : error C0000: syntax error, unexpected $end, expecting "::" at token "<EOF>"

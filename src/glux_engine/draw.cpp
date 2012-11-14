@@ -281,7 +281,8 @@ void TScene::Redraw(bool delete_buffer)
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_ping"]);                
         RenderPass("mat_quad");
-		glBindTexture(GL_TEXTURE_2D, 0);                
+		glBindTexture(GL_TEXTURE_2D, 0);
+
     }
 
     //show shadow maps
@@ -303,6 +304,11 @@ void TScene::Redraw(bool delete_buffer)
                 break;
             }
         }
+		
+		m_materials["mat_debug_draw_grid"]->RenderMaterial();
+		glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "polynomials_grid"));
+		glDrawArrays( GL_LINES, 0, 8 );
+		glBindVertexArray( 0 );
     }
 
     //finish drawing, restore buffers
