@@ -122,6 +122,8 @@ protected:
     float *m_select_buffer, *m_aerr_buffer;
     glm::vec2 m_cut_angle;
     GLuint m_aerr_f_buffer, m_aerr_f_buffer_color, m_aerr_r_buffer_depth;
+	//FIXME
+	int m_num_lines;
 
 public:
     //basic constructor
@@ -450,6 +452,7 @@ public:
     void RenderShadowMapOmniWarped(TLight *l);
 	//add additional vertex data
 	void AddVertexDataWarped();
+	void GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coefssY );
 
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()

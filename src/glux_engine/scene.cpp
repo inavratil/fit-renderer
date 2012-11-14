@@ -46,6 +46,7 @@ TScene::TScene()
     m_draw_aliasError = false;
     m_parab_angle = glm::vec3(0.0, 0.0, 0.0);
     m_cut_angle = glm::vec2(0.0);
+	m_num_lines = 0;
 }
 
 /**

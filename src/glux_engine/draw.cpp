@@ -307,7 +307,7 @@ void TScene::Redraw(bool delete_buffer)
 		
 		m_materials["mat_debug_draw_grid"]->RenderMaterial();
 		glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "polynomials_grid"));
-		glDrawArrays( GL_LINES, 0, 8 );
+		glDrawArrays( GL_LINES, 0, m_num_lines );
 		glBindVertexArray( 0 );
     }
 

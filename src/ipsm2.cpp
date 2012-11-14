@@ -157,6 +157,67 @@ void TScene::AddVertexDataWarped()
 
 
 }
+
+glm::vec2 axes[8] = {
+	glm::vec2(),
+	glm::vec2(),
+	glm::vec2(),
+	glm::vec2(),
+
+	glm::vec2(),
+	glm::vec2(),
+	glm::vec2(),
+	glm::vec2()
+};
+
+void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
+{
+		vector<GLfloat> vertices;
+		m_num_lines = 0;
+		float nparts = 10.0;
+
+		for( int i=0;i<nparts;++i )
+		{
+			float x0, x1, y0, y1;
+			x0 = -0.5 + i*1.0/nparts;
+			x1 = -0.5 + (i+1)*1.0/nparts;
+			y0 = y1 = 0.5;
+			
+			float dx, dy, new_x, new_y;
+			glm::vec4 temp, X, Y;
+			glm::vec4 range = glm::vec4( -1.0, 1.0, -1.0, 1.0 );
+
+			new_x = (x0 - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
+			new_y = (y0 - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
+
+			X = glm::vec4( 1.0, new_x, glm::pow(new_x, 2.0f), glm::pow(new_x,3.0f) );
+			Y = glm::vec4( 1.0, new_y, glm::pow(new_y, 2.0f), glm::pow(new_y,3.0f) );
+
+			temp = X * _coeffsX;
+			dx = glm::dot(temp, Y);
+			temp = X * _coeffsY;
+			dy = glm::dot(temp, Y);
+
+			vertices.push_back( x0+dx ); vertices.push_back( y0+dy ); m_num_lines++;
+
+			new_x = (x1 - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
+			new_y = (y1 - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
+
+			X = glm::vec4( 1.0, new_x, glm::pow(new_x, 2.0f), glm::pow(new_x,3.0f) );
+			Y = glm::vec4( 1.0, new_y, glm::pow(new_y, 2.0f), glm::pow(new_y,3.0f) );
+
+
+			temp = X * _coeffsX;
+			dx = glm::dot(temp, Y);
+			temp = X * _coeffsY;
+			dy = glm::dot(temp, Y);
+
+			vertices.push_back( x1+dx ); vertices.push_back( y1+dy ); m_num_lines++;
+		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "polynomials_grid"));
+		glBufferData(GL_ARRAY_BUFFER, m_num_lines * 2 * sizeof(GLfloat), &vertices[0], GL_DYNAMIC_DRAW);   //update vertex data
+		}
 /**
 ****************************************************************************************************
 @brief Creates shadow map and other structures for selected light for multiresolution rendering
@@ -508,23 +569,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		coeffsX = compute2DPolynomialCoeffsX( z_values );
 		coeffsY = compute2DPolynomialCoeffsY( z_values );
 
-		vector<GLfloat> vertices;
-		GLuint num = 0;
-
-		vertices.push_back( -0.5 );	vertices.push_back( 0.5 );
-		vertices.push_back( 0.5 );	vertices.push_back( 0.5 );
-
-		vertices.push_back( 0.5 );	vertices.push_back( 0.5 );
-		vertices.push_back( 0.5 );	vertices.push_back( -0.5 );
-		
-		vertices.push_back( 0.5 );	vertices.push_back( -0.5 );
-		vertices.push_back( -0.5 );	vertices.push_back( -0.5 );
-		
-		vertices.push_back( -0.5 );	vertices.push_back( -0.5 );
-		vertices.push_back( -0.5 );	vertices.push_back( 0.5 );
-
-		glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "polynomials_grid"));
-		glBufferData(GL_ARRAY_BUFFER, 8 * 2 * sizeof(GLfloat), &vertices[0], GL_DYNAMIC_DRAW);   //update vertex data
+		GeneratePolynomialGrid( coeffsX, coeffsY );
 
 		//printMatrix( coeffsX );
 		glEnable(GL_DEPTH_TEST);
