@@ -158,61 +158,96 @@ void TScene::AddVertexDataWarped()
 
 }
 
-glm::vec2 axes[8] = {
-	glm::vec2(),
-	glm::vec2(),
-	glm::vec2(),
-	glm::vec2(),
-
-	glm::vec2(),
-	glm::vec2(),
-	glm::vec2(),
-	glm::vec2()
-};
-
 void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 {
 		vector<GLfloat> vertices;
 		m_num_lines = 0;
 		float nparts = 10.0;
 
-		for( int i=0;i<nparts;++i )
+		//glm::vec4 range = glm::vec4( -0.75, -0.25, 0.25, 0.75 );
+		glm::vec4 range = glm::vec4( 41.0, 83.0, 11.0, 41.0 ) / 128.0;
+		range.x = range.x - 1.0;
+		range.y = range.y - 1.0;
+
+		for( int t=0; t<=2; ++t)
+		for( int s=0; s<=3; ++s)
+		//for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
-			x0 = -0.5 + i*1.0/nparts;
-			x1 = -0.5 + (i+1)*1.0/nparts;
-			y0 = y1 = 0.5;
-			
+			x0 = s; x1 = s;
+			y0 = t; y1 = t+1;
+	
 			float dx, dy, new_x, new_y;
 			glm::vec4 temp, X, Y;
-			glm::vec4 range = glm::vec4( -1.0, 1.0, -1.0, 1.0 );
+			
 
-			new_x = (x0 - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
-			new_y = (y0 - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
-
-			X = glm::vec4( 1.0, new_x, glm::pow(new_x, 2.0f), glm::pow(new_x,3.0f) );
-			Y = glm::vec4( 1.0, new_y, glm::pow(new_y, 2.0f), glm::pow(new_y,3.0f) );
+			X = glm::vec4( 1.0, x0, glm::pow(x0, 2.0f), glm::pow(x0,3.0f) );
+			Y = glm::vec4( 1.0, y0, glm::pow(y0, 2.0f), glm::pow(y0,3.0f) );
 
 			temp = X * _coeffsX;
 			dx = glm::dot(temp, Y);
 			temp = X * _coeffsY;
 			dy = glm::dot(temp, Y);
 
-			vertices.push_back( x0+dx ); vertices.push_back( y0+dy ); m_num_lines++;
+				cout << "[" << s << "," << t << "]" << dx << endl;
+				cout << "[" << s << "," << t << "]" << dy << endl;
 
-			new_x = (x1 - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
-			new_y = (y1 - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
+			new_x = convertRange(x0+dx, glm::vec2(0.0, 3.0),  glm::vec2(range.x, range.y) );
+			new_y = convertRange(y0+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
+			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
 
-			X = glm::vec4( 1.0, new_x, glm::pow(new_x, 2.0f), glm::pow(new_x,3.0f) );
-			Y = glm::vec4( 1.0, new_y, glm::pow(new_y, 2.0f), glm::pow(new_y,3.0f) );
+			X = glm::vec4( 1.0, x1, glm::pow(x1, 2.0f), glm::pow(x1,3.0f) );
+			Y = glm::vec4( 1.0, y1, glm::pow(y1, 2.0f), glm::pow(y1,3.0f) );
 
+			temp = X * _coeffsX;
+			dx = glm::dot(temp, Y);	
+			temp = X * _coeffsY;
+			dy = glm::dot(temp, Y);
+
+			if( t == 2)
+			{
+				cout << "[" << s << "," << t << "]" << dx << endl;
+				cout << "[" << s << "," << t << "]" << dy << endl;
+			}
+
+			new_x = convertRange(x1+dx, glm::vec2(0.0, 3.0), glm::vec2(range.x, range.y) );
+			new_y = convertRange(y1+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
+			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
+		}
+
+		for( int s=0; s<=2; ++s)
+		for( int t=0; t<=3; ++t)
+		{
+			float x0, x1, y0, y1;
+			x0 = s; x1 = s+1;
+			y0 = t; y1 = t;
+	
+			float dx, dy, new_x, new_y;
+			glm::vec4 temp, X, Y;
+
+			X = glm::vec4( 1.0, x0, glm::pow(x0, 2.0f), glm::pow(x0,3.0f) );
+			Y = glm::vec4( 1.0, y0, glm::pow(y0, 2.0f), glm::pow(y0,3.0f) );
 
 			temp = X * _coeffsX;
 			dx = glm::dot(temp, Y);
 			temp = X * _coeffsY;
 			dy = glm::dot(temp, Y);
 
-			vertices.push_back( x1+dx ); vertices.push_back( y1+dy ); m_num_lines++;
+			new_x = convertRange(x0+dx, glm::vec2(0.0, 3.0),  glm::vec2(range.x, range.y) );
+			new_y = convertRange(y0+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
+			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
+
+			X = glm::vec4( 1.0, x1, glm::pow(x1, 2.0f), glm::pow(x1,3.0f) );
+			Y = glm::vec4( 1.0, y1, glm::pow(y1, 2.0f), glm::pow(y1,3.0f) );
+
+			temp = X * _coeffsX;
+			dx = glm::dot(temp, Y);
+			temp = X * _coeffsY;
+			dy = glm::dot(temp, Y);
+
+			new_x = convertRange(x1+dx, glm::vec2(0.0, 3.0), glm::vec2(range.x, range.y) );
+			new_y = convertRange(y1+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
+			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
 		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "polynomials_grid"));

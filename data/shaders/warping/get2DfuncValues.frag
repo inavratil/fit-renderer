@@ -14,5 +14,5 @@ void main()
 	tmp = texture( gradient_map, vec2( coords/128.0 ) + vec2( 0.5/128.0 ) );
 	//tmp *= 2.0;
 
-	out_FragColor = vec4(tmp);
+	out_FragColor = tmp;
 }

@@ -1,14 +1,14 @@
 out vec4 out_FragColor;
 in vec2 fragTexCoord;
 
-uniform sampler2D tex;
+uniform sampler2D tex_blurred_error;
 
 void main()
 {
 	vec4 a;
 	vec4 res;
 
-    a = texture(tex, fragTexCoord );
+    a = texture(tex_blurred_error, fragTexCoord );
 	float dx = dFdx(a.a);
 	float dy = dFdy(a.a);
 

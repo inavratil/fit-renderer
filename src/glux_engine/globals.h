@@ -183,4 +183,9 @@ inline void printVec( glm::vec4 v, const char* name = NULL )
     cout << v.x << ", " << v.y << ", " << v.z << ", " << v.w << endl;
 }
 
+inline float convertRange( float num, glm::vec2 _old, glm::vec2 _new )
+{
+	return (num - _old.x)/(_old.y - _old.x) * (_new.y - _new.x) + _new.x;
+}
+
 #endif
