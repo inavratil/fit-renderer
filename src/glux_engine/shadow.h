@@ -14,6 +14,9 @@ const int Z_SELECT_SIZE = 64;             //selection size of z-buffer (to compu
 const float SHADOW_NEAR = 0.1f;
 const float SHADOW_FAR = 5000.0f;
 
+//FIXME: ovlivnuje vliv hodnoty gradientu na posunuti
+const float POLY_BIAS = 0.025;
+
 const int MAX_CASCADES = 5;             //maximum shadow cascade count
 const int F_POINTS = 4;                 //near/far point count
 

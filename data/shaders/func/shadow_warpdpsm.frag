@@ -2,7 +2,7 @@
 //-- Warp dpsm - fragment shader
 
 in vec4 o_vertex;       //input vertex
-uniform vec2 near_far; // near and far plane for cm-cams
+uniform vec3 near_far_bias; // near and far plane for cm-cams
 
 uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
 
@@ -64,9 +64,9 @@ vec2 computeDiff( vec4 _position )
 		vec4 Y = vec4( 1.0, new_y, pow(new_y, 2.0), pow(new_y,3.0) );
 		
 		vec4 temp = X * coeffsX;
-		delta.x = dot(temp, Y) * 25.0/1024.0;
+		delta.x = dot(temp, Y) * near_far_bias.z;
 		temp = X * coeffsY;
-		delta.y = dot(temp, Y) * 25.0/1024.0;
+		delta.y = dot(temp, Y) * near_far_bias.z;
 		//dx = dx * 2.0 - 1.0;
 		//dy = dy * 2.0 - 1.0
 	}
@@ -93,7 +93,7 @@ vec3 DPCoordsFront()
     texCoords.x /= texCoords.z;
     texCoords.y /= texCoords.z;
 
-    texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
+    texCoords.z = (Length - near_far_bias.x)/(near_far_bias.y + POLY_OFFSET - near_far_bias.x);
     texCoords.w = 1.0;
 
 	vec2 d = computeDiff( texCoords );
@@ -116,7 +116,7 @@ vec3 DPCoordsBack(out vec2 d)
     texCoords.x /= texCoords.z;
     texCoords.y /= texCoords.z;
 
-    texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
+    texCoords.z = (Length - near_far_bias.x)/(near_far_bias.y + POLY_OFFSET - near_far_bias.x);
     texCoords.w = 1.0;
 
 	d = computeDiff( texCoords );

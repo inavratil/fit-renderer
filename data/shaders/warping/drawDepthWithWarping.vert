@@ -4,8 +4,7 @@ layout(location = 1) in vec3 in_Normal;
 layout(location = 2) in vec3 in_Coord;
 
 uniform mat4 in_ModelViewMatrix;
-
-uniform vec2 near_far; // near and far plane for cm-cams
+uniform vec3 near_far_bias; // near and far plane for cm-cams
 
 out vec2 fragTexCoord;
 out vec4 position;
@@ -57,7 +56,7 @@ void main(void)
     vertexEyeSpace.z += 1.0;
     vertexEyeSpace.xy /= vertexEyeSpace.z;
 
-    vertexEyeSpace.z = (Length - near_far.x)/(near_far.y  - near_far.x);
+    vertexEyeSpace.z = (Length - near_far_bias.x)/(near_far_bias.y  - near_far_bias.x);
     vertexEyeSpace.w = 1.0; 
 
 	position = vertexEyeSpace;
@@ -86,9 +85,9 @@ void main(void)
 		vec4 Y = vec4( 1.0, new_y, pow(new_y, 2.0), pow(new_y,3.0) );
 		
 		vec4 temp = X * coeffsX;
-		dx = dot(temp, Y) * 25.0/1024.0;
+		dx = dot(temp, Y) * near_far_bias.z;
 		temp = X * coeffsY;
-		dy = dot(temp, Y) * 25.0/1024.0;
+		dy = dot(temp, Y) * near_far_bias.z;
 		//dx = dx * 2.0 - 1.0;
 		//dy = dy * 2.0 - 1.0;
 
