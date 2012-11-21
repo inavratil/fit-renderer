@@ -2,7 +2,8 @@
 // Color output for screen aligned-quad
 
 in vec2 fragTexCoord;
-out vec4 out_FragColor;
+layout ( location = 0 ) out vec4 out_FragColor;
+layout ( location = 1 ) out vec4 out_FragMask;
 uniform sampler2D tex_coords;
 uniform sampler2D tex_error;
 //uniform sampler2D tex_coverage;
@@ -76,8 +77,12 @@ void main()
 //------------------------------------------------------------------------------
 
 	//if( (a.x >= 0.0 && a.x <= 1.0) && (a.y >= 0.0 && a.y <= 1.0) )
-	//if( dp_K == 0.0 || K == 0.0)
-	//	out_FragColor = vec4( 0.0, 1.0, 0.0, 1.0 );
-	//else
+	if( new_res > 12.0)
+		out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );
+	else
 		out_FragColor = vec4( color, new_res );
+
+	out_FragMask = vec4( 0.0 );
+	if( lessThan(a.xy, vec2(1.0) ) == bvec2(1.0) && greaterThan(a.xy, vec2(0.0) )== bvec2(1.0) )
+		out_FragMask = vec4( 1.0 );
 }

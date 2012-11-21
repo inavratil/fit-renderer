@@ -245,6 +245,15 @@
     <None Include="data\shaders\warping\dbg_polynomials_grid.frag">
       <Filter>Shaders\warp</Filter>
     </None>
+    <None Include="data\shaders\quad_lod.frag">
+      <Filter>Shaders\HDR/AO</Filter>
+    </None>
+    <None Include="data\shaders\warping\mipmap_boundingbox.frag">
+      <Filter>Shaders\warp</Filter>
+    </None>
+    <None Include="data\shaders\select_depth.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header files">

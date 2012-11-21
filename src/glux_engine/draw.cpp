@@ -279,13 +279,14 @@ void TScene::Redraw(bool delete_buffer)
     if(m_draw_aliasError)
     {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_ping"]);                
-        RenderPass("mat_quad");
+        glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_mask"]);                
+		SetUniform("mat_quad_lod", "lod", 4.0);
+        RenderPass("mat_quad_lod");
 		glBindTexture(GL_TEXTURE_2D, 0);
 
     }
 
-    //show shadow maps
+    //show shadow maps 
     if(m_draw_shadow_map)
     {
         for(int i=0; i<2; i++)
@@ -305,10 +306,13 @@ void TScene::Redraw(bool delete_buffer)
             }
         }
 		
-		m_materials["mat_debug_draw_grid"]->RenderMaterial();
-		glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "polynomials_grid"));
-		glDrawArrays( GL_LINES, 0, m_num_lines );
-		glBindVertexArray( 0 );
+		//if( m_dpshadow_method == WARP_DPSM )
+		
+			m_materials["mat_debug_draw_grid"]->RenderMaterial();
+			glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "polynomials_grid"));
+			glDrawArrays( GL_LINES, 0, m_num_lines );
+			glBindVertexArray( 0 );
+		
     }
 
     //finish drawing, restore buffers

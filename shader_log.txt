@@ -73,3 +73,40 @@ mat_debug_draw_grid:(0) : error C0000: syntax error, unexpected $end, expecting 
 mat_aliasgradient:0(18) : error C1008: undefined variable "a"
 
 mat_aliasgradient:0(12) : error C7011: implicit cast from "float" to "vec4"
+
+mat_aliasgradient:0(16) : error C0000: syntax error, unexpected integer constant, expecting ')' at token "<int-const>"
+
+mat_compute_aliasError:0(88) : error C7011: implicit cast from "float" to "vec2"
+0(88) : error C7011: implicit cast from "float" to "vec2"
+0(88) : error C1033: cast not allowed
+
+mat_compute_aliasError:0(87) : error C7011: implicit cast from "float" to "vec2"
+0(87) : error C7011: implicit cast from "float" to "vec2"
+0(87) : error C1019: scalar Boolean expression expected
+
+mat_compute_aliasError:0(87) : error C1033: cast not allowed
+
+mat_compute_aliasError:0(87) : error C1019: scalar Boolean expression expected
+
+mat_compute_aliasError:0(87) : error C7011: implicit cast from "bvec2" to "vec2"
+0(87) : error C7011: implicit cast from "bvec2" to "vec2"
+
+mat_compute_aliasError:0(86) : error C7011: implicit cast from "bvec2" to "ivec2"
+0(86) : error C7011: implicit cast from "bvec2" to "ivec2"
+0(86) : error C1038: declaration of "b" conflicts with previous declaration at 0(21)
+0(86) : error C1060: incompatible types in initialization
+0(86) : error C1056: invalid initialization
+
+mat_compute_aliasError:0(86) : error C1038: declaration of "b" conflicts with previous declaration at 0(21)
+0(87) : error C7011: implicit cast from "bool" to "vec4"
+0(87) : error C0000: syntax error, unexpected identifier, expecting ',' or ';' at token "out_FragMask"
+
+mat_compute_aliasError:0(87) : error C0000: syntax error, unexpected identifier, expecting ',' or ';' at token "out_FragMask"
+
+mat_camAndLightCoords_afterDP:0(17) : error C0000: syntax error, unexpected '=', expecting "::" at token "="
+
+mat_compute_aliasError:0(6) : warning C7022: unrecognized profile specifier "q"
+0(6) : error C0502: syntax error at token "q"
+
+mat_compute_aliasError:0(6) : warning C7022: unrecognized profile specifier "q"
+0(6) : error C0502: syntax error at token "q"

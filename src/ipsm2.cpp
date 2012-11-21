@@ -77,28 +77,6 @@ m[3][1] = -1.0/18.0*z[I(0,3)]+11.0/36.0*z[I(0,0)]-1.0/2.0*z[I(0,1)]+1.0/4.0*z[I(
 m[3][2] = 1.0/12.0*z[I(0,3)]-1.0/6.0*z[I(0,0)]+5.0/12.0*z[I(0,1)]-1.0/3.0*z[I(0,2)]+1.0/2.0*z[I(1,0)]-1.0/4.0*z[I(1,3)]-1.0/2.0*z[I(2,0)]+5.0/4.0*z[I(2,1)]-z[I(2,2)]+1.0/4.0*z[I(2,3)]+1.0/6.0*z[I(3,0)]-1.0/12.0*z[I(3,3)]-5.0/4.0*z[I(1,1)]+1.0/3.0*z[I(3,2)]-5.0/12.0*z[I(3,1)]+z[I(1,2)];
 m[3][3] = -1.0/36.0*z[I(0,3)]+1.0/36.0*z[I(0,0)]-1.0/12.0*z[I(0,1)]+1.0/12.0*z[I(0,2)]-1.0/12.0*z[I(1,0)]+1.0/12.0*z[I(1,3)]+1.0/12.0*z[I(2,0)]-1.0/4.0*z[I(2,1)]+1.0/4.0*z[I(2,2)]-1.0/12.0*z[I(2,3)]-1.0/36.0*z[I(3,0)]+1.0/36.0*z[I(3,3)]+1.0/4.0*z[I(1,1)]-1.0/12.0*z[I(3,2)]+1.0/12.0*z[I(3,1)]-1.0/4.0*z[I(1,2)];
 
-/*
-J a00 = z00, 
-J a01 = -11/6*z00+3*z01-3/2*z02+1/3*z03, 
-J a02 = z00-5/2*z01+2*z02-1/2*z03, 
-J a03 = -1/6*z00+1/2*z01-1/2*z02+1/6*z03, 
-
-J a10 = -11/6*z00+3*z10-3/2*z20+1/3*z30, 
-a11 = -11.0/18.0*z[I(0,3)]+121.0/36.0*z[I(0,0)]-11.0/2.0*z[I(0,1)]+11.0/4.0*z[I(0,2)]-11.0/2.0*z[I(1,0)]+z[I(1,3)]+11.0/4.0*z[I(2,0)]-9.0/2.0*z[I(2,1)]+9.0/4.0*z[I(2,2)]-1.0/2.0*z[I(2,3)]-11.0/18.0*z[I(3,0)]+1.0/9.0*z[I(3,3)]+9.0*z[I(1,1)]-1.0/2.0*z[I(3,2)]+z[I(3,1)]-9.0/2.0*z[I(1,2)], 
-a12 = 11.0/12.0*z[I(0,3)]-11.0/6.0*z[I(0,0)]+55.0/12.0*z[I(0,1)]-11.0/3.0*z[I(0,2)]+3.0*z[I(1,0)]-3.0/2.0*z[I(1,3)]-3.0/2.0*z[I(2,0)]+15.0/4.0*z[I(2,1)]-3.0*z[I(2,2)]+3.0/4.0*z[I(2,3)]+1.0/3.0*z[I(3,0)]-1.0/6.0*z[I(3,3)]-15.0/2.0*z[I(1,1)]+2.0/3.0*z[I(3,2)]-5.0/6.0*z[I(3,1)]+6.0*z[I(1,2)], 
-a13 = -11.0/36.0*z[I(0,3)]+11.0/36.0*z[I(0,0)]-11.0/12.0*z[I(0,1)]+11.0/12.0*z[I(0,2)]-1.0/2.0*z[I(1,0)]+1.0/2.0*z[I(1,3)]+1.0/4.0*z[I(2,0)]-3.0/4.0*z[I(2,1)]+3.0/4.0*z[I(2,2)]-1.0/4.0*z[I(2,3)]-1.0/18.0*z[I(3,0)]+1.0/18.0*z[I(3,3)]+3.0/2.0*z[I(1,1)]-1.0/6.0*z[I(3,2)]+1.0/6.0*z[I(3,1)]-3.0/2.0*z[I(1,2)], 
-
-a20 = -5.0/2.0*z[I(1,0)]+2.0*z[I(2,0)]+z[I(0,0)]-1.0/2.0*z[I(3,0)], 
-a21 = 1.0/3.0*z[I(0,3)]-11.0/6.0*z[I(0,0)]+3.0*z[I(0,1)]-3.0/2.0*z[I(0,2)]+55.0/12.0*z[I(1,0)]-5.0/6.0*z[I(1,3)]-11.0/3.0*z[I(2,0)]+6.0*z[I(2,1)]-3.0*z[I(2,2)]+2.0/3.0*z[I(2,3)]+11.0/12.0*z[I(3,0)]-1.0/6.0*z[I(3,3)]-15.0/2.0*z[I(1,1)]+3.0/4.0*z[I(3,2)]-3.0/2.0*z[I(3,1)]+15.0/4.0*z[I(1,2)], 
-a22 = -1.0/2.0*z[I(0,3)]+z[I(0,0)]-5.0/2.0*z[I(0,1)]+2.0*z[I(0,2)]-5.0/2.0*z[I(1,0)]+5.0/4.0*z[I(1,3)]+2.0*z[I(2,0)]-5.0*z[I(2,1)]+4.0*z[I(2,2)]-z[I(2,3)]-1.0/2.0*z[I(3,0)]+1.0/4.0*z[I(3,3)]+25.0/4.0*z[I(1,1)]-z[I(3,2)]+5.0/4.0*z[I(3,1)]-5.0*z[I(1,2)], 
-a23 = 1.0/6.0*z[I(0,3)]-1.0/6.0*z[I(0,0)]+1.0/2.0*z[I(0,1)]-1.0/2.0*z[I(0,2)]+5.0/12.0*z[I(1,0)]-5.0/12.0*z[I(1,3)]-1.0/3.0*z[I(2,0)]+z[I(2,1)]-z[I(2,2)]+1.0/3.0*z[I(2,3)]+1.0/12.0*z[I(3,0)]-1.0/12.0*z[I(3,3)]-5.0/4.0*z[I(1,1)]+1.0/4.0*z[I(3,2)]-1.0/4.0*z[I(3,1)]+5.0/4.0*z[I(1,2)], 
-
-a30 = 1.0/2.0*z[I(1,0)]-1.0/2.0*z[I(2,0)]-1.0/6.0*z[I(0,0)]+1.0/6.0*z[I(3,0)], 
-a31 = -1.0/18.0*z[I(0,3)]+11.0/36.0*z[I(0,0)]-1.0/2.0*z[I(0,1)]+1.0/4.0*z[I(0,2)]-11.0/12.0*z[I(1,0)]+1.0/6.0*z[I(1,3)]+11.0/12.0*z[I(2,0)]-3.0/2.0*z[I(2,1)]+3.0/4.0*z[I(2,2)]-1.0/6.0*z[I(2,3)]-11.0/36.0*z[I(3,0)]+1.0/18.0*z[I(3,3)]+3.0/2.0*z[I(1,1)]-1.0/4.0*z[I(3,2)]+1.0/2.0*z[I(3,1)]-3.0/4.0*z[I(1,2)], 
-a32 = 1.0/12.0*z[I(0,3)]-1.0/6.0*z[I(0,0)]+5.0/12.0*z[I(0,1)]-1.0/3.0*z[I(0,2)]+1.0/2.0*z[I(1,0)]-1.0/4.0*z[I(1,3)]-1.0/2.0*z[I(2,0)]+5.0/4.0*z[I(2,1)]-z[I(2,2)]+1.0/4.0*z[I(2,3)]+1.0/6.0*z[I(3,0)]-1.0/12.0*z[I(3,3)]-5.0/4.0*z[I(1,1)]+1.0/3.0*z[I(3,2)]-5.0/12.0*z[I(3,1)]+z[I(1,2)], 
-a33 = -1.0/36.0*z[I(0,3)]+1.0/36.0*z[I(0,0)]-1.0/12.0*z[I(0,1)]+1.0/12.0*z[I(0,2)]-1.0/12.0*z[I(1,0)]+1.0/12.0*z[I(1,3)]+1.0/12.0*z[I(2,0)]-1.0/4.0*z[I(2,1)]+1.0/4.0*z[I(2,2)]-1.0/12.0*z[I(2,3)]-1.0/36.0*z[I(3,0)]+1.0/36.0*z[I(3,3)]+1.0/4.0*z[I(1,1)]-1.0/12.0*z[I(3,2)]+1.0/12.0*z[I(3,1)]-1.0/4.0*z[I(1,2)]}
-*/
-
 	return m;
 }
 
@@ -176,8 +154,6 @@ void TScene::AddVertexDataWarped()
 	SceneManager::Instance()->setVBO("polynomials_grid", tmp_vbo);
 
     glBindVertexArray(0);
-
-
 }
 
 void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
@@ -304,8 +280,9 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 
         //output
         CreateDataTexture("MTEX_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		CreateDataTexture("MTEX_mask", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_TEXTURE_2D, true);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		//blur
 		CreateDataTexture("MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
 		CreateDataTexture("MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
@@ -432,6 +409,11 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
         AddTexture("mat_compute_aliasError", "data/tex/error_color.tga");
         //AddTexture("mat_compute_aliasError","MTEX_coverage",RENDER_TEXTURE);
         CustomShader("mat_compute_aliasError","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
+
+		//custom mipmap from mask
+		AddMaterial("mat_mipmap_bb",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+		AddTexture("mat_mipmap_bb","MTEX_mask",RENDER_TEXTURE);
+		CustomShader("mat_mipmap_bb","data/shaders/quad.vert", "data/shaders/warping/mipmap_boundingbox.frag");
     }
     catch(int)
     {
@@ -460,7 +442,8 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightProjMatrix));
 	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	SetUniform("mat_camAndLightCoords_afterDP", "matrix", m_projMatrix * m_viewMatrix );
+	SetUniform("mat_camAndLightCoords_afterDP", "cam_mv", m_viewMatrix );
+	SetUniform("mat_camAndLightCoords_afterDP", "cam_proj", m_projMatrix );
 	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
 	SetUniform("mat_camAndLightCoords_afterDP", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 
@@ -492,6 +475,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		//DrawSceneDepth("mat_aliasError", lightViewMatrix);
 		DrawAliasError("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
 
+		glViewport( 0, 0, sh_res, sh_res );
 		//if(!m_wireframe)
 		//	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
@@ -512,7 +496,8 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
-		glDrawBuffers(1, mrt);
+		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, m_tex_cache["MTEX_mask"], 0);
+		glDrawBuffers(2, mrt);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -522,6 +507,29 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		SetUniform("mat_compute_aliasError", "tex_error", 1);
 		//SetUniform("mat_compute_aliasError", "tex_coverage", 1); // musi byt 1, protoze tex_error je ze souboru (asi?)
 		RenderPass("mat_compute_aliasError");
+
+		glDrawBuffers(1, mrt);
+		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);
+
+		glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_mask"] ); 
+		glGenerateMipmap( GL_TEXTURE_2D );
+		glBindTexture( GL_TEXTURE_2D, 0 ); 
+
+		float mask_values[128*128];
+		glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_mask"]);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
+		//calculate custom mipmaps 
+		/*
+		int i,j;
+		for(i=1, j = sh_res/8/2; j>=1; i++, j/=2)
+		{
+			glViewport(0, 0, j, j);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["MTEX_mask"], i);
+			SetUniform("mat_mipmap_bb", "mip_level", i-1);
+			RenderPass("mat_mipmap_bb");
+		}
+		glViewport(0,0,sh_res/8,sh_res/8);  //restore viewport
+		*/
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 4. Blur the alias error

@@ -286,6 +286,8 @@ bool InitScene(int resx, int resy)
 		//draw quad
         s->AddMaterial("mat_quad",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
         s->CustomShader("mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag");
+		s->AddMaterial("mat_quad_lod",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+        s->CustomShader("mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag");
         
 
 		//shader showing shadow map alias error
