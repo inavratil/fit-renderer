@@ -14,7 +14,7 @@ shader_out/
 
 # User-specific files
 *.suo
-*.user
+#*.user
 *.sln.docstates
 
 # Build results
