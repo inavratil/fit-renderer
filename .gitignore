@@ -15,7 +15,7 @@ shader_log.txt
 
 # User-specific files
 *.suo
-*.user
+#*.user
 *.nvuser
 *.sln.docstates
 
