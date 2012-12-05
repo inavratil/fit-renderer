@@ -98,7 +98,7 @@ bool InitScene(int resx, int resy)
             pos = glm::vec3(-540, -43, 0);
             rot = glm::vec3(-20, 270, 0.0f);
 
-            s->LoadScene("data/obj/scenes/sibenik.3ds");
+            s->LoadScene("data/obj/scenes/testing.3ds");
             s->AddLight(0, dgrey, white, white, glm::vec3(0.0,50.0,0.0), 1000.0f);
             s->MoveLight(0, glm::vec3(-120, 350, 0));
         }
