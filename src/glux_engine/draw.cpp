@@ -280,7 +280,7 @@ void TScene::Redraw(bool delete_buffer)
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_mask"]);                
-		SetUniform("mat_quad_lod", "lod", 4.0);
+		SetUniform("mat_quad_lod", "lod", 0.0);
         RenderPass("mat_quad_lod");
 		glBindTexture(GL_TEXTURE_2D, 0);
 
