@@ -162,15 +162,21 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 		m_num_lines = 0;
 		float nparts = 10.0;
 
+		// 1/4 obrazu
 		//glm::vec4 range = glm::vec4( -0.75, -0.25, 0.25, 0.75 );
-		glm::vec4 range = glm::vec4( 41.0, 83.0, 11.0, 41.0 ) / 128.0;
-		range.x = range.x * 0.5 - 1.0;
-		range.y = range.y * 0.5 - 1.0;
-		range.z = range.z * 0.5 - 0.5;
-		range.w = range.w * 0.5 - 0.5;
 		//range.x = range.x - 1.0;
 		//range.y = range.y - 1.0;
 
+		// 1/8 nahore
+		//glm::vec4 range = glm::vec4( 41.0, 83.0, 11.0, 41.0 ) / 128.0;
+		//range.x = range.x * 0.5 - 1.0;
+		//range.y = range.y * 0.5 - 1.0;
+		//range.z = range.z * 0.5 - 0.5;
+		//range.w = range.w * 0.5 - 0.5;
+
+		glm::vec4 range = glm::vec4( 16.0, 112.0, 16.0, 112.0 ) / 128.0;
+		range = range * 2.0 - 1.0;
+		
 		for( int t=0; t<=2; ++t)
 		for( int s=0; s<=3; ++s)
 		//for( int i=0;i<nparts;++i )
@@ -577,7 +583,8 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		glViewport(0,0,4,4);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
-		SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(11.0, 10.0, 41.0, 14.0));
+		//SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(11.0, 10.0, 41.0, 14.0));
+		SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(16.0, 24.0, 16.0, 24.0));
 		RenderPass("mat_get_2Dfunc_values");
 
 		float z_values[32];
