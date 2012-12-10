@@ -12,7 +12,8 @@ void main()
 	coords = vec2(range.z + coords.x*range.w, range.x + coords.y*range.y );
 
 	tmp = texture( gradient_map, vec2( coords/128.0 ) + vec2( 0.5/128.0 ) );
-	tmp *= 2.0;
+	//tmp *= 2.0;
 
-	out_FragColor = tmp;
+	out_FragColor.rg = tmp.xy;
+	out_FragColor.ba = coords;
 }

@@ -274,17 +274,34 @@ void TScene::Redraw(bool delete_buffer)
         glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_debug_output"]);                
         RenderPass("mat_quad");
 		glBindTexture(GL_TEXTURE_2D, 0);         
-
-    //show alias error
-    if(m_draw_aliasError)
+    
+	if(m_dpshadow_method == WARP_DPSM)
     {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_mask"]);                
-		SetUniform("mat_quad_lod", "lod", 0.0);
-        RenderPass("mat_quad_lod");
-		glBindTexture(GL_TEXTURE_2D, 0);
+		GLuint previewTexs[] =
+		{
+			m_tex_cache["MTEX_output"],
+			m_tex_cache["MTEX_ping"],
+			m_tex_cache["MTEX_pong"],
+			m_tex_cache["MTEX_mask"]
+		};
+		
+		//show alias error
+		if(m_draw_aliasError)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, previewTexs[m_texPreview_id]);                
+			//glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_warped_depth_color"]);
+			//SetUniform("mat_quad_array", "index", 1.0);
+			RenderPass("mat_quad");
+			glBindTexture(GL_TEXTURE_2D, 0);
 
-    }
+		}
+
+		m_materials["mat_debug_draw_grid"]->RenderMaterial();
+		glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "polynomials_grid"));
+		glDrawArrays( GL_LINES, 0, m_num_lines );
+		glBindVertexArray( 0 );
+	}
 
     //show shadow maps 
     if(m_draw_shadow_map)
@@ -304,15 +321,7 @@ void TScene::Redraw(bool delete_buffer)
                 RenderSmallQuad("show_depth", 0.0f, 0.0f, q_size);
                 break;
             }
-        }
-		
-		//if( m_dpshadow_method == WARP_DPSM )
-		
-			m_materials["mat_debug_draw_grid"]->RenderMaterial();
-			glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "polynomials_grid"));
-			glDrawArrays( GL_LINES, 0, m_num_lines );
-			glBindVertexArray( 0 );
-		
+        }	
     }
 
     //finish drawing, restore buffers

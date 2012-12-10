@@ -144,6 +144,7 @@
     <None Include="data\shaders\progress_bar.frag" />
     <None Include="data\shaders\quad.frag" />
     <None Include="data\shaders\quad.vert" />
+    <None Include="data\shaders\quad_array.frag" />
     <None Include="data\shaders\quad_lod.frag" />
     <None Include="data\shaders\select_depth.frag" />
     <None Include="data\shaders\shadow.frag" />
@@ -175,8 +176,6 @@
     <None Include="data\shaders\warping\computeAliasError.vert" />
     <None Include="data\shaders\warping\dbg_polynomials_grid.frag" />
     <None Include="data\shaders\warping\get2DfuncValues.frag" />
-    <None Include="data\shaders\warping\computeNewPoints.frag" />
-    <None Include="data\shaders\warping\computePolynomialsCoefficients.frag" />
     <None Include="data\shaders\warping\drawDepthWithWarping.frag" />
     <None Include="data\shaders\warping\drawDepthWithWarping.vert" />
     <None Include="data\shaders\warping\grid.frag" />

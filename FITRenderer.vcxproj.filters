@@ -197,12 +197,6 @@
     <None Include="data\shaders\warping\camAndLightCoords_afterDP.vert">
       <Filter>Shaders\warp</Filter>
     </None>
-    <None Include="data\shaders\warping\computeNewPoints.frag">
-      <Filter>Shaders\warp</Filter>
-    </None>
-    <None Include="data\shaders\warping\computePolynomialsCoefficients.frag">
-      <Filter>Shaders\warp</Filter>
-    </None>
     <None Include="data\shaders\warping\drawDepthWithWarping.frag">
       <Filter>Shaders\warp</Filter>
     </None>
@@ -253,6 +247,9 @@
     </None>
     <None Include="data\shaders\select_depth.frag">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="data\shaders\quad_array.frag">
+      <Filter>Shaders\HDR/AO</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

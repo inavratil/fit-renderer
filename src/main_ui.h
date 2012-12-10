@@ -45,9 +45,11 @@ bool use_pcf = false;
 int dpshadow_method = WARP_DPSM;
 glm::vec2 cut_angle( 0.0, 0.0 );
 float dp_frontFOV = 0.0, dp_farPoint = 0.0;
+int ipsm_texPrev = OUTPUT;
 
 bool draw_error = false;
 bool drawSM = true;
+bool do_warp = true;
 
 Experiment exper;
 bool isExperiment = false;
@@ -133,6 +135,10 @@ void InitTweakBar()
     TwEnumVal sh_mode[3] = { {DPSM, "DPSM"}, {IPSM, "IPSM"}, {CUT, "CUT"} };
     TwType sh_modes = TwDefineEnum("sh_modes", sh_mode, 3);
     TwAddVarRO(ui, "sh_mode", sh_modes, &dpshadow_method, "label='Mode' group='Shadows'");
+	//IPSM textures
+	TwEnumVal ipsm_tex[4] = { {OUTPUT, "Ouput"}, {PING, "Ping"}, {PONG, "Pong"}, {MASK, "Mask"} };
+	TwType ipsm_texs = TwDefineEnum("ipsm_texs", ipsm_tex, 4);
+    TwAddVarRW(ui, "ipsm_tex", ipsm_texs, &ipsm_texPrev, "label='Texture' group='Shadows'");
     //parabola cut
     TwAddVarRO(ui, "parabola_cut", TW_TYPE_BOOLCPP, &parabola_cut, 
                " label='Parabola cut' group='Shadows' ");
@@ -154,6 +160,9 @@ void InitTweakBar()
     //show shadow maps
     TwAddVarRW(ui, "drawSM", TW_TYPE_BOOLCPP, &drawSM, 
                " label='Show shadow maps' group='Shadows' ");
+	//do warping
+    TwAddVarRW(ui, "do_warp", TW_TYPE_BOOLCPP, &do_warp, 
+               " label='Enable warping' group='Shadows' key=v ");
 
     //bar settings
     TwDefine("TweakBar refresh=0.1 size='256 512' ");
@@ -169,5 +178,7 @@ void UpdateTweakBar()
     s->SetCamType(cam_type);
     s->DPDrawAliasError(draw_error);
     s->DPDrawSM(drawSM);
+	s->SetTexturePreviewId(ipsm_texPrev);
+	s->SetWarping(do_warp);
 }
 

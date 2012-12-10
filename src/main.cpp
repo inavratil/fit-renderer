@@ -98,9 +98,13 @@ bool InitScene(int resx, int resy)
             pos = glm::vec3(-540, -43, 0);
             rot = glm::vec3(-20, 270, 0.0f);
 
-            s->LoadScene("data/obj/scenes/poor_sibenik.3ds");
-            s->AddLight(0, dgrey, white, white, glm::vec3(0.0,50.0,0.0), 1000.0f);
-            s->MoveLight(0, glm::vec3(-120, 350, 0));
+			s->AddLight(0, dgrey, white, white, glm::vec3(0.0,50.0,0.0), 1000.0f);
+
+            //s->LoadScene("data/obj/scenes/poor_sibenik.3ds");
+            //s->MoveLight(0, glm::vec3(-120, 350, 0));
+
+			s->LoadScene("data/obj/scenes/testing.3ds");
+			s->MoveLight(0, glm::vec3(123,98,-43) );
         }
         //scene 3 - bad scene
         else if(scene == 3)
@@ -288,6 +292,8 @@ bool InitScene(int resx, int resy)
         s->CustomShader("mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag");
 		s->AddMaterial("mat_quad_lod",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
         s->CustomShader("mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag");
+		s->AddMaterial("mat_quad_array",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+        s->CustomShader("mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag");
         
 
 		//shader showing shadow map alias error
@@ -443,7 +449,8 @@ void KeyInput(SDLKey key)
     default:
         break;
     }
-    //s->PrintCamera();
+	cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
+    s->PrintCamera();
 
     //camera object position
     //s->MoveObjAbs("camera", pos.x, pos.y, pos.z);

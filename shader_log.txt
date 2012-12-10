@@ -110,3 +110,9 @@ mat_compute_aliasError:0(6) : warning C7022: unrecognized profile specifier "q"
 
 mat_compute_aliasError:0(6) : warning C7022: unrecognized profile specifier "q"
 0(6) : error C0502: syntax error at token "q"
+
+mat_compute_new_points:(0) : error C0000: syntax error, unexpected $end, expecting "::" at token "<EOF>"
+
+mat_quad:0(11) : error C7011: implicit cast from "vec3" to "vec2"
+
+mat_quad:0(11) : error C7011: implicit cast from "vec3" to "vec2"

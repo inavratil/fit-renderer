@@ -32,26 +32,6 @@ const float COVERAGE[100] = { 0.2525314589560607, 0.2576326279264187, 0.26283603
 0.9136357166693593, 0.9210153086167311, 0.9281269295161807, 0.9349595375079411, 0.9415023695886816, 0.9477449771968978, 0.9536772614690937, 0.9592895079717747, 0.9645724207097471, 0.9695171552121149, 0.9741153504974227, 0.9783591597219075, 0.9822412793198499, 0.9857549764505119, 0.9888941145749449, 0.991653176994985, 0.9940272881980572, 0.9960122328654299, 0.9976044724143962, 0.9988011589619574,
 0.9996001466136796, 1 };
 
-//-- initials coordinates of the grid, in 128x128 texture
-const float points[32] = { 
-	41.0, 11.0,		41.0, 31.0, 
-	55.0, 11.0,		55.0, 31.0, 
-	69.0, 11.0,		69.0, 31.0, 
-	83.0, 11.0,		83.0, 31.0, 
-	41.0, 21.0,		41.0, 41.0, 
-	55.0, 21.0,		55.0, 41.0, 
-	69.0, 21.0,		69.0, 41.0, 
-	83.0, 21.0,		83.0, 41.0 };
-//float points[32] = { 
-//	16.0, 16.0,		16.0, 80.0, 
-//	48.0, 16.0,		48.0, 80.0, 
-//	80.0, 16.0,		80.0, 80.0, 
-//	112.0, 16.0,	112.0,80.0, 
-//	16.0, 48.0,		16.0, 112.0, 
-//	48.0, 48.0,		48.0, 112.0, 
-//	80.0, 48.0,		80.0, 112.0, 
-//	112.0,48.0,		112.0,112.0 };
-
 #define I(y,x) 2*(4*y + x)
 glm::mat4 compute2DPolynomialCoeffsX( float *z )
 {
@@ -115,34 +95,6 @@ void TScene::AddVertexDataWarped()
     //vertex attributes for screen quad
     GLfloat vertattribs[] = { -1.0,1.0, 0.0,1.0, -1.0,-1.0, 0.0,-1.0 };
 
-    glGenVertexArrays(1, &tmp_vbo.vao);
-    glBindVertexArray(tmp_vbo.vao);
-
-    //vertex attribs...
-    glGenBuffers(1, &tmp_vbo.buffer[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, tmp_vbo.buffer[0]);
-    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_STATIC_DRAW); 
-    glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-	SceneManager::Instance()->setVBO("polys_coeff_horiz", tmp_vbo);
-
-	//vertex attributes for screen quad
-    vertattribs[0]++;
-	vertattribs[2]++;
-	vertattribs[4]++;
-	vertattribs[6]++;
-
-    glGenVertexArrays(1, &tmp_vbo.vao);
-    glBindVertexArray(tmp_vbo.vao);
-
-    //vertex attribs...
-    glGenBuffers(1, &tmp_vbo.buffer[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, tmp_vbo.buffer[0]);
-    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_STATIC_DRAW); 
-    glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-	SceneManager::Instance()->setVBO("polys_coeff_vert", tmp_vbo);
-
 	glGenVertexArrays( 1, &tmp_vbo.vao );
 	glBindVertexArray( tmp_vbo.vao );
 
@@ -161,6 +113,7 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 		vector<GLfloat> vertices;
 		m_num_lines = 0;
 		float nparts = 10.0;
+		float eps = 1.0/(float)nparts;
 
 		// 1/4 obrazu
 		//glm::vec4 range = glm::vec4( -0.75, -0.25, 0.25, 0.75 );
@@ -179,11 +132,12 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 		
 		for( int t=0; t<=2; ++t)
 		for( int s=0; s<=3; ++s)
-		//for( int i=0;i<nparts;++i )
+		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
+			
 			x0 = s; x1 = s;
-			y0 = t; y1 = t+1;
+			y0 = t+i*eps; y1 = t+(i+1)*eps;
 	
 			float dx, dy, new_x, new_y;
 			glm::vec4 temp, X, Y;
@@ -226,9 +180,10 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 
 		for( int s=0; s<=2; ++s)
 		for( int t=0; t<=3; ++t)
+		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
-			x0 = s; x1 = s+1;
+			x0 = s+i*eps; x1 = s+(i+1)*eps;
 			y0 = t; y1 = t;
 	
 			float dx, dy, new_x, new_y;
@@ -292,15 +247,6 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 		//blur
 		CreateDataTexture("MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
 		CreateDataTexture("MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
-
-		//grid points
-        glGenTextures(1, &texid);
-        glBindTexture(GL_TEXTURE_2D, texid);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 8, 1, 0, GL_RGBA, GL_FLOAT, points);
-        m_tex_cache["MTEX_grid_points_ping"] = texid;
-		CreateDataTexture("MTEX_grid_points_pong", 8, 1, GL_RGBA32F, GL_FLOAT);
 
 		//2D polynomials coefficients
 		CreateDataTexture("MTEX_2Dfunc_values", 4, 4, GL_RGBA32F, GL_FLOAT);
@@ -385,20 +331,6 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 		AddTexture("mat_aliasgradient","MTEX_pong",RENDER_TEXTURE);
 		CustomShader("mat_aliasgradient","data/shaders/quad.vert","data/shaders/warping/aliasgradient.frag");
 
-		//new grid points
-		AddMaterial("mat_compute_new_points",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		AddTexture("mat_compute_new_points","MTEX_ping",RENDER_TEXTURE);
-		AddTexture("mat_compute_new_points","MTEX_grid_points_ping",RENDER_TEXTURE);
-		CustomShader("mat_compute_new_points","data/shaders/quad.vert","data/shaders/warping/computeNewPoints.frag");
-		
-		//polynomials coefficients
-		AddMaterial("mat_compute_polys_coeffs_horiz",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		AddTexture("mat_compute_polys_coeffs_horiz","MTEX_grid_points_pong",RENDER_TEXTURE);
-		CustomShader("mat_compute_polys_coeffs_horiz","data/shaders/quad.vert","data/shaders/warping/computePolynomialsCoefficients.frag", " ","#define HORIZONTAL\n");
-		AddMaterial("mat_compute_polys_coeffs_vert",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		AddTexture("mat_compute_polys_coeffs_vert","MTEX_grid_points_pong",RENDER_TEXTURE);
-		CustomShader("mat_compute_polys_coeffs_vert","data/shaders/quad.vert","data/shaders/warping/computePolynomialsCoefficients.frag", " ","#define VERTICAL\n");
-
 		//2D polynomial coefficients
 		AddMaterial("mat_get_2Dfunc_values",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
 		AddTexture("mat_get_2Dfunc_values","MTEX_ping",RENDER_TEXTURE);
@@ -448,13 +380,19 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightProjMatrix));
 	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+	glm::mat4 Mp = glm::mat4( 1.0 );
+	Mp = glm::rotate( Mp, -1.0f*m_parab_angle.x, glm::vec3(1, 0, 0));
+	Mp = glm::rotate( Mp, m_parab_angle.y, glm::vec3(0, 1, 0));
+
+	lightViewMatrix[1] = Mp * lightViewMatrix[1];
+
 	SetUniform("mat_camAndLightCoords_afterDP", "cam_mv", m_viewMatrix );
 	SetUniform("mat_camAndLightCoords_afterDP", "cam_proj", m_projMatrix );
 	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
 	SetUniform("mat_camAndLightCoords_afterDP", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 
-	glm::mat4 coeffsX;
-	glm::mat4 coeffsY;
+	glm::mat4 coeffsX = glm::mat4( 0.0 );
+	glm::mat4 coeffsY = glm::mat4( 0.0 );
 
 	{
 		glClearColor(99.0, 0.0, 0.0, 0.0);
@@ -490,14 +428,9 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		///////////////////////////////////////////////////////////////////////////////
-		//-- 2. Fill the texture with initial grid points position in 128x128 viewport
-		glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_ping"]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 8, 1, 0, GL_RGBA, GL_FLOAT, points);
-		glBindTexture(GL_TEXTURE_2D, 0);
 
 		///////////////////////////////////////////////////////////////////////////////
-		//-- 3. Compute alias error based on the coordinates data computed in step 1
+		//-- 2. Compute alias error based on the coordinates data computed in step 1
 		//--	Input: MTEX_coords (error texture)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
@@ -538,7 +471,8 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		*/
 
 		///////////////////////////////////////////////////////////////////////////////
-		//-- 4. Blur the alias error
+		//-- 3. Blur the alias error
+		//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
 
 		glDisable(GL_DEPTH_TEST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
@@ -549,52 +483,33 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		RenderPass("mat_aliasblur_vert");
 
 		///////////////////////////////////////////////////////////////////////////////
-		//-- 5. Compute gradient and store the result per-pixel into 128x128 texture
+		//-- 4. Compute gradient and store the result per-pixel into 128x128 texture
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		RenderPass("mat_aliasgradient");
 
-	#if 0
-	//grid
-	glViewport(0,0,8,1);
-	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_pong"], 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	SetUniform("mat_compute_new_points", "scaleRes", glm::vec2( 15.0, 128.0 ) );
-	SetUniform("mat_compute_new_points", "grid_points", 0);
-	SetUniform("mat_compute_new_points", "gradient_map", 1);
-	RenderPass("mat_compute_new_points");
-
-	//polynomials coefficients
-	glViewport(0,0,8,1);
-	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_grid_points_ping"], 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	m_materials["mat_compute_polys_coeffs_horiz"]->RenderMaterial();
-	glBindVertexArray(m_vbos["polys_coeff_horiz"].vao);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	m_materials["mat_compute_polys_coeffs_vert"]->RenderMaterial();
-	glBindVertexArray(m_vbos["polys_coeff_vert"].vao);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	glBindVertexArray(0);
-	#endif
 		///////////////////////////////////////////////////////////////////////////////
-		//-- 6. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
+		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
 
 		glViewport(0,0,4,4);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		//SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(11.0, 10.0, 41.0, 14.0));
-		SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(16.0, 24.0, 16.0, 24.0));
+		SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(16.0, 32.0, 16.0, 32.0));
 		RenderPass("mat_get_2Dfunc_values");
 
 		float z_values[32];
-
+		memset(z_values, 0, 32*sizeof(float));
 		///////////////////////////////////////////////////////////////////////////////
-		//-- 7. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
+		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
 
-		glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"]);
-		glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
-		glBindTexture(GL_TEXTURE_2D, 0 ); 
+		if( m_warping_enabled )
+		{
+			glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"]);
+			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
+			glBindTexture(GL_TEXTURE_2D, 0 ); 
+		}
 		/*
 		z_values[0] = 0.0;
 		z_values[1] = 0.0;
@@ -643,7 +558,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 	SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
 	SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
-
+	SetUniform("mat_depth_with_warping", "range", glm::vec4(16.0, 112.0, 16.0, 112.0));
 
 	    glCullFace(GL_FRONT);
         //glColorMask(0, 0, 0, 0);      //disable colorbuffer write
@@ -659,6 +574,12 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	if(i == 1)
 		z_direction = -1.0;  
 	lightViewMatrix[i] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+
+	glm::mat4 Mp = glm::mat4( 1.0 );
+	Mp = glm::rotate( Mp, z_direction*m_parab_angle.x, glm::vec3(1, 0, 0));
+	Mp = glm::rotate( Mp, m_parab_angle.y, glm::vec3(0, 1, 0));
+
+	lightViewMatrix[i] = Mp * lightViewMatrix[i];
 
 	if(m_dpshadow_tess)
 	{
@@ -738,5 +659,6 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		m_im->second->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 		m_im->second->SetUniform("coeffsX", coeffsX );
 		m_im->second->SetUniform("coeffsY", coeffsY );
+		m_im->second->SetUniform("range", glm::vec4(16.0, 112.0, 16.0, 112.0));
 	}
 }

@@ -111,6 +111,7 @@ enum FBOmode { NO_DEPTH, DEPTH_ONLY, DEPTH_AND_STENCIL };
 
 #define PI 3.1415926535898f
 
+enum IPSMTextures { OUTPUT, PING, PONG, MASK };
 /**
 ****************************************************************************************************
 @brief Show message box (or output to console on Linux)

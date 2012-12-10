@@ -14,6 +14,7 @@ out vec4 res;
 
 uniform mat4 coeffsX;
 uniform mat4 coeffsY;
+uniform vec4 range;
 
 const float SCREEN_X = 128.0;
 const float SCREEN_Y = 128.0;
@@ -24,7 +25,7 @@ const int BOTTOM = 2;	//0x0010;
 const int RIGHT = 4;	//0x0100;
 const int LEFT = 8;		//0x1000;
 
-int computeCode(vec2 _p, vec4 range)
+int computeCode(vec2 _p)
 {
         int ret;
  
@@ -67,13 +68,11 @@ void main(void)
 
 	res = vec4( 0.0 );
 
-	vec4 range = vec4( 41.0, 83.0, 11.0, 41.0 );
-
 	vec2 p = position.xy;
 	p = p*0.5 + 0.5;
-	p = p * vec2( 128.0, 128.0 );
+	p = p * vec2( SCREEN_X, SCREEN_Y );
 
-	int code = computeCode(p, range);
+	int code = computeCode(p);
 
 	float dx,dy;
 	if ( code == INSIDE )

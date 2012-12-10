@@ -124,6 +124,8 @@ protected:
     GLuint m_aerr_f_buffer, m_aerr_f_buffer_color, m_aerr_r_buffer_depth;
 	//FIXME
 	int m_num_lines;
+	int m_texPreview_id;
+	bool m_warping_enabled;
 
 public:
     //basic constructor
@@ -557,6 +559,15 @@ public:
         m_draw_aliasError = flag;
     }
 
+	void SetTexturePreviewId( int _id )
+	{
+		m_texPreview_id = _id;
+	}
+
+	void SetWarping( bool _flag )
+	{
+		m_warping_enabled = _flag;
+	}
 
     ////////////////////////// RENDER TARGETS, HDR AND SSAO ////////////////////////
 

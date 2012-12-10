@@ -13,6 +13,7 @@ uniform mat4 lightModelView[2]; //model view matrices for front and back side of
 
 uniform mat4 coeffsX;
 uniform mat4 coeffsY;
+uniform vec4 range;
 
 const float SCREEN_X = 128.0;
 const float SCREEN_Y = 128.0;
@@ -23,7 +24,7 @@ const int BOTTOM = 2;	//0x0010;
 const int RIGHT = 4;	//0x0100;
 const int LEFT = 8;		//0x1000;
 
-int computeCode(vec2 _p, vec4 range)
+int computeCode(vec2 _p)
 {
         int ret;
  
@@ -46,13 +47,11 @@ int computeCode(vec2 _p, vec4 range)
 
 vec2 computeDiff( vec4 _position )
 {
-	vec4 range = vec4( 41.0, 83.0, 11.0, 41.0 );
-
 	vec2 p = _position.xy;
 	p = p*0.5 + 0.5;
 	p = p * vec2( SCREEN_X, SCREEN_Y );
 
-	int code = computeCode(p, range);
+	int code = computeCode(p);
 
 	vec2 delta = vec2( 0.0 );
 	if ( code == INSIDE )
