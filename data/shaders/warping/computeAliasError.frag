@@ -92,9 +92,9 @@ void main()
 		out_FragMask = vec4( 1.0 );
 
 		if( new_res > 12.0)
-		out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );
-			else
-		out_FragColor = vec4( color, new_res );
+			out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );
+		else
+			out_FragColor = vec4( color, new_res );
 
 	}
 

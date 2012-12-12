@@ -449,8 +449,8 @@ void KeyInput(SDLKey key)
     default:
         break;
     }
-	cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
-    s->PrintCamera();
+	//cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
+    //s->PrintCamera();
 
     //camera object position
     //s->MoveObjAbs("camera", pos.x, pos.y, pos.z);

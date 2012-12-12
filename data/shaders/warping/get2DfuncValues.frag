@@ -9,7 +9,7 @@ void main()
 	vec4 res, tmp;
 
 	vec2 coords = floor(fragTexCoord*4.0);
-	coords = vec2(range.z + coords.x*range.w, range.x + coords.y*range.y );
+	coords = vec2(range.x + coords.x*range.y, range.z + coords.y*range.w );
 
 	tmp = texture( gradient_map, vec2( coords/128.0 ) + vec2( 0.5/128.0 ) );
 	//tmp *= 2.0;

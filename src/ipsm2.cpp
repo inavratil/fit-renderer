@@ -108,7 +108,7 @@ void TScene::AddVertexDataWarped()
     glBindVertexArray(0);
 }
 
-void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
+void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm::vec4 _range )
 {
 		vector<GLfloat> vertices;
 		m_num_lines = 0;
@@ -127,17 +127,18 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 		//range.z = range.z * 0.5 - 0.5;
 		//range.w = range.w * 0.5 - 0.5;
 
-		glm::vec4 range = glm::vec4( 16.0, 112.0, 16.0, 112.0 ) / 128.0;
+		glm::vec4 range = (_range + glm::vec4( -1.0, 1.0, -1.0, 1.0 )) / 128.0;
 		range = range * 2.0 - 1.0;
 		
-		for( int t=0; t<=2; ++t)
-		for( int s=0; s<=3; ++s)
+		int K = 10;
+		for( int t=-1; t<=3*K; ++t)
+		for( int s=-1; s<=4*K; ++s)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
 			
-			x0 = s; x1 = s;
-			y0 = t+i*eps; y1 = t+(i+1)*eps;
+			x0 = s/(float)K; x1 = s/(float)K;
+			y0 = t/(float)K+i*eps; y1 = t/(float)K+(i+1)*eps;
 	
 			float dx, dy, new_x, new_y;
 			glm::vec4 temp, X, Y;
@@ -147,9 +148,9 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 			Y = glm::vec4( 1.0, y0, glm::pow(y0, 2.0f), glm::pow(y0,3.0f) );
 
 			temp = X * _coeffsX;
-			dx = glm::dot(temp, Y);
+			dx = glm::dot(temp, Y) * POLY_BIAS;
 			temp = X * _coeffsY;
-			dy = glm::dot(temp, Y);
+			dy = glm::dot(temp, Y) * POLY_BIAS;
 
 				//cout << "[" << s << "," << t << "]" << dx << endl;
 				//cout << "[" << s << "," << t << "]" << dy << endl;
@@ -163,9 +164,9 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 
 			//FIXME: nemusi ty matice byt transponovane?? V octavu jsem je musel transponovat.
 			temp = X * _coeffsX;
-			dx = glm::dot(temp, Y);	
+			dx = glm::dot(temp, Y) * POLY_BIAS;	
 			temp = X * _coeffsY;
-			dy = glm::dot(temp, Y);
+			dy = glm::dot(temp, Y) * POLY_BIAS;
 
 			//if( t == 2)
 			//{
@@ -178,13 +179,13 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
 		}
 
-		for( int s=0; s<=2; ++s)
-		for( int t=0; t<=3; ++t)
+		for( int s=-1; s<=3*K; ++s)
+		for( int t=-1; t<=4*K; ++t)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
-			x0 = s+i*eps; x1 = s+(i+1)*eps;
-			y0 = t; y1 = t;
+			x0 = s/(float)K+i*eps; x1 = s/(float)K+(i+1)*eps;
+			y0 = t/(float)K; y1 = t/(float)K;
 	
 			float dx, dy, new_x, new_y;
 			glm::vec4 temp, X, Y;
@@ -193,9 +194,9 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 			Y = glm::vec4( 1.0, y0, glm::pow(y0, 2.0f), glm::pow(y0,3.0f) );
 
 			temp = X * _coeffsX;
-			dx = glm::dot(temp, Y);
+			dx = glm::dot(temp, Y) * POLY_BIAS;
 			temp = X * _coeffsY;
-			dy = glm::dot(temp, Y);
+			dy = glm::dot(temp, Y) * POLY_BIAS;
 
 			new_x = convertRange(x0+dx, glm::vec2(0.0, 3.0),  glm::vec2(range.x, range.y) );
 			new_y = convertRange(y0+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
@@ -205,9 +206,9 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 			Y = glm::vec4( 1.0, y1, glm::pow(y1, 2.0f), glm::pow(y1,3.0f) );
 
 			temp = X * _coeffsX;
-			dx = glm::dot(temp, Y);
+			dx = glm::dot(temp, Y) * POLY_BIAS;
 			temp = X * _coeffsY;
-			dy = glm::dot(temp, Y);
+			dy = glm::dot(temp, Y) * POLY_BIAS;
 
 			new_x = convertRange(x1+dx, glm::vec2(0.0, 3.0), glm::vec2(range.x, range.y) );
 			new_y = convertRange(y1+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
@@ -246,7 +247,11 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		//blur
 		CreateDataTexture("MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		CreateDataTexture("MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		//2D polynomials coefficients
 		CreateDataTexture("MTEX_2Dfunc_values", 4, 4, GL_RGBA32F, GL_FLOAT);
@@ -393,6 +398,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 	glm::mat4 coeffsX = glm::mat4( 0.0 );
 	glm::mat4 coeffsY = glm::mat4( 0.0 );
+	glm::vec4 mask_range = glm::vec4( 112, 16, 112, 16 );
 
 	{
 		glClearColor(99.0, 0.0, 0.0, 0.0);
@@ -457,6 +463,22 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		float mask_values[128*128];
 		glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_mask"]);
         glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
+
+		for(int i=0; i<128; ++i)
+			for(int j=0; j<128; ++j)
+			{
+				float a = mask_values[j + i*128];
+				if( a > 0.0 )
+				{
+					if( j < mask_range.x ) mask_range.x = j; // left border
+					if( j > mask_range.y ) mask_range.y = j; // right border
+					if( i < mask_range.z ) mask_range.z = i; // bottom border
+					if( i > mask_range.w ) mask_range.w = i; // top border
+				}
+
+			}
+
+
 		//calculate custom mipmaps 
 		/*
 		int i,j;
@@ -487,16 +509,36 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		glm::vec2 limit = glm::vec2(1.0);
+
+		if( m_warping_enabled )
+		{
+			float w = (mask_range.y-mask_range.x);
+			float h = (mask_range.w-mask_range.z);
+			limit = glm::vec2( 1.0 );
+		}
+		SetUniform("mat_aliasgradient", "limit", limit );
 		RenderPass("mat_aliasgradient");
+
+		printVec(mask_range, "mask range: ");
+		printVec( glm::vec4(limit,0.0,0.0), "limit: ");
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
+
+		glm::vec4 func_range = glm::vec4(
+			mask_range.x,
+			(mask_range.y-mask_range.x)/3.0f,
+			mask_range.z,
+			(mask_range.w-mask_range.z)/3.0f
+			);
 
 		glViewport(0,0,4,4);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		//SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(11.0, 10.0, 41.0, 14.0));
-		SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(16.0, 32.0, 16.0, 32.0));
+		SetUniform("mat_get_2Dfunc_values", "range", func_range/*glm::vec4(16.0, 32.0, 16.0, 32.0)*/);
 		RenderPass("mat_get_2Dfunc_values");
 
 		float z_values[32];
@@ -541,7 +583,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		coeffsX = compute2DPolynomialCoeffsX( z_values );
 		coeffsY = compute2DPolynomialCoeffsY( z_values );
 
-		GeneratePolynomialGrid( coeffsX, coeffsY );
+		GeneratePolynomialGrid( coeffsX, coeffsY, mask_range );
 		glEnable(GL_DEPTH_TEST);
 	}
 
@@ -558,7 +600,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 	SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
 	SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
-	SetUniform("mat_depth_with_warping", "range", glm::vec4(16.0, 112.0, 16.0, 112.0));
+	SetUniform("mat_depth_with_warping", "range", mask_range);
 
 	    glCullFace(GL_FRONT);
         //glColorMask(0, 0, 0, 0);      //disable colorbuffer write
@@ -659,6 +701,6 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		m_im->second->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 		m_im->second->SetUniform("coeffsX", coeffsX );
 		m_im->second->SetUniform("coeffsY", coeffsY );
-		m_im->second->SetUniform("range", glm::vec4(16.0, 112.0, 16.0, 112.0));
+		m_im->second->SetUniform("range", mask_range);
 	}
 }

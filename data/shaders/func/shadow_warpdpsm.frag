@@ -54,7 +54,7 @@ vec2 computeDiff( vec4 _position )
 	int code = computeCode(p);
 
 	vec2 delta = vec2( 0.0 );
-	if ( code == INSIDE )
+	//if ( code == INSIDE )
 	{
 		float new_x = (p.x - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
 		float new_y = (p.y - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
@@ -66,8 +66,8 @@ vec2 computeDiff( vec4 _position )
 		delta.x = dot(temp, Y) * near_far_bias.z;
 		temp = X * coeffsY;
 		delta.y = dot(temp, Y) * near_far_bias.z;
-		//dx = dx * 2.0 - 1.0;
-		//dy = dy * 2.0 - 1.0
+		delta.x = delta.x*2.0/3.0;
+		delta.y = delta.y*2.0/3.0;
 	}
 
 	return delta;

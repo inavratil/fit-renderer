@@ -75,7 +75,7 @@ void main(void)
 	int code = computeCode(p);
 
 	float dx,dy;
-	if ( code == INSIDE )
+	//if ( code == INSIDE )
 	{
 		float new_x = (p.x - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
 		float new_y = (p.y - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
@@ -87,8 +87,8 @@ void main(void)
 		dx = dot(temp, Y) * near_far_bias.z;
 		temp = X * coeffsY;
 		dy = dot(temp, Y) * near_far_bias.z;
-		//dx = dx * 2.0 - 1.0;
-		//dy = dy * 2.0 - 1.0;
+		dx = dx*2.0/3.0;
+		dy = dy*2.0/3.0;
 
 		vertexEyeSpace.x += dx;
 		vertexEyeSpace.y += dy;

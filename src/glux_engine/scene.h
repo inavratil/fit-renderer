@@ -454,7 +454,7 @@ public:
     void RenderShadowMapOmniWarped(TLight *l);
 	//add additional vertex data
 	void AddVertexDataWarped();
-	void GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coefssY );
+	void GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coefssY, glm::vec4 _range );
 
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()

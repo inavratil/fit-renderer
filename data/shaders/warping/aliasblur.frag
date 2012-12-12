@@ -35,11 +35,11 @@ void main()
       k_shift = float(i - kernel_size/2) * (1.0/float(texsize.y));
       disp_coord = coord + vec2(0.0, k_shift);
 #endif
+	  vec4 c = texture(bloom_texture, disp_coord);
+	  if( c.r > 50.0 ) continue;
+
       gauss_func = frac_sqrt_sigma*exp(-(abs(k_shift)*abs(k_shift))/sigma);
       div_factor += gauss_func;
-
-	  vec4 c = texture(bloom_texture, disp_coord);
-	  if( isnan(c.a) || isinf(c.a) ) c.a = 0.0;
 
       result += gauss_func * c;
     }
