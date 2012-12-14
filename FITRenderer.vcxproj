@@ -97,12 +97,14 @@
     <ClCompile Include="src\glux_engine\camera.cpp" />
     <ClCompile Include="src\glux_engine\draw.cpp" />
     <ClCompile Include="src\glux_engine\font.cpp" />
+    <ClCompile Include="src\glux_engine\IShadowTechnique.cpp" />
     <ClCompile Include="src\glux_engine\light.cpp" />
     <ClCompile Include="src\glux_engine\load3DS.cpp" />
     <ClCompile Include="src\glux_engine\loadScene.cpp" />
     <ClCompile Include="src\glux_engine\material.cpp" />
     <ClCompile Include="src\glux_engine\material_generator.cpp" />
     <ClCompile Include="src\glux_engine\object.cpp" />
+    <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\render_target.cpp" />
     <ClCompile Include="src\glux_engine\scene.cpp" />
     <ClCompile Include="src\glux_engine\SceneManager.cpp" />
@@ -119,9 +121,11 @@
     <ClInclude Include="src\glux_engine\compute.h" />
     <ClInclude Include="src\glux_engine\engine.h" />
     <ClInclude Include="src\glux_engine\globals.h" />
+    <ClInclude Include="src\glux_engine\IShadowTechnique.h" />
     <ClInclude Include="src\glux_engine\light.h" />
     <ClInclude Include="src\glux_engine\material.h" />
     <ClInclude Include="src\glux_engine\object.h" />
+    <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\scene.h" />
     <ClInclude Include="src\glux_engine\SceneManager.h" />
     <ClInclude Include="src\glux_engine\shadow.h" />

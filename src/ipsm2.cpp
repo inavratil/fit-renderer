@@ -131,8 +131,8 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm
 		range = range * 2.0 - 1.0;
 		
 		int K = 10;
-		for( int t=-1; t<=3*K; ++t)
-		for( int s=-1; s<=4*K; ++s)
+		for( int t=0; t<3*K; ++t)
+		for( int s=0; s<4*K; ++s)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
@@ -179,8 +179,8 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm
 			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
 		}
 
-		for( int s=-1; s<=3*K; ++s)
-		for( int t=-1; t<=4*K; ++t)
+		for( int s=0; s<3*K; ++s)
+		for( int t=0; t<4*K; ++t)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
@@ -520,9 +520,6 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		}
 		SetUniform("mat_aliasgradient", "limit", limit );
 		RenderPass("mat_aliasgradient");
-
-		printVec(mask_range, "mask range: ");
-		printVec( glm::vec4(limit,0.0,0.0), "limit: ");
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture

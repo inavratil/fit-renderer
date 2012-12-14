@@ -13,6 +13,7 @@
 #include "light.h"
 #include "camera.h"
 #include "shadow.h"
+#include "IShadowTechnique.h"
 
 #include "SceneManager.h"
 
@@ -46,7 +47,7 @@ protected:
     map<string,GLuint> m_fbos;
     ///iterator for fbos container
     map<string,GLuint>::iterator m_ifbo;
-
+    
     int m_shadow_textures;    //count of shader textures
 
     ///texture cache: all loaded textures are stored here; if there's request for load of already
@@ -126,6 +127,7 @@ protected:
 	int m_num_lines;
 	int m_texPreview_id;
 	bool m_warping_enabled;
+	IShadowTechnique* m_shadow_technique;
 
 public:
     //basic constructor
@@ -498,6 +500,16 @@ public:
     void UseShadows(bool flag = true){ 
         m_useShadows = flag; 
     }
+
+	void SetShadowTechnique( IShadowTechnique* _p_technique )
+	{
+		m_shadow_technique = _p_technique;
+	}
+
+	IShadowTechnique* GetShadowTechnique()
+	{
+		return m_shadow_technique;
+	}
 
     //IMPROVED DUAL-PARABOLOID SHADOWS SETTINGS
 

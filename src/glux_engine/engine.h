@@ -13,4 +13,8 @@
 //#include "timer.h"
 #include "compute.h"
 
+// Shadow techniques
+
+#include "PolynomialWarpedShadow.h"
+
 #endif

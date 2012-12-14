@@ -1,6 +1,5 @@
 #include "main_ui.h"
 
-
 //*****************************************************************************
 //Initialize OpenGL settings for scene
 bool InitScene(int resx, int resy)
@@ -13,6 +12,8 @@ bool InitScene(int resx, int resy)
         const char *cubemap[] = {   "data/tex/cubemaps/posx.tga", "data/tex/cubemaps/negx.tga",
             "data/tex/cubemaps/posy.tga", "data/tex/cubemaps/negy.tga",
             "data/tex/cubemaps/posz.tga", "data/tex/cubemaps/negz.tga" };
+
+		s->SetShadowTechnique( new PolynomialWarpedShadow() );
 
         //-- Loading experiments settings
         if( ex >= 0 )

@@ -29,6 +29,7 @@ TLight::~TLight()
     ///delete framebuffer
     if(fbo != 0)
         glDeleteFramebuffers(1, &fbo);
+	glDeleteTextures(1, &m_shadow_tex);
 }
 
 /**

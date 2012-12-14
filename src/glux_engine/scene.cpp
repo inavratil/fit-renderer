@@ -46,7 +46,12 @@ TScene::TScene()
     m_draw_aliasError = false;
     m_parab_angle = glm::vec3(0.0, 0.0, 0.0);
     m_cut_angle = glm::vec2(0.0);
+
+	//FIXME
+	m_texPreview_id = 0;
+	m_warping_enabled = true;
 	m_num_lines = 0;
+	m_shadow_technique = NULL;
 }
 
 /**
@@ -84,6 +89,8 @@ TScene::~TScene()
     delete m_font2D_bkg;
 
     delete m_cam;
+
+	delete m_shadow_technique;
 }
 
 /**
