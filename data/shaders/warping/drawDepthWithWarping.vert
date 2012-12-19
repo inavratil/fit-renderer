@@ -62,19 +62,17 @@ void main(void)
 
 	position = vertexEyeSpace;
 
-
 	//------------------------------------------------------------------------------------
 	// Polynomial warping
-
+	
+	float dx,dy;
 	res = vec4( 0.0 );
 
 	vec2 p = position.xy;
 	p = p*0.5 + 0.5;
 	p = p * vec2( SCREEN_X, SCREEN_Y );
 
-	int code = computeCode(p);
-
-	float dx,dy;
+	//int code = computeCode(p);
 	//if ( code == INSIDE )
 	{
 		float new_x = (p.x - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;

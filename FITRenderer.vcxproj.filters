@@ -49,13 +49,13 @@
     <ClCompile Include="src\glux_engine\Singleton.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ipsm2.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\IShadowTechnique.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ipsm2.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>

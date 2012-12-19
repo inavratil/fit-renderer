@@ -23,7 +23,9 @@ Framebuffers:
     ATTACH: 
 */
 
-const float MAX_MIPLEVELS = 6;
+//#define DEBUG_DRAW 
+
+const int GRID_RES = 4;
 
 const float COVERAGE[100] = { 0.2525314589560607, 0.2576326279264187, 0.2628360322702068, 0.2681431353083358, 0.2735553772432651, 0.2790741715891978, 0.2847009014014726, 0.2904369152983624, 0.2962835232704883, 0.3022419922728888, 0.308313541593817, 0.31449933799764, 0.3208004906361242, 0.3272180457262481, 0.3337529809911264, 0.3404061998622743, 0.3471785254421841, 0.3540706942267695,
 0.3610833495887235, 0.3682170350233647, 0.3754721871601566, 0.3828491285443266, 0.3903480601940126, 0.3979690539407849, 0.4057120445616824, 0.4135768217143915, 0.42156302168711, 0.4296701189785898, 0.437897417723999, 0.4462440429868523, 0.4547089319362121, 0.463290824935085, 0.4719882565643009, 0.4807995466116144, 0.4897227910574863, 0.4987558530912262, 0.5078963541952966, 0.5171416653374513,
@@ -88,7 +90,7 @@ m[3][3] = -1.0/36.0*z[J(0,3)]+1.0/36.0*z[J(0,0)]-1.0/12.0*z[J(0,1)]+1.0/12.0*z[J
 	return m;
 }
 
-void TScene::AddVertexDataWarped()
+void AddVertexDataWarped()
 {
 	VBO tmp_vbo;
 
@@ -108,7 +110,7 @@ void TScene::AddVertexDataWarped()
     glBindVertexArray(0);
 }
 
-void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm::vec4 _range )
+void TScene::WarpedShadows_GenerateGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm::vec4 _range )
 {
 		vector<GLfloat> vertices;
 		m_num_lines = 0;
@@ -131,8 +133,8 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm
 		range = range * 2.0 - 1.0;
 		
 		int K = 10;
-		for( int t=0; t<3*K; ++t)
-		for( int s=0; s<4*K; ++s)
+		for( int t=0; t<2*K; ++t)
+		for( int s=0; s<3*K; ++s)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
@@ -179,8 +181,8 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm
 			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
 		}
 
-		for( int s=0; s<3*K; ++s)
-		for( int t=0; t<4*K; ++t)
+		for( int s=0; s<2*K; ++s)
+		for( int t=0; t<3*K; ++t)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
@@ -224,7 +226,7 @@ void TScene::GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm
 @param ii iterator to lights list
 @return success/fail of shadow creation
 ****************************************************************************************************/
-bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
+bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 {
     int sh_res = (*ii)->ShadowSize();
 	GLuint texid, fbo, r_buffer, buffer;
@@ -370,7 +372,7 @@ bool TScene::CreateShadowMapWarped(vector<TLight*>::iterator ii)
 @brief Render omnidirectional shadow map using multiresolution techniques
 @param l current light
 ****************************************************************************************************/
-void TScene::RenderShadowMapOmniWarped(TLight *l)
+void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 {
 	int sh_res = l->ShadowSize();
 	GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
@@ -580,7 +582,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 		coeffsX = compute2DPolynomialCoeffsX( z_values );
 		coeffsY = compute2DPolynomialCoeffsY( z_values );
 
-		GeneratePolynomialGrid( coeffsX, coeffsY, mask_range );
+		WarpedShadows_GenerateGrid( coeffsX, coeffsY, mask_range );
 		glEnable(GL_DEPTH_TEST);
 	}
 
@@ -646,7 +648,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 
 	///////////////////////////////////////////////////////////////////////////////
 	//-- DEBUG DRAW
-
+#ifdef DEBUG_DRAW
 	glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_debug"], 0);
 	glDrawBuffers(1, mrt);
@@ -665,7 +667,7 @@ void TScene::RenderShadowMapOmniWarped(TLight *l)
 	glDisable(GL_CLIP_PLANE0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+#endif
 	///////////////////////////////////////////////////////////////////////////////
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

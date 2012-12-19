@@ -111,8 +111,8 @@
     <ClCompile Include="src\glux_engine\shadow.cpp" />
     <ClCompile Include="src\glux_engine\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
-    <ClCompile Include="src\ipsm2.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ipsm2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ellipse_params.h" />

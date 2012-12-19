@@ -114,7 +114,7 @@ void TScene::Redraw(bool delete_buffer)
 				if( m_dpshadow_method == CUT || m_dpshadow_method == DPSM )
 					RenderShadowMapOmni(*m_il);
 				if( m_dpshadow_method == WARP_DPSM )
-					RenderShadowMapOmniWarped(*m_il); 
+					WarpedShadows_RenderShadowMap(*m_il); 
 				
             }
             else 
@@ -308,7 +308,7 @@ void TScene::Redraw(bool delete_buffer)
     {
         for(int i=0; i<2; i++)
         {
-            const float q_size = 1.0f;
+            const float q_size = 0.5f;
             if(m_lights[0]->GetType() == OMNI)
             {
                 SetUniform("show_depth_omni", "far_plane", SHADOW_FAR);

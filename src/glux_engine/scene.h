@@ -436,7 +436,7 @@ public:
     }
 
 
-
+	///////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////SHADOWS ///////////////////////////////////////
 
     //create render target for alias error 
@@ -450,13 +450,15 @@ public:
     //render shadow map (omnidirectional, dual-paraboloid)
     void RenderShadowMapOmni(TLight *l);
 
+	///////////////////////////////////////////////////////////////////////////////////////////
+	//-- Polynomial Warped shadows
+
     //prepare textures and FBOs for multiresolution rendering
-    bool CreateShadowMapWarped(vector<TLight*>::iterator ii);
+    bool WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii);
     //render omnidirectional shadow map using multiresolution techniques
-    void RenderShadowMapOmniWarped(TLight *l);
+    void WarpedShadows_RenderShadowMap(TLight *l);
 	//add additional vertex data
-	void AddVertexDataWarped();
-	void GeneratePolynomialGrid( glm::mat4 _coeffsX, glm::mat4 _coefssY, glm::vec4 _range );
+	void WarpedShadows_GenerateGrid( glm::mat4 _coeffsX, glm::mat4 _coefssY, glm::vec4 _range );
 
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()

@@ -10,7 +10,7 @@ public:
 	PolynomialWarpedShadow();
 	~PolynomialWarpedShadow(void);
 
-	virtual void Initialize();
+	virtual bool Initialize(TLight* _light);
 	virtual void PreRender();
 	virtual void PostRender();
 };
