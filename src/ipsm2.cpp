@@ -128,13 +128,14 @@ void TScene::WarpedShadows_GenerateGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY,
 		//range.y = range.y * 0.5 - 1.0;
 		//range.z = range.z * 0.5 - 0.5;
 		//range.w = range.w * 0.5 - 0.5;
-
+		
+		//FIXME: musi tam byt to +/- 1?
 		glm::vec4 range = (_range + glm::vec4( -1.0, 1.0, -1.0, 1.0 )) / 128.0;
 		range = range * 2.0 - 1.0;
 		
 		int K = 10;
-		for( int t=0; t<2*K; ++t)
-		for( int s=0; s<3*K; ++s)
+		for( int t=0; t<3*K; ++t)
+		for( int s=0; s<4*K; ++s)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
@@ -181,8 +182,8 @@ void TScene::WarpedShadows_GenerateGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY,
 			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
 		}
 
-		for( int s=0; s<2*K; ++s)
-		for( int t=0; t<3*K; ++t)
+		for( int s=0; s<3*K; ++s)
+		for( int t=0; t<4*K; ++t)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
@@ -256,7 +257,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		//2D polynomials coefficients
-		CreateDataTexture("MTEX_2Dfunc_values", 4, 4, GL_RGBA32F, GL_FLOAT);
+		CreateDataTexture("MTEX_2Dfunc_values", GRID_RES, GRID_RES, GL_RGBA32F, GL_FLOAT);
         
 		//create renderbuffers
 		glGenRenderbuffers(1, &m_aerr_r_buffer_depth);
@@ -479,7 +480,8 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 				}
 
 			}
-
+		
+		//mask_range = glm::vec4(0,128,0,128);
 
 		//calculate custom mipmaps 
 		/*
@@ -499,6 +501,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
 
 		glDisable(GL_DEPTH_TEST);
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		RenderPass("mat_aliasblur_horiz");
@@ -532,18 +535,28 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			mask_range.z,
 			(mask_range.w-mask_range.z)/3.0f
 			);
+		 
 
-		glViewport(0,0,4,4);
+		//func_range = glm::vec4( 0, 32, 0, 32 );
+
+		glViewport( 0, 0, GRID_RES, GRID_RES );
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
+
+		glm::vec4 clear_color;
+		glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
+		//glClearColor( 0, 0, 0, 0 );
 		glClear(GL_COLOR_BUFFER_BIT);
-		//SetUniform("mat_get_2Dfunc_values", "range", glm::vec4(11.0, 10.0, 41.0, 14.0));
-		SetUniform("mat_get_2Dfunc_values", "range", func_range/*glm::vec4(16.0, 32.0, 16.0, 32.0)*/);
+		//glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+
+		//glViewport( 0+1, 0+1, GRID_RES-2, GRID_RES-2 );
+		SetUniform("mat_get_2Dfunc_values", "grid_res", (float) GRID_RES );
+		SetUniform("mat_get_2Dfunc_values", "range", func_range );
 		RenderPass("mat_get_2Dfunc_values");
 
-		float z_values[32];
-		memset(z_values, 0, 32*sizeof(float));
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
+		float z_values[GRID_RES*GRID_RES*2];
+		memset(z_values, 0, GRID_RES*GRID_RES*2*sizeof(float));
 
 		if( m_warping_enabled )
 		{
@@ -551,38 +564,12 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
 			glBindTexture(GL_TEXTURE_2D, 0 ); 
 		}
-		/*
-		z_values[0] = 0.0;
-		z_values[1] = 0.0;
-		z_values[2] = 0.0;
-		z_values[3] = 0.0;
-		z_values[4] = 0.0;
-		z_values[5] = 0.0;
-		z_values[6] = 0.0;
-		z_values[7] = 0.0;
-		z_values[8] = 0.0;
-		z_values[9] = 0.0;
-		z_values[14] = 0.0;
-		z_values[15] = 0.0;
-		z_values[16] = 0.0;
-		z_values[17] = 0.0;
-		z_values[22] = 0.0;
-		z_values[23] = 0.0;
-
-		z_values[24] = 0.0;
-		z_values[25] = 0.0;
-		z_values[26] = 0.0;
-		z_values[27] = 0.0;
-		z_values[28] = 0.0;
-		z_values[29] = 0.0;
-		z_values[30] = 0.0;
-		z_values[31] = 0.0;
-		*/
 
 		coeffsX = compute2DPolynomialCoeffsX( z_values );
 		coeffsY = compute2DPolynomialCoeffsY( z_values );
 
 		WarpedShadows_GenerateGrid( coeffsX, coeffsY, mask_range );
+
 		glEnable(GL_DEPTH_TEST);
 	}
 
