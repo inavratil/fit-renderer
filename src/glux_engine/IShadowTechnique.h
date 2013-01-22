@@ -5,6 +5,8 @@
 
 class IShadowTechnique
 {
+protected:
+
 
 public:
 	IShadowTechnique();
@@ -14,6 +16,8 @@ public:
 	virtual void PreRender() = 0;
 	virtual void PostRender() = 0;
 
+	virtual glm::vec2 ComputeDiff( glm::vec2 _P ) = 0;
+	virtual float GetResolution() = 0;
 };
 
 #endif

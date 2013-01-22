@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "shadow.h"
 #include "IShadowTechnique.h"
+#include "ScreenGrid.h"
 
 #include "SceneManager.h"
 
@@ -124,10 +125,11 @@ protected:
     glm::vec2 m_cut_angle;
     GLuint m_aerr_f_buffer, m_aerr_f_buffer_color, m_aerr_r_buffer_depth;
 	//FIXME
-	int m_num_lines;
+
 	int m_texPreview_id;
 	bool m_warping_enabled;
 	IShadowTechnique* m_shadow_technique;
+	int m_num_lines;
 
 public:
     //basic constructor
@@ -458,7 +460,7 @@ public:
     //render omnidirectional shadow map using multiresolution techniques
     void WarpedShadows_RenderShadowMap(TLight *l);
 	//add additional vertex data
-	void WarpedShadows_GenerateGrid( glm::mat4 _coeffsX, glm::mat4 _coefssY, glm::vec4 _range );
+	void WarpedShadows_GenerateGrid( IShadowTechnique* _shadowTech, ScreenGrid _grid );
 
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()

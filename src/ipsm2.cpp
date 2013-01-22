@@ -1,31 +1,25 @@
 #include "glux_engine/scene.h"
-/*
-Datove textury:
----------------
-- normals + linearized depth
-- eye space pos
-- color
-- derivative buffer
-- minmax_normals
-- stencil
 
+#include "glux_engine/PolynomialWarpedShadow.h"
+#include "glux_engine/BilinearWarpedShadow.h"
 
-Framebuffers:
--------------
-- main FBO s podporou MRT (3 attachmenty_
-    ATTACH: podla potreby
-        - default: color, eye space, normals
-- depth_multires FBO
-    ATTACH: derivative buffer mipmapped
-- normal_multires FBO
-    ATTACH: minmax_normals mipmapped
-- big multires FBO: s dvojnasobnou sirkou
-    ATTACH: 
-*/
+///////////////////////////////////////////////////////////////////////////////
+//-- Defines
 
 //#define DEBUG_DRAW 
 
+const int cTexRes = 128;
 const int GRID_RES = 4;
+
+///////////////////////////////////////////////////////////////////////////////
+//-- Global variables
+//-- FIXME: vytvorit pro to extra tridu
+
+ScreenGrid g_ScreenGrid( cTexRes );
+IShadowTechnique* g_pShadowTech = NULL;
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 const float COVERAGE[100] = { 0.2525314589560607, 0.2576326279264187, 0.2628360322702068, 0.2681431353083358, 0.2735553772432651, 0.2790741715891978, 0.2847009014014726, 0.2904369152983624, 0.2962835232704883, 0.3022419922728888, 0.308313541593817, 0.31449933799764, 0.3208004906361242, 0.3272180457262481, 0.3337529809911264, 0.3404061998622743, 0.3471785254421841, 0.3540706942267695,
 0.3610833495887235, 0.3682170350233647, 0.3754721871601566, 0.3828491285443266, 0.3903480601940126, 0.3979690539407849, 0.4057120445616824, 0.4135768217143915, 0.42156302168711, 0.4296701189785898, 0.437897417723999, 0.4462440429868523, 0.4547089319362121, 0.463290824935085, 0.4719882565643009, 0.4807995466116144, 0.4897227910574863, 0.4987558530912262, 0.5078963541952966, 0.5171416653374513,
@@ -94,28 +88,53 @@ void AddVertexDataWarped()
 {
 	VBO tmp_vbo;
 
-    //vertex attributes for screen quad
-    GLfloat vertattribs[] = { -1.0,1.0, 0.0,1.0, -1.0,-1.0, 0.0,-1.0 };
-
 	glGenVertexArrays( 1, &tmp_vbo.vao );
 	glBindVertexArray( tmp_vbo.vao );
 
-	glGenBuffers( 1, &tmp_vbo.buffer[0] );
+	glGenBuffers( 2, tmp_vbo.buffer );
 	glBindBuffer( GL_ARRAY_BUFFER, tmp_vbo.buffer[0] );
 	glBufferData( GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW );
 	glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
+
+	glBindBuffer( GL_ARRAY_BUFFER, tmp_vbo.buffer[1] );
+	glBufferData( GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW );
+	glVertexAttribPointer(GLuint(1), 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+
 	SceneManager::Instance()->setVBO("polynomials_grid", tmp_vbo);
 
     glBindVertexArray(0);
 }
 
-void TScene::WarpedShadows_GenerateGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY, glm::vec4 _range )
+void TScene::WarpedShadows_GenerateGrid( IShadowTechnique* _shadowTech, ScreenGrid _grid )
 {
-		vector<GLfloat> vertices;
-		m_num_lines = 0;
-		float nparts = 10.0;
+		vector<glm::vec2> vertices;
+		vector<glm::vec3> colors;
+		
+		float nparts = 1.0; // kolik casti bude mezi dve body mrizky
 		float eps = 1.0/(float)nparts;
+		int res = _grid.GetResolution(); // rozliseni mrizky
+		int K = 4; // kolik bunek bude mezi dvema ridicimi body
+		int overlap = 1; // o kolik ridicich bodu mimo rozliseni se podivat
+
+		float origin, major, minor;
+		origin = 0 - overlap*K; // dolni hranice pro svisly i vodorovny smer, tedy pro s a t
+		major = (res+overlap)*K-(K-1); // hranice pro hlavni smer pocitani, (K-1) je tam proto, abychom na konci meli vzdy posledni ridici bod 
+		minor = major-1; // hranice pro vedlejsi smer pocitani
+		// Pozn. hlavni vs. vedlejsi - pro rozliseni 4 (polynom) mame CTYRI cary ve TRECH radach
+		//   ----------
+		// 0 |  |  |  |
+		//   ----------
+		// 1 |  |  |  |
+		//   ----------
+		// 2 |  |  |  |
+		//   ----------
+		//   0  1  2  3
+		//
+		// tedy pro svisle cary bude s nabyvat hodnot 0..3 a t bude 0..2 (tedy s<res a t<res-1)
+
+		m_num_lines = 0;
 
 		// 1/4 obrazu
 		//glm::vec4 range = glm::vec4( -0.75, -0.25, 0.25, 0.75 );
@@ -130,97 +149,103 @@ void TScene::WarpedShadows_GenerateGrid( glm::mat4 _coeffsX, glm::mat4 _coeffsY,
 		//range.w = range.w * 0.5 - 0.5;
 		
 		//FIXME: musi tam byt to +/- 1?
-		glm::vec4 range = (_range + glm::vec4( -1.0, 1.0, -1.0, 1.0 )) / 128.0;
+		//glm::vec4 range = (_grid.GetRange() + glm::vec4( -1.0, 1.0, -1.0, 1.0 )) / cTexRes;
+		glm::vec4 range = _grid.GetRange() / cTexRes;
 		range = range * 2.0 - 1.0;
 		
-		int K = 10;
-		for( int t=0; t<3*K; ++t)
-		for( int s=0; s<4*K; ++s)
+		for( int t=origin; t<minor; ++t)
+		for( int s=origin; s<major; ++s)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
 			
+			// hodnoty v intervalu [0..3], resp. [0..res-1], kde res je rozliseni mrizky
+			// (pro polynomy musi byt rozliseni 4
 			x0 = s/(float)K; x1 = s/(float)K;
-			y0 = t/(float)K+i*eps; y1 = t/(float)K+(i+1)*eps;
+			y0 = (t+i*eps)/(float)K; y1 = (t+(i+1)*eps)/(float)K;
 	
-			float dx, dy, new_x, new_y;
-			glm::vec4 temp, X, Y;
-			
+			glm::vec2 new_P(0.0);
+			glm::vec2 diff(0.0);
+	
+			//-- Uprava souradnic podle polynomu
+			diff = _shadowTech->ComputeDiff( glm::vec2(x0, y0) );
 
-			X = glm::vec4( 1.0, x0, glm::pow(x0, 2.0f), glm::pow(x0,3.0f) );
-			Y = glm::vec4( 1.0, y0, glm::pow(y0, 2.0f), glm::pow(y0,3.0f) );
+			//-- zde je nutny prevod z intervalu [0..3] do rozsahu mrizku (range)
+			new_P = convertRange( glm::vec2(x0,y0)+diff, glm::vec4(0.0, res-1, 0.0, res-1), range );
 
-			temp = X * _coeffsX;
-			dx = glm::dot(temp, Y) * POLY_BIAS;
-			temp = X * _coeffsY;
-			dy = glm::dot(temp, Y) * POLY_BIAS;
+			//-- ulozeni prvniho vrcholu cary
+			vertices.push_back( new_P ); 
+			if(s % K == 0)
+				colors.push_back( glm::vec3(0.0,0.0,1.0) ); 
+			else if( x0<0 || x0>(res-1) || y0<0 || y0>(res-1) ) 
+				colors.push_back( glm::vec3(1.0,0.0,1.0) );
+			else
+				colors.push_back( glm::vec3(0.0,1.0,0.0) ); 
+			m_num_lines++;
 
-				//cout << "[" << s << "," << t << "]" << dx << endl;
-				//cout << "[" << s << "," << t << "]" << dy << endl;
+			//-- Uprava souradnic podle polynomu
+			diff = _shadowTech->ComputeDiff( glm::vec2(x1, y1) );
 
-			new_x = convertRange(x0+dx, glm::vec2(0.0, 3.0),  glm::vec2(range.x, range.y) );
-			new_y = convertRange(y0+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
-			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
+			//-- zde je nutny prevod z intervalu [0..3] do rozsahu mrizku (range)
+			new_P = convertRange( glm::vec2(x1,y1)+diff, glm::vec4(0.0, res-1, 0.0, res-1), range );
 
-			X = glm::vec4( 1.0, x1, glm::pow(x1, 2.0f), glm::pow(x1,3.0f) );
-			Y = glm::vec4( 1.0, y1, glm::pow(y1, 2.0f), glm::pow(y1,3.0f) );
-
-			//FIXME: nemusi ty matice byt transponovane?? V octavu jsem je musel transponovat.
-			temp = X * _coeffsX;
-			dx = glm::dot(temp, Y) * POLY_BIAS;	
-			temp = X * _coeffsY;
-			dy = glm::dot(temp, Y) * POLY_BIAS;
-
-			//if( t == 2)
-			//{
-			//	cout << "[" << s << "," << t << "]" << dx << endl;
-			//	cout << "[" << s << "," << t << "]" << dy << endl;
-			//}
-
-			new_x = convertRange(x1+dx, glm::vec2(0.0, 3.0), glm::vec2(range.x, range.y) );
-			new_y = convertRange(y1+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
-			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
+			//-- ulozeni druheho vrcholu cary
+			vertices.push_back( new_P ); 
+			if(s % K == 0)
+				colors.push_back( glm::vec3(0.0,0.0,1.0) ); 
+			else if( x1<0 || x1>(res-1) || y1<0 || y1>(res-1) ) 
+				colors.push_back( glm::vec3(1.0,0.0,1.0) );
+			else
+				colors.push_back( glm::vec3(0.0,1.0,0.0) ); 
+			m_num_lines++;
 		}
 
-		for( int s=0; s<3*K; ++s)
-		for( int t=0; t<4*K; ++t)
+		for( int s=origin; s<minor; ++s)
+		for( int t=origin; t<major; ++t)
 		for( int i=0;i<nparts;++i )
 		{
 			float x0, x1, y0, y1;
-			x0 = s/(float)K+i*eps; x1 = s/(float)K+(i+1)*eps;
+			x0 = (s+i*eps)/(float)K; x1 = (s+(i+1)*eps)/(float)K;
 			y0 = t/(float)K; y1 = t/(float)K;
 	
-			float dx, dy, new_x, new_y;
-			glm::vec4 temp, X, Y;
+			glm::vec2 new_P(0.0);
+			glm::vec2 diff(0.0);
+	
+			//-- Uprava souradnic podle polynomu
+			diff = _shadowTech->ComputeDiff( glm::vec2(x0, y0) );
 
-			X = glm::vec4( 1.0, x0, glm::pow(x0, 2.0f), glm::pow(x0,3.0f) );
-			Y = glm::vec4( 1.0, y0, glm::pow(y0, 2.0f), glm::pow(y0,3.0f) );
+			new_P = convertRange( glm::vec2(x0,y0)+diff, glm::vec4(0.0, res-1, 0.0, res-1), range );
 
-			temp = X * _coeffsX;
-			dx = glm::dot(temp, Y) * POLY_BIAS;
-			temp = X * _coeffsY;
-			dy = glm::dot(temp, Y) * POLY_BIAS;
+			//-- ulozeni prvniho vrcholu cary
+			vertices.push_back( new_P );
+			if(t % K == 0)
+				colors.push_back( glm::vec3(0.0,0.0,1.0) ); 
+			else if( x0<0 || x0>(res-1) || y0<0 || y0>(res-1) ) 
+				colors.push_back( glm::vec3(1.0,0.0,1.0) );
+			else
+				colors.push_back( glm::vec3(0.0,1.0,0.0) ); 
+			m_num_lines++;
 
-			new_x = convertRange(x0+dx, glm::vec2(0.0, 3.0),  glm::vec2(range.x, range.y) );
-			new_y = convertRange(y0+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
-			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
+			//-- Uprava souradnic podle polynomu
+			diff = _shadowTech->ComputeDiff( glm::vec2(x1, y1) );
 
-			X = glm::vec4( 1.0, x1, glm::pow(x1, 2.0f), glm::pow(x1,3.0f) );
-			Y = glm::vec4( 1.0, y1, glm::pow(y1, 2.0f), glm::pow(y1,3.0f) );
+			new_P = convertRange( glm::vec2(x1,y1)+diff, glm::vec4(0.0, res-1, 0.0, res-1), range );
 
-			temp = X * _coeffsX;
-			dx = glm::dot(temp, Y) * POLY_BIAS;
-			temp = X * _coeffsY;
-			dy = glm::dot(temp, Y) * POLY_BIAS;
-
-			new_x = convertRange(x1+dx, glm::vec2(0.0, 3.0), glm::vec2(range.x, range.y) );
-			new_y = convertRange(y1+dy, glm::vec2(0.0, 3.0), glm::vec2(range.z, range.w) );
-			vertices.push_back( new_x ); vertices.push_back( new_y ); m_num_lines++;
+			vertices.push_back( new_P );
+			if(t % K == 0)
+				colors.push_back( glm::vec3(0.0,0.0,1.0) ); 
+			else if( x1<0 || x1>(res-1) || y1<0 || y1>(res-1) ) 
+				colors.push_back( glm::vec3(1.0,0.0,1.0) );
+			else
+				colors.push_back( glm::vec3(0.0,1.0,0.0) ); 
+			m_num_lines++;
 		}
 
-		glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "polynomials_grid"));
+		glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "polynomials_grid", 0));
 		glBufferData(GL_ARRAY_BUFFER, m_num_lines * 2 * sizeof(GLfloat), &vertices[0], GL_DYNAMIC_DRAW);   //update vertex data
-		}
+		glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "polynomials_grid", 1));
+		glBufferData(GL_ARRAY_BUFFER, m_num_lines * 3 * sizeof(GLfloat), &colors[0], GL_DYNAMIC_DRAW);   //update color data
+}
 /**
 ****************************************************************************************************
 @brief Creates shadow map and other structures for selected light for multiresolution rendering
@@ -317,7 +342,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//FIXME: draw polynomials grid
 	    AddMaterial("mat_debug_draw_grid");
-        CustomShader("mat_debug_draw_grid","data/shaders/quad.vert", "data/shaders/warping/dbg_polynomials_grid.frag");
+        CustomShader("mat_debug_draw_grid","data/shaders/warping/dbg_polynomials_grid.vert", "data/shaders/warping/dbg_polynomials_grid.frag");
 
 		// aliasing error
         AddMaterial("mat_camAndLightCoords_afterDP");
@@ -481,6 +506,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 			}
 		
+		g_ScreenGrid.SetRange( mask_range );
 		//mask_range = glm::vec4(0,128,0,128);
 
 		//calculate custom mipmaps 
@@ -516,15 +542,30 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glm::vec2 limit = glm::vec2(1.0);
-
+		/*
+		 * Tato cast kodu mela slouzit pro vypocet limitu posunuti. Prakticky se melo pousouvat o max polovinu velikosti bunky.
+		 * Ale mira posunuti je ovlivnena i promeny POLY_BIAS a to se to pak komplikuje. Tak je to zatim u ledu.
 		if( m_warping_enabled )
 		{
 			float w = (mask_range.y-mask_range.x);
 			float h = (mask_range.w-mask_range.z);
 			limit = glm::vec2( 1.0 );
 		}
+		*/
 		SetUniform("mat_aliasgradient", "limit", limit );
 		RenderPass("mat_aliasgradient");
+
+		
+		PolynomialWarpedShadow polyShadowTech(coeffsX, coeffsY);
+		g_pShadowTech = &polyShadowTech;
+
+		
+		BilinearWarpedShadow bilinShadowTech;
+		//g_pShadowTech = &bilinShadowTech;
+		//g_ScreenGrid.SetRange( 128.0 );
+
+		g_ScreenGrid.SetResolution( g_pShadowTech->GetResolution() );
+
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
@@ -555,6 +596,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
+		
 		float z_values[GRID_RES*GRID_RES*2];
 		memset(z_values, 0, GRID_RES*GRID_RES*2*sizeof(float));
 
@@ -567,8 +609,11 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		coeffsX = compute2DPolynomialCoeffsX( z_values );
 		coeffsY = compute2DPolynomialCoeffsY( z_values );
+		polyShadowTech.SetMatrices( coeffsX, coeffsY );
 
-		WarpedShadows_GenerateGrid( coeffsX, coeffsY, mask_range );
+		///////////////////////////////////////////////////////////////////////////////
+
+		WarpedShadows_GenerateGrid( g_pShadowTech, g_ScreenGrid );
 
 		glEnable(GL_DEPTH_TEST);
 	}

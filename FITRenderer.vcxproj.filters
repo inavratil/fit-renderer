@@ -58,6 +58,12 @@
     <ClCompile Include="src\ipsm2.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\ScreenGrid.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -112,6 +118,12 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\ScreenGrid.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -262,6 +274,9 @@
     </None>
     <None Include="data\shaders\quad_array.frag">
       <Filter>Shaders\HDR/AO</Filter>
+    </None>
+    <None Include="data\shaders\warping\dbg_polynomials_grid.vert">
+      <Filter>Shaders\warp</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

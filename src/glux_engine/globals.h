@@ -189,4 +189,12 @@ inline float convertRange( float num, glm::vec2 _old, glm::vec2 _new )
 	return (num - _old.x)/(_old.y - _old.x) * (_new.y - _new.x) + _new.x;
 }
 
+inline glm::vec2 convertRange( glm::vec2 num, glm::vec4 _old, glm::vec4 _new )
+{
+	float new_x = (num.x - _old.x)/(_old.y - _old.x) * (_new.y - _new.x) + _new.x;
+	float new_y = (num.y - _old.z)/(_old.w - _old.z) * (_new.w - _new.z) + _new.z;
+
+	return glm::vec2( new_x, new_y );
+}
+
 #endif

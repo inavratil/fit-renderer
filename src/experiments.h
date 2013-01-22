@@ -67,7 +67,10 @@ const Experiment experiments[EXP_COUNT] =
         2, 
 
         glm::vec4( 0.0 ), //glm::vec4( 56, 36, 54, 54 ),
-        glm::vec3(120,98,-68), //pozice svetla v katedrale( 256,206,-23 ),
+		//pozice svetla v testing.3ds
+        glm::vec3(120,98,-68), 
+		//pozice svetla v katedrale
+		//glm::vec3( 256,206,-23 ),
 		// puvodni pohled zezadu
 		//glm::vec3( 210.533,-82.6701,-34.9359 ),
 		//glm::vec3( 5,81,0 )
