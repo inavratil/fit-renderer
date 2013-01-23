@@ -30,6 +30,10 @@ public:
 	inline void SetMatCoeffsY( glm::mat4 _coeffsY );
 	inline glm::mat4 GetMatCoeffsX();
 	inline glm::mat4 GetMatCoeffsY();
+
+protected:
+	glm::mat4 compute2DPolynomialCoeffsX( float *z );
+	glm::mat4 compute2DPolynomialCoeffsY( float *z );
 };
 
 #endif

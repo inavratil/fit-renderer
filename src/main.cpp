@@ -13,8 +13,6 @@ bool InitScene(int resx, int resy)
             "data/tex/cubemaps/posy.tga", "data/tex/cubemaps/negy.tga",
             "data/tex/cubemaps/posz.tga", "data/tex/cubemaps/negz.tga" };
 
-		s->SetShadowTechnique( new PolynomialWarpedShadow() );
-
         //-- Loading experiments settings
         if( ex >= 0 )
         {

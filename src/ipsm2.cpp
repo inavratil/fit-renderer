@@ -9,14 +9,12 @@
 //#define DEBUG_DRAW 
 
 const int cTexRes = 128;
-const int GRID_RES = 4;
 
 ///////////////////////////////////////////////////////////////////////////////
 //-- Global variables
 //-- FIXME: vytvorit pro to extra tridu
 
 ScreenGrid g_ScreenGrid( cTexRes );
-IShadowTechnique* g_pShadowTech = NULL;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -27,62 +25,6 @@ const float COVERAGE[100] = { 0.2525314589560607, 0.2576326279264187, 0.26283603
 0.7277872568587884, 0.7380769160403831, 0.748327350219802, 0.7585285052521402, 0.7686700556833742, 0.7787414191045477, 0.7887317721106483, 0.7986300678752298, 0.8084250553400247, 0.8181053000119952, 0.8276592063450691, 0.8370750416769379, 0.846340961676199, 0.8554450372439244, 0.8643752828030637, 0.87311968589294, 0.8816662379765975, 0.890002966355447, 0.8981179670715378, 0.9059994386685738,
 0.9136357166693593, 0.9210153086167311, 0.9281269295161807, 0.9349595375079411, 0.9415023695886816, 0.9477449771968978, 0.9536772614690937, 0.9592895079717747, 0.9645724207097471, 0.9695171552121149, 0.9741153504974227, 0.9783591597219075, 0.9822412793198499, 0.9857549764505119, 0.9888941145749449, 0.991653176994985, 0.9940272881980572, 0.9960122328654299, 0.9976044724143962, 0.9988011589619574,
 0.9996001466136796, 1 };
-
-#define I(y,x) 2*(4*y + x)
-glm::mat4 compute2DPolynomialCoeffsX( float *z )
-{
-	glm::mat4 m( 0.0 );
-
-m[0][0] = z[I(0,0)];
-m[0][1] = -11.0/6.0*z[I(0,0)]+3.0*z[I(0,1)]-3.0/2.0*z[I(0,2)]+1.0/3.0*z[I(0,3)] ;
-m[0][2] = z[I(0,0)]-5.0/2.0*z[I(0,1)]+2.0*z[I(0,2)]-1.0/2.0*z[I(0,3)] ;
-m[0][3] = -1.0/6.0*z[I(0,0)]+1.0/2.0*z[I(0,1)]-1.0/2.0*z[I(0,2)]+1.0/6.0*z[I(0,3)];
-
-m[1][0] = -11.0/6.0*z[I(0,0)]+3.0*z[I(1,0)]-3.0/2.0*z[I(2,0)]+1.0/3.0*z[I(3,0)] ;
-m[1][1] = -11.0/18.0*z[I(0,3)]+121.0/36.0*z[I(0,0)]-11.0/2.0*z[I(0,1)]+11.0/4.0*z[I(0,2)]-11.0/2.0*z[I(1,0)]+z[I(1,3)]+11.0/4.0*z[I(2,0)]-9.0/2.0*z[I(2,1)]+9.0/4.0*z[I(2,2)]-1.0/2.0*z[I(2,3)]-11.0/18.0*z[I(3,0)]+1.0/9.0*z[I(3,3)]+9.0*z[I(1,1)]-1.0/2.0*z[I(3,2)]+z[I(3,1)]-9.0/2.0*z[I(1,2)]; 
-m[1][2] = 11.0/12.0*z[I(0,3)]-11.0/6.0*z[I(0,0)]+55.0/12.0*z[I(0,1)]-11.0/3.0*z[I(0,2)]+3.0*z[I(1,0)]-3.0/2.0*z[I(1,3)]-3.0/2.0*z[I(2,0)]+15.0/4.0*z[I(2,1)]-3.0*z[I(2,2)]+3.0/4.0*z[I(2,3)]+1.0/3.0*z[I(3,0)]-1.0/6.0*z[I(3,3)]-15.0/2.0*z[I(1,1)]+2.0/3.0*z[I(3,2)]-5.0/6.0*z[I(3,1)]+6.0*z[I(1,2)];
-m[1][3] = -11.0/36.0*z[I(0,3)]+11.0/36.0*z[I(0,0)]-11.0/12.0*z[I(0,1)]+11.0/12.0*z[I(0,2)]-1.0/2.0*z[I(1,0)]+1.0/2.0*z[I(1,3)]+1.0/4.0*z[I(2,0)]-3.0/4.0*z[I(2,1)]+3.0/4.0*z[I(2,2)]-1.0/4.0*z[I(2,3)]-1.0/18.0*z[I(3,0)]+1.0/18.0*z[I(3,3)]+3.0/2.0*z[I(1,1)]-1.0/6.0*z[I(3,2)]+1.0/6.0*z[I(3,1)]-3.0/2.0*z[I(1,2)];
-
-m[2][0] = -5.0/2.0*z[I(1,0)]+2.0*z[I(2,0)]+z[I(0,0)]-1.0/2.0*z[I(3,0)];
-m[2][1] = 1.0/3.0*z[I(0,3)]-11.0/6.0*z[I(0,0)]+3.0*z[I(0,1)]-3.0/2.0*z[I(0,2)]+55.0/12.0*z[I(1,0)]-5.0/6.0*z[I(1,3)]-11.0/3.0*z[I(2,0)]+6.0*z[I(2,1)]-3.0*z[I(2,2)]+2.0/3.0*z[I(2,3)]+11.0/12.0*z[I(3,0)]-1.0/6.0*z[I(3,3)]-15.0/2.0*z[I(1,1)]+3.0/4.0*z[I(3,2)]-3.0/2.0*z[I(3,1)]+15.0/4.0*z[I(1,2)];
-m[2][2] = -1.0/2.0*z[I(0,3)]+z[I(0,0)]-5.0/2.0*z[I(0,1)]+2.0*z[I(0,2)]-5.0/2.0*z[I(1,0)]+5.0/4.0*z[I(1,3)]+2.0*z[I(2,0)]-5.0*z[I(2,1)]+4.0*z[I(2,2)]-z[I(2,3)]-1.0/2.0*z[I(3,0)]+1.0/4.0*z[I(3,3)]+25.0/4.0*z[I(1,1)]-z[I(3,2)]+5.0/4.0*z[I(3,1)]-5.0*z[I(1,2)];
-m[2][3] = 1.0/6.0*z[I(0,3)]-1.0/6.0*z[I(0,0)]+1.0/2.0*z[I(0,1)]-1.0/2.0*z[I(0,2)]+5.0/12.0*z[I(1,0)]-5.0/12.0*z[I(1,3)]-1.0/3.0*z[I(2,0)]+z[I(2,1)]-z[I(2,2)]+1.0/3.0*z[I(2,3)]+1.0/12.0*z[I(3,0)]-1.0/12.0*z[I(3,3)]-5.0/4.0*z[I(1,1)]+1.0/4.0*z[I(3,2)]-1.0/4.0*z[I(3,1)]+5.0/4.0*z[I(1,2)];
-
-m[3][0] = 1.0/2.0*z[I(1,0)]-1.0/2.0*z[I(2,0)]-1.0/6.0*z[I(0,0)]+1.0/6.0*z[I(3,0)];
-m[3][1] = -1.0/18.0*z[I(0,3)]+11.0/36.0*z[I(0,0)]-1.0/2.0*z[I(0,1)]+1.0/4.0*z[I(0,2)]-11.0/12.0*z[I(1,0)]+1.0/6.0*z[I(1,3)]+11.0/12.0*z[I(2,0)]-3.0/2.0*z[I(2,1)]+3.0/4.0*z[I(2,2)]-1.0/6.0*z[I(2,3)]-11.0/36.0*z[I(3,0)]+1.0/18.0*z[I(3,3)]+3.0/2.0*z[I(1,1)]-1.0/4.0*z[I(3,2)]+1.0/2.0*z[I(3,1)]-3.0/4.0*z[I(1,2)];
-m[3][2] = 1.0/12.0*z[I(0,3)]-1.0/6.0*z[I(0,0)]+5.0/12.0*z[I(0,1)]-1.0/3.0*z[I(0,2)]+1.0/2.0*z[I(1,0)]-1.0/4.0*z[I(1,3)]-1.0/2.0*z[I(2,0)]+5.0/4.0*z[I(2,1)]-z[I(2,2)]+1.0/4.0*z[I(2,3)]+1.0/6.0*z[I(3,0)]-1.0/12.0*z[I(3,3)]-5.0/4.0*z[I(1,1)]+1.0/3.0*z[I(3,2)]-5.0/12.0*z[I(3,1)]+z[I(1,2)];
-m[3][3] = -1.0/36.0*z[I(0,3)]+1.0/36.0*z[I(0,0)]-1.0/12.0*z[I(0,1)]+1.0/12.0*z[I(0,2)]-1.0/12.0*z[I(1,0)]+1.0/12.0*z[I(1,3)]+1.0/12.0*z[I(2,0)]-1.0/4.0*z[I(2,1)]+1.0/4.0*z[I(2,2)]-1.0/12.0*z[I(2,3)]-1.0/36.0*z[I(3,0)]+1.0/36.0*z[I(3,3)]+1.0/4.0*z[I(1,1)]-1.0/12.0*z[I(3,2)]+1.0/12.0*z[I(3,1)]-1.0/4.0*z[I(1,2)];
-
-	return m;
-}
-
-#define J(y,x) 2*(4*y + x) + 1
-glm::mat4 compute2DPolynomialCoeffsY( float *z )
-{
-	glm::mat4 m( 0.0 );
-
-m[0][0] = z[J(0,0)];
-m[0][1] = -11.0/6.0*z[J(0,0)]+3.0*z[J(0,1)]-3.0/2.0*z[J(0,2)]+1.0/3.0*z[J(0,3)] ;
-m[0][2] = z[J(0,0)]-5.0/2.0*z[J(0,1)]+2.0*z[J(0,2)]-1.0/2.0*z[J(0,3)] ;
-m[0][3] = -1.0/6.0*z[J(0,0)]+1.0/2.0*z[J(0,1)]-1.0/2.0*z[J(0,2)]+1.0/6.0*z[J(0,3)];
-
-m[1][0] = -11.0/6.0*z[J(0,0)]+3.0*z[J(1,0)]-3.0/2.0*z[J(2,0)]+1.0/3.0*z[J(3,0)] ;
-m[1][1] = -11.0/18.0*z[J(0,3)]+121.0/36.0*z[J(0,0)]-11.0/2.0*z[J(0,1)]+11.0/4.0*z[J(0,2)]-11.0/2.0*z[J(1,0)]+z[J(1,3)]+11.0/4.0*z[J(2,0)]-9.0/2.0*z[J(2,1)]+9.0/4.0*z[J(2,2)]-1.0/2.0*z[J(2,3)]-11.0/18.0*z[J(3,0)]+1.0/9.0*z[J(3,3)]+9.0*z[J(1,1)]-1.0/2.0*z[J(3,2)]+z[J(3,1)]-9.0/2.0*z[J(1,2)]; 
-m[1][2] = 11.0/12.0*z[J(0,3)]-11.0/6.0*z[J(0,0)]+55.0/12.0*z[J(0,1)]-11.0/3.0*z[J(0,2)]+3.0*z[J(1,0)]-3.0/2.0*z[J(1,3)]-3.0/2.0*z[J(2,0)]+15.0/4.0*z[J(2,1)]-3.0*z[J(2,2)]+3.0/4.0*z[J(2,3)]+1.0/3.0*z[J(3,0)]-1.0/6.0*z[J(3,3)]-15.0/2.0*z[J(1,1)]+2.0/3.0*z[J(3,2)]-5.0/6.0*z[J(3,1)]+6.0*z[J(1,2)];
-m[1][3] = -11.0/36.0*z[J(0,3)]+11.0/36.0*z[J(0,0)]-11.0/12.0*z[J(0,1)]+11.0/12.0*z[J(0,2)]-1.0/2.0*z[J(1,0)]+1.0/2.0*z[J(1,3)]+1.0/4.0*z[J(2,0)]-3.0/4.0*z[J(2,1)]+3.0/4.0*z[J(2,2)]-1.0/4.0*z[J(2,3)]-1.0/18.0*z[J(3,0)]+1.0/18.0*z[J(3,3)]+3.0/2.0*z[J(1,1)]-1.0/6.0*z[J(3,2)]+1.0/6.0*z[J(3,1)]-3.0/2.0*z[J(1,2)];
-
-m[2][0] = -5.0/2.0*z[J(1,0)]+2.0*z[J(2,0)]+z[J(0,0)]-1.0/2.0*z[J(3,0)];
-m[2][1] = 1.0/3.0*z[J(0,3)]-11.0/6.0*z[J(0,0)]+3.0*z[J(0,1)]-3.0/2.0*z[J(0,2)]+55.0/12.0*z[J(1,0)]-5.0/6.0*z[J(1,3)]-11.0/3.0*z[J(2,0)]+6.0*z[J(2,1)]-3.0*z[J(2,2)]+2.0/3.0*z[J(2,3)]+11.0/12.0*z[J(3,0)]-1.0/6.0*z[J(3,3)]-15.0/2.0*z[J(1,1)]+3.0/4.0*z[J(3,2)]-3.0/2.0*z[J(3,1)]+15.0/4.0*z[J(1,2)];
-m[2][2] = -1.0/2.0*z[J(0,3)]+z[J(0,0)]-5.0/2.0*z[J(0,1)]+2.0*z[J(0,2)]-5.0/2.0*z[J(1,0)]+5.0/4.0*z[J(1,3)]+2.0*z[J(2,0)]-5.0*z[J(2,1)]+4.0*z[J(2,2)]-z[J(2,3)]-1.0/2.0*z[J(3,0)]+1.0/4.0*z[J(3,3)]+25.0/4.0*z[J(1,1)]-z[J(3,2)]+5.0/4.0*z[J(3,1)]-5.0*z[J(1,2)];
-m[2][3] = 1.0/6.0*z[J(0,3)]-1.0/6.0*z[J(0,0)]+1.0/2.0*z[J(0,1)]-1.0/2.0*z[J(0,2)]+5.0/12.0*z[J(1,0)]-5.0/12.0*z[J(1,3)]-1.0/3.0*z[J(2,0)]+z[J(2,1)]-z[J(2,2)]+1.0/3.0*z[J(2,3)]+1.0/12.0*z[J(3,0)]-1.0/12.0*z[J(3,3)]-5.0/4.0*z[J(1,1)]+1.0/4.0*z[J(3,2)]-1.0/4.0*z[J(3,1)]+5.0/4.0*z[J(1,2)];
-
-m[3][0] = 1.0/2.0*z[J(1,0)]-1.0/2.0*z[J(2,0)]-1.0/6.0*z[J(0,0)]+1.0/6.0*z[J(3,0)];
-m[3][1] = -1.0/18.0*z[J(0,3)]+11.0/36.0*z[J(0,0)]-1.0/2.0*z[J(0,1)]+1.0/4.0*z[J(0,2)]-11.0/12.0*z[J(1,0)]+1.0/6.0*z[J(1,3)]+11.0/12.0*z[J(2,0)]-3.0/2.0*z[J(2,1)]+3.0/4.0*z[J(2,2)]-1.0/6.0*z[J(2,3)]-11.0/36.0*z[J(3,0)]+1.0/18.0*z[J(3,3)]+3.0/2.0*z[J(1,1)]-1.0/4.0*z[J(3,2)]+1.0/2.0*z[J(3,1)]-3.0/4.0*z[J(1,2)];
-m[3][2] = 1.0/12.0*z[J(0,3)]-1.0/6.0*z[J(0,0)]+5.0/12.0*z[J(0,1)]-1.0/3.0*z[J(0,2)]+1.0/2.0*z[J(1,0)]-1.0/4.0*z[J(1,3)]-1.0/2.0*z[J(2,0)]+5.0/4.0*z[J(2,1)]-z[J(2,2)]+1.0/4.0*z[J(2,3)]+1.0/6.0*z[J(3,0)]-1.0/12.0*z[J(3,3)]-5.0/4.0*z[J(1,1)]+1.0/3.0*z[J(3,2)]-5.0/12.0*z[J(3,1)]+z[J(1,2)];
-m[3][3] = -1.0/36.0*z[J(0,3)]+1.0/36.0*z[J(0,0)]-1.0/12.0*z[J(0,1)]+1.0/12.0*z[J(0,2)]-1.0/12.0*z[J(1,0)]+1.0/12.0*z[J(1,3)]+1.0/12.0*z[J(2,0)]-1.0/4.0*z[J(2,1)]+1.0/4.0*z[J(2,2)]-1.0/12.0*z[J(2,3)]-1.0/36.0*z[J(3,0)]+1.0/36.0*z[J(3,3)]+1.0/4.0*z[J(1,1)]-1.0/12.0*z[J(3,2)]+1.0/12.0*z[J(3,1)]-1.0/4.0*z[J(1,2)];
-
-	return m;
-}
 
 void AddVertexDataWarped()
 {
@@ -259,6 +201,9 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 	AddVertexDataWarped();
 
+	this->SetShadowTechnique( new PolynomialWarpedShadow() );
+	//this->SetShadowTechnique( new BilinearWarpedShadow() );
+
     //create data textures
     try{
 
@@ -282,7 +227,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		//2D polynomials coefficients
-		CreateDataTexture("MTEX_2Dfunc_values", GRID_RES, GRID_RES, GL_RGBA32F, GL_FLOAT);
+		//FIXME: precision??? nestaci 16F ?
+		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
         
 		//create renderbuffers
 		glGenRenderbuffers(1, &m_aerr_r_buffer_depth);
@@ -555,18 +501,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		SetUniform("mat_aliasgradient", "limit", limit );
 		RenderPass("mat_aliasgradient");
 
-		
-		PolynomialWarpedShadow polyShadowTech(coeffsX, coeffsY);
-		g_pShadowTech = &polyShadowTech;
-
-		
-		BilinearWarpedShadow bilinShadowTech;
-		//g_pShadowTech = &bilinShadowTech;
-		//g_ScreenGrid.SetRange( 128.0 );
-
-		g_ScreenGrid.SetResolution( g_pShadowTech->GetResolution() );
-
-
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
 
@@ -580,7 +514,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		//func_range = glm::vec4( 0, 32, 0, 32 );
 
-		glViewport( 0, 0, GRID_RES, GRID_RES );
+		glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
 
 		glm::vec4 clear_color;
@@ -590,30 +524,22 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
 
 		//glViewport( 0+1, 0+1, GRID_RES-2, GRID_RES-2 );
-		SetUniform("mat_get_2Dfunc_values", "grid_res", (float) GRID_RES );
+		SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetResolution() );
 		SetUniform("mat_get_2Dfunc_values", "range", func_range );
 		RenderPass("mat_get_2Dfunc_values");
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
+		//-- odtud zacina cast, ktera je pro kazdou warpovaci metodu jina. Proto se pouziva abstraktni trida shadow_technique
 		
-		float z_values[GRID_RES*GRID_RES*2];
-		memset(z_values, 0, GRID_RES*GRID_RES*2*sizeof(float));
+		g_ScreenGrid.SetResolution( m_shadow_technique->GetResolution() );
 
-		if( m_warping_enabled )
-		{
-			glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"]);
-			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
-			glBindTexture(GL_TEXTURE_2D, 0 ); 
-		}
-
-		coeffsX = compute2DPolynomialCoeffsX( z_values );
-		coeffsY = compute2DPolynomialCoeffsY( z_values );
-		polyShadowTech.SetMatrices( coeffsX, coeffsY );
+		m_shadow_technique->SetTexId(m_tex_cache["MTEX_2Dfunc_values"]);
+		m_shadow_technique->PreRender();
 
 		///////////////////////////////////////////////////////////////////////////////
 
-		WarpedShadows_GenerateGrid( g_pShadowTech, g_ScreenGrid );
+		WarpedShadows_GenerateGrid( m_shadow_technique, g_ScreenGrid );
 
 		glEnable(GL_DEPTH_TEST);
 	}
