@@ -452,7 +452,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 			}
 		
-		g_ScreenGrid.SetRange( mask_range );
+		g_ScreenGrid.UpdateRange( mask_range );
 		//mask_range = glm::vec4(0,128,0,128);
 
 		//calculate custom mipmaps 

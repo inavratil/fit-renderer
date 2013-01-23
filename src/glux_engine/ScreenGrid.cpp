@@ -1,13 +1,8 @@
 #include "ScreenGrid.h"
 
-ScreenGrid::ScreenGrid( )
+ScreenGrid::ScreenGrid( float _res )
 {
-	ScreenGrid( glm::vec4( 0.0 ) );
-}
-
-ScreenGrid::ScreenGrid( float _size )
-{
-	ScreenGrid( 0.0, _size, 0.0, _size);
+	ScreenGrid( 0.0, _res, 0.0, _res);
 }
 
 ScreenGrid::ScreenGrid( glm::vec4 _range )
@@ -16,9 +11,10 @@ ScreenGrid::ScreenGrid( glm::vec4 _range )
 }
 
 ScreenGrid::ScreenGrid( float _left, float _right, float _bottom, float _top )
-	: m_fLeft(_left), m_fRight(_right), m_fBottom(_bottom), m_fTop(_top),
-	  m_iNumLines(0), m_iResolution(1)
+	: m_iNumLines(0), m_iResolution(1)
 {
+	UpdateRange( _left, _right, _bottom, _top );
+
 	TShader grid_vert("data/shaders/quad.vert", "");
 	TShader grid_frag("data/shaders/warping/dbg_polynomials_grid.frag", "");
 }
