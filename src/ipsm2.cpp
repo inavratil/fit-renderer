@@ -12,9 +12,6 @@ const int cTexRes = 128;
 
 ///////////////////////////////////////////////////////////////////////////////
 //-- Global variables
-//-- FIXME: vytvorit pro to extra tridu
-
-ScreenGrid g_ScreenGrid( cTexRes );
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -49,14 +46,14 @@ void AddVertexDataWarped()
     glBindVertexArray(0);
 }
 
-void TScene::WarpedShadows_GenerateGrid( IShadowTechnique* _shadowTech, ScreenGrid _grid )
+void TScene::WarpedShadows_GenerateGrid( IShadowTechnique* _shadowTech )
 {
 		vector<glm::vec2> vertices;
 		vector<glm::vec3> colors;
 		
 		float nparts = 1.0; // kolik casti bude mezi dve body mrizky
 		float eps = 1.0/(float)nparts;
-		int res = _grid.GetResolution(); // rozliseni mrizky
+		int res = _shadowTech->GetResolution(); // rozliseni mrizky
 		int K = 4; // kolik bunek bude mezi dvema ridicimi body
 		int overlap = 1; // o kolik ridicich bodu mimo rozliseni se podivat
 
@@ -92,7 +89,7 @@ void TScene::WarpedShadows_GenerateGrid( IShadowTechnique* _shadowTech, ScreenGr
 		
 		//FIXME: musi tam byt to +/- 1?
 		//glm::vec4 range = (_grid.GetRange() + glm::vec4( -1.0, 1.0, -1.0, 1.0 )) / cTexRes;
-		glm::vec4 range = _grid.GetRange() / cTexRes;
+		glm::vec4 range = _shadowTech->GetGridRange() / cTexRes;
 		range = range * 2.0 - 1.0;
 		
 		for( int t=origin; t<minor; ++t)
@@ -201,8 +198,12 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 	AddVertexDataWarped();
 
+	//-- Polynomial shadow technique
 	this->SetShadowTechnique( new PolynomialWarpedShadow() );
+
+	//-- Bilinear shadow technique
 	//this->SetShadowTechnique( new BilinearWarpedShadow() );
+	//m_shadow_technique->SetResolution( 16.0 );
 
     //create data textures
     try{
@@ -452,7 +453,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 			}
 		
-		g_ScreenGrid.UpdateRange( mask_range );
+		m_shadow_technique->UpdateGridRange( mask_range );
 		//mask_range = glm::vec4(0,128,0,128);
 
 		//calculate custom mipmaps 
@@ -532,14 +533,12 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
 		//-- odtud zacina cast, ktera je pro kazdou warpovaci metodu jina. Proto se pouziva abstraktni trida shadow_technique
 		
-		g_ScreenGrid.SetResolution( m_shadow_technique->GetResolution() );
-
 		m_shadow_technique->SetTexId(m_tex_cache["MTEX_2Dfunc_values"]);
 		m_shadow_technique->PreRender();
 
 		///////////////////////////////////////////////////////////////////////////////
 
-		WarpedShadows_GenerateGrid( m_shadow_technique, g_ScreenGrid );
+		WarpedShadows_GenerateGrid( m_shadow_technique );
 
 		glEnable(GL_DEPTH_TEST);
 	}

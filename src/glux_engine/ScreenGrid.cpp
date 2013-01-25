@@ -2,22 +2,18 @@
 
 ScreenGrid::ScreenGrid( float _res )
 {
-	ScreenGrid( 0.0, _res, 0.0, _res);
+	ScreenGrid( glm::vec4(0.0, _res, 0.0, _res), _res );
 }
 
-ScreenGrid::ScreenGrid( glm::vec4 _range )
+ScreenGrid::ScreenGrid( glm::vec4 _range, float _res )
+	: m_iNumLines(0), m_iResolution(_res)
 {
-	ScreenGrid( _range.x, _range.y, _range.z, _range.w);
-}
-
-ScreenGrid::ScreenGrid( float _left, float _right, float _bottom, float _top )
-	: m_iNumLines(0), m_iResolution(1)
-{
-	UpdateRange( _left, _right, _bottom, _top );
+	UpdateRange( _range );
 
 	TShader grid_vert("data/shaders/quad.vert", "");
 	TShader grid_frag("data/shaders/warping/dbg_polynomials_grid.frag", "");
 }
+
 
 ScreenGrid::~ScreenGrid(void)
 {

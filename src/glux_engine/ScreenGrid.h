@@ -9,33 +9,11 @@ class ScreenGrid
 {
 protected:
 	
-	//-- Range values
-
-	float m_fLeft;
-	float m_fRight;
-	float m_fBottom;
-	float m_fTop;
+	//-- Range and associate members
 
 	glm::vec4 m_vRange;
-
-	//-- Step values
-
-	float m_fStepX;
-	float m_fStepY;
-
 	glm::vec2 m_vStep;
-
-	//-- Offset values
-
-	float m_fOffsetX;
-	float m_fOffsetY;
-
 	glm::vec2 m_vOffset;
-	
-	//-- Size
-
-	float m_fWidth;
-	float m_fHeight;
 	glm::vec2 m_vSize;
 
 	//-- Miscellaneous 
@@ -44,9 +22,8 @@ protected:
 	int m_iResolution;
 
 public:
-	ScreenGrid( float _left, float _right, float _bottom, float _top );
-	ScreenGrid( glm::vec4 _range );
-	ScreenGrid( float _res );
+	ScreenGrid( glm::vec4 _range, float _res );
+	ScreenGrid( float _res = 1.0 );
 
 	virtual ~ScreenGrid(void);
 
@@ -54,17 +31,28 @@ public:
 
 	inline void UpdateRange( float _range );
 	inline void UpdateRange( glm::vec4 _range );
-	inline void UpdateRange( float _left, float _right, float _bottom, float _top );
 	inline glm::vec4 GetRange();
 
-	void SetResolution( int _res ){ m_iResolution = _res; }
-	int GetResolution(){ return m_iResolution; }
+	inline void SetResolution( int _res );
+	inline int GetResolution();
 
+	inline void ResetCounter();
+	inline void IncCounter();
+	
 	//-- Miscellaneous
 
 	void Draw(TMaterial* _mat);
 
+protected:
+	float _Left();
+	float _Right();
+	float _Bottom();
+	float _Top();
+
 };
+
+///////////////////////////////////////////////////////////////////////////////
+//-- Inlines
 
 inline void ScreenGrid::UpdateRange( float _range )
 { 
@@ -72,25 +60,62 @@ inline void ScreenGrid::UpdateRange( float _range )
 }
 
 inline void ScreenGrid::UpdateRange( glm::vec4 _range )
-{
-	UpdateRange( _range.x, _range.y, _range.z, _range.w );
-} 
-
-inline void ScreenGrid::UpdateRange( float _left, float _right, float _bottom, float _top )
 { 
-	m_fLeft = _left; 
-	m_fRight = _right; 
-	m_fBottom = _bottom; 
-	m_fTop = _top; 
+	m_vRange = _range;
 
-	m_fWidth = m_fRight - m_fLeft;
-	m_fHeight = m_fRight - m_fLeft;
+	m_vSize = glm::vec2( _Right() - _Left(), _Top() - _Bottom() );
+
+	m_vStep = m_vSize/(float)m_iResolution;
+
+	m_vOffset = 0.5f * m_vStep;
 
 }
 
 inline glm::vec4 ScreenGrid::GetRange()
 { 
-	return glm::vec4(m_fLeft, m_fRight, m_fBottom, m_fTop); 
+	return m_vRange; 
+}
+
+inline void ScreenGrid::SetResolution( int _res )
+{ 
+	m_iResolution = _res; 
+
+	UpdateRange( m_vRange );
+}
+
+inline int ScreenGrid::GetResolution()
+{ 
+	return m_iResolution; 
+}
+
+inline void ScreenGrid::ResetCounter()
+{
+	m_iNumLines = 0;
+}
+
+inline void ScreenGrid::IncCounter()
+{
+	m_iNumLines++;
+}
+
+inline float ScreenGrid::_Left()
+{
+	return m_vRange.x;
+}
+
+inline float ScreenGrid::_Right()
+{
+	return m_vRange.y;
+}
+
+inline float ScreenGrid::_Bottom()
+{
+	return m_vRange.z;
+}
+
+inline float ScreenGrid::_Top()
+{
+	return m_vRange.w;
 }
 
 #endif

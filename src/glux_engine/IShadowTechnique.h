@@ -2,15 +2,17 @@
 #define _ISHADOWTECHNIQUE_H_
 
 #include "light.h"
+#include "ScreenGrid.h"
 
 class IShadowTechnique
 {
 protected:
-	GLuint m_iTexID;
+	GLuint			m_iTexID;
+	ScreenGrid*		m_pScreenGrid;
 
 public:
 	IShadowTechnique();
-	IShadowTechnique( GLuint _texid ) : m_iTexID(_texid){};
+	IShadowTechnique( GLuint _texid );
 	virtual ~IShadowTechnique(void);
 
 	virtual bool Initialize(TLight* _light) = 0;
@@ -18,10 +20,37 @@ public:
 	virtual void PostRender() = 0;
 
 	virtual glm::vec2 ComputeDiff( glm::vec2 _P ) = 0;
-	virtual float GetResolution() = 0;
 
-	GLuint GetTexId(){ return m_iTexID; }
-	void SetTexId( GLuint _texid){ m_iTexID = _texid; }
+	virtual void SetResolution( float _res );
+	virtual float GetResolution();
+
+	GLuint GetTexId();
+	void SetTexId( GLuint _texid);
+
+	void UpdateGridRange( glm::vec4 _range );
+	glm::vec4 GetGridRange();
 };
+
+///////////////////////////////////////////////////////////////////////////////
+//-- Inline 
+
+inline void IShadowTechnique::SetResolution( float _res )
+{
+	m_pScreenGrid->SetResolution( _res );
+}
+inline float IShadowTechnique::GetResolution()
+{
+	return m_pScreenGrid->GetResolution();
+}
+
+inline GLuint IShadowTechnique::GetTexId()
+{ 
+	return m_iTexID; 
+}
+
+inline void IShadowTechnique::SetTexId( GLuint _texid)
+{ 
+	m_iTexID = _texid; 
+}
 
 #endif

@@ -5,11 +5,13 @@
 PolynomialWarpedShadow::PolynomialWarpedShadow()
 	: m_matCoeffsX(1.0), m_matCoeffsY(1.0)
 {
+	m_pScreenGrid->SetResolution(4);
 }
 
 PolynomialWarpedShadow::PolynomialWarpedShadow( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 	: m_matCoeffsX(_coeffsX), m_matCoeffsY(_coeffsY)
 {
+	m_pScreenGrid->SetResolution(4);
 }
 
 
