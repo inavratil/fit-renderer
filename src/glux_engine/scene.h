@@ -459,7 +459,6 @@ public:
     bool WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii);
     //render omnidirectional shadow map using multiresolution techniques
     void WarpedShadows_RenderShadowMap(TLight *l);
-	void WarpedShadows_GenerateGrid( IShadowTechnique* _shadowTech );
 
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()

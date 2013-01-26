@@ -4,11 +4,16 @@
 #include "globals.h"
 #include "SceneManager.h"
 #include "material.h"
+#include "IShadowTechnique.h"
+
+class IShadowTechnique;
 
 class ScreenGrid
 {
 protected:
 	
+	static const int m_cDefaultRes = 128;
+
 	//-- Range and associate members
 
 	glm::vec4 m_vRange;
@@ -21,6 +26,8 @@ protected:
 	int m_iNumLines;
 	int m_iResolution;
 
+	TMaterial*		m_pMat;
+
 public:
 	ScreenGrid( glm::vec4 _range, float _res );
 	ScreenGrid( float _res = 1.0 );
@@ -32,6 +39,7 @@ public:
 	inline void UpdateRange( float _range );
 	inline void UpdateRange( glm::vec4 _range );
 	inline glm::vec4 GetRange();
+	inline glm::vec4 GetRangeAsOriginStep();
 
 	inline void SetResolution( int _res );
 	inline int GetResolution();
@@ -41,9 +49,14 @@ public:
 	
 	//-- Miscellaneous
 
-	void Draw(TMaterial* _mat);
+	void Draw();
+	void InitVertexData();
+	void GenerateGrid( IShadowTechnique* _pShadowTech );
 
-protected:
+
+private:
+	void _Init( glm::vec4 _range, float _res );
+
 	float _Left();
 	float _Right();
 	float _Bottom();
@@ -65,7 +78,8 @@ inline void ScreenGrid::UpdateRange( glm::vec4 _range )
 
 	m_vSize = glm::vec2( _Right() - _Left(), _Top() - _Bottom() );
 
-	m_vStep = m_vSize/(float)m_iResolution;
+	//FIXME: Opravdu tam musi byt -1.0 ?? Pro rozliseni 4 jsou tam tri bunky
+	m_vStep = m_vSize/(float)(m_iResolution - 1);
 
 	m_vOffset = 0.5f * m_vStep;
 
@@ -74,6 +88,11 @@ inline void ScreenGrid::UpdateRange( glm::vec4 _range )
 inline glm::vec4 ScreenGrid::GetRange()
 { 
 	return m_vRange; 
+}
+
+inline glm::vec4 ScreenGrid::GetRangeAsOriginStep()
+{
+	return glm::vec4(_Left(), m_vStep.x, _Bottom(), m_vStep.y);
 }
 
 inline void ScreenGrid::SetResolution( int _res )

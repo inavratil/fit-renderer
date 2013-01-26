@@ -7,7 +7,6 @@ class BilinearWarpedShadow :
 	public IShadowTechnique
 {
 protected:
-	float m_fRes;
 
 public:
 	BilinearWarpedShadow();
@@ -18,8 +17,6 @@ public:
 	virtual void PostRender();
 
 	virtual glm::vec2 ComputeDiff( glm::vec2 _P );
-
-	virtual float GetResolution();
 };
 
 #endif

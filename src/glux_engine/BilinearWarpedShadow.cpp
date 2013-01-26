@@ -3,7 +3,6 @@
 #include "shadow.h"
 
 BilinearWarpedShadow::BilinearWarpedShadow()
-	: m_fRes(16.0)
 {
 }
 
@@ -30,9 +29,4 @@ glm::vec2 BilinearWarpedShadow::ComputeDiff( glm::vec2 _P )
 	glm::vec2 diff( 0.0 );
 
 	return diff;
-}
-
-float BilinearWarpedShadow::GetResolution()
-{
-	return m_fRes;
 }

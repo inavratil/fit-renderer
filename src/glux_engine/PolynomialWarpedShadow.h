@@ -22,8 +22,6 @@ public:
 
 	virtual glm::vec2 ComputeDiff( glm::vec2 _P );
 
-	virtual float GetResolution();
-
 	//-- Class-specific methods
 	void SetMatrices( glm::mat4 _coeffsX, glm::mat4 _coeffsY );
 	inline void SetMatCoeffsX( glm::mat4 _coeffsX );

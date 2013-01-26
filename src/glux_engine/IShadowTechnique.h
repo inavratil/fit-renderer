@@ -3,10 +3,16 @@
 
 #include "light.h"
 #include "ScreenGrid.h"
+#include "material.h"
+
+class ScreenGrid;
 
 class IShadowTechnique
 {
 protected:
+	
+	static const int m_cDefaultRes = 128;
+
 	GLuint			m_iTexID;
 	ScreenGrid*		m_pScreenGrid;
 
@@ -27,30 +33,19 @@ public:
 	GLuint GetTexId();
 	void SetTexId( GLuint _texid);
 
+	ScreenGrid* GetGrid();
+
 	void UpdateGridRange( glm::vec4 _range );
 	glm::vec4 GetGridRange();
+	void GenerateGrid();
+	void DrawGrid();
+
+private:
+	void _Init( GLuint _texid );
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 //-- Inline 
 
-inline void IShadowTechnique::SetResolution( float _res )
-{
-	m_pScreenGrid->SetResolution( _res );
-}
-inline float IShadowTechnique::GetResolution()
-{
-	return m_pScreenGrid->GetResolution();
-}
-
-inline GLuint IShadowTechnique::GetTexId()
-{ 
-	return m_iTexID; 
-}
-
-inline void IShadowTechnique::SetTexId( GLuint _texid)
-{ 
-	m_iTexID = _texid; 
-}
 
 #endif

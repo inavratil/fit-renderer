@@ -39,6 +39,8 @@ void PolynomialWarpedShadow::PreRender()
 	m_matCoeffsY = this->compute2DPolynomialCoeffsY( z_values );
 
 	delete[] z_values;
+
+	this->GenerateGrid();
 }
 
 void PolynomialWarpedShadow::PostRender()
@@ -60,12 +62,6 @@ glm::vec2 PolynomialWarpedShadow::ComputeDiff( glm::vec2 _P )
 	diff.y = glm::dot(temp, Y) * POLY_BIAS;
 
 	return diff;
-}
-
-
-float PolynomialWarpedShadow::GetResolution()
-{
-	return 4.0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
