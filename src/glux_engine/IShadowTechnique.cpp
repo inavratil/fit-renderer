@@ -32,6 +32,11 @@ float IShadowTechnique::GetResolution()
 	return m_pScreenGrid->GetResolution();
 }
 
+const char* IShadowTechnique::GetName()
+{
+	return m_sName;
+}
+
 GLuint IShadowTechnique::GetTexId()
 { 
 	return m_iTexID; 

@@ -3,20 +3,28 @@
 #include "shadow.h"
 
 PolynomialWarpedShadow::PolynomialWarpedShadow()
-	: m_matCoeffsX(1.0), m_matCoeffsY(1.0)
 {
-	m_pScreenGrid->SetResolution(4);
+	_Init( glm::mat4(1.0), glm::mat4(1.0) );
 }
 
 PolynomialWarpedShadow::PolynomialWarpedShadow( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
-	: m_matCoeffsX(_coeffsX), m_matCoeffsY(_coeffsY)
 {
-	m_pScreenGrid->SetResolution(4);
+	_Init( _coeffsX, _coeffsY );
 }
 
 
 PolynomialWarpedShadow::~PolynomialWarpedShadow(void)
 {
+}
+
+void PolynomialWarpedShadow::_Init( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
+{
+	m_sName = "Polynomial";
+
+	m_matCoeffsX = _coeffsX; 
+	m_matCoeffsY = _coeffsY;
+
+	m_pScreenGrid->SetResolution(4);
 }
 
 bool PolynomialWarpedShadow::Initialize(TLight* _light)

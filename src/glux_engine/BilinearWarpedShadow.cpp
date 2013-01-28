@@ -4,11 +4,17 @@
 
 BilinearWarpedShadow::BilinearWarpedShadow()
 {
+	_Init();
 }
 
 
 BilinearWarpedShadow::~BilinearWarpedShadow(void)
 {
+}
+
+void BilinearWarpedShadow::_Init()
+{
+	m_sName = "Bilinear";
 }
 
 bool BilinearWarpedShadow::Initialize(TLight* _light)
@@ -18,6 +24,7 @@ bool BilinearWarpedShadow::Initialize(TLight* _light)
 
 void BilinearWarpedShadow::PreRender()
 {
+	this->GenerateGrid();
 }
 
 void BilinearWarpedShadow::PostRender()

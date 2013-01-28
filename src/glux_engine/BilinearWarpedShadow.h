@@ -17,6 +17,9 @@ public:
 	virtual void PostRender();
 
 	virtual glm::vec2 ComputeDiff( glm::vec2 _P );
+
+private:
+	void _Init();
 };
 
 #endif

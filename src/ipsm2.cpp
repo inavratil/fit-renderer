@@ -8,7 +8,6 @@
 
 //#define DEBUG_DRAW 
 
-const int cTexRes = 128;
 
 ///////////////////////////////////////////////////////////////////////////////
 //-- Global variables
@@ -264,31 +263,35 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glDrawBuffers(1, mrt);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);
 
-		glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_mask"] ); 
-		glGenerateMipmap( GL_TEXTURE_2D );
-		glBindTexture( GL_TEXTURE_2D, 0 ); 
+		//FIXME: tenhle kod by mel prijit do PreRender metody, ale zatim neni vyresen pristup globalni pristup k texturam
+		if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
+		{
+			//glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_mask"] ); 
+			//glGenerateMipmap( GL_TEXTURE_2D );
+			//glBindTexture( GL_TEXTURE_2D, 0 ); 
 
-		float mask_values[128*128];
-		glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_mask"]);
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
 
-		for(int i=0; i<128; ++i)
-			for(int j=0; j<128; ++j)
-			{
-				float a = mask_values[j + i*128];
-				if( a > 0.0 )
+			float mask_values[128*128];
+			glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_mask"]);
+			glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
+
+			for(int i=0; i<128; ++i)
+				for(int j=0; j<128; ++j)
 				{
-					if( j < mask_range.x ) mask_range.x = j; // left border
-					if( j > mask_range.y ) mask_range.y = j; // right border
-					if( i < mask_range.z ) mask_range.z = i; // bottom border
-					if( i > mask_range.w ) mask_range.w = i; // top border
+					float a = mask_values[j + i*128];
+					if( a > 0.0 )
+					{
+						if( j < mask_range.x ) mask_range.x = j; // left border
+						if( j > mask_range.y ) mask_range.y = j; // right border
+						if( i < mask_range.z ) mask_range.z = i; // bottom border
+						if( i > mask_range.w ) mask_range.w = i; // top border
+					}
+
 				}
 
-			}
+				m_shadow_technique->UpdateGridRange( mask_range );
+		}
 		
-		m_shadow_technique->UpdateGridRange( mask_range );
-		//mask_range = glm::vec4(0,128,0,128);
-
 		//calculate custom mipmaps 
 		/*
 		int i,j;
@@ -386,11 +389,17 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	
+	//-- Shared uniforms
 	SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+	SetUniform("mat_depth_with_warping", "range", mask_range);
+	
+	//-- Polynomial uniforms
 	SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
 	SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
-	SetUniform("mat_depth_with_warping", "range", mask_range);
+
+	//-- Bilinear uniforms
+	SetUniform("mat_depth_with_warping", "funcTex", 0 );
+	
 
 	    glCullFace(GL_FRONT);
         //glColorMask(0, 0, 0, 0);      //disable colorbuffer write

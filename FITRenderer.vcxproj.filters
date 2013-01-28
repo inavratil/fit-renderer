@@ -64,6 +64,9 @@
     <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\TextureCache.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -124,6 +127,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\TextureCache.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

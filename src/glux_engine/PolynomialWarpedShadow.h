@@ -32,6 +32,9 @@ public:
 protected:
 	glm::mat4 compute2DPolynomialCoeffsX( float *z );
 	glm::mat4 compute2DPolynomialCoeffsY( float *z );
+
+private:
+	void _Init( glm::mat4 _coeffsX, glm::mat4 _coeffsY );
 };
 
 #endif
