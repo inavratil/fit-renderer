@@ -49,9 +49,9 @@ void main(void)
 	float dx,dy;
 	res = vec4( 0.0 );
 
-	vec2 p = position.xy;
-	p = p*0.5 + 0.5;
-	p = p * vec2( SCREEN_X, SCREEN_Y );
+	vec2 p = position.xy;				//-- zde je p v intervalu [-1..1]
+	p = p*0.5 + 0.5;					//-- prevod p na interval [0..1]
+	p = p * vec2( SCREEN_X, SCREEN_Y );	//-- p nabyva hodnot [0..128]
 
 	//------------------------------------------------------------------------------------
 	//-- Polynomial warping

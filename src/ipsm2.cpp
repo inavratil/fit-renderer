@@ -35,11 +35,11 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 	GLuint texid, fbo, r_buffer, buffer;
 
 	//-- Polynomial shadow technique
-	this->SetShadowTechnique( new PolynomialWarpedShadow() );
+	//this->SetShadowTechnique( new PolynomialWarpedShadow() );
 
 	//-- Bilinear shadow technique
-	//this->SetShadowTechnique( new BilinearWarpedShadow() );
-	//m_shadow_technique->SetResolution( 16.0 );
+	this->SetShadowTechnique( new BilinearWarpedShadow() );
+	m_shadow_technique->SetResolution( 16.0 );
 
     //create data textures
     try{

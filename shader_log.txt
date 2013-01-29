@@ -119,3 +119,9 @@ mat_quad:0(11) : error C7011: implicit cast from "vec3" to "vec2"
 
 mat_aliasgradient:0(13) : error C1008: undefined variable "ivec"
 0(14) : error C1008: undefined variable "ivec"
+
+mat_get_2Dfunc_values:0(14) : error C7011: implicit cast from "float" to "vec2"
+
+mat_get_2Dfunc_values:0(14) : warning C7022: unrecognized profile specifier "glm"
+
+mat_get_2Dfunc_values:0(14) : warning C7022: unrecognized profile specifier "glm"
