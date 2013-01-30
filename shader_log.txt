@@ -125,3 +125,59 @@ mat_get_2Dfunc_values:0(14) : error C7011: implicit cast from "float" to "vec2"
 mat_get_2Dfunc_values:0(14) : warning C7022: unrecognized profile specifier "glm"
 
 mat_get_2Dfunc_values:0(14) : warning C7022: unrecognized profile specifier "glm"
+
+mat_aliasblur_horiz:0(46) : warning C7022: unrecognized profile specifier "glm"
+
+mat_depth_with_warping:0(69) : error C1008: undefined variable "coeffsX"
+0(71) : error C1008: undefined variable "coeffsY"
+
+mat_depth_with_warping:0(69) : error C1008: undefined variable "coeffsX"
+0(71) : error C1008: undefined variable "coeffsY"
+
+mat_depth_with_warping:0(23) : error C0105: Syntax error in #if
+0(88) : error C0105: Syntax error in #if
+
+mat_depth_with_warping:0(88) : error C0105: Syntax error in #if
+
+mat_depth_with_warping:0(89) : error C1008: undefined variable "grid_res"
+
+mat_depth_with_warping:0(89) : error C7011: implicit cast from "vec4" to "vec2"
+
+mat_depth_with_warping:0(89) : error C7011: implicit cast from "vec4" to "vec2"
+
+mat_depth_with_warping:0(89) : error C7011: implicit cast from "vec4" to "vec2"
+
+mat_depth_with_warping:0(103) : warning C7022: unrecognized profile specifier "glm"
+0(104) : warning C7022: unrecognized profile specifier "glm"
+
+mat_depth_with_warping:0(15) : error C1008: undefined variable "ivec"
+
+mat_depth_with_warping:0(16) : error C7011: implicit cast from "vec4" to "float"
+0(17) : error C7011: implicit cast from "vec4" to "float"
+0(18) : error C7011: implicit cast from "vec4" to "float"
+0(19) : error C7011: implicit cast from "vec4" to "float"
+
+mat_depth_with_warping:0(3) : error C0204: version directive must be first statement and may not be repeated
+
+mat_depth_with_warping:0(2) : error C0204: version directive must be first statement and may not be repeated
+
+mat_depth_with_warping:0(2) : error C0204: version directive must be first statement and may not be repeated
+
+mat_depth_with_warping:0(2) : error C0204: version directive must be first statement and may not be repeated
+
+mat_depth_with_warping:0(2) : error C0204: version directive must be first statement and may not be repeated
+
+mat_depth_with_warping:0(2) : error C0204: version directive must be first statement and may not be repeated
+
+mat_depth_with_warping:0(2) : error C0204: version directive must be first statement and may not be repeated
+
+mat_get_2Dfunc_values:0(14) : error C1035: assignment of incompatible types
+
+mat_depth_with_warping:0(109) : error C0000: syntax error, unexpected '.', expecting "::" at token "."
+
+mat_depth_with_warping:0(108) : error C1115: unable to find compatible overloaded function "texelFetchOffset(sampler2D, vec2, int, ivec2)"
+0(109) : error C1115: unable to find compatible overloaded function "texelFetchOffset(sampler2D, vec2, int, ivec2)"
+0(110) : error C1115: unable to find compatible overloaded function "texelFetchOffset(sampler2D, vec2, int, ivec2)"
+0(111) : error C1115: unable to find compatible overloaded function "texelFetchOffset(sampler2D, vec2, int, ivec2)"
+0(120) : error C1115: unable to find compatible
+mat_depth_with_warping:0(90) : error C7011: implicit cast from "vec2" to "ivec2"

@@ -20,6 +20,7 @@ PolynomialWarpedShadow::~PolynomialWarpedShadow(void)
 void PolynomialWarpedShadow::_Init( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 {
 	m_sName = "Polynomial";
+	m_sDefines = "#define POLYNOMIAL_WARP\n";
 
 	m_matCoeffsX = _coeffsX; 
 	m_matCoeffsY = _coeffsY;
@@ -57,7 +58,10 @@ void PolynomialWarpedShadow::PostRender()
 
 glm::vec2 PolynomialWarpedShadow::ComputeDiff( glm::vec2 _P )
 {
-	glm::vec2 diff;
+	glm::vec2 diff( 0.0 );
+
+	if( !m_bEnabled ) return diff;
+
 	glm::vec4 temp, X, Y;
 	
 	X = glm::vec4( 1.0, _P.x, glm::pow(_P.x, 2.0f), glm::pow(_P.x,3.0f) );

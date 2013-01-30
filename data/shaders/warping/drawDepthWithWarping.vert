@@ -12,14 +12,16 @@ out vec4 res;
 
 //-- Shared uniforms
 uniform vec4 range;
+uniform float grid_res;
 
-//-- Polynomial uniforms
-uniform mat4 coeffsX;
-uniform mat4 coeffsY;
-
-//-- Bilinear uniforms
-uniform sampler2D funcTex;
-
+#ifdef POLYNOMIAL_WARP
+	//-- Polynomial uniforms
+	uniform mat4 coeffsX;
+	uniform mat4 coeffsY;
+#else ifdef BILINEAR_WARP
+	//-- Bilinear uniforms
+	uniform sampler2D funcTex;
+#endif
 
 const float SCREEN_X = 128.0;
 const float SCREEN_Y = 128.0;
@@ -51,11 +53,14 @@ void main(void)
 
 	vec2 p = position.xy;				//-- zde je p v intervalu [-1..1]
 	p = p*0.5 + 0.5;					//-- prevod p na interval [0..1]
-	p = p * vec2( SCREEN_X, SCREEN_Y );	//-- p nabyva hodnot [0..128]
+	
 
 	//------------------------------------------------------------------------------------
 	//-- Polynomial warping
 
+#ifdef POLYNOMIAL_WARP
+
+	p = p * vec2( SCREEN_X, SCREEN_Y );	//-- p nabyva hodnot [0..128]
 
 	float new_x = (p.x - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
 	float new_y = (p.y - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
@@ -71,12 +76,61 @@ void main(void)
 	//FIXME: proc tady jsou 2/3 ???
 	dx = dx*2.0/3.0;
 	dy = dy*2.0/3.0;
-
-	vertexEyeSpace.x += dx;
-	vertexEyeSpace.y += dy;
 	
 	//------------------------------------------------------------------------------------
+	//-- Bilinear warping
 
-	res = vertexEyeSpace;
+#else ifdef BILINEAR_WARP
+
+	p = p * (grid_res); // prevod z [0..1] do [0..res]
+
+	//-- vypocet souradnice bunky, ve ktere se bod "p" nachazi
+	vec2 grid_coords = floor( p.xy );
+	
+	vec2 temp, X, Y;
+	mat2 M;
+	vec4 f_values;
+
+	//-- prevod do intervalu [0..1]
+	float x = fract(p.x);
+	float y = fract(p.y);
+
+	X = vec2(1-x,x);
+	Y = vec2(1-y,y);
+
+	//-- diff X
+	//f_values = _GetFuncValuesFromCell( grid_coords, D_X );
+	
+	//FIXME: Nefunguje!?!? vec4 t = textureGather( funcTex, vec2(0,0));
+
+	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).r;
+	f_values.y = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,0) ).r;
+	f_values.z = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,1) ).r;
+	f_values.w = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,1) ).r;
+
+
+	M = mat2( f_values.xy, f_values.zw);
+
+	temp = X * M;
+	dx = dot(temp, Y);
+
+	//-- diff Y
+	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).g;
+	f_values.y = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,0) ).g;
+	f_values.z = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,1) ).g;
+	f_values.w = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,1) ).g;
+
+	M = mat2(f_values.xy, f_values.zw);
+
+	temp = X * M;
+	dy = dot(temp, Y);
+
+	//------------------------------------------------------------------------------------
+
+#endif
+	vertexEyeSpace.x += dx;
+	vertexEyeSpace.y += dy;
+
+	res = f_values;
     gl_Position = vertexEyeSpace;
 }

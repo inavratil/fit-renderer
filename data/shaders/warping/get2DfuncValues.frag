@@ -10,6 +10,8 @@ void main()
 	vec4 res, tmp;
 
 	vec2 coords = floor(fragTexCoord*grid_res);
+	//out_FragColor = vec4( coords.y*grid_res + coords.x );
+
 	coords = vec2(range.x + coords.x*range.y, range.z + coords.y*range.w );
 
 	tmp = texture( gradient_map, vec2( coords/128.0 ) + vec2( 0.5/128.0 ) );
@@ -17,4 +19,5 @@ void main()
 
 	out_FragColor.rg = tmp.xy;
 	out_FragColor.ba = coords;
+	
 }

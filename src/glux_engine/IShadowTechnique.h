@@ -12,7 +12,10 @@ class IShadowTechnique
 protected:
 	
 	static const int m_cDefaultRes = 128;
-	const char* m_sName;
+
+	const char*			m_sName;
+	const char*			m_sDefines;
+	bool				m_bEnabled;
 
 	GLuint			m_iTexID;
 	ScreenGrid*		m_pScreenGrid;
@@ -36,6 +39,10 @@ public:
 	//-- Set/Get methods
 	
 	const char* GetName();
+	const char* GetDefines();
+	void Enable();
+	void Disable();
+	bool IsEnabled();
 
 	GLuint GetTexId();
 	void SetTexId( GLuint _texid);

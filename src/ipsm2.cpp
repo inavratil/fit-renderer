@@ -66,6 +66,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//2D polynomials coefficients
 		//FIXME: precision??? nestaci 16F ?
 		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
+		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         
 		//create renderbuffers
 		glGenRenderbuffers(1, &m_aerr_r_buffer_depth);
@@ -150,8 +152,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//draw depth with warping
 		AddMaterial("mat_depth_with_warping");
-		//FIXME: delete? AddTexture("mat_depth_with_warping","MTEX_grid_points_ping", RENDER_TEXTURE );
-        CustomShader("mat_depth_with_warping","data/shaders/warping/drawDepthWithWarping.vert", "data/shaders/warping/drawDepthWithWarping.frag");
+		//AddTexture("mat_depth_with_warping","MTEX_2Dfunc_values", RENDER_TEXTURE );
+		CustomShader("mat_depth_with_warping","data/shaders/warping/drawDepthWithWarping.vert", "data/shaders/warping/drawDepthWithWarping.frag", m_shadow_technique->GetDefines(), "");
 
         //alias quad
         AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
@@ -359,14 +361,17 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		glm::vec4 clear_color;
 		glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
-		//glClearColor( 0, 0, 0, 0 );
+		glClearColor( 0, 0, 0, 0 );
 		glClear(GL_COLOR_BUFFER_BIT);
-		//glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+		glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
 
 		//glViewport( 0+1, 0+1, GRID_RES-2, GRID_RES-2 );
-		SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetResolution() );
-		SetUniform("mat_get_2Dfunc_values", "range", func_range );
-		RenderPass("mat_get_2Dfunc_values");
+		if( m_shadow_technique->IsEnabled() )
+		{
+			SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetResolution() );
+			SetUniform("mat_get_2Dfunc_values", "range", func_range );
+			RenderPass("mat_get_2Dfunc_values");
+		}
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
@@ -392,13 +397,14 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//-- Shared uniforms
 	SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 	SetUniform("mat_depth_with_warping", "range", mask_range);
+	SetUniform("mat_depth_with_warping", "grid_res", (float) m_shadow_technique->GetResolution() );
 	
 	//-- Polynomial uniforms
 	SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
 	SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
 
 	//-- Bilinear uniforms
-	SetUniform("mat_depth_with_warping", "funcTex", 0 );
+	SetUniform("mat_depth_with_warping", "funcTex", 1 );
 	
 
 	    glCullFace(GL_FRONT);
@@ -432,7 +438,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	}
 	else
 	{
+		glActiveTexture( GL_TEXTURE1 );
+		glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
 		DrawSceneDepth("mat_depth_with_warping", lightViewMatrix[i]);
+		glBindTexture( GL_TEXTURE_2D, 0 );
 	}
 	if(!m_wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);

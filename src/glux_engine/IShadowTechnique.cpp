@@ -37,6 +37,26 @@ const char* IShadowTechnique::GetName()
 	return m_sName;
 }
 
+const char* IShadowTechnique::GetDefines()
+{
+	return m_sDefines;
+}
+
+void IShadowTechnique::Enable()
+{
+	m_bEnabled = true;
+}
+
+void IShadowTechnique::Disable()
+{
+	m_bEnabled = false;
+}
+
+bool IShadowTechnique::IsEnabled()
+{
+	return m_bEnabled;
+}
+
 GLuint IShadowTechnique::GetTexId()
 { 
 	return m_iTexID; 

@@ -15,6 +15,8 @@ BilinearWarpedShadow::~BilinearWarpedShadow(void)
 void BilinearWarpedShadow::_Init()
 {
 	m_sName = "Bilinear";
+	m_sDefines = "#define BILINEAR_WARP\n";
+
 	m_pFuncValues = NULL;
 }
 
@@ -51,7 +53,7 @@ glm::vec2 BilinearWarpedShadow::ComputeDiff( glm::vec2 _P )
 {
 	glm::vec2 diff( 0.0 );
 
-	if( m_iTexID == 0 || m_pFuncValues == NULL ) return diff;
+	if( m_iTexID == 0 || m_pFuncValues == NULL || !m_bEnabled ) return diff;
 
 	float res = this->GetResolution();
 	//-- vypocet souradnice bunky, ve ktere se bod _P nachazi

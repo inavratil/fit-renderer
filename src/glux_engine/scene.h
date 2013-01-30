@@ -127,9 +127,7 @@ protected:
 	//FIXME
 
 	int m_texPreview_id;
-	bool m_warping_enabled;
 	IShadowTechnique* m_shadow_technique;
-	int m_num_lines;
 
 public:
     //basic constructor
@@ -578,9 +576,12 @@ public:
 		m_texPreview_id = _id;
 	}
 
-	void SetWarping( bool _flag )
+	void SetWarping( bool _isEnabled )
 	{
-		m_warping_enabled = _flag;
+		if(_isEnabled)
+			m_shadow_technique->Enable();
+		else
+			m_shadow_technique->Disable();
 	}
 
     ////////////////////////// RENDER TARGETS, HDR AND SSAO ////////////////////////

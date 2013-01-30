@@ -275,6 +275,27 @@ void TScene::Redraw(bool delete_buffer)
         RenderPass("mat_quad");
 		glBindTexture(GL_TEXTURE_2D, 0);         
     
+	//show shadow maps 
+    if(m_draw_shadow_map)
+    {
+        for(int i=1; i<2; i++)
+        {
+            const float q_size = 2.0f;
+            if(m_lights[0]->GetType() == OMNI)
+            {
+                SetUniform("show_depth_omni", "far_plane", SHADOW_FAR);
+                SetUniform("show_depth_omni", "index", float(i));
+                RenderSmallQuad("show_depth_omni", 0.0f, 0*q_size, q_size);
+            }
+            else
+            {
+                SetUniform("show_depth", "far_plane", SHADOW_FAR);
+                RenderSmallQuad("show_depth", 0.0f, 0.0f, q_size);
+                break;
+            }
+        }	
+    }
+
 	if(m_dpshadow_method == WARP_DPSM)
     {
 		GLuint previewTexs[] =
@@ -300,26 +321,7 @@ void TScene::Redraw(bool delete_buffer)
 		m_shadow_technique->DrawGrid();
 	}
 
-    //show shadow maps 
-    if(m_draw_shadow_map)
-    {
-        for(int i=0; i<2; i++)
-        {
-            const float q_size = 0.5f;
-            if(m_lights[0]->GetType() == OMNI)
-            {
-                SetUniform("show_depth_omni", "far_plane", SHADOW_FAR);
-                SetUniform("show_depth_omni", "index", float(i));
-                RenderSmallQuad("show_depth_omni", 0.0f, i*q_size, q_size);
-            }
-            else
-            {
-                SetUniform("show_depth", "far_plane", SHADOW_FAR);
-                RenderSmallQuad("show_depth", 0.0f, 0.0f, q_size);
-                break;
-            }
-        }	
-    }
+
 
     //finish drawing, restore buffers
     glBindVertexArray(0);

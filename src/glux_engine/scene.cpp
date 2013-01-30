@@ -49,8 +49,6 @@ TScene::TScene()
 
 	//FIXME
 	m_texPreview_id = 0;
-	m_warping_enabled = true;
-	m_num_lines = 0;
 	m_shadow_technique = NULL;
 }
 

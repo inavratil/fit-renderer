@@ -350,7 +350,7 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
     //shader version. If OpenGL4 is supported, use 400, else 330
     string version = "#version 330 compatibility\n";
     if(GLEW_ARB_gpu_shader5)
-        version = "#version 400 compatibility\n";
+        version = "#version 400 core\n";
 
     //write shader header - version and defines
     string vertex_shader, fragment_shader, geometry_shader, tess_control_shader, tess_eval_shader;
