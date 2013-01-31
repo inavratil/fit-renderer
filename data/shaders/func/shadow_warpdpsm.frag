@@ -11,65 +11,103 @@ uniform mat4 lightModelView[2]; //model view matrices for front and back side of
 ////////////////////////////////////////////////////////////////////////////////
 //-- Warp dpsm - vertex shader                                                  
 
-uniform mat4 coeffsX;
-uniform mat4 coeffsY;
+//-- Shared uniforms
 uniform vec4 range;
+uniform float grid_res;
+
+#ifdef POLYNOMIAL_WARP
+	//-- Polynomial uniforms
+	uniform mat4 coeffsX;
+	uniform mat4 coeffsY;
+
+	//-- Bilinear uniforms
+	uniform sampler2D funcTex;
+#endif
 
 const float SCREEN_X = 128.0;
 const float SCREEN_Y = 128.0;
 
-const int INSIDE = 0;	//0x0000;
-const int TOP = 1;		//0x0001;
-const int BOTTOM = 2;	//0x0010;
-const int RIGHT = 4;	//0x0100;
-const int LEFT = 8;		//0x1000;
 
-int computeCode(vec2 _p)
-{
-        int ret;
- 
-        ret = INSIDE;       
- 
-        if (_p.x < range.x)           // to the left of clip window
-                ret |= LEFT;
-        else if (_p.x > range.y)      // to the right of clip window
-                ret |= RIGHT;
-        if (_p.y < range.z)           // below the clip window
-                ret |= BOTTOM;
-        else if (_p.y > range.w)      // above the clip window
-                ret |= TOP;
- 
-        return ret;
-}
-
-//------------------------------------------------------------------------------------
-// Polynomial warping
 
 vec2 computeDiff( vec4 _position )
 {
-	vec2 p = _position.xy;
-	p = p*0.5 + 0.5;
-	p = p * vec2( SCREEN_X, SCREEN_Y );
-
-	int code = computeCode(p);
+	//------------------------------------------------------------------------------------
+	//-- Initialization
 
 	vec2 delta = vec2( 0.0 );
-	//if ( code == INSIDE )
-	{
-		float new_x = (p.x - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
-		float new_y = (p.y - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
+	vec2 p = _position.xy;		//-- zde je p v intervalu [-1..1]
+	p = p*0.5 + 0.5;			//-- prevod p na interval [0..1]
 
-		vec4 X = vec4( 1.0, new_x, pow(new_x, 2.0), pow(new_x,3.0) );
-		vec4 Y = vec4( 1.0, new_y, pow(new_y, 2.0), pow(new_y,3.0) );
+	//------------------------------------------------------------------------------------
+	// Polynomial warping
+
+#ifdef POLYNOMIAL_WARP
+
+	p = p * vec2( SCREEN_X, SCREEN_Y );
+
+	float new_x = (p.x - range.x)/(range.y - range.x) * (3.0 - 0.0) + 0.0;
+	float new_y = (p.y - range.z)/(range.w - range.z) * (3.0 - 0.0) + 0.0;
+
+	vec4 X = vec4( 1.0, new_x, pow(new_x, 2.0), pow(new_x,3.0) );
+	vec4 Y = vec4( 1.0, new_y, pow(new_y, 2.0), pow(new_y,3.0) );
 		
-		vec4 temp = X * coeffsX;
-		delta.x = dot(temp, Y) * near_far_bias.z;
-		temp = X * coeffsY;
-		delta.y = dot(temp, Y) * near_far_bias.z;
-		delta.x = delta.x*2.0/3.0;
-		delta.y = delta.y*2.0/3.0;
-	}
+	vec4 temp = X * coeffsX;
+	delta.x = dot(temp, Y) * near_far_bias.z;
+	temp = X * coeffsY;
+	delta.y = dot(temp, Y) * near_far_bias.z;
 
+	//------------------------------------------------------------------------------------
+	//-- Bilinear warping
+
+#else ifdef BILINEAR_WARP
+
+	p = p * (grid_res-1); // prevod z [0..1] do [0..res-1]
+
+	//-- vypocet souradnice bunky, ve ktere se bod "p" nachazi
+	vec2 grid_coords = floor( p.xy );
+	
+	vec2 temp, X, Y;
+	mat2 M;
+	vec4 f_values;
+
+	//-- prevod do intervalu [0..1]
+	float x = fract(p.x);
+	float y = fract(p.y);
+
+	X = vec2(1-x,x);
+	Y = vec2(1-y,y);
+
+	//-- diff X
+	//FIXME: Nefunguje!?!? vec4 t = textureGather( funcTex, vec2(0,0));
+
+	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).r;
+	f_values.y = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,0) ).r;
+	f_values.z = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,1) ).r;
+	f_values.w = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,1) ).r;
+
+	M = mat2( f_values.xy, f_values.zw);
+
+	temp = X * M;
+	delta.x = dot(temp, Y) * near_far_bias.z;
+
+	//-- diff Y
+	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).g;
+	f_values.y = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,0) ).g;
+	f_values.z = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,1) ).g;
+	f_values.w = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,1) ).g;
+
+	M = mat2(f_values.xy, f_values.zw);
+
+	temp = X * M;
+	delta.y = dot(temp, Y) * near_far_bias.z;
+
+	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
+	delta.x *= 2.0;
+	delta.y *= 2.0;
+
+	//------------------------------------------------------------------------------------
+
+#endif
 	return delta;
 }
 

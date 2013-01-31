@@ -396,7 +396,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 	//-- Shared uniforms
 	SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-	SetUniform("mat_depth_with_warping", "range", mask_range);
+	SetUniform("mat_depth_with_warping", "range", m_shadow_technique->GetGridRange());
 	SetUniform("mat_depth_with_warping", "grid_res", (float) m_shadow_technique->GetResolution() );
 	
 	//-- Polynomial uniforms
@@ -509,6 +509,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		m_im->second->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 		m_im->second->SetUniform("coeffsX", coeffsX );
 		m_im->second->SetUniform("coeffsY", coeffsY );
-		m_im->second->SetUniform("range", mask_range);
+		m_im->second->SetUniform("range", m_shadow_technique->GetGridRange());
 	}
 }

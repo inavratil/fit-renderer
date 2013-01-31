@@ -69,11 +69,11 @@ glm::vec2 PolynomialWarpedShadow::ComputeDiff( glm::vec2 _P )
 
 	//FIXME: nemusi ty matice byt transponovane?? V octavu jsem je musel transponovat.
 	temp = X * m_matCoeffsX;
-	diff.x = glm::dot(temp, Y) * POLY_BIAS;
+	diff.x = glm::dot(temp, Y);
 	temp = X * m_matCoeffsY;
-	diff.y = glm::dot(temp, Y) * POLY_BIAS;
+	diff.y = glm::dot(temp, Y);
 
-	return diff;
+	return diff * POLY_BIAS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

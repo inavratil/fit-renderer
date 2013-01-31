@@ -126,14 +126,16 @@ void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
 			x0 = s/(float)K; x1 = s/(float)K;
 			y0 = (t+i*eps)/(float)K; y1 = (t+(i+1)*eps)/(float)K;
 	
-			glm::vec2 new_P(0.0);
+			glm::vec2 new_P(0.0), old_P(0.0);
 			glm::vec2 diff(0.0);
 	
 			//-- Uprava souradnic podle polynomu
 			diff = _pShadowTech->ComputeDiff( glm::vec2(x0, y0) );
 
-			//-- zde je nutny prevod z intervalu [0..3] do rozsahu mrizku (range)
-			new_P = convertRange( glm::vec2(x0,y0)+diff, glm::vec4(0.0, res-1, 0.0, res-1), range );
+			//-- prevod do intervalu [0..1], aby se diff mohl vztahovat k normalizovanym souradnicim
+			old_P = glm::vec2(x0, y0) / (float)(res-1);
+			//-- zde je nutny prevod z intervalu [0..1] do rozsahu mrizku (range)
+			new_P = convertRange( old_P+diff, glm::vec4(0, 1, 0, 1), range );
 
 			//-- ulozeni prvniho vrcholu cary
 			vertices.push_back( new_P ); 
@@ -148,8 +150,10 @@ void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
 			//-- Uprava souradnic podle polynomu
 			diff = _pShadowTech->ComputeDiff( glm::vec2(x1, y1) );
 
-			//-- zde je nutny prevod z intervalu [0..3] do rozsahu mrizku (range)
-			new_P = convertRange( glm::vec2(x1,y1)+diff, glm::vec4(0.0, res-1, 0.0, res-1), range );
+			//-- prevod do intervalu [0..1], aby se diff mohl vztahovat k normalizovanym souradnicim
+			old_P = glm::vec2(x1, y1) / (float)(res-1);
+			//-- zde je nutny prevod z intervalu [0..1] do rozsahu mrizku (range)
+			new_P = convertRange( old_P+diff, glm::vec4(0, 1, 0, 1), range );
 
 			//-- ulozeni druheho vrcholu cary
 			vertices.push_back( new_P ); 
@@ -170,13 +174,16 @@ void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
 			x0 = (s+i*eps)/(float)K; x1 = (s+(i+1)*eps)/(float)K;
 			y0 = t/(float)K; y1 = t/(float)K;
 	
-			glm::vec2 new_P(0.0);
+			glm::vec2 new_P(0.0), old_P(0.0);
 			glm::vec2 diff(0.0);
 	
 			//-- Uprava souradnic podle polynomu
 			diff = _pShadowTech->ComputeDiff( glm::vec2(x0, y0) );
 
-			new_P = convertRange( glm::vec2(x0,y0)+diff, glm::vec4(0.0, res-1, 0.0, res-1), range );
+			//-- prevod do intervalu [0..1], aby se diff mohl vztahovat k normalizovanym souradnicim
+			old_P = glm::vec2(x0, y0) / (float)(res-1);
+			//-- zde je nutny prevod z intervalu [0..1] do rozsahu mrizku (range)
+			new_P = convertRange( old_P+diff, glm::vec4(0, 1, 0, 1), range );
 
 			//-- ulozeni prvniho vrcholu cary
 			vertices.push_back( new_P );
@@ -191,7 +198,10 @@ void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
 			//-- Uprava souradnic podle polynomu
 			diff = _pShadowTech->ComputeDiff( glm::vec2(x1, y1) );
 
-			new_P = convertRange( glm::vec2(x1,y1)+diff, glm::vec4(0.0, res-1, 0.0, res-1), range );
+			//-- prevod do intervalu [0..1], aby se diff mohl vztahovat k normalizovanym souradnicim
+			old_P = glm::vec2(x1, y1) / (float)(res-1);
+			//-- zde je nutny prevod z intervalu [0..1] do rozsahu mrizku (range)
+			new_P = convertRange( old_P+diff, glm::vec4(0, 1, 0, 1), range );
 
 			vertices.push_back( new_P );
 			if(t % K == 0)

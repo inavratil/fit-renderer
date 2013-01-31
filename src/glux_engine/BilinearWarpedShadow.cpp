@@ -86,7 +86,7 @@ glm::vec2 BilinearWarpedShadow::ComputeDiff( glm::vec2 _P )
 	temp = X * M;
 	diff.y = glm::dot(temp, Y);
 
-	return diff;
+	return diff * POLY_BIAS;
 }
 
 #define I(i,j) (2*( (j)*(res) + (i) ))

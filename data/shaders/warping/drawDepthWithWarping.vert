@@ -74,15 +74,15 @@ void main(void)
 	dy = dot(temp, Y) * near_far_bias.z;
 
 	//FIXME: proc tady jsou 2/3 ???
-	dx = dx*2.0/3.0;
-	dy = dy*2.0/3.0;
+	dx = dx;
+	dy = dy;
 	
 	//------------------------------------------------------------------------------------
 	//-- Bilinear warping
 
 #else ifdef BILINEAR_WARP
 
-	p = p * (grid_res); // prevod z [0..1] do [0..res]
+	p = p * (grid_res-1); // prevod z [0..1] do [0..res-1]
 
 	//-- vypocet souradnice bunky, ve ktere se bod "p" nachazi
 	vec2 grid_coords = floor( p.xy );
@@ -112,7 +112,7 @@ void main(void)
 	M = mat2( f_values.xy, f_values.zw);
 
 	temp = X * M;
-	dx = dot(temp, Y);
+	dx = dot(temp, Y) * near_far_bias.z;
 
 	//-- diff Y
 	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).g;
@@ -123,7 +123,11 @@ void main(void)
 	M = mat2(f_values.xy, f_values.zw);
 
 	temp = X * M;
-	dy = dot(temp, Y);
+	dy = dot(temp, Y) * near_far_bias.z;
+
+	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
+	dx *= 2.0;
+	dy *= 2.0;
 
 	//------------------------------------------------------------------------------------
 
