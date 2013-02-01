@@ -198,7 +198,10 @@ bool TScene::PostInit()
             //add shadow map to all materials (except those who don't receive shadows)
             for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
                 if(m_im->second->GetSceneID() == m_sceneID && !m_im->second->IsScreenSpace())
-                    m_im->second->AddShadowMap((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
+				{
+                    m_im->second->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
+					m_im->second->AddFeature(m_shadow_technique->GetShaderFeature());
+				}
 
             CreateDataTexture("select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_TEXTURE_2D);
             //create render target for depth calculations

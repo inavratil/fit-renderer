@@ -1,6 +1,7 @@
 #include "BilinearWarpedShadow.h"
 
 #include "shadow.h"
+#include "shaderGen/SFBilinearWarpedShadow.h"
 
 BilinearWarpedShadow::BilinearWarpedShadow()
 {
@@ -18,6 +19,8 @@ void BilinearWarpedShadow::_Init()
 	m_sDefines = "#define BILINEAR_WARP\n";
 
 	m_pFuncValues = NULL;
+
+	m_pShaderFeature = new SFBilinearWarpedShadow();
 }
 
 bool BilinearWarpedShadow::Initialize(TLight* _light)

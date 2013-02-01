@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //-- Warp dpsm - fragment shader
 
-in vec4 o_vertex;       //input vertex
+in vec4 io_ObjSpacePosition;       //input vertex
 uniform vec3 near_far_bias; // near and far plane for cm-cams
 
 uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
@@ -15,6 +15,7 @@ uniform mat4 lightModelView[2]; //model view matrices for front and back side of
 uniform vec4 range;
 uniform float grid_res;
 
+#define POLYNOMIAL_WARP
 #ifdef POLYNOMIAL_WARP
 	//-- Polynomial uniforms
 	uniform mat4 coeffsX;
@@ -26,8 +27,6 @@ uniform float grid_res;
 
 const float SCREEN_X = 128.0;
 const float SCREEN_Y = 128.0;
-
-
 
 vec2 computeDiff( vec4 _position )
 {
@@ -118,7 +117,7 @@ vec3 DPCoordsFront()
 { 
     vec4 texCoords;
 
-    texCoords = lightModelView[0] * o_vertex;
+    texCoords = lightModelView[0] * io_ObjSpacePosition;
 
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
@@ -142,7 +141,7 @@ vec3 DPCoordsFront()
 vec3 DPCoordsBack(out vec2 d)
 {
     vec4 texCoords;
-    texCoords = lightModelView[1] * o_vertex;
+    texCoords = lightModelView[1] * io_ObjSpacePosition;
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
 
@@ -171,7 +170,7 @@ float ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
     vec3 back_coords = DPCoordsBack(delta_back);
 
     //calculate split plane position between paraboloids
-    float split_plane = vec4(lightModelView[0] * o_vertex).z;
+    float split_plane = vec4(lightModelView[0] * io_ObjSpacePosition).z;
 
     float depth, mydepth;
 

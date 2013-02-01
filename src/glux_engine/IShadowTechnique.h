@@ -4,6 +4,7 @@
 #include "light.h"
 #include "ScreenGrid.h"
 #include "material.h"
+#include "shaderGen/ShaderFeature.h"
 
 class ScreenGrid;
 
@@ -19,6 +20,7 @@ protected:
 
 	GLuint			m_iTexID;
 	ScreenGrid*		m_pScreenGrid;
+	ShaderFeature*	m_pShaderFeature;
 
 public:
 	IShadowTechnique();
@@ -48,6 +50,9 @@ public:
 	void SetTexId( GLuint _texid);
 
 	ScreenGrid* GetGrid();
+	
+	void SetShaderFeature( ShaderFeature* _pFeature );
+	ShaderFeature* GetShaderFeature();
 
 	//-- Miscellaneous
 
@@ -58,6 +63,7 @@ public:
 
 private:
 	void _Init( GLuint _texid );
+	void _Destroy();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

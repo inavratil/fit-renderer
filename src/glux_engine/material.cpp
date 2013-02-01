@@ -243,36 +243,45 @@ GLint TMaterial::AddTextureData(const char *texname, GLint textype, const void *
 @param map pointer to texture data
 @param intensity shadow intensity (0 - transparent, 1 - opaque)
 ***************************************************************************************************/
-void TMaterial::AddShadowMap(int type, GLuint map, GLfloat intensity)
+void TMaterial::AddTextureFromCache(int type, GLuint id, GLfloat intensity)
 {
+	//FIXME: need to check if texutre with id exists in the cache
+
     //don't add shadow map for materials whose don't want to receive shadows!
     if(!m_receive_shadows) 
         return;
 
+	//create texture
+    Texture *tex = new Texture();
+    tex->SetID(id);
+
     ///1. generate new shadow texture name using TMaterial::NextTexture()
     string texname;
-    if(type == OMNI)
-        texname = NextTexture(m_name + "ShadowOMNI_A");
-    else
-        texname = NextTexture(m_name + "ShadowA");
-
-    //create shadow texture
-    Texture *shadow_tex = new Texture();
-    shadow_tex->SetID(map);
-    shadow_tex->SetName(texname);
-
-    if(type == OMNI)
-        shadow_tex->SetType(SHADOW_OMNI);
-    else
-        shadow_tex->SetType(SHADOW);
+	switch(type)
+	{
+	case SPOT: 
+		texname = NextTexture(m_name + "ShadowA"); 
+		tex->SetType(SHADOW);
+		break;
+	case OMNI: 
+		texname = NextTexture(m_name + "ShadowOMNI_A"); 
+		tex->SetType(SHADOW_OMNI);
+		break;
+	case CUSTOM:
+		texname = NextTexture(m_name + "Custom_A"); 
+		tex->SetType(CUSTOM);
+		break;
+	}
+	
+    tex->SetName(texname);      
 
     ///@todo 2: if material is transparent, modify intensity of shadow
     if(m_transparency > 0.0) 
         intensity = m_transparency;
 
-    shadow_tex->SetIntensity(intensity);
+    tex->SetIntensity(intensity);
     //add into list
-    m_textures[texname] = shadow_tex;
+    m_textures[texname] = tex;
 }
 
 
@@ -514,4 +523,20 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
     m_baked = true;
     m_custom_shader = true;
     return !compile_err;
+}
+
+void TMaterial::AddFeature( ShaderFeature* _pFeat )
+{
+	if( m_custom_shader || this->IsScreenSpace() )
+		return;
+
+	vector<GLuint> textures = _pFeat->GetTextures();
+	vector<GLuint>::iterator it;
+
+	for( it = textures.begin(); it != textures.end(); ++it )
+	{
+		this->AddTextureFromCache( CUSTOM, *it, 1 );
+	}
+
+	m_features.push_back( _pFeat );
 }

@@ -504,11 +504,14 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//set light matrices and near/far planes to all materials
 	for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
 	{
-		m_im->second->SetUniform("lightModelView[0]", lightViewMatrix[0]);
-		m_im->second->SetUniform("lightModelView[1]", lightViewMatrix[1]);
-		m_im->second->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-		m_im->second->SetUniform("coeffsX", coeffsX );
-		m_im->second->SetUniform("coeffsY", coeffsY );
-		m_im->second->SetUniform("range", m_shadow_technique->GetGridRange());
+		if(m_im->second->GetSceneID() == m_sceneID && !m_im->second->IsScreenSpace())
+		{
+			m_im->second->SetUniform("lightModelView[0]", lightViewMatrix[0]);
+			m_im->second->SetUniform("lightModelView[1]", lightViewMatrix[1]);
+			m_im->second->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+			m_im->second->SetUniform("coeffsX", coeffsX );
+			m_im->second->SetUniform("coeffsY", coeffsY );
+			m_im->second->SetUniform("range", m_shadow_technique->GetGridRange());
+		}
 	}
 }

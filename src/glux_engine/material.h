@@ -6,6 +6,7 @@
 #define _MATERIAL_H_
 
 #include "texture.h"
+#include "shaderGen/ShaderFeature.h"
 
 ///Aligned buffer size
 #define BUFFER 512
@@ -78,6 +79,9 @@ private:
     //scene ID - when drawing more scenes than 1
     int m_sceneID;
 
+	vector<ShaderFeature*>::iterator	m_if;
+	vector<ShaderFeature*>				m_features;
+
 public:
     //material creation
     TMaterial(const char* name, unsigned id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, 
@@ -144,7 +148,7 @@ public:
     }
 
     //add shadow map
-    void AddShadowMap(int type, GLuint map, GLfloat intensity);
+    void AddTextureFromCache(int type, GLuint id, GLfloat intensity);
     //remove all shadow maps
     void RemoveShadows();
 
@@ -252,6 +256,8 @@ public:
         }
         return 0;
     }
+
+	void AddFeature( ShaderFeature* _pFeat );
 };
 
 #endif

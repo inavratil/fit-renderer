@@ -13,13 +13,19 @@ IShadowTechnique::IShadowTechnique( GLuint _texid )
 
 IShadowTechnique::~IShadowTechnique(void)
 {
-	delete m_pScreenGrid;
+	_Destroy();
 }
 
 void IShadowTechnique::_Init( GLuint _texid )
 {
 	m_iTexID = _texid;
 	m_pScreenGrid = new ScreenGrid( m_cDefaultRes );
+}
+
+void IShadowTechnique::_Destroy()
+{
+	delete m_pScreenGrid;
+	delete m_pShaderFeature;
 }
 
 void IShadowTechnique::SetResolution( float _res )
@@ -70,6 +76,16 @@ void IShadowTechnique::SetTexId( GLuint _texid)
 ScreenGrid* IShadowTechnique::GetGrid()
 {
 	return m_pScreenGrid;
+}
+
+void IShadowTechnique::SetShaderFeature( ShaderFeature* _pFeature )
+{
+	m_pShaderFeature = _pFeature;
+}
+
+ShaderFeature* IShadowTechnique::GetShaderFeature()
+{
+	return m_pShaderFeature;
 }
 
 void IShadowTechnique::UpdateGridRange( glm::vec4 _range )
