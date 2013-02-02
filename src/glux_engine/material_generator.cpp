@@ -416,8 +416,14 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 
     for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
     {
-		//FIXME: misto SHADOW* sem ma prijit CUSTOM
-        if(!m_it->second->Empty() && m_it->second->GetType() != SHADOW && m_it->second->GetType() != SHADOW_OMNI && m_it->second->GetType() != DISPLACE )
+		
+        if(!m_it->second->Empty() &&
+			//FIXME: misto SHADOW* sem ma prijit CUSTOM 
+			m_it->second->GetType() != SHADOW && 
+			m_it->second->GetType() != SHADOW_OMNI && 
+			//FIXME: Lepsi ..
+			m_it->second->GetType() != CUSTOM &&
+			m_it->second->GetType() != DISPLACE )
         {
             frag_main += "\n  vec4 " + m_it->first + "_texture;\n";
 

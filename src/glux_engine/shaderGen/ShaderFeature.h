@@ -48,6 +48,7 @@ public:
 	void AddVariable( string _name, string _type, int _varType );
 	void ModifyVariable( string _name, string _opperation, string _opperand, int _shaderType );
 
+	void AddTexture( GLuint _id, float _intensity );
 	vector<GLuint> & GetTextures();
 
 	virtual string GetVars( int _shaderType );
