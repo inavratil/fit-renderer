@@ -68,6 +68,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
 		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		m_shadow_technique->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", m_tex_cache["MTEX_2Dfunc_values"], 1.0, ShaderFeature::VS );
         
 		//create renderbuffers
 		glGenRenderbuffers(1, &m_aerr_r_buffer_depth);

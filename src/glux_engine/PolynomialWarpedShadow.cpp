@@ -1,6 +1,7 @@
 #include "PolynomialWarpedShadow.h"
 
 #include "shadow.h"
+#include "shaderGen/SFPolynomialWarpedShadow.h"
 
 PolynomialWarpedShadow::PolynomialWarpedShadow()
 {
@@ -26,6 +27,8 @@ void PolynomialWarpedShadow::_Init( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 	m_matCoeffsY = _coeffsY;
 
 	m_pScreenGrid->SetResolution(4);
+
+	m_pShaderFeature = new SFPolynomialWarpedShadow();
 }
 
 bool PolynomialWarpedShadow::Initialize(TLight* _light)

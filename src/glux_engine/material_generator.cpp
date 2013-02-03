@@ -606,6 +606,13 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     ////////////////////////////////////////////////////////////////////////////////
     //-- 3.5 Finalize (with transparency or alpha test)
 
+	
+	for( m_if = m_features.begin(); m_if != m_features.end(); ++m_if )
+	{
+		frag_vars += (*m_if)->GetVars( ShaderFeature::FS );
+		frag_main += (*m_if)->GetModifiers( ShaderFeature::FS );
+	}
+
     frag_main +=
         "\n  //FINAL fragment color\n";
 

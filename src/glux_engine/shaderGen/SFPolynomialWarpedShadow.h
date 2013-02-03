@@ -1,16 +1,16 @@
-#ifndef _SFBILINEARWARPEDSHADOW_H_
-#define _SFBILINEARWARPEDSHADOW_H_
+#ifndef _SFPOLYNOMIALRWARPEDSHADOW_H_
+#define _SFPOLYNOMIALRWARPEDSHADOW_H_
 
 #include "ShaderFeature.h"
 
-class SFBilinearWarpedShadow 
+class SFPolynomialWarpedShadow 
 	: public ShaderFeature
 {
 protected:
 
 public:
-	SFBilinearWarpedShadow();
-	~SFBilinearWarpedShadow();
+	SFPolynomialWarpedShadow();
+	~SFPolynomialWarpedShadow();
 
 	virtual void Init();
 

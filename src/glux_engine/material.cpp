@@ -530,13 +530,5 @@ void TMaterial::AddFeature( ShaderFeature* _pFeat )
 	if( m_custom_shader || this->IsScreenSpace() )
 		return;
 
-	vector<GLuint> textures = _pFeat->GetTextures();
-	vector<GLuint>::iterator it;
-
-	for( it = textures.begin(); it != textures.end(); ++it )
-	{
-		this->AddTextureFromCache( CUSTOM, *it, 1 );
-	}
-
 	m_features.push_back( _pFeat );
 }

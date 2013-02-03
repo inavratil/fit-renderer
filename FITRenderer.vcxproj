@@ -111,11 +111,13 @@
     <ClCompile Include="src\glux_engine\SceneManager.cpp" />
     <ClCompile Include="src\glux_engine\ScreenGrid.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.cpp" />
+    <ClCompile Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp" />
     <ClCompile Include="src\glux_engine\shadow.cpp" />
     <ClCompile Include="src\glux_engine\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
     <ClCompile Include="src\glux_engine\TextureCache.cpp" />
+    <ClCompile Include="src\glux_engine\TextureUser.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ipsm2.cpp" />
   </ItemGroup>
@@ -136,12 +138,14 @@
     <ClInclude Include="src\glux_engine\SceneManager.h" />
     <ClInclude Include="src\glux_engine\ScreenGrid.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.h" />
+    <ClInclude Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\shaderGen\ShaderFeature.h" />
     <ClInclude Include="src\glux_engine\shaderGen\shader_generator.h" />
     <ClInclude Include="src\glux_engine\shadow.h" />
     <ClInclude Include="src\glux_engine\Singleton.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
     <ClInclude Include="src\glux_engine\TextureCache.h" />
+    <ClInclude Include="src\glux_engine\TextureUser.h" />
     <ClInclude Include="src\glux_engine\timer.h" />
     <ClInclude Include="src\main_ui.h" />
   </ItemGroup>

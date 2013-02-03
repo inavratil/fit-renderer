@@ -18,6 +18,13 @@ struct Modifier {
 	int shType;
 };
 
+//FIXME: takto zpracovane textury jsou divne a asi to bude nutne predelat
+struct FeatureTexure {
+	GLuint id;
+	float intensity;
+	int shType;
+};
+
 const string InOut[] = { SG_IN, SG_OUT };
 
 class ShaderFeature
@@ -33,8 +40,9 @@ protected:
 	vector<Modifier>::iterator m_im;
 	vector<Modifier>			m_modifiers;
 
-	vector<GLuint>::iterator m_it;
-	vector<GLuint>			m_textures;
+	//FIXME: Tohle je taky divne
+	map<string,FeatureTexure>::iterator m_it;
+	map<string,FeatureTexure>			m_textures;
 
 
 public:
@@ -48,8 +56,8 @@ public:
 	void AddVariable( string _name, string _type, int _varType );
 	void ModifyVariable( string _name, string _opperation, string _opperand, int _shaderType );
 
-	void AddTexture( GLuint _id, float _intensity );
-	vector<GLuint> & GetTextures();
+	void AddTexture( string _name, GLuint _id, float _intensity = 1.0, int _shaderType = FS );
+	map<string,FeatureTexure> & GetTextures();
 
 	virtual string GetVars( int _shaderType );
 	virtual string GetModifiers( int _shaderType );

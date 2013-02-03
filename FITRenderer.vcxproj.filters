@@ -73,6 +73,12 @@
     <ClCompile Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\TextureUser.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -145,6 +151,12 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\TextureUser.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

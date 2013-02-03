@@ -1,29 +1,8 @@
+
 ////////////////////////////////////////////////////////////////////////////////
-//-- Warp dpsm - fragment shader
-
-in vec4 io_ObjSpacePosition;       //input vertex
-uniform vec3 near_far_bias; // near and far plane for cm-cams
-
-uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
+//-- Warp dpsm - fragment shader   
 
 #define POLY_OFFSET 100.0
-
-////////////////////////////////////////////////////////////////////////////////
-//-- Warp dpsm - vertex shader                                                  
-
-//-- Shared uniforms
-uniform vec4 range;
-uniform float grid_res;
-
-#define POLYNOMIAL_WARP
-#ifdef POLYNOMIAL_WARP
-	//-- Polynomial uniforms
-	uniform mat4 coeffsX;
-	uniform mat4 coeffsY;
-
-	//-- Bilinear uniforms
-	uniform sampler2D funcTex;
-#endif
 
 const float SCREEN_X = 128.0;
 const float SCREEN_Y = 128.0;

@@ -39,7 +39,17 @@ void ShaderFeature::ModifyVariable( string _name, string _opperation, string _op
 	m_modifiers.push_back( m );
 }
 
-vector<GLuint> & ShaderFeature::GetTextures()
+void ShaderFeature::AddTexture( string _name, GLuint _id, float _intensity, int _shaderType )
+{
+	FeatureTexure t;
+	t.id = _id;
+	t.intensity = _intensity;
+	t.shType = _shaderType;
+
+	m_textures[_name] = t;
+}
+
+map<string,FeatureTexure> & ShaderFeature::GetTextures()
 {
 	return m_textures;
 }
@@ -60,7 +70,13 @@ string ShaderFeature::GetVars( int _shaderType )
 			uniforms += SG_UNIFORM + v.type + v.name + SG_SEMINL;
 	}
 
-	output = ioVars + SG_NEWLINE + uniforms;
+	for( m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it )
+	{
+		if( _shaderType & m_it->second.shType )
+			uniforms += SG_UNIFORM + SG_SAMPLER2D + m_it->first + SG_SEMINL;
+	}
+
+	output = ioVars + SG_NEWLINE + uniforms + SG_NEWLINE;
 
 	return output;
 }

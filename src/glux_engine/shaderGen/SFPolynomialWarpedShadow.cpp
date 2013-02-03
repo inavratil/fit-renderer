@@ -1,21 +1,21 @@
-#include "SFBilinearWarpedShadow.h"
+#include "SFPolynomialWarpedShadow.h"
 
-SFBilinearWarpedShadow::SFBilinearWarpedShadow()
+SFPolynomialWarpedShadow::SFPolynomialWarpedShadow()
 {
 	Init();
 }
 
-SFBilinearWarpedShadow::~SFBilinearWarpedShadow()
+SFPolynomialWarpedShadow::~SFPolynomialWarpedShadow()
 {
 }
 
-void SFBilinearWarpedShadow::Init()
+void SFPolynomialWarpedShadow::Init()
 {
 	AddVariable("ObjSpacePosition", SG_VEC4, ShaderFeature::INOUT);
 	ModifyVariable("ObjSpacePosition", SG_ASSIGN, SG_V4_VERTCOORD, ShaderFeature::VS);	//vertex object-space position
 }
 
-string SFBilinearWarpedShadow::GetVars( int _shaderType )
+string SFPolynomialWarpedShadow::GetVars( int _shaderType )
 {
 	string output = ShaderFeature::GetVars( _shaderType );;
 
@@ -30,14 +30,15 @@ string SFBilinearWarpedShadow::GetVars( int _shaderType )
 			"\n"
 			"uniform vec4 range;\n"
 			"uniform float grid_res;\n"
-			"uniform sampler2D funcTex;\n"
-			"\n";
+			"\n"
+			"uniform mat4 coeffsX;\n"
+			"uniform mat4 coeffsY;\n";
 	}
 
 	return output;
 }
 
-string SFBilinearWarpedShadow::GetModifiers( int _shaderType )
+string SFPolynomialWarpedShadow::GetModifiers( int _shaderType )
 {
 	return ShaderFeature::GetModifiers( _shaderType );
 }
