@@ -40,6 +40,7 @@ public:
 	inline void UpdateRange( glm::vec4 _range );
 	inline glm::vec4 GetRange();
 	inline glm::vec4 GetRangeAsOriginStep();
+	inline glm::vec2 GetOffset();
 
 	inline void SetResolution( int _res );
 	inline int GetResolution();
@@ -93,6 +94,11 @@ inline glm::vec4 ScreenGrid::GetRange()
 inline glm::vec4 ScreenGrid::GetRangeAsOriginStep()
 {
 	return glm::vec4(_Left(), m_vStep.x, _Bottom(), m_vStep.y);
+}
+
+inline glm::vec2 ScreenGrid::GetOffset()
+{
+	return m_vOffset;
 }
 
 inline void ScreenGrid::SetResolution( int _res )

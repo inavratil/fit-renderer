@@ -54,6 +54,16 @@ map<string,FeatureTexure> & ShaderFeature::GetTextures()
 	return m_textures;
 }
 
+void ShaderFeature::ActivateTextures( GLuint _shader, int& _unitId )
+{
+	
+	for( m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it )
+	{
+		glUniform1i(glGetUniformLocation(_shader, m_it->first.c_str()), _unitId++);
+	}
+	
+}
+
 string ShaderFeature::GetVars( int _shaderType )
 {
 	string output;
@@ -72,7 +82,7 @@ string ShaderFeature::GetVars( int _shaderType )
 
 	for( m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it )
 	{
-		if( _shaderType & m_it->second.shType )
+		if( _shaderType == m_it->second.shType )
 			uniforms += SG_UNIFORM + SG_SAMPLER2D + m_it->first + SG_SEMINL;
 	}
 
@@ -92,6 +102,13 @@ string ShaderFeature::GetModifiers( int _shaderType )
 		if( _shaderType == m.shType )
 			output += m.value;
 	}
+
+	return output;
+}
+
+string ShaderFeature::GetFunc( int _shaderType )
+{
+	string output;
 
 	return output;
 }

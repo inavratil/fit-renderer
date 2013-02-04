@@ -158,8 +158,10 @@
     <None Include="data\shaders\func\env.frag" />
     <None Include="data\shaders\func\light.frag" />
     <None Include="data\shaders\func\shadow.frag" />
+    <None Include="data\shaders\func\shadow_cut.frag" />
     <None Include="data\shaders\func\shadow_omni.frag" />
     <None Include="data\shaders\func\shadow_warpdpsm.frag" />
+    <None Include="data\shaders\func\warp_bilinear.frag" />
     <None Include="data\shaders\progress_bar.frag" />
     <None Include="data\shaders\quad.frag" />
     <None Include="data\shaders\quad.vert" />

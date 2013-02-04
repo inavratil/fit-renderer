@@ -498,6 +498,18 @@ void TScene::AddTextureData(const char *name, const char *tex_name, const void *
     //LoadScreen();	//update loading screen
 }
 
+void TScene::RemoveTexture( const char *name, const char *_texName )
+{
+	//material existence control
+    if(m_materials.find(name) == m_materials.end())
+    {
+        cerr<<"WARNING (AddTextureData): no material with name "<<name<<"\n";
+        return;
+    }
+
+	m_materials[name]->RemoveTexture(_texName);
+}
+
 /**
 ****************************************************************************************************
 @brief Bind material(identified by mat_name) to object(identified by obj_name)

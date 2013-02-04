@@ -7,14 +7,14 @@
 
 #include "shaderGen/shader_generator.h"
 
+
 /**
 ****************************************************************************************************
 @brief Load shader function from file
 @param func shader function source file 
 @return string with shader function source
 ***************************************************************************************************/
-
-string LoadFunc(char* func, char* type = ".frag" )
+string LoadFunc(char* func, char* type)
 {
     string file;
     file += "data/shaders/func/";
@@ -30,7 +30,6 @@ string LoadFunc(char* func, char* type = ".frag" )
 
     return data;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //************************* TMaterial methods ********************************//
@@ -555,9 +554,8 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                 //insert shadow function (only once)
                 if(m_it->first.find("ShadowOMNI_A") != string::npos)
 					if( dpshadow_method == CUT || dpshadow_method == DPSM  )
-						frag_func += LoadFunc("shadow_omni");
-					else if ( dpshadow_method == WARP_DPSM )
-						frag_func += LoadFunc("shadow_warpdpsm");
+						frag_func += LoadFunc("shadow_cut");
+						
 
 				//FIXME: jako parametr funkce dat m_variables["ObjSpacePosition"]
                 frag_main += "\n  //Shadow map projection\n"
@@ -610,6 +608,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 	for( m_if = m_features.begin(); m_if != m_features.end(); ++m_if )
 	{
 		frag_vars += (*m_if)->GetVars( ShaderFeature::FS );
+		frag_func += (*m_if)->GetFunc( ShaderFeature::FS );
 		frag_main += (*m_if)->GetModifiers( ShaderFeature::FS );
 	}
 

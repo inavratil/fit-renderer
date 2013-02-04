@@ -58,9 +58,11 @@ public:
 
 	void AddTexture( string _name, GLuint _id, float _intensity = 1.0, int _shaderType = FS );
 	map<string,FeatureTexure> & GetTextures();
+	void ActivateTextures( GLuint _shader, int& _unitId );
 
 	virtual string GetVars( int _shaderType );
 	virtual string GetModifiers( int _shaderType );
+	virtual string GetFunc( int _shaderType );
 };
 
 #endif

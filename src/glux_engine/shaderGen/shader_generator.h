@@ -43,4 +43,9 @@ const string SG_SEMI =			";";
 const string SG_SEMINL =		";\n";
 const string SG_TAB =			"\t";
 
+//------------------------------------------------------------------------------
+//-- Functions
+
+string LoadFunc(char* func, char* type = ".frag" );
+
 #endif

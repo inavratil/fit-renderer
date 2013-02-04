@@ -4,11 +4,11 @@ out vec4 out_FragColor;
 in vec2 fragTexCoord;
 
 uniform sampler2D bloom_texture;
-const int kernel_size = 8;
+uniform float kernel_size;
 
 //Gaussian filter constant
-const float sigma = 25.132741;  // = 2*PI*sigma^2
-const float frac_sqrt_sigma = 0.1994711;  // = 1.0/sqrt(2*PI*sigma^2)
+uniform float sigma;  // = 2*PI*sigma^2
+uniform float frac_sqrt_sigma;  // = 1.0/sqrt(2*PI*sigma^2)
 
 uniform ivec2 texsize;
 

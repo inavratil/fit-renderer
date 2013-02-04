@@ -49,35 +49,35 @@
     <ClCompile Include="src\glux_engine\Singleton.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\IShadowTechnique.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ipsm2.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\ScreenGrid.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\TextureCache.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\TextureUser.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.cpp">
+      <Filter>Source files\Shader Generation</Filter>
+    </ClCompile>
     <ClCompile Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.cpp">
-      <Filter>Source files</Filter>
+      <Filter>Source files\Shader Generation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp">
+      <Filter>Source files\Shader Generation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp">
+      <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\IShadowTechnique.cpp">
+      <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp">
+      <Filter>Source files\Shadow Techniques</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,35 +129,35 @@
     <ClInclude Include="src\experiments.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\IShadowTechnique.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\ScreenGrid.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h">
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\TextureCache.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\shaderGen\shader_generator.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\shaderGen\ShaderFeature.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\TextureUser.h">
       <Filter>Header files</Filter>
     </ClInclude>
+    <ClInclude Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.h">
+      <Filter>Header files\Shader Generation</Filter>
+    </ClInclude>
     <ClInclude Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.h">
-      <Filter>Header files</Filter>
+      <Filter>Header files\Shader Generation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\shaderGen\shader_generator.h">
+      <Filter>Header files\Shader Generation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\shaderGen\ShaderFeature.h">
+      <Filter>Header files\Shader Generation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h">
+      <Filter>Header files\Shadow Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\IShadowTechnique.h">
+      <Filter>Header files\Shadow Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h">
+      <Filter>Header files\Shadow Techniques</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -239,9 +239,6 @@
     <None Include="data\shaders\func\shadow.frag">
       <Filter>Shaders\func</Filter>
     </None>
-    <None Include="data\shaders\func\shadow_omni.frag">
-      <Filter>Shaders\func</Filter>
-    </None>
     <None Include="data\shaders\warping\aliasblur.frag">
       <Filter>Shaders\warp</Filter>
     </None>
@@ -311,6 +308,15 @@
     <None Include="data\shaders\warping\dbg_polynomials_grid.vert">
       <Filter>Shaders\warp</Filter>
     </None>
+    <None Include="data\shaders\func\warp_bilinear.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+    <None Include="data\shaders\func\shadow_cut.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+    <None Include="data\shaders\func\shadow_omni.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header files">
@@ -336,6 +342,18 @@
     </Filter>
     <Filter Include="Shaders\warp">
       <UniqueIdentifier>{56db86c2-b00e-4267-b42d-fa5467e408c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Shader Generation">
+      <UniqueIdentifier>{8d135884-98eb-4866-88b0-125446656b37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Shader Generation">
+      <UniqueIdentifier>{7a354d8b-bded-4374-b472-07b5d7ef39e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Shadow Techniques">
+      <UniqueIdentifier>{253c72bb-3dc4-4987-a4a8-73a66ab3070b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Shadow Techniques">
+      <UniqueIdentifier>{457922a1-f12c-44ef-bcb3-9ca5d5ff8d32}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

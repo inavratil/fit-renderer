@@ -30,7 +30,6 @@ string SFBilinearWarpedShadow::GetVars( int _shaderType )
 			"\n"
 			"uniform vec4 range;\n"
 			"uniform float grid_res;\n"
-			"uniform sampler2D funcTex;\n"
 			"\n";
 	}
 
@@ -40,4 +39,14 @@ string SFBilinearWarpedShadow::GetVars( int _shaderType )
 string SFBilinearWarpedShadow::GetModifiers( int _shaderType )
 {
 	return ShaderFeature::GetModifiers( _shaderType );
+}
+
+string SFBilinearWarpedShadow::GetFunc( int _shaderType )
+{
+	string output;
+
+	output += LoadFunc("warp_bilinear");
+	output += LoadFunc("shadow_omni");
+
+	return output;
 }

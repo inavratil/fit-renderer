@@ -16,6 +16,7 @@ public:
 
 	virtual string GetVars( int _shaderType );
 	virtual string GetModifiers( int _shaderType );
+	virtual string GetFunc( int _shaderType );
 };
 
 #endif

@@ -102,7 +102,7 @@ bool InitScene(int resx, int resy)
             //s->LoadScene("data/obj/scenes/sibenik.3ds");
             //s->MoveLight(0, glm::vec3(-120, 350, 0));
 
-			s->LoadScene("data/obj/scenes/testing.3ds");
+			s->LoadScene("data/obj/scenes/testing_tess.3ds");
 			s->MoveLight(0, glm::vec3(123,98,-43) );
         }
         //scene 3 - bad scene

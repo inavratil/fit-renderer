@@ -236,6 +236,11 @@ GLint TMaterial::AddTextureData(const char *texname, GLint textype, const void *
     return m_textures[texname]->Load(texname, textype, texdata, tex_size, tex_format, data_type, texmode, intensity, tileX, tileY, mipmap, aniso);
 }
 
+void TMaterial::RemoveTexture( const char *_texName )
+{	
+	m_textures.erase(_texName);
+}
+
 /**
 ****************************************************************************************************
 @brief Add shadow map
@@ -260,15 +265,15 @@ void TMaterial::AddTextureFromCache(int type, GLuint id, GLfloat intensity)
 	switch(type)
 	{
 	case SPOT: 
-		texname = NextTexture(m_name + "ShadowA"); 
+		texname = NextTexture(m_name + "_texShadow_A"); 
 		tex->SetType(SHADOW);
 		break;
 	case OMNI: 
-		texname = NextTexture(m_name + "ShadowOMNI_A"); 
+		texname = NextTexture(m_name + "_texShadowOMNI_A"); 
 		tex->SetType(SHADOW_OMNI);
 		break;
 	case CUSTOM:
-		texname = NextTexture(m_name + "Custom_A"); 
+		texname = NextTexture(m_name + "_texCustom_A"); 
 		tex->SetType(CUSTOM);
 		break;
 	}
@@ -325,6 +330,12 @@ void TMaterial::RenderMaterial()
             i++;
         }
     }
+
+	for( m_if = m_features.begin(); m_if != m_features.end(); ++m_if )
+	{
+		(*m_if)->ActivateTextures( m_shader, i );
+	}
+
 #ifdef VERBOSE
     cout<<"...done\n";
 #endif

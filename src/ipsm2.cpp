@@ -65,10 +65,12 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//2D polynomials coefficients
 		//FIXME: precision??? nestaci 16F ?
-		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
-		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		m_shadow_technique->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", m_tex_cache["MTEX_2Dfunc_values"], 1.0, ShaderFeature::VS );
+		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA16F, GL_FLOAT);
+		CreateDataTexture("MTEX_2Dfunc_values_ping", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA16F, GL_FLOAT);
+		//glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//FIXME: Tohle by melo prijit do Init metody dane shadow techniky
+		m_shadow_technique->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", m_tex_cache["MTEX_2Dfunc_values"], 1.0, ShaderFeature::FS );
         
 		//create renderbuffers
 		glGenRenderbuffers(1, &m_aerr_r_buffer_depth);
@@ -132,14 +134,9 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//blur
 		AddMaterial("mat_aliasblur_horiz",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		AddTexture("mat_aliasblur_horiz","MTEX_output",RENDER_TEXTURE);
 		CustomShader("mat_aliasblur_horiz","data/shaders/quad.vert","data/shaders/warping/aliasblur.frag", " ","#define HORIZONTAL\n");
-		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));       //send texture size info
-
 		AddMaterial("mat_aliasblur_vert",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		AddTexture("mat_aliasblur_vert","MTEX_ping",RENDER_TEXTURE);
 		CustomShader("mat_aliasblur_vert","data/shaders/quad.vert","data/shaders/warping/aliasblur.frag", " ", "#define VERTICAL\n");
-		SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(sh_res/8, sh_res/8));       //send texture size info
 
 		//alias gradient
 		AddMaterial("mat_aliasgradient",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
@@ -307,12 +304,23 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		}
 		glViewport(0,0,sh_res/8,sh_res/8);  //restore viewport
 		*/
+		
+		glDisable(GL_DEPTH_TEST);
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 3. Blur the alias error
 		//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
 
-		glDisable(GL_DEPTH_TEST);
+		AddTexture("mat_aliasblur_horiz","MTEX_output",RENDER_TEXTURE);
+		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));
+		SetUniform("mat_aliasblur_horiz", "kernel_size", 8.0);
+		SetUniform("mat_aliasblur_horiz", "sigma", 25.132741);
+		SetUniform("mat_aliasblur_horiz", "frac_sqrt_sigma", 1.0/glm::sqrt(25.132741));
+		AddTexture("mat_aliasblur_vert","MTEX_ping",RENDER_TEXTURE);
+		SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(sh_res/8, sh_res/8));
+		SetUniform("mat_aliasblur_vert", "kernel_size", 8.0);
+		SetUniform("mat_aliasblur_vert", "sigma", 25.132741);
+		SetUniform("mat_aliasblur_vert", "frac_sqrt_sigma", 1.0/glm::sqrt(25.132741));
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -321,23 +329,18 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glClear(GL_COLOR_BUFFER_BIT);
 		RenderPass("mat_aliasblur_vert");
 
+		RemoveTexture("mat_aliasblur_horiz","MTEX_output");
+		RemoveTexture("mat_aliasblur_vert","MTEX_ping");
+
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 4. Compute gradient and store the result per-pixel into 128x128 texture
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glm::vec2 limit = glm::vec2(1.0);
-		/*
-		 * Tato cast kodu mela slouzit pro vypocet limitu posunuti. Prakticky se melo pousouvat o max polovinu velikosti bunky.
-		 * Ale mira posunuti je ovlivnena i promeny POLY_BIAS a to se to pak komplikuje. Tak je to zatim u ledu.
-		if( m_warping_enabled )
-		{
-			float w = (mask_range.y-mask_range.x);
-			float h = (mask_range.w-mask_range.z);
-			limit = glm::vec2( 1.0 );
-		}
-		*/
+		glm::vec2 limit = m_shadow_technique->GetGrid()->GetOffset() / 128.0f;
+		limit /= POLY_BIAS;
+
 		SetUniform("mat_aliasgradient", "limit", limit );
 		RenderPass("mat_aliasgradient");
 
@@ -345,17 +348,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
 
 		glm::vec4 func_range = m_shadow_technique->GetGrid()->GetRangeAsOriginStep();
-			/*
-			glm::vec4(
-			mask_range.x,
-			(mask_range.y-mask_range.x)/3.0f,
-			mask_range.z,
-			(mask_range.w-mask_range.z)/3.0f
-			);
-			*/
-		 
-
-		//func_range = glm::vec4( 0, 32, 0, 32 );
 
 		glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
@@ -373,6 +365,28 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			SetUniform("mat_get_2Dfunc_values", "range", func_range );
 			RenderPass("mat_get_2Dfunc_values");
 		}
+
+		AddTexture("mat_aliasblur_horiz","MTEX_2Dfunc_values",RENDER_TEXTURE);
+		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(m_shadow_technique->GetResolution()));
+		SetUniform("mat_aliasblur_horiz", "kernel_size", 3.0);
+		SetUniform("mat_aliasblur_horiz", "sigma", 0.5);
+		SetUniform("mat_aliasblur_horiz", "frac_sqrt_sigma", 1.0/glm::sqrt(0.1));
+		AddTexture("mat_aliasblur_vert","MTEX_2Dfunc_values_ping",RENDER_TEXTURE);
+		SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(m_shadow_technique->GetResolution()));
+		SetUniform("mat_aliasblur_vert", "kernel_size", 3.0);
+		SetUniform("mat_aliasblur_vert", "sigma", 0.1);
+		SetUniform("mat_aliasblur_vert", "frac_sqrt_sigma", 1.0/glm::sqrt(0.1));
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values_ping"], 0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		RenderPass("mat_aliasblur_horiz");
+		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		RenderPass("mat_aliasblur_vert");
+
+		RemoveTexture("mat_aliasblur_horiz","MTEX_2Dfunc_values");
+		RemoveTexture("mat_aliasblur_vert","MTEX_2Dfunc_values_ping");
+
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
@@ -513,6 +527,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			m_im->second->SetUniform("coeffsX", coeffsX );
 			m_im->second->SetUniform("coeffsY", coeffsY );
 			m_im->second->SetUniform("range", m_shadow_technique->GetGridRange());
+			m_im->second->SetUniform("grid_res", m_shadow_technique->GetResolution());
 		}
 	}
 }

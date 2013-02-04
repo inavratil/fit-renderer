@@ -128,6 +128,9 @@ public:
     GLint AddTextureData(const char *texname, GLint textype, const void *texdata, glm::vec2 tex_size, GLenum tex_format, GLenum data_type, 
                         GLint texmode, GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso);
 
+	//remove texture
+	void RemoveTexture( const char *_texName );
+
     //finds next free texture in the list
     string NextTexture(string textype);   
     /**
