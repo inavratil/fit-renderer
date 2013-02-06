@@ -12,8 +12,8 @@ void main()
     a = texture(tex_blurred_error, fragTexCoord );
 	ax = textureOffset(tex_blurred_error, fragTexCoord, ivec2(1,0) );
 	ay = textureOffset(tex_blurred_error, fragTexCoord, ivec2(0,1) );
-	float dx = ax.a - a.a;
-	float dy = ay.a - a.a;
+	float dx = a.a - ax.a;
+	float dy = a.a - ay.a;
 	//float dx = dFdx(a.a);
 	//float dy = dFdy(a.a);
 

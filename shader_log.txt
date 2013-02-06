@@ -181,3 +181,18 @@ mat_depth_with_warping:0(108) : error C1115: unable to find compatible overloade
 0(111) : error C1115: unable to find compatible overloaded function "texelFetchOffset(sampler2D, vec2, int, ivec2)"
 0(120) : error C1115: unable to find compatible
 mat_depth_with_warping:0(90) : error C7011: implicit cast from "vec2" to "ivec2"
+
+mat_compute_aliasError:0(93) : error C1008: undefined variable "IsInsideFrustum"
+
+mat_depth_with_warping:0(90) : error C0000: syntax error, unexpected '=', expecting "::" at token "="
+
+mat_depth_with_warping:0(26) : warning C7022: unrecognized profile specifier "asfasd"
+0(26) : error C0502: syntax error at token "asfasd"
+
+mat_depth_with_warping:0(31) : warning C7022: unrecognized profile specifier "asdfasdf"
+0(31) : error C0502: syntax error at token "asdfasdf"
+
+mat_depth_with_warping:0(27) : error C7102: unmatched #endif
+
+mat_depth_with_warping:0(32) : warning C7022: unrecognized profile specifier "asdfasd"
+0(32) : error C0502: syntax error at token "asdfasd"

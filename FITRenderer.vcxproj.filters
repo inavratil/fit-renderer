@@ -79,6 +79,12 @@
     <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp">
       <Filter>Source files\Shadow Techniques</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.cpp">
+      <Filter>Source files\Shader Generation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\SplineWarpedShadow.cpp">
+      <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -157,6 +163,12 @@
       <Filter>Header files\Shadow Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h">
+      <Filter>Header files\Shadow Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.h">
+      <Filter>Header files\Shader Generation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\SplineWarpedShadow.h">
       <Filter>Header files\Shadow Techniques</Filter>
     </ClInclude>
   </ItemGroup>
@@ -315,6 +327,9 @@
       <Filter>Shaders\func</Filter>
     </None>
     <None Include="data\shaders\func\shadow_omni.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+    <None Include="data\shaders\func\warp_spline.frag">
       <Filter>Shaders\func</Filter>
     </None>
   </ItemGroup>

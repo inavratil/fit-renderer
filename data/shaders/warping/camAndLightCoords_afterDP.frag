@@ -16,8 +16,6 @@ void main()
     cam_coords = cam_proj * cam_eye;
     cam_coords = cam_coords/cam_coords.w;
     cam_coords.xy = cam_coords.xy * 0.5 + 0.5;
-	if( cam_eye.z > 0.0 )
-		cam_coords.xy = vec2( 99.0, 0.0 );
 
 	/*
 	 * per-pixel presny vypocet chyby neni potreba, protoze ve vysledku se to stejne nedela.

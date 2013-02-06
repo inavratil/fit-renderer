@@ -384,6 +384,14 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
     if(vertex_shader == "null" || fragment_shader == "null")
         return false;
 
+	//save shaders to debug file
+    string file; file = "shader_out/" + m_name + ".vert";
+    ofstream fout1(file.c_str());
+    fout1<<vertex_shader;
+    file = "shader_out/" + m_name + ".frag";
+    ofstream fout2(file.c_str());
+    fout2<<fragment_shader;
+
     const char *ff = fragment_shader.c_str();
     const char *vv = vertex_shader.c_str();
 

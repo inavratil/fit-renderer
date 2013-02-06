@@ -58,7 +58,6 @@ glm::vec2 BilinearWarpedShadow::ComputeDiff( glm::vec2 _P )
 
 	if( m_iTexID == 0 || m_pFuncValues == NULL || !m_bEnabled ) return diff;
 
-	float res = this->GetResolution();
 	//-- vypocet souradnice bunky, ve ktere se bod _P nachazi
 	glm::vec2 grid_coords = glm::floor( _P );
 	

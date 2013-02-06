@@ -18,8 +18,15 @@ uniform float grid_res;
 	//-- Polynomial uniforms
 	uniform mat4 coeffsX;
 	uniform mat4 coeffsY;
-#else ifdef BILINEAR_WARP
+#endif
+
+#ifdef BILINEAR_WARP
 	//-- Bilinear uniforms
+	uniform sampler2D funcTex;
+#endif
+
+#ifdef SPLINE_WARP
+	//-- Spline uniforms
 	uniform sampler2D funcTex;
 #endif
 
@@ -76,11 +83,13 @@ void main(void)
 	//FIXME: proc tady jsou 2/3 ???
 	dx = dx;
 	dy = dy;
-	
+
+#endif
+
+#ifdef BILINEAR_WARP
+
 	//------------------------------------------------------------------------------------
 	//-- Bilinear warping
-
-#else ifdef BILINEAR_WARP
 
 	p = p * (grid_res-1); // prevod z [0..1] do [0..res-1]
 
@@ -124,6 +133,50 @@ void main(void)
 
 	temp = X * M;
 	dy = dot(temp, Y) * near_far_bias.z;
+
+	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
+	dx *= 2.0;
+	dy *= 2.0;
+
+#endif
+
+#ifdef SPLINE_WARP
+
+	//------------------------------------------------------------------------------------
+	//-- Spline warping
+
+	p = p * (grid_res-1); // prevod z [0..1] do [0..res-1]
+
+	//-- vypocet souradnice bunky, ve ktere se bod "p" nachazi
+	vec2 grid_coords = floor( p.xy );
+	
+	vec2 temp, X, Y;
+	mat2 M;
+	vec4 f_values;
+
+	//-- prevod do intervalu [0..1]
+	float x = fract(p.x);
+	float y = fract(p.y);
+
+	//-- diff X
+	//f_values = _GetFuncValuesFromCell( grid_coords, D_X );
+	
+	//FIXME: Nefunguje!?!? vec4 t = textureGather( funcTex, vec2(0,0));
+
+	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).r;
+	f_values.y = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,0) ).r;
+	f_values.z = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,1) ).r;
+	f_values.w = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,1) ).r;
+
+	//TODO: doplnit !!!!	
+
+	//-- diff Y
+	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).g;
+	f_values.y = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,0) ).g;
+	f_values.z = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,1) ).g;
+	f_values.w = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,1) ).g;
+
+	//TODO: doplnit !!!!	
 
 	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
 	dx *= 2.0;
