@@ -15,11 +15,6 @@ out vec2 fragTexCoord;
 out vec4 o_vertex;
 out vec4 light_vertex;
 
-#define POLY_OFFSET 100.0
-
-const float SCREEN_X = 1024.0;
-const float SCREEN_Y = 1024.0;
-
 void main(void)
 {
     fragTexCoord = in_Coord.xy;

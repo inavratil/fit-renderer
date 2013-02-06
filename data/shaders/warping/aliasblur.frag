@@ -4,11 +4,11 @@ out vec4 out_FragColor;
 in vec2 fragTexCoord;
 
 uniform sampler2D bloom_texture;
-uniform float kernel_size;
+uniform float kernel_size; //-- musi byt liche cislo
 
 //Gaussian filter constant
-uniform float sigma;  // = 2*PI*sigma^2
-uniform float frac_sqrt_sigma;  // = 1.0/sqrt(2*PI*sigma^2)
+uniform float two_sigma_sq;  // = 2*sigma^2
+uniform float frac_sqrt_two_sigma_sq;  // = 1.0/sqrt(2*PI*sigma^2)
 
 uniform ivec2 texsize;
 
@@ -29,16 +29,16 @@ void main()
     for(i = 0; i < kernel_size; i++)
     {
 #ifdef HORIZONTAL
-      k_shift = float(i - kernel_size/2) * (1.0/float(texsize.x));
+      k_shift = float(i - (kernel_size-1.0)/2) * (1.0/float(texsize.x));
       disp_coord = coord + vec2(k_shift, 0.0);
 #else
-      k_shift = float(i - kernel_size/2) * (1.0/float(texsize.y));
+      k_shift = float(i - (kernel_size-1.0)/2) * (1.0/float(texsize.y));
       disp_coord = coord + vec2(0.0, k_shift);
 #endif
 	  vec4 c = texture(bloom_texture, disp_coord);
 	  if( c.r > 50.0 ) continue;
 
-      gauss_func = frac_sqrt_sigma*exp(-(abs(k_shift)*abs(k_shift))/sigma);
+      gauss_func = frac_sqrt_two_sigma_sq*exp(-(abs(k_shift)*abs(k_shift))/two_sigma_sq);
       div_factor += gauss_func;
 
       result += gauss_func * c;

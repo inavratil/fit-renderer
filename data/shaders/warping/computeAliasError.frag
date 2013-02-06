@@ -30,6 +30,12 @@ void main()
     c = textureOffset(tex_coords, fragTexCoord, ivec2(1,1) );
     d = textureOffset(tex_coords, fragTexCoord, ivec2(0,1) );
 
+	//a = texture(tex_coords, fragTexCoord + vec2( 0.5/128.0 ) );
+	//if(a.r > 90.0) discard;				
+    //b = texture(tex_coords, fragTexCoord + vec2(1.0/128.0, 0.0) + vec2( 0.5/128.0 ) );
+    //c = texture(tex_coords, fragTexCoord + vec2(1.0/128.0) + vec2( 0.5/128.0 ) );
+    //d = texture(tex_coords, fragTexCoord + vec2(0.0, 1.0/128.0) + vec2( 0.5/128.0 ) );
+
     //-----
 
     vec3 ac = vec3( c.xy-a.xy, 0.0 );
@@ -38,6 +44,7 @@ void main()
     ac.y *= SCREEN_Y;
     bd.x *= SCREEN_X;
     bd.y *= SCREEN_Y;
+	//vypocet obsah ctyruhelniku - quadrilateral
     float K = 0.5 * abs( cross(ac, bd).z ); // zde by melo byt length misto abs, ale jelikoz z-ove 0, tak vysledek je pouze hodnota v z-ove ose
     //float K = max( length(ac+bd), length(ac-bd) );
 
@@ -86,10 +93,10 @@ void main()
 	out_FragMask = vec4( 0.0 );
 
 	
-	
+	  
 	if( IsInsideFrustum( a.xy ) )
 	{
-		out_FragMask = vec4( 1.0 );
+		out_FragMask = vec4( fragTexCoord*128.0, a.xy );
 
 		if( new_res > 12.0)
 			out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );

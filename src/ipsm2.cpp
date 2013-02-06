@@ -46,7 +46,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		CreateDataTexture("MTEX_debug", sh_res, sh_res, GL_RGBA16F, GL_FLOAT);
         //cam coords
-        CreateDataTexture("MTEX_coords", sh_res, sh_res, GL_RGBA32F, GL_FLOAT/*, GL_TEXTURE_2D, true*/);
+        CreateDataTexture("MTEX_coords", sh_res/8, sh_res/8, GL_RGBA32F, GL_FLOAT/*, GL_TEXTURE_2D, true*/);
 		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
@@ -211,8 +211,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glClearColor(99.0, 0.0, 0.0, 0.0);
 
 		///////////////////////////////////////////////////////////////////////////////
-		//-- 1. Render scene from light point of view and store per pixel camera 
-		//--	coordinates and light coordinates
+		//-- 1. Render scene from light point of view and store per pixel camera-screen 
+		//--	coordinates and light-screen coordinates
+		//FIXME: Jake je rozliseni vystupu???
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
@@ -220,7 +221,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glViewport( 0, 0, sh_res, sh_res );
+		glViewport( 0, 0, sh_res/8, sh_res/8 );
 
 		//if(m_wireframe)
 		//    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
@@ -232,7 +233,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//DrawSceneDepth("mat_aliasError", lightViewMatrix);
 		DrawAliasError("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
 
-		glViewport( 0, 0, sh_res, sh_res );
 		//if(!m_wireframe)
 		//	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
@@ -255,6 +255,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		glViewport( 0, 0, sh_res/8, sh_res/8 );
 
+		//FIXME: opravdu mohu pouzit tex_coords v plnem rozliseni, pri mensim rozliseni se bude brat jenom kazda n-ta hodnota
+		//		textureOffset se pousouva v rozliseni textury, takze kdyz je rozliseni 1024, posune se o pixel v tomto rozliseni
+		//		pri rendrovani do 128x128 je mi toto chovani ale na prd ?????
 		SetUniform("mat_compute_aliasError", "tex_coords", 0);
 		SetUniform("mat_compute_aliasError", "tex_error", 1);
 		//SetUniform("mat_compute_aliasError", "tex_coverage", 1); // musi byt 1, protoze tex_error je ze souboru (asi?)
@@ -311,16 +314,18 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//-- 3. Blur the alias error
 		//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
 
+		float sigma = 2.7;
+
 		AddTexture("mat_aliasblur_horiz","MTEX_output",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));
-		SetUniform("mat_aliasblur_horiz", "kernel_size", 8.0);
-		SetUniform("mat_aliasblur_horiz", "sigma", 25.132741);
-		SetUniform("mat_aliasblur_horiz", "frac_sqrt_sigma", 1.0/glm::sqrt(25.132741));
+		SetUniform("mat_aliasblur_horiz", "kernel_size", 9.0);
+		SetUniform("mat_aliasblur_horiz", "two_sigma_sq", TWOSIGMA2(sigma));
+		SetUniform("mat_aliasblur_horiz", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 		AddTexture("mat_aliasblur_vert","MTEX_ping",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(sh_res/8, sh_res/8));
-		SetUniform("mat_aliasblur_vert", "kernel_size", 8.0);
-		SetUniform("mat_aliasblur_vert", "sigma", 25.132741);
-		SetUniform("mat_aliasblur_vert", "frac_sqrt_sigma", 1.0/glm::sqrt(25.132741));
+		SetUniform("mat_aliasblur_vert", "kernel_size", 9.0);
+		SetUniform("mat_aliasblur_vert", "two_sigma_sq",TWOSIGMA2(sigma));
+		SetUniform("mat_aliasblur_vert", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -366,16 +371,17 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			RenderPass("mat_get_2Dfunc_values");
 		}
 
+		sigma = 1.0;
 		AddTexture("mat_aliasblur_horiz","MTEX_2Dfunc_values",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(m_shadow_technique->GetResolution()));
 		SetUniform("mat_aliasblur_horiz", "kernel_size", 3.0);
-		SetUniform("mat_aliasblur_horiz", "sigma", 0.5);
-		SetUniform("mat_aliasblur_horiz", "frac_sqrt_sigma", 1.0/glm::sqrt(0.1));
+		SetUniform("mat_aliasblur_horiz", "two_sigma_sq", TWOSIGMA2(sigma));
+		SetUniform("mat_aliasblur_horiz", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 		AddTexture("mat_aliasblur_vert","MTEX_2Dfunc_values_ping",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(m_shadow_technique->GetResolution()));
 		SetUniform("mat_aliasblur_vert", "kernel_size", 3.0);
-		SetUniform("mat_aliasblur_vert", "sigma", 0.1);
-		SetUniform("mat_aliasblur_vert", "frac_sqrt_sigma", 1.0/glm::sqrt(0.1));
+		SetUniform("mat_aliasblur_vert", "two_sigma_sq", TWOSIGMA2(sigma));
+		SetUniform("mat_aliasblur_vert", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
