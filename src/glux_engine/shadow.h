@@ -15,7 +15,7 @@ const float SHADOW_NEAR = 0.1f;
 const float SHADOW_FAR = 5000.0f;
 
 //FIXME: ovlivnuje vliv hodnoty gradientu na posunuti
-const float POLY_BIAS = 5.0f;
+const float POLY_BIAS = 1.0f;
 
 const int MAX_CASCADES = 5;             //maximum shadow cascade count
 const int F_POINTS = 4;                 //near/far point count

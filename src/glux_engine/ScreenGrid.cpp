@@ -77,7 +77,7 @@ void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
 		float nparts = 1.0; // kolik casti bude mezi dve body mrizky
 		float eps = 1.0/(float)nparts;
 		int res = m_iResolution; // rozliseni mrizky
-		int K = 4; // kolik bunek bude mezi dvema ridicimi body
+		int K = 1; // kolik bunek bude mezi dvema ridicimi body
 		int overlap = 0; // o kolik ridicich bodu mimo rozliseni se podivat
 
 		float origin, major, minor;

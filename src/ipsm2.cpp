@@ -68,8 +68,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//2D polynomials coefficients
 		//FIXME: precision??? nestaci 16F ?
-		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA16F, GL_FLOAT);
-		CreateDataTexture("MTEX_2Dfunc_values_ping", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA16F, GL_FLOAT);
+		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
+		CreateDataTexture("MTEX_2Dfunc_values_ping", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
 		//glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         //glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		//FIXME: Tohle by melo prijit do Init metody dane shadow techniky
@@ -318,7 +318,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
 
 		float sigma = 2.7;
-
+	
 		AddTexture("mat_aliasblur_horiz","MTEX_output",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));
 		SetUniform("mat_aliasblur_horiz", "kernel_size", 9.0);
@@ -349,7 +349,8 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glm::vec2 limit = m_shadow_technique->GetGrid()->GetOffset() / 128.0f;
 		limit /= POLY_BIAS;
 
-		SetUniform("mat_aliasgradient", "limit", limit * 2.0f);
+		//FIXME: limit pocitat nejak inteligentne bez bulharske konstanty
+		SetUniform("mat_aliasgradient", "limit", limit*2.0f);
 		RenderPass("mat_aliasgradient");
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -360,27 +361,37 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
 
-		if ( (string) m_shadow_technique->GetName() ==  "Spline" )
-		{
-			glm::vec4 clear_color;
-			glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
-			glClearColor( 0, 0, 0, 0 );
-			glClear(GL_COLOR_BUFFER_BIT);
-			glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+		glm::vec4 clear_color;
+		glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
+		glClearColor( 0, 0, 0, 0 );
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
 
-			glViewport( 0+2, 0+2, m_shadow_technique->GetResolution()-4, m_shadow_technique->GetResolution()-4 );
-		}
-
-		
 		if( m_shadow_technique->IsEnabled() )
 		{
-			SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetGrid()->GetResolution() );
-			SetUniform("mat_get_2Dfunc_values", "range", func_range );
+			if ( (string) m_shadow_technique->GetName() ==  "Spline" )
+			{
+				func_range.x +=  func_range.y;
+				func_range.z +=  func_range.w;
+				
+				glViewport( 0+2, 0+2, m_shadow_technique->GetGrid()->GetResolution()-2, m_shadow_technique->GetGrid()->GetResolution()-2 );
+				SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetGrid()->GetResolution() - 2.0 );
+			}
+			else
+			{
+				glClear(GL_COLOR_BUFFER_BIT);
+				SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetGrid()->GetResolution() );
+			}
+
+			SetUniform("mat_get_2Dfunc_values", "range", func_range );	
 			RenderPass("mat_get_2Dfunc_values");
 		}
 
-		//-- Simplified deformation model
-		/* 
+		if ( (string) m_shadow_technique->GetName() ==  "Spline" )
+			glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
+
+		//-- Simplified deformation model 
+		
 		sigma = 1.0;
 		AddTexture("mat_aliasblur_horiz","MTEX_2Dfunc_values",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(m_shadow_technique->GetResolution()));
@@ -402,8 +413,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		RemoveTexture("mat_aliasblur_horiz","MTEX_2Dfunc_values");
 		RemoveTexture("mat_aliasblur_vert","MTEX_2Dfunc_values_ping");
-		*/
-
+		
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
@@ -544,7 +554,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			m_im->second->SetUniform("coeffsX", coeffsX );
 			m_im->second->SetUniform("coeffsY", coeffsY );
 			m_im->second->SetUniform("range", m_shadow_technique->GetGridRange());
-			m_im->second->SetUniform("grid_res", m_shadow_technique->GetGrid()->GetResolution());
+			m_im->second->SetUniform("grid_res", (float) m_shadow_technique->GetGrid()->GetResolution());
 		}
 	}
 }
