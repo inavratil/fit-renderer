@@ -28,6 +28,26 @@ uniform float grid_res;
 #ifdef SPLINE_WARP
 	//-- Spline uniforms
 	uniform sampler2D funcTex;
+
+	const mat4 Mcr = 0.5 * mat4(
+		 0.0f,	2.0f,	0.0f,	0.0f,
+		-1.0f,	0.0f,	1.0f,	0.0f,
+		 2.0f, -5.0f,	4.0f,  -1.0f,
+		-1.0f,	3.0f,	-3.0f,  1.0f
+		);
+
+vec4 GetPoints( in vec2 grid_pos, in int _x, in int comp )
+{
+	vec4 output;
+
+	output.x = textureOffset( funcTex, grid_pos, ivec2(_x,0) )[comp];
+	output.y = textureOffset( funcTex, grid_pos, ivec2(_x,1) )[comp];
+	output.z = textureOffset( funcTex, grid_pos, ivec2(_x,2) )[comp];
+	output.w = textureOffset( funcTex, grid_pos, ivec2(_x,3) )[comp];
+
+	return output;
+}
+
 #endif
 
 const float SCREEN_X = 128.0;
@@ -145,38 +165,47 @@ void main(void)
 	//------------------------------------------------------------------------------------
 	//-- Spline warping
 
-	p = p * (grid_res-1); // prevod z [0..1] do [0..res-1]
+	//FIXME: grid_res je mrizka i s rozsirenim na kraji, ale ja potrebuji tu skutecnou - 1
+	p = p * (grid_res-2.0-1.0); // prevod z [0..1] do [0..res-1]
 
 	//-- vypocet souradnice bunky, ve ktere se bod "p" nachazi
 	vec2 grid_coords = floor( p.xy );
 	
-	vec2 temp, X, Y;
-	mat2 M;
-	vec4 f_values;
+	mat4 P;
+	vec4 Tx, Ty;
+	vec4 Q;
 
 	//-- prevod do intervalu [0..1]
 	float x = fract(p.x);
 	float y = fract(p.y);
 
+	Tx = vec4( 1.0, x, pow(x, 2.0f), pow(x,3.0f) );
+	Ty = vec4( 1.0, y, pow(y, 2.0f), pow(y, 3.0f) );
+
 	//-- diff X
-	//f_values = _GetFuncValuesFromCell( grid_coords, D_X );
-	
 	//FIXME: Nefunguje!?!? vec4 t = textureGather( funcTex, vec2(0,0));
-
-	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).r;
-	f_values.y = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,0) ).r;
-	f_values.z = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,1) ).r;
-	f_values.w = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,1) ).r;
-
-	//TODO: doplnit !!!!	
+	
+	P = mat4(
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 0, 0 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 1, 0 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 2, 0 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 3, 0 )
+		);
+	
+	Q = P * Mcr * Tx;
+	dx = dot(Q * Mcr, Ty);
 
 	//-- diff Y
-	f_values.x = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,0) ).g;
-	f_values.y = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,0) ).g;
-	f_values.z = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(0,1) ).g;
-	f_values.w = textureOffset( funcTex, grid_coords/grid_res + 0.5/grid_res, ivec2(1,1) ).g;
 
-	//TODO: doplnit !!!!	
+	P = mat4(
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 0, 1 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 1, 1 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 2, 1 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 3, 1 )
+		);
+	
+	Q = P * Mcr * Tx;
+	dy = dot(Q * Mcr, Ty);	
 
 	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
 	dx *= 2.0;
@@ -188,6 +217,6 @@ void main(void)
 	vertexEyeSpace.x += dx;
 	vertexEyeSpace.y += dy;
 
-	res = f_values;
+	res = vec4(0);
     gl_Position = vertexEyeSpace;
 }

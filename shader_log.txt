@@ -196,3 +196,9 @@ mat_depth_with_warping:0(27) : error C7102: unmatched #endif
 
 mat_depth_with_warping:0(32) : warning C7022: unrecognized profile specifier "asdfasd"
 0(32) : error C0502: syntax error at token "asdfasd"
+
+mat_depth_with_warping:0(217) : error C1015: void function cannot return a value
+
+mat_depth_with_warping:0(217) : error C1015: void function cannot return a value
+
+mat_depth_with_warping:0(221) : error C1008: undefined variable "f_values"

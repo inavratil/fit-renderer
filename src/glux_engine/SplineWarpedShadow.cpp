@@ -22,7 +22,7 @@ void SplineWarpedShadow::_Init()
 
 	m_pShaderFeature = new SFSplineWarpedShadow();
 
-	Mcr = glm::mat4(
+	Mcr = 0.5 * glm::mat4(
 		 0.0f,	2.0f,	0.0f,	0.0f,
 		-1.0f,	0.0f,	1.0f,	0.0f,
 		 2.0f, -5.0f,	4.0f,  -1.0f,
@@ -68,8 +68,8 @@ glm::vec2 SplineWarpedShadow::ComputeDiff( glm::vec2 _P )
 	//-- vypocet souradnice bunky, ve ktere se bod _P nachazi
 	glm::vec2 grid_coords = glm::floor( _P );
 	
-	glm::vec4 T, temp;
-	glm::vec4 P0, P1, P2, P3;
+	glm::mat4 P;
+	glm::vec4 Tx, Ty;
 	glm::vec4 Q;
 
 	Splines4x4 splines;
@@ -80,49 +80,35 @@ glm::vec2 SplineWarpedShadow::ComputeDiff( glm::vec2 _P )
 
 	splines = _GetSplinesValues( grid_coords );
 
+	Tx = glm::vec4( 1.0, x, glm::pow(x, 2.0f), glm::pow(x,3.0f) );
+	Ty = glm::vec4( 1.0, y, glm::pow(y, 2.0f), glm::pow(y, 3.0f) );
+
 	//-- diff X
-	T = glm::vec4( 1.0, x, glm::pow(x, 2.0f), glm::pow(x,3.0f) );
+	
+	//-- definice po sloupcich
+	P = glm::mat4(
+		splines.p0[0].x,	splines.p1[0].x,	splines.p2[0].x,	splines.p3[0].x,
+		splines.p0[1].x,	splines.p1[1].x,	splines.p2[1].x,	splines.p3[1].x,
+		splines.p0[2].x,	splines.p1[2].x,	splines.p2[2].x,	splines.p3[2].x,
+		splines.p0[3].x,	splines.p1[3].x,	splines.p2[3].x,	splines.p3[3].x
+		);
 
-	P0 = glm::vec4( splines.p0[0].x,	splines.p0[1].x,	splines.p0[2].x,	splines.p0[3].x );
-	P1 = glm::vec4( splines.p1[0].x,	splines.p1[1].x,	splines.p1[2].x,	splines.p1[3].x );
-	P2 = glm::vec4( splines.p2[0].x,	splines.p2[1].x,	splines.p2[2].x,	splines.p2[3].x );
-	P3 = glm::vec4( splines.p3[0].x,	splines.p3[1].x,	splines.p3[2].x,	splines.p3[3].x );
-
-	temp = P0 * 0.5 * Mcr;
-	Q.x = glm::dot(temp,T);
-	temp = P1 * 0.5 * Mcr;
-	Q.y = glm::dot(temp,T);
-	temp = P2 * 0.5 * Mcr;
-	Q.z = glm::dot(temp,T);
-	temp = P3 * 0.5 * Mcr;
-	Q.w = glm::dot(temp,T);
-
-	T = glm::vec4( 1.0, y, glm::pow(y, 2.0f), glm::pow(y, 3.0f) );
-
-	temp = Q * 0.5 * Mcr;
-	diff.x = glm::dot( temp, T );
+	Q = P * Mcr * Tx;
+	diff.x = glm::dot(Q * Mcr, Ty);
 
 	//-- diff Y
-	T = glm::vec4( 1.0, x, glm::pow(x, 2.0f), glm::pow(x,3.0f) );
 
-	P0 = glm::vec4( splines.p0[0].y,	splines.p0[1].y,	splines.p0[2].y,	splines.p0[3].y );
-	P1 = glm::vec4( splines.p1[0].y,	splines.p1[1].y,	splines.p1[2].y,	splines.p1[3].y );
-	P2 = glm::vec4( splines.p2[0].y,	splines.p2[1].y,	splines.p2[2].y,	splines.p2[3].y );
-	P3 = glm::vec4( splines.p3[0].y,	splines.p3[1].y,	splines.p3[2].y,	splines.p3[3].y );
+	//-- definice po sloupcich
+	P = glm::mat4(
+		splines.p0[0].y,	splines.p1[0].y,	splines.p2[0].y,	splines.p3[0].y,
+		splines.p0[1].y,	splines.p1[1].y,	splines.p2[1].y,	splines.p3[1].y,
+		splines.p0[2].y,	splines.p1[2].y,	splines.p2[2].y,	splines.p3[2].y,
+		splines.p0[3].y,	splines.p1[3].y,	splines.p2[3].y,	splines.p3[3].y
+		);
 
-	temp = P0 * 0.5 * Mcr;
-	Q.x = glm::dot(temp,T);
-	temp = P1 * 0.5 * Mcr;
-	Q.y = glm::dot(temp,T);
-	temp = P2 * 0.5 * Mcr;
-	Q.z = glm::dot(temp,T);
-	temp = P3 * 0.5 * Mcr;
-	Q.w = glm::dot(temp,T);
-
-	T = glm::vec4( 1.0, y, glm::pow(y, 2.0f), glm::pow(y, 3.0f) );
-
-	temp = Q * 0.5 * Mcr;
-	diff.y = glm::dot( temp, T );
+	Q = P * Mcr * Tx;
+	glm::vec4 v = Mcr * Ty;
+	diff.y = glm::dot(Q * Mcr, Ty);
 
 	return diff * POLY_BIAS;
 }
