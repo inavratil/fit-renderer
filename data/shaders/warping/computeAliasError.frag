@@ -15,6 +15,11 @@ const float SM_Y = 128.0;
 
 const float MAX_MIPLEVEL = 6; // TODO: jako uniform ??
 
+bool IsInsideFrustum( vec2 _screenPos )
+{
+	return (lessThan(_screenPos.xy, vec2(1.0) ) == bvec2(1.0) && greaterThan(_screenPos.xy, vec2(0.0) )== bvec2(1.0));
+}
+
 void main()
 {
     vec4 a, b, c, d;
@@ -87,8 +92,9 @@ void main()
 	out_FragColor = vec4( 0.0 );
 	out_FragMask = vec4( 0.0 );
 
+	if( IsInsideFrustum( a.xy ) )
 	{
-		out_FragMask = vec4( fragTexCoord*128.0, a.xy );
+		out_FragMask = vec4( 1.0 );
 
 		if( new_res > 12.0)
 			out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );

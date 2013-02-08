@@ -50,7 +50,6 @@ const Experiment experiments[EXP_COUNT] =
         // ResA_cut: 1.30759, -14, 36, 36, 18
         5, 
         glm::vec4( -14, 36, 36, 18 ),
-        glm::vec3( 0,217,75 ),
         glm::vec3( 205.413,-276.738,393.74 ),
         glm::vec3( 34,-558,0 )
 
@@ -71,6 +70,7 @@ const Experiment experiments[EXP_COUNT] =
         glm::vec3(120,98,-68), 
 		//pozice svetla v katedrale
 		//glm::vec3( 256,206,-23 ),
+
 		// puvodni pohled zezadu
 		//glm::vec3( 210.533,-82.6701,-34.9359 ),
 		//glm::vec3( 5,81,0 )
