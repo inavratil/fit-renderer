@@ -658,7 +658,7 @@ int main(int argc, char **argv)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, msaa);
 
-    SDL_WM_SetCaption("FITRenderer v0.0", 0);
+    SDL_WM_SetCaption("FITRenderer v0.5", 0);
 
     //set video mode
     int mode = SDL_OPENGL;

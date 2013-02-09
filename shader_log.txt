@@ -202,3 +202,9 @@ mat_depth_with_warping:0(217) : error C1015: void function cannot return a value
 mat_depth_with_warping:0(217) : error C1015: void function cannot return a value
 
 mat_depth_with_warping:0(221) : error C1008: undefined variable "f_values"
+
+mat_camAndLightCoords_afterDP:0(24) : error C1035: assignment of incompatible types
+
+mat_stencil_test:0(28) : error C7011: implicit cast from "vec4" to "vec2"
+
+mat_stencil_test:0(28) : error C7011: implicit cast from "vec4" to "vec2"

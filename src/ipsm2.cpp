@@ -123,6 +123,38 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
             return false;
         }
 
+		//FIXME: Debug fbo a textury pro stencil test
+		{
+			glGenTextures(1, &texid);
+			glBindTexture(GL_TEXTURE_2D, texid);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 128.0, 128.0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			m_tex_cache["Stencil_depth"] = texid;
+
+			glGenTextures(1, &texid);
+			glBindTexture(GL_TEXTURE_2D, texid);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128.0, 128.0, 0, GL_RGBA, GL_FLOAT, NULL);
+			m_tex_cache["Stencil_color"] = texid;
+
+			glGenFramebuffers(1, &fbo);
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_tex_cache["Stencil_color"], 0);	    
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
+			m_fbos["fbo_stencil_test"] = fbo;
+
+			//check FBO creation
+			if(!CheckFBO())
+			{
+				ShowMessage("ERROR: FBO creation for depth map failed!",false);
+				return false;
+			}
+		}
+		//End
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //add shaders handling multiresolution rendering
@@ -130,6 +162,9 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//FIXME: debug shader
 		AddMaterial("mat_debug_draw");
         CustomShader("mat_debug_draw","data/shaders/debug_draw.vert", "data/shaders/debug_draw.frag");
+		//FIXME: debug shader - stencil test
+		AddMaterial("mat_stencil_test");
+        CustomShader("mat_stencil_test","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/dbg_stencil_test.frag");
 
 		// aliasing error
         AddMaterial("mat_camAndLightCoords_afterDP");
@@ -244,6 +279,30 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		//FIXME: Stencil test
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_stencil_test"]);
+			glDrawBuffers(1, mrt);
+			glViewport( 0, 0, sh_res/8, sh_res/8 );
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+
+			glDepthMask( GL_FALSE );
+			glEnable(GL_STENCIL_TEST);
+			glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+			glStencilFunc(GL_ALWAYS, 255, 0xffffffff);
+
+			SetUniform("mat_stencil_test", "cam_mv", m_viewMatrix );
+			SetUniform("mat_stencil_test", "cam_proj", m_projMatrix );
+			SetUniform("mat_stencil_test", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+
+			DrawAliasError("mat_stencil_test", lightViewMatrix[1]);
+
+			glDisable(GL_STENCIL_TEST);
+			glDepthMask( GL_TRUE );
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 2. Compute alias error based on the coordinates data computed in step 1

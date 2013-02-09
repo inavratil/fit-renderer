@@ -11,11 +11,16 @@ uniform mat4 lightMatrix;
 void main() 
 {
     vec4 cam_coords, cam_eye, dp_coords;
+	float w;
 
 	cam_eye = cam_mv * o_vertex;
     cam_coords = cam_proj * cam_eye;
+	w = cam_coords.w;
     cam_coords = cam_coords/cam_coords.w;
     cam_coords.xy = cam_coords.xy * 0.5 + 0.5;
+
+	//if(w<0.0)
+	//	cam_coords.xy = vec2(99.0, 0.0);
 
 	/*
 	 * per-pixel presny vypocet chyby neni potreba, protoze ve vysledku se to stejne nedela.

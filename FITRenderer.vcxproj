@@ -202,6 +202,7 @@
     <None Include="data\shaders\warping\computeAliasError.vert" />
     <None Include="data\shaders\warping\dbg_polynomials_grid.frag" />
     <None Include="data\shaders\warping\dbg_polynomials_grid.vert" />
+    <None Include="data\shaders\warping\dbg_stencil_test.frag" />
     <None Include="data\shaders\warping\get2DfuncValues.frag" />
     <None Include="data\shaders\warping\drawDepthWithWarping.frag" />
     <None Include="data\shaders\warping\drawDepthWithWarping.vert" />

@@ -100,11 +100,11 @@ glm::vec4 IShadowTechnique::GetGridRange()
 
 void IShadowTechnique::GenerateGrid()
 {
-	m_pScreenGrid->GenerateGrid(this);
+	//m_pScreenGrid->GenerateGrid(this);
 }
 
 void IShadowTechnique::DrawGrid()
 {
-	m_pScreenGrid->Draw();
+	//m_pScreenGrid->Draw();
 }
 
