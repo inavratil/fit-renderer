@@ -123,38 +123,6 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
             return false;
         }
 
-		//FIXME: Debug fbo a textury pro stencil test
-		{
-			glGenTextures(1, &texid);
-			glBindTexture(GL_TEXTURE_2D, texid);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 128.0, 128.0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-			m_tex_cache["Stencil_depth"] = texid;
-
-			glGenTextures(1, &texid);
-			glBindTexture(GL_TEXTURE_2D, texid);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128.0, 128.0, 0, GL_RGBA, GL_FLOAT, NULL);
-			m_tex_cache["Stencil_color"] = texid;
-
-			glGenFramebuffers(1, &fbo);
-			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_tex_cache["Stencil_color"], 0);	    
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
-			m_fbos["fbo_stencil_test"] = fbo;
-
-			//check FBO creation
-			if(!CheckFBO())
-			{
-				ShowMessage("ERROR: FBO creation for depth map failed!",false);
-				return false;
-			}
-		}
-		//End
-
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //add shaders handling multiresolution rendering
@@ -162,9 +130,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//FIXME: debug shader
 		AddMaterial("mat_debug_draw");
         CustomShader("mat_debug_draw","data/shaders/debug_draw.vert", "data/shaders/debug_draw.frag");
-		//FIXME: debug shader - stencil test
-		AddMaterial("mat_stencil_test");
-        CustomShader("mat_stencil_test","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/dbg_stencil_test.frag");
+
 
 		// aliasing error
         AddMaterial("mat_camAndLightCoords_afterDP");
@@ -202,6 +168,62 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		AddMaterial("mat_mipmap_bb",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
 		AddTexture("mat_mipmap_bb","MTEX_mask",RENDER_TEXTURE);
 		CustomShader("mat_mipmap_bb","data/shaders/quad.vert", "data/shaders/warping/mipmap_boundingbox.frag");
+
+		//FIXME: Debug fbo a textury pro stencil test
+		{
+			glm::vec4 data[] = {
+				glm::vec4(0.0f), glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f),
+				glm::vec4(0.0f), glm::vec4(-1.0f, 1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
+				glm::vec4(0.0f), glm::vec4(0.0f), glm::vec4(0.0f)
+				};
+
+			glGenTextures(1, &texid);
+			glBindTexture(GL_TEXTURE_2D, texid);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 3.0, 3.0, 0, GL_RGBA, GL_FLOAT, glm::value_ptr(*data));
+			m_tex_cache["move_grid"] = texid;
+
+			glGenTextures(1, &texid);
+			glBindTexture(GL_TEXTURE_2D, texid);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 128.0, 128.0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			m_tex_cache["Stencil_depth"] = texid;
+
+			glGenTextures(1, &texid);
+			glBindTexture(GL_TEXTURE_2D, texid);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128.0, 128.0, 0, GL_RGBA, GL_FLOAT, NULL);
+			m_tex_cache["Stencil_color"] = texid;
+
+			glGenFramebuffers(1, &fbo);
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_tex_cache["Stencil_color"], 0);	    
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
+			m_fbos["fbo_stencil_test"] = fbo;
+
+			//check FBO creation
+			if(!CheckFBO())
+			{
+				ShowMessage("ERROR: FBO creation for depth map failed!",false);
+				return false;
+			}
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+			//FIXME: debug shader - stencil test
+			AddMaterial("mat_stencil_test",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+			CustomShader("mat_stencil_test","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/dbg_stencil_test.frag");
+
+			AddMaterial("mat_move_grid",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+			AddTexture("mat_move_grid","move_grid",RENDER_TEXTURE);
+			CustomShader("mat_move_grid","data/shaders/warping/move_grid.vert", "data/shaders/warping/move_grid.frag");
+
+		}
+		//End
     }
     catch(int)
     {
@@ -282,11 +304,15 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//FIXME: Stencil test
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_stencil_test"]);
+			glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["Stencil_color"], 0);
 			glDrawBuffers(1, mrt);
-			glViewport( 0, 0, sh_res/8, sh_res/8 );
+			glViewport( 0, 0, 5, 5 );
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+			RenderPass("mat_move_grid");
+
+			/*
 			glDepthMask( GL_FALSE );
 			glEnable(GL_STENCIL_TEST);
 			glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
@@ -300,6 +326,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 			glDisable(GL_STENCIL_TEST);
 			glDepthMask( GL_TRUE );
+			*/
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
@@ -329,7 +356,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);
 
 		//FIXME: tenhle kod by mel prijit do PreRender metody, ale zatim neni vyresen pristup globalni pristup k texturam
-		if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
+		//if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
 		{
 			//glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_mask"] ); 
 			//glGenerateMipmap( GL_TEXTURE_2D );
