@@ -294,11 +294,6 @@ bool InitScene(int resx, int resy)
 		s->AddMaterial("mat_quad_array",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
         s->CustomShader("mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag");
         
-
-		//shader showing shadow map alias error
-		s->AddMaterial("mat_aliasError");
-		s->AddTexture("mat_aliasError", "data/tex/error_color.tga");
-		s->CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
 	  	
 		//add shadow shader when shadows are enabled (will be sending depth values only)
 		s->AddMaterial("_mat_default_shadow");

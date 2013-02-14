@@ -2,7 +2,7 @@
 #define _SCREENGRID_H_
 
 #include "globals.h"
-#include "SceneManager.h"
+#include "resources/SceneManager.h"
 #include "material.h"
 #include "IShadowTechnique.h"
 

@@ -27,5 +27,5 @@ void main()
 	if(w < 0.0 || !IsInsideFrustum(cam_coords.xy) )
 		discard;
 
-    out_fragColor = vec4( cam_coords.xy, 0.0, 1.0 );
+    out_fragColor = vec4( 1.0 );
 }

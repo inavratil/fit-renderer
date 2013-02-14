@@ -217,6 +217,12 @@ void main(void)
 	vertexEyeSpace.x += dx;
 	vertexEyeSpace.y += dy;
 
+	vec2 screen_pos = vertexEyeSpace.xy*0.5 + 0.5;		//-- prevod do [0..1]
+	vec4 zoomed_range = range / 128.0;					//-- prevod do [0..1]
+
+	vec2 zoomed_pos = (screen_pos - zoomed_range.xz) / (zoomed_range.yw - zoomed_range.xz) * 2.0 - 1.0;
+
+
 	res = vec4(0);
-    gl_Position = vertexEyeSpace;
+    gl_Position = vec4( zoomed_pos, vertexEyeSpace.z, 1.0) ;
 }

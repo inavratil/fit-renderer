@@ -8,56 +8,6 @@
 #include "scene.h"
 #include "../ellipse_params.h"
 
-bool TScene::CreateAliasErrorTarget()
-{
-    CreateDataTexture("aliaserr_texture", m_resx, m_resy, GL_RGBA16F, GL_FLOAT);
-    //create renderbuffers
-    glGenRenderbuffers(1, &m_aerr_r_buffer_depth);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_aerr_r_buffer_depth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,m_resx, m_resy);
-
-    glGenFramebuffers(1, &m_aerr_f_buffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
-    
-    //attach texture to the frame buffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["aliaserr_texture"], 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, m_aerr_r_buffer_depth);
-
-    //check FBO creation
-    if(!CheckFBO())
-    {
-        ShowMessage("ERROR: FBO creation for shadow map failed!",false);
-        return false;
-    }
-
-    // Go back to regular frame buffer rendering
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    m_aerr_buffer = new float[m_resx*m_resy];
-
-	return true;
-}
-
-void TScene::RenderAliasError()
-{
-    glEnable(GL_DEPTH_TEST);
-
-    if(m_wireframe)
-        glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
-    glViewport( 0, 0, m_resx, m_resy );
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glm::mat4 m = m_viewMatrix;
-    DrawAliasError("mat_aliasError", m);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    
-    if(m_wireframe)
-        glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-}
-
 
 /**
 ****************************************************************************************************

@@ -146,23 +146,15 @@ void TScene::Redraw(bool delete_buffer)
         if(delete_buffer)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
-    else        //else render to default framebuffer, clear it(if desired)
-    {
-        if(delete_buffer)
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
+
+	glViewport(0,0,m_RT_resX,m_RT_resY);
+
+	if(delete_buffer)
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-
-	GLenum bufs[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glBindFramebuffer( GL_FRAMEBUFFER, m_fbos["debug_fbo"] );
-	glDrawBuffers(1, bufs);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glViewport(0,0,m_RT_resX,m_RT_resY);
-
+	
     //render all opaque objects
     DrawScene(DRAW_OPAQUE);
 
@@ -270,10 +262,6 @@ void TScene::Redraw(bool delete_buffer)
         glViewport(0,0,m_resx,m_resy);
     }
 #endif
-	    glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,  m_tex_cache["MTEX_debug_output"]);                
-        RenderPass("mat_quad");
-		glBindTexture(GL_TEXTURE_2D, 0);         
     
 	//show shadow maps 
     if(m_draw_shadow_map)
@@ -303,7 +291,7 @@ void TScene::Redraw(bool delete_buffer)
 			m_tex_cache["MTEX_output"],
 			m_tex_cache["MTEX_ping"],
 			m_tex_cache["MTEX_pong"],
-			m_tex_cache["MTEX_mask"]
+			m_tex_cache["Stencil_color"]
 		};
 		
 		//show alias error

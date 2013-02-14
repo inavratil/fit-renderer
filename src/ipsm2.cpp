@@ -76,16 +76,17 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		m_shadow_technique->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", m_tex_cache["MTEX_2Dfunc_values"], 1.0, ShaderFeature::FS );
         
 		//create renderbuffers
-		glGenRenderbuffers(1, &m_aerr_r_buffer_depth);
-		glBindRenderbuffer(GL_RENDERBUFFER, m_aerr_r_buffer_depth);
+		glGenRenderbuffers(1, &r_buffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, r_buffer);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,sh_res, sh_res);
 
-		glGenFramebuffers(1, &m_aerr_f_buffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
+		glGenFramebuffers(1, &fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     
 		//attach texture to the frame buffer
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, m_aerr_r_buffer_depth);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, r_buffer);
+		m_fbos["ipsm"] = fbo;
 
 
 		glGenTextures(1, (*ii)->GetShadowTexID());
@@ -174,13 +175,13 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			glm::vec4 data[] = {
 				glm::vec4(0.0f), glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f),
 				glm::vec4(0.0f), glm::vec4(-1.0f, 1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
-				glm::vec4(0.0f), glm::vec4(0.0f), glm::vec4(0.0f)
+				glm::vec4(1.0f), glm::vec4(2.0f), glm::vec4(3.0f)
 				};
 
 			glGenTextures(1, &texid);
 			glBindTexture(GL_TEXTURE_2D, texid);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 3.0, 3.0, 0, GL_RGBA, GL_FLOAT, glm::value_ptr(*data));
 			m_tex_cache["move_grid"] = texid;
 
@@ -188,7 +189,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			glBindTexture(GL_TEXTURE_2D, texid);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 128.0, 128.0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 128.0, 128.0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 			m_tex_cache["Stencil_depth"] = texid;
 
 			glGenTextures(1, &texid);
@@ -202,7 +203,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_tex_cache["Stencil_color"], 0);	    
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
+			//glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, m_tex_cache["Stencil_depth"], 0);	    
 			m_fbos["fbo_stencil_test"] = fbo;
 
 			//check FBO creation
@@ -265,7 +266,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 	glm::mat4 coeffsX = glm::mat4( 0.0 );
 	glm::mat4 coeffsY = glm::mat4( 0.0 );
-	glm::vec4 mask_range = glm::vec4( 112, 16, 112, 16 );
+	glm::vec4 mask_range = glm::vec4( 128.0, 0.0, 128.0, 0.0 );
 
 	{
 		glClearColor(99.0, 0.0, 0.0, 0.0);
@@ -275,9 +276,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//--	coordinates and light-screen coordinates
 		//FIXME: Jake je rozliseni vystupu???
 
-		glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
-		glDrawBuffers(1, mrt);
+		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, m_tex_cache["Stencil_color"], 0);
+		glDrawBuffers(2, mrt);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -299,24 +301,55 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glCullFace(GL_BACK);
 		glDisable( GL_CULL_FACE);
 
+		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		//FIXME: tenhle kod by mel prijit do PreRender metody, ale zatim neni vyresen pristup globalni pristup k texturam
+		//if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
+		{
+			//glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_mask"] ); 
+			//glGenerateMipmap( GL_TEXTURE_2D );
+			//glBindTexture( GL_TEXTURE_2D, 0 ); 
+
+
+			float mask_values[128*128];
+			glBindTexture(GL_TEXTURE_2D, m_tex_cache["Stencil_color"]);
+			glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
+
+			for(int i=0; i<128; ++i)
+				for(int j=0; j<128; ++j)
+				{
+					float a = mask_values[j + i*128];
+					if( a > 0.0 )
+					{
+						if( j < mask_range.x ) mask_range.x = j; // left border
+						if( j > mask_range.y ) mask_range.y = j; // right border
+						if( i < mask_range.z ) mask_range.z = i; // bottom border
+						if( i > mask_range.w ) mask_range.w = i; // top border
+					}
+
+				}
+
+				m_shadow_technique->UpdateGridRange( mask_range );
+		}
 		//FIXME: Stencil test
+		/*
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_stencil_test"]);
 			glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["Stencil_color"], 0);
 			glDrawBuffers(1, mrt);
-			glViewport( 0, 0, 5, 5 );
+			glViewport( 0, 0, 128.0, 128.0 );
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-			RenderPass("mat_move_grid");
+			//RenderPass("mat_move_grid");
 
-			/*
+			
 			glDepthMask( GL_FALSE );
-			glEnable(GL_STENCIL_TEST);
-			glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-			glStencilFunc(GL_ALWAYS, 255, 0xffffffff);
+			//glEnable(GL_STENCIL_TEST);
+			//glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+			//glStencilFunc(GL_ALWAYS, 255, 0xffffffff);
 
 			SetUniform("mat_stencil_test", "cam_mv", m_viewMatrix );
 			SetUniform("mat_stencil_test", "cam_proj", m_projMatrix );
@@ -326,16 +359,17 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 			glDisable(GL_STENCIL_TEST);
 			glDepthMask( GL_TRUE );
-			*/
+			
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
+		*/
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 2. Compute alias error based on the coordinates data computed in step 1
 		//--	Input: MTEX_coords (error texture)
 
-		glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, m_tex_cache["MTEX_mask"], 0);
 		glDrawBuffers(2, mrt);
@@ -355,34 +389,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glDrawBuffers(1, mrt);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);
 
-		//FIXME: tenhle kod by mel prijit do PreRender metody, ale zatim neni vyresen pristup globalni pristup k texturam
-		//if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
-		{
-			//glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_mask"] ); 
-			//glGenerateMipmap( GL_TEXTURE_2D );
-			//glBindTexture( GL_TEXTURE_2D, 0 ); 
 
-
-			float mask_values[128*128];
-			glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_mask"]);
-			glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
-
-			for(int i=0; i<128; ++i)
-				for(int j=0; j<128; ++j)
-				{
-					float a = mask_values[j + i*128];
-					if( a > 0.0 )
-					{
-						if( j < mask_range.x ) mask_range.x = j; // left border
-						if( j > mask_range.y ) mask_range.y = j; // right border
-						if( i < mask_range.z ) mask_range.z = i; // bottom border
-						if( i > mask_range.w ) mask_range.w = i; // top border
-					}
-
-				}
-
-				m_shadow_technique->UpdateGridRange( mask_range );
-		}
 		
 		//calculate custom mipmaps 
 		/*

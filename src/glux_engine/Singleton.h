@@ -3,18 +3,16 @@
 
 class Singleton
 {
-// Static
+
 protected:
 	static Singleton * m_pInstance;
-
-public:
-    static Singleton * Instance();
-    static void Destroy();
 
 public:
 	Singleton(void);
 	virtual ~Singleton(void);
 
+	static Singleton * Instance();
+    static void Destroy();
 
 };
 

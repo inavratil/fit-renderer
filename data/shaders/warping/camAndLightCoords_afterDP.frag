@@ -3,10 +3,16 @@ in vec2 fragTexCoord;
 in vec4 o_vertex;
 in vec4 light_vertex;
 
-out vec4 out_fragColor;
+layout( location = 0 ) out vec4 out_fragColor;
+layout( location = 1 ) out vec4 out_fragMask;
 
 uniform mat4 cam_mv, cam_proj;
 uniform mat4 lightMatrix;
+
+bool IsInsideFrustum( vec2 _screenPos )
+{
+	return (lessThan(_screenPos.xy, vec2(1.0) ) == bvec2(1.0) && greaterThan(_screenPos.xy, vec2(0.0) )== bvec2(1.0));
+}
 
 void main() 
 {
@@ -18,6 +24,9 @@ void main()
 	w = cam_coords.w;
     cam_coords = cam_coords/cam_coords.w;
     cam_coords.xy = cam_coords.xy * 0.5 + 0.5;
+
+	if(w < 0.0 || !IsInsideFrustum(cam_coords.xy) )
+		discard;
 
 	//if(w<0.0)
 	//	cam_coords.xy = vec2(99.0, 0.0);
@@ -36,4 +45,5 @@ void main()
 	dp_coords.xy = 0.5*light_vertex.xy + 0.5;
 
     out_fragColor = vec4( cam_coords.xy, dp_coords.xy );
+	out_fragMask = vec4( 1.0 );
 }

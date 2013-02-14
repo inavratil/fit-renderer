@@ -44,9 +44,9 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LIB\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">src\glux_engine;LIB\include;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LIB\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LIB\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">src\glux_engine;LIB\include;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LIB\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -96,6 +96,7 @@
   <ItemGroup>
     <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\camera.cpp" />
+    <ClCompile Include="src\glux_engine\debug.cpp" />
     <ClCompile Include="src\glux_engine\draw.cpp" />
     <ClCompile Include="src\glux_engine\font.cpp" />
     <ClCompile Include="src\glux_engine\IShadowTechnique.cpp" />
@@ -107,8 +108,11 @@
     <ClCompile Include="src\glux_engine\object.cpp" />
     <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\render_target.cpp" />
+    <ClCompile Include="src\glux_engine\resources\FBO.cpp" />
+    <ClCompile Include="src\glux_engine\resources\FBOManager.cpp" />
+    <ClCompile Include="src\glux_engine\resources\SceneManager.cpp" />
+    <ClCompile Include="src\glux_engine\resources\TextureCache.cpp" />
     <ClCompile Include="src\glux_engine\scene.cpp" />
-    <ClCompile Include="src\glux_engine\SceneManager.cpp" />
     <ClCompile Include="src\glux_engine\ScreenGrid.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.cpp" />
@@ -118,8 +122,6 @@
     <ClCompile Include="src\glux_engine\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\SplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
-    <ClCompile Include="src\glux_engine\TextureCache.cpp" />
-    <ClCompile Include="src\glux_engine\TextureUser.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ipsm2.cpp" />
   </ItemGroup>
@@ -136,8 +138,11 @@
     <ClInclude Include="src\glux_engine\material.h" />
     <ClInclude Include="src\glux_engine\object.h" />
     <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h" />
+    <ClInclude Include="src\glux_engine\resources\FBO.h" />
+    <ClInclude Include="src\glux_engine\resources\FBOManager.h" />
+    <ClInclude Include="src\glux_engine\resources\SceneManager.h" />
+    <ClInclude Include="src\glux_engine\resources\TextureCache.h" />
     <ClInclude Include="src\glux_engine\scene.h" />
-    <ClInclude Include="src\glux_engine\SceneManager.h" />
     <ClInclude Include="src\glux_engine\ScreenGrid.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.h" />
@@ -148,8 +153,6 @@
     <ClInclude Include="src\glux_engine\Singleton.h" />
     <ClInclude Include="src\glux_engine\SplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
-    <ClInclude Include="src\glux_engine\TextureCache.h" />
-    <ClInclude Include="src\glux_engine\TextureUser.h" />
     <ClInclude Include="src\glux_engine\timer.h" />
     <ClInclude Include="src\main_ui.h" />
   </ItemGroup>
@@ -175,6 +178,8 @@
     <None Include="data\shaders\select_depth.frag" />
     <None Include="data\shaders\shadow.frag" />
     <None Include="data\shaders\shadow.vert" />
+    <None Include="data\shaders\shadow_alias_error.frag" />
+    <None Include="data\shaders\shadow_alias_error.vert" />
     <None Include="data\shaders\shadow_omni.frag" />
     <None Include="data\shaders\shadow_omni.vert" />
     <None Include="data\shaders\shadow_omni_tess.frag" />

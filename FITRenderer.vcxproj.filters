@@ -43,9 +43,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\SceneManager.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\Singleton.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -53,12 +50,6 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\ScreenGrid.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\TextureCache.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\TextureUser.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.cpp">
@@ -84,6 +75,21 @@
     </ClCompile>
     <ClCompile Include="src\glux_engine\SplineWarpedShadow.cpp">
       <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\resources\SceneManager.cpp">
+      <Filter>Source files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\resources\FBOManager.cpp">
+      <Filter>Source files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\resources\FBO.cpp">
+      <Filter>Source files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\resources\TextureCache.cpp">
+      <Filter>Source files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\debug.cpp">
+      <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -123,9 +129,6 @@
     <ClInclude Include="src\glux_engine\timer.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\SceneManager.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\Singleton.h">
       <Filter>Header files</Filter>
     </ClInclude>
@@ -136,12 +139,6 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\ScreenGrid.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\TextureCache.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\TextureUser.h">
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.h">
@@ -170,6 +167,18 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\SplineWarpedShadow.h">
       <Filter>Header files\Shadow Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\resources\SceneManager.h">
+      <Filter>Header files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\resources\FBOManager.h">
+      <Filter>Header files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\resources\FBO.h">
+      <Filter>Header files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\resources\TextureCache.h">
+      <Filter>Header files\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -341,6 +350,12 @@
     <None Include="data\shaders\warping\move_grid.vert">
       <Filter>Shaders\warp</Filter>
     </None>
+    <None Include="data\shaders\shadow_alias_error.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="data\shaders\shadow_alias_error.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header files">
@@ -378,6 +393,12 @@
     </Filter>
     <Filter Include="Source files\Shadow Techniques">
       <UniqueIdentifier>{457922a1-f12c-44ef-bcb3-9ca5d5ff8d32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Resources">
+      <UniqueIdentifier>{0342c0e7-8e50-44c4-b027-2df50c426317}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Resources">
+      <UniqueIdentifier>{ee7bb9d5-6113-4404-b26a-19aa06491036}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

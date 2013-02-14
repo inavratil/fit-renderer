@@ -16,7 +16,9 @@
 #include "IShadowTechnique.h"
 #include "ScreenGrid.h"
 
-#include "SceneManager.h"
+#include "resources/SceneManager.h"
+#include "resources/TextureCache.h"
+#include "resources/FBOManager.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
@@ -123,7 +125,6 @@ protected:
     glm::vec3 m_avg_normal;
     float *m_select_buffer, *m_aerr_buffer;
     glm::vec2 m_cut_angle;
-    GLuint m_aerr_f_buffer, m_aerr_f_buffer_color, m_aerr_r_buffer_depth;
 	//FIXME
 
 	int m_texPreview_id;
@@ -441,10 +442,9 @@ public:
 	///////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////SHADOWS ///////////////////////////////////////
 
-    //create render target for alias error 
-    bool CreateAliasErrorTarget();
-    //render alias error
-    void RenderAliasError();
+	bool InitDebug();
+	void RenderDebug();
+
     //create shadow map for selected light
     bool CreateShadowMap(vector<TLight*>::iterator ii);
     //render shadow map (spot)
