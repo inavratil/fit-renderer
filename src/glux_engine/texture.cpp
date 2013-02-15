@@ -96,7 +96,7 @@ GLint Texture::Load(const char *texname, int textype, const char *filename, int 
 #ifdef _LINUX_
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, m_imageData);
 #else
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_imageData);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, m_width, m_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, m_imageData);
 #endif
         else					//compress color maps
 #ifdef _LINUX_
@@ -297,8 +297,6 @@ bool Texture::LoadImage(const char* filename)
 	ilGenImages(1, &id);
 	ilBindImage(id);
 
-	cout<<"Loading image "<<filename<<"...";
-
 	if(!ilLoadImage(filename))
 	{
 		ShowMessage("Cannot open texture file!");
@@ -310,7 +308,7 @@ bool Texture::LoadImage(const char* filename)
 	m_height = ilGetInteger(IL_IMAGE_HEIGHT);
 	m_bpp = ilGetInteger(IL_IMAGE_BPP);
 
-	if((m_width <= 0) || (m_height <= 0) || ((m_bpp != 3) && (m_bpp != 4)) )
+	if((m_width <= 0) || (m_height <= 0) )
 	{
 		ShowMessage("Unknown image type!");
 		return false;
@@ -326,16 +324,18 @@ bool Texture::LoadImage(const char* filename)
 	}
 
 	//Copy pixels
-	if(m_bpp==3)
+	if(m_bpp==1)
+		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_ALPHA, IL_UNSIGNED_BYTE, m_imageData);
+	else if(m_bpp==3)
 		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_RGB, IL_UNSIGNED_BYTE, m_imageData);
-	else
+	else if(m_bpp==3)
 		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_RGBA, IL_UNSIGNED_BYTE, m_imageData);
 
 	//Unbind and free
 	ilBindImage(0);
 	ilDeleteImage(id);
 
-	cout<<"OK\n";
+	cout<<"Image loaded: "<< filename <<"\n";
 	return true;
 }
 

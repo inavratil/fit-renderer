@@ -123,9 +123,6 @@
     <ClInclude Include="src\glux_engine\shadow.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\timer.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ellipse_params.h">
       <Filter>Header files</Filter>
     </ClInclude>
@@ -173,6 +170,12 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\resources\TextureCache.h">
       <Filter>Header files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\bitops.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\hires_timer.h">
+      <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

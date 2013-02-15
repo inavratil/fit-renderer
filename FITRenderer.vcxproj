@@ -128,10 +128,12 @@
     <ClInclude Include="src\ellipse_params.h" />
     <ClInclude Include="src\experiments.h" />
     <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h" />
+    <ClInclude Include="src\glux_engine\bitops.h" />
     <ClInclude Include="src\glux_engine\camera.h" />
     <ClInclude Include="src\glux_engine\compute.h" />
     <ClInclude Include="src\glux_engine\engine.h" />
     <ClInclude Include="src\glux_engine\globals.h" />
+    <ClInclude Include="src\glux_engine\hires_timer.h" />
     <ClInclude Include="src\glux_engine\IShadowTechnique.h" />
     <ClInclude Include="src\glux_engine\light.h" />
     <ClInclude Include="src\glux_engine\material.h" />
@@ -151,7 +153,6 @@
     <ClInclude Include="src\glux_engine\shadow.h" />
     <ClInclude Include="src\glux_engine\SplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
-    <ClInclude Include="src\glux_engine\timer.h" />
     <ClInclude Include="src\main_ui.h" />
   </ItemGroup>
   <ItemGroup>

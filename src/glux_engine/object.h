@@ -10,7 +10,6 @@ Uses lib3DS to load 3D objects/scenes: http://code.google.com/p/lib3ds/
 #define _OBJECT_H_
 
 #include "globals.h"
-#include <lib3ds/lib3ds.h>
 
 ///Object types
 enum Obj_types{PRIMITIVE,EXTERN,INSTANCE};
@@ -83,7 +82,7 @@ public:
     //create object from 3DS file
     VBO Create(const char *name, const char *file, bool load = true);
     //create object from 3DS mesh
-    VBO Create(Lib3dsMesh *mesh);
+    VBO Create(aiMesh *mesh);
     //create object as instance from existing object
     void CreateInstance(const TObject &ref);
     ///@brief Set new VBO data
