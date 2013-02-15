@@ -59,6 +59,14 @@
 #include <cmath>
 #include <algorithm>
 
+//DevIL
+#include <IL/il.h>
+
+//Assimp
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 // Local classes
 
 
