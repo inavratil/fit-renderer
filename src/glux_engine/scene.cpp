@@ -160,6 +160,9 @@ enabled, and to add this shadow map(TMaterial::AddShadowMap()) to all materials
 ****************************************************************************************************/
 bool TScene::PostInit()
 {    
+	//-- Init debug stuff
+	InitDebug();
+
     //Generate uniform buffers 
     
     //for projection and shadow matrices
@@ -269,8 +272,6 @@ bool TScene::PostInit()
         return false;
     }
 
-	//-- Init debug stuff
-	InitDebug();
 
     cout<<"Post Init OK\n";
     return true;

@@ -287,7 +287,7 @@ void TScene::Redraw(bool delete_buffer)
 	if(m_dpshadow_method == WARP_DPSM)
     {
 		GLuint previewTexs[] =
-		{
+	{	
 			m_tex_cache["MTEX_output"],
 			m_tex_cache["MTEX_ping"],
 			m_tex_cache["MTEX_pong"],
@@ -309,7 +309,7 @@ void TScene::Redraw(bool delete_buffer)
 		m_shadow_technique->DrawGrid();
 	}
 
-
+	RenderDebug();
 
     //finish drawing, restore buffers
     glBindVertexArray(0);

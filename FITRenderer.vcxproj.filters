@@ -43,9 +43,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\Singleton.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ipsm2.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -127,9 +124,6 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\timer.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\Singleton.h">
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\ellipse_params.h">

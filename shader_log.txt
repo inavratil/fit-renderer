@@ -218,3 +218,17 @@ mat_move_grid:0(8) : error C1035: assignment of incompatible types
 mat_depth_with_warping:0(222) : error C7011: implicit cast from "vec4" to "vec2"
 
 mat_depth_with_warping:0(229) : error C1035: assignment of incompatible types
+
+mat_aliasError:0(30) : error C1008: undefined variable "near_far"
+0(30) : error C1008: undefined variable "near_far"
+0(30) : error C1008: undefined variable "near_far"
+0(52) : error C1008: undefined variable "near_far"
+0(52) : error C1008: undefined variable "near_far"
+0(52) : error C1008: undefined variable "near_far"
+
+mat_aliasError:0(30) : error C1008: undefined variable "near_far"
+0(30) : error C1008: undefined variable "near_far"
+0(30) : error C1008: undefined variable "near_far"
+0(52) : error C1008: undefined variable "near_far"
+0(52) : error C1008: undefined variable "near_far"
+0(52) : error C1008: undefined variable "near_far"

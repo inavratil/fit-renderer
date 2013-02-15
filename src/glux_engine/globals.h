@@ -60,7 +60,7 @@
 #include <algorithm>
 
 // Local classes
-#include "Singleton.h"
+
 
 
 ///verbose mode

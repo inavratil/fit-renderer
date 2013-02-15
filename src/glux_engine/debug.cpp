@@ -14,7 +14,7 @@ bool TScene::InitDebug()
 
 		GLuint buffer, fbo;
 
-		TextureCache::Instance()->Add("aliaserr_texture", m_resx, m_resy, GL_RGBA16F, GL_FLOAT);
+		TextureCache::Instance()->Add("aliaserr_texture", 128.0, 128.0, GL_RGBA16F, GL_FLOAT);
 		
 		//create renderbuffers
 		glGenRenderbuffers(1, &buffer);
@@ -57,7 +57,7 @@ void TScene::RenderDebug()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
-	glViewport( 0, 0, m_resx, m_resy );
+	glViewport( 0, 0, 128.0, 128.0 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//then other with depth-only shader
@@ -70,12 +70,6 @@ void TScene::RenderDebug()
 			//update matrix
 			glm::mat4 m = m_viewMatrix * m_io->second->GetMatrix();
 			SetUniform("mat_aliasError", "in_ModelViewMatrix", m);
-
-			//TODO: hack na zobrazeni kamery
-			if(m_io->first == "camera")
-				SetUniform("mat_aliasError", "is_camera",1);
-			else
-				SetUniform("mat_aliasError", "is_camera",0);
 
 			m_io->second->Draw( m_materials["mat_aliasError"]->IsTessellated() );
 		}

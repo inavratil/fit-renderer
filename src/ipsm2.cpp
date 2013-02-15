@@ -74,6 +74,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
         //glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		//FIXME: Tohle by melo prijit do Init metody dane shadow techniky
 		m_shadow_technique->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", m_tex_cache["MTEX_2Dfunc_values"], 1.0, ShaderFeature::FS );
+		//AddTexture("mat_aliasError","MTEX_2Dfunc_values",RENDER_TEXTURE);
         
 		//create renderbuffers
 		glGenRenderbuffers(1, &r_buffer);
@@ -306,7 +307,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		//FIXME: tenhle kod by mel prijit do PreRender metody, ale zatim neni vyresen pristup globalni pristup k texturam
-		//if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
+		if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
 		{
 			//glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_mask"] ); 
 			//glGenerateMipmap( GL_TEXTURE_2D );
@@ -650,4 +651,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			m_im->second->SetUniform("grid_res", (float) m_shadow_technique->GetResolution());
 		}
 	}
+
+	//-- set debug shaders
+	SetUniform("mat_aliasError", "lightModelView[0]", lightViewMatrix[0]);
+	SetUniform("mat_aliasError", "lightModelView[1]", lightViewMatrix[1]);
+	SetUniform("mat_aliasError", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+	SetUniform("mat_aliasError", "grid_res", (float) m_shadow_technique->GetResolution());
 }

@@ -67,22 +67,22 @@ const Experiment experiments[EXP_COUNT] =
 
         glm::vec4( 0.0 ), //glm::vec4( 56, 36, 54, 54 ),
 		//pozice svetla v testing.3ds
-        glm::vec3(120,98,-68), 
+        //glm::vec3(120,98,-68), 
 		//pozice svetla v katedrale
-		//glm::vec3( 256,206,-23 ),
+		glm::vec3( 256,206,-23 ),
 
 		// puvodni pohled zezadu
 		//glm::vec3( 210.533,-82.6701,-34.9359 ),
 		//glm::vec3( 5,81,0 )
 		// pohled na stred
-		//glm::vec3( 99.1987,-153.125,15.3984 ),
-		//glm::vec3( 41,92,0 )
+		glm::vec3( 99.1987,-153.125,15.3984 ),
+		glm::vec3( 41,92,0 )
 		// pohled na stranu
         //glm::vec3( 92.7532,-105.067,76.8914),
         //glm::vec3(32, 90, 0) 
 		// pohled v testing.3ds scene
-		glm::vec3(210.533,-82.6701,-34.9359),
-		glm::vec3(28,79,0)
+		//glm::vec3(210.533,-82.6701,-34.9359),
+		//glm::vec3(28,79,0)
 
         //Res: 1.52775
         //glm::vec4( -64, -64, 108, 36 ), //-64, 0, 18, 108 ),

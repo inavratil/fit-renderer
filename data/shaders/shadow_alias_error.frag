@@ -1,24 +1,115 @@
 uniform sampler2D mat_aliasErrorBaseA;
+uniform sampler2D MTEX_2Dfunc_values;
 
 uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
-uniform vec2 near_far; // near and far plane for cm-cams
-
-#define PARABOLA_CUT
-#ifdef PARABOLA_CUT
-uniform vec4 cut_params; //-- min/max values for cut (on x-axis)
-uniform mat4 in_CutMatrix[2];
-#endif
+uniform vec3 near_far_bias; // near and far plane for cm-cams
 
 in  vec4 o_vertex;
 out vec4 out_fragColor;
 
 #define POLY_OFFSET 100.0
 
+const float SM_RES = 128.0;
+
+////////////////////////////////////////////////////////////////////////////////
+//-- Bilinear warping - fragment shader   
+
+uniform float grid_res;
+
+#define POLY_OFFSET 100.0
+
+const float SCREEN_X = 128.0;
+const float SCREEN_Y = 128.0;
+
+const mat4 Mcr = 0.5 * mat4(
+		 0.0f,	2.0f,	0.0f,	0.0f,
+		-1.0f,	0.0f,	1.0f,	0.0f,
+		 2.0f, -5.0f,	4.0f,  -1.0f,
+		-1.0f,	3.0f,	-3.0f,  1.0f
+		);
+
+vec4 GetPoints( in vec2 grid_pos, in int _x, in int comp )
+{
+	vec4 output;
+
+	output.x = textureOffset( MTEX_2Dfunc_values, grid_pos, ivec2(_x,0) )[comp];
+	output.y = textureOffset( MTEX_2Dfunc_values, grid_pos, ivec2(_x,1) )[comp];
+	output.z = textureOffset( MTEX_2Dfunc_values, grid_pos, ivec2(_x,2) )[comp];
+	output.w = textureOffset( MTEX_2Dfunc_values, grid_pos, ivec2(_x,3) )[comp];
+
+	return output;
+}
+
+vec2 computeDiff( vec4 _position )
+{
+	//------------------------------------------------------------------------------------
+	//-- Initialization
+
+	vec2 delta = vec2( 0.0 );
+	vec2 p = _position.xy;		//-- zde je p v intervalu [-1..1]
+	p = p*0.5 + 0.5;			//-- prevod p na interval [0..1]
+
+	//------------------------------------------------------------------------------------
+	//-- Spline warping
+
+	//FIXME: grid_res je mrizka i s rozsirenim na kraji, ale ja potrebuji tu skutecnou - 1
+	p = p * (grid_res -2.0-1); // prevod z [0..1] do [0..res-1]
+
+	//-- vypocet souradnice bunky, ve ktere se bod "p" nachazi
+	vec2 grid_coords = floor( p.xy );
+	
+	mat4 P;
+	vec4 Tx, Ty;
+	vec4 Q;
+
+	//-- prevod do intervalu [0..1]
+	float x = fract(p.x);
+	float y = fract(p.y);
+
+	Tx = vec4( 1.0, x, pow(x, 2.0f), pow(x,3.0f) );
+	Ty = vec4( 1.0, y, pow(y, 2.0f), pow(y, 3.0f) );
+
+	//-- diff X
+	//FIXME: Nefunguje!?!? vec4 t = textureGather( funcTex, vec2(0,0));
+	
+	P = mat4(
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 0, 0 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 1, 0 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 2, 0 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 3, 0 )
+		);
+	
+	Q = P * Mcr * Tx;
+	delta.x = dot(Q * Mcr, Ty);
+
+	//-- diff Y
+
+	P = mat4(
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 0, 1 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 1, 1 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 2, 1 ),
+		GetPoints( grid_coords/grid_res + 0.5/grid_res, 3, 1 )
+		);
+	
+	Q = P * Mcr * Tx;
+	delta.y = dot(Q * Mcr, Ty);	
+
+	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
+	delta.x *= 2.0;
+	delta.y *= 2.0;
+
+	//------------------------------------------------------------------------------------
+
+	return delta;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 vec3 DPCoordsFront()
 {
     vec4 texCoords;
 
-    texCoords = in_CutMatrix[1] * in_CutMatrix[0] * lightModelView[0] * o_vertex;
+    texCoords = lightModelView[0] * o_vertex;
 
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
@@ -30,14 +121,11 @@ vec3 DPCoordsFront()
     texCoords.x /= texCoords.z;
     texCoords.y /= texCoords.z;
 
-#ifdef PARABOLA_CUT
-    texCoords.x = ((texCoords.x - cut_params.x)/(cut_params.y - cut_params.x)) * 2.0 - 1.0;
-    texCoords.y = ((texCoords.y - cut_params.z)/(cut_params.w - cut_params.z)) * 2.0 - 1.0;
-#endif
-
-    texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
+    texCoords.z = (Length - near_far_bias.x)/(near_far_bias.y + POLY_OFFSET - near_far_bias.x);
     texCoords.w = 1.0;
 
+	vec2 d = computeDiff( texCoords );
+	//texCoords.xy += d;
 
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
@@ -45,7 +133,7 @@ vec3 DPCoordsFront()
 vec3 DPCoordsBack()
 {
     vec4 texCoords;
-    texCoords = inverse( in_CutMatrix[1] ) * in_CutMatrix[0] *lightModelView[1] * o_vertex;
+    texCoords = lightModelView[1] * o_vertex;
 
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
@@ -56,12 +144,12 @@ vec3 DPCoordsBack()
     texCoords.z += 1.0;
     texCoords.x /= texCoords.z;
     texCoords.y /= texCoords.z;
-#ifdef PARABOLA_CUT
-    texCoords.x = ((texCoords.x + cut_params.y)/(cut_params.y - cut_params.x)) * 2.0 - 1.0;
-    texCoords.y = ((texCoords.y - cut_params.z)/(cut_params.w - cut_params.z)) * 2.0 - 1.0;
-#endif
-    texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
+
+    texCoords.z = (Length - near_far_bias.x)/(near_far_bias.y + POLY_OFFSET - near_far_bias.x);
     texCoords.w = 1.0;
+
+	vec2 d = computeDiff( texCoords );
+	//texCoords.xy += d;
 
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
@@ -83,8 +171,8 @@ void main(void)
 
     vec2 ds, dt;
     {
-        ds = dFdx(curr_texCoords.xy) * 512.0;
-        dt = dFdy(curr_texCoords.xy) * 512.0;
+        ds = dFdx(curr_texCoords.xy) * SM_RES;
+        dt = dFdy(curr_texCoords.xy) * SM_RES;
     }
 
     mat2 ma = mat2( ds, dt );
