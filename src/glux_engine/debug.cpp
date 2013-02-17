@@ -62,7 +62,7 @@ bool TScene::InitDebug()
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 64.0, 64.0, 0, GL_RGBA, GL_FLOAT, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 2048.0, 3.0, 0, GL_RGBA, GL_FLOAT, 0);
 
 		m_tex_cache["tex_random_vpls"] = tex;
 
@@ -248,7 +248,7 @@ void TScene::RenderDebug()
 
 	glBindFramebuffer( GL_FRAMEBUFFER, FBOManager::Instance()->Get("fbo_random_vpls") );
 	glDrawBuffers(1, mrt);
-	glViewport(0,0,64,64);
+	glViewport(0,0,2048,3);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	SetUniform("mat_randomVPLs", "seed", (float) (rand()%100)  );
