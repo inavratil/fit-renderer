@@ -232,3 +232,17 @@ mat_aliasError:0(30) : error C1008: undefined variable "near_far"
 0(52) : error C1008: undefined variable "near_far"
 0(52) : error C1008: undefined variable "near_far"
 0(52) : error C1008: undefined variable "near_far"
+
+mat_aliasError:0(212) : error C7011: implicit cast from "vec4" to "vec3"
+
+mat_randomVPLs:0(2) : error C0000: syntax error, unexpected ';', expecting "::" at token ";"
+0(3) : error C0000: syntax error, unexpected ';', expecting "::" at token ";"
+0(4) : error C0000: syntax error, unexpected ';', expecting "::" at token ";"
+
+mat_randomVPLs:0(2) : error C0000: syntax error, unexpected identifier, expecting '{' at token "texColor"
+0(3) : error C0000: syntax error, unexpected identifier, expecting '{' at token "texPos"
+0(4) : error C0000: syntax error, unexpected identifier, expecting '{' at token "texNormal"
+
+mat_randomVPLs:0(13) : error C7506: OpenGL does not define the global function noise
+
+mat_randomVPLs:0(14) : error C7011: implicit cast from "vec4" to "vec3"

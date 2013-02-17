@@ -35,6 +35,8 @@ vec4 LightModel(in vec3 normal, in vec3 eyeVec)
     att = max(0.0, 1.0 - dot(lightDir, lightDir));
     L = normalize(lightDir);
 
+	final_color += lights.diffuse[i] * material.diffuse;
+	/*
   	lambertTerm = dot(N,L);
   	if(lambertTerm > 0.0)
   	{
@@ -43,6 +45,7 @@ vec4 LightModel(in vec3 normal, in vec3 eyeVec)
   		specular = pow( max(dot(R, E), 0.0), material.shininess );
   		final_color += lights.specular[i].rgb *  material.specular * specular * att;
   	}
+	*/
   }
 
   return vec4(final_color,0.0);

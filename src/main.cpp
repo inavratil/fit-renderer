@@ -5,7 +5,7 @@
 bool InitScene(int resx, int resy)
 { 
     s = new TScene();
-    if(!s->PreInit(resx, resy, 0.1f, 10000.0f,45.0f, msaa, false, false)) 
+    if(!s->PreInit(resx, resy, 0.1f, 10000.0f,90.0f, msaa, false, false)) 
         return false;
 
     try{
@@ -97,13 +97,13 @@ bool InitScene(int resx, int resy)
             //pos = glm::vec3(-540, -43, 0);
             //rot = glm::vec3(-20, 270, 0.0f);
 
-			pos = glm::vec3(0, 0, 0);
-            rot = glm::vec3(0, 0, 0);
+			pos = glm::vec3(37.4598,-94.1301,3.02059);
+            rot = glm::vec3(0,-270, 0);
 
 			s->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
 
-            s->LoadScene("data/obj/scenes/newsibenik/sibenik.obj");
-            //s->MoveLight(0, glm::vec3(-120, 350, 0));
+            s->LoadScene("data/obj/scenes/sibenik.3ds");
+            s->MoveLight(0, glm::vec3(-120, 3050, 0));
 
 			//s->LoadScene("data/obj/scenes/testing_tess_all.3ds");
 			//s->MoveLight(0, glm::vec3(123,98,-43) );
@@ -370,7 +370,7 @@ void Redraw()
 
 //*****************************************************************************
 //Keyboard input
-const float INC = 1.0;
+const float INC = 5.0;
 void KeyInput(SDLKey key)
 {
     glm::vec3 lpos1 = s->GetLightPos(0);
@@ -382,6 +382,12 @@ void KeyInput(SDLKey key)
 
     switch(key)
     {     
+	case SDLK_1:
+		rot.y += 90.0;
+		break;
+    case SDLK_2:
+		rot.x += 90.0;
+		break;
     case SDLK_7:
         cut_angle.y -= 20.0;
         s->DPSetCutAngle(cut_angle);

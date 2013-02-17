@@ -245,7 +245,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 
 	//set light projection and light view matrix
-	glm::mat4 lightProjMatrix = glm::perspective(90.0f, 1.0f, 1.0f, 1000.0f);
+	glm::mat4 lightProjMatrix = glm::perspective(90.0f, 1.0f, 0.1f, 1000.0f);
 	glm::mat4 lightViewMatrix[2];
 	lightViewMatrix[1] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(-m_far_p, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 	//glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );

@@ -152,17 +152,17 @@ void TScene::Redraw(bool delete_buffer)
 	if(delete_buffer)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(m_wireframe)
-        glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-	
-    //render all opaque objects
-    DrawScene(DRAW_OPAQUE);
+	if(m_wireframe)
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
-    //then transparent objects
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glEnable(GL_BLEND);
-    DrawScene(DRAW_TRANSPARENT);
-    glDisable(GL_BLEND);
+	//render all opaque objects
+	DrawScene(DRAW_OPAQUE);
+
+	//then transparent objects
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glEnable(GL_BLEND);
+	DrawScene(DRAW_TRANSPARENT);
+	glDisable(GL_BLEND);
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
@@ -306,10 +306,10 @@ void TScene::Redraw(bool delete_buffer)
 
 		}
 
-		m_shadow_technique->DrawGrid();
+		//m_shadow_technique->DrawGrid();
 	}
 
-	RenderDebug();
+		RenderDebug();
 
     //finish drawing, restore buffers
     glBindVertexArray(0);

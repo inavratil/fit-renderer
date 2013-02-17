@@ -73,7 +73,7 @@ string computeTexel(Texture *t, string name)
     case MODULATE:
         ret +=
             "  //" + name + ", MODULATE mode\n"
-            "  color *= " + name + "_texture;\n";
+            "  color = " + name + "_texture;\n";
         break;
         ///DECAL mode: mix texel and color together
     case DECAL:
@@ -562,7 +562,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 
 				//FIXME: jako parametr funkce dat m_variables["ObjSpacePosition"]
                 frag_main += "\n  //Shadow map projection\n"
-                    "  color *= ShadowOMNI(" + m_it->first + ", " + m_it->first + "_intensity);\n";
+                    "  //color *= ShadowOMNI(" + m_it->first + ", " + m_it->first + "_intensity);\n";
             }
 
             //other texture types

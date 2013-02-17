@@ -5,7 +5,9 @@ uniform mat4 lightModelView[2]; //model view matrices for front and back side of
 uniform vec3 near_far_bias; // near and far plane for cm-cams
 
 in  vec4 o_vertex;
-out vec4 out_fragColor;
+in vec3 o_normal;
+layout( location = 0) out vec4 out_fragColor;
+layout( location = 1) out vec4 out_fragColor2;
 
 #define POLY_OFFSET 100.0
 
@@ -203,8 +205,11 @@ void main(void)
 #endif
     //-- End
 
-    out_fragColor = color_result;
-    out_fragColor.a = ma_error;
+    out_fragColor.rgb = normalize(o_normal);
+    out_fragColor.a = 1.0;
+
+	out_fragColor2 = o_vertex;
+	out_fragColor2.a = 1.0;
 
 /*
     vec2 C[] = vec2[](
