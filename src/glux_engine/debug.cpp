@@ -67,7 +67,6 @@ bool TScene::InitDebug()
 		m_tex_cache["tex_random_vpls"] = tex;
 
 		AddMaterial("mat_randomVPLs",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		AddTexture("mat_randomVPLs","data/tex/random.tga");
 		CustomShader("mat_randomVPLs", "data/shaders/quad.vert", "data/shaders/random_vpls.frag");
 
 		glGenFramebuffers(1, &fbo);
@@ -251,8 +250,27 @@ void TScene::RenderDebug()
 	glViewport(0,0,2048,3);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	SetUniform("mat_randomVPLs", "seed", (float) (rand()%100)  );
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_CUBE_MAP, m_tex_cache["aliaserr_texture_cube_color"]);
+	glActiveTexture( GL_TEXTURE1 );
+	glBindTexture( GL_TEXTURE_CUBE_MAP, m_tex_cache["aliaserr_texture_cube_pos"]);
+	glActiveTexture( GL_TEXTURE2 );
+	glBindTexture( GL_TEXTURE_CUBE_MAP, m_tex_cache["aliaserr_texture_cube_norm"]);
+	
+	SetUniform("mat_randomVPLs", "aliaserr_texture_cube_color", 0 );
+	SetUniform("mat_randomVPLs", "aliaserr_texture_cube_pos" , 1 );
+	SetUniform("mat_randomVPLs", "aliaserr_texture_cube_norm", 2 );
+	SetUniform("mat_randomVPLs", "seed", (float) rand()  );
 	RenderPass("mat_randomVPLs");
+
+	glActiveTexture( GL_TEXTURE2 );		
+	glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+	glActiveTexture( GL_TEXTURE1 );		
+	glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+	
+
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

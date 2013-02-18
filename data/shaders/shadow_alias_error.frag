@@ -204,12 +204,13 @@ void main(void)
         color_result = vec4( 1.0, 0.0, 0.0, 1.0 );
 #endif
     //-- End
+	
+	out_fragColor = o_vertex;
+	out_fragColor.a = 1.0;
 
-    out_fragColor.rgb = normalize(o_normal);
-    out_fragColor.a = 1.0;
+    out_fragColor2.rgb = normalize(o_normal);
+    out_fragColor2.a = 1.0;
 
-	out_fragColor2 = o_vertex;
-	out_fragColor2.a = 1.0;
 
 /*
     vec2 C[] = vec2[](

@@ -246,3 +246,20 @@ mat_randomVPLs:0(2) : error C0000: syntax error, unexpected identifier, expectin
 mat_randomVPLs:0(13) : error C7506: OpenGL does not define the global function noise
 
 mat_randomVPLs:0(14) : error C7011: implicit cast from "vec4" to "vec3"
+
+mat_randomVPLs:0(13) : error C1067: too little data in type constructor
+
+mat_randomVPLs:0(13) : error C1067: too little data in type constructor
+
+mat_randomVPLs:0(18) : error C0000: syntax error, unexpected identifier, expecting ',' or ';' at token "coord"
+
+mat_randomVPLs:0(28) : error C0000: syntax error, unexpected '.', expecting "::" at token "."
+
+mat_randomVPLs:0(28) : error C7011: implicit cast from "vec4" to "vec3"
+0(30) : error C7011: implicit cast from "vec4" to "vec3"
+0(32) : error C7011: implicit cast from "vec4" to "vec3"
+
+mat_randomVPLs:0(34) : error C7011: implicit cast from "vec4" to "vec3"
+
+mat_randomVPLs:0(34) : error C1067: too little data in type constructor
+0(34) : error C7011: implicit cast from "vec4" to "vec3"
