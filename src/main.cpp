@@ -102,8 +102,9 @@ bool InitScene(int resx, int resy)
 
 			s->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
 
-            s->LoadScene("data/obj/scenes/newsibenik/sibenik.obj");
-            //s->MoveLight(0, glm::vec3(-120, 350, 0));
+            s->LoadScene("data/obj/scenes/sibenik.3ds");
+			//s->LoadScene("data/obj/scenes/sponza/sponza.obj");
+            s->MoveLight(0, glm::vec3(-120, 350, 0));
 
 			//s->LoadScene("data/obj/scenes/testing_tess_all.3ds");
 			//s->MoveLight(0, glm::vec3(123,98,-43) );
@@ -370,7 +371,7 @@ void Redraw()
 
 //*****************************************************************************
 //Keyboard input
-const float INC = 1.0;
+const float INC = 5.0;
 void KeyInput(SDLKey key)
 {
     glm::vec3 lpos1 = s->GetLightPos(0);

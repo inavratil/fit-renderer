@@ -317,6 +317,7 @@ bool Texture::LoadImage(const char* filename)
 	//Allocate memory for image
 	unsigned imageSize = (m_bpp * m_width * m_height);
 	m_imageData = new GLubyte[imageSize];
+
 	if(m_imageData == NULL)
 	{
 		ShowMessage("Can't allocate image data!");
@@ -325,10 +326,10 @@ bool Texture::LoadImage(const char* filename)
 
 	//Copy pixels
 	if(m_bpp==1)
-		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_ALPHA, IL_UNSIGNED_BYTE, m_imageData);
+		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, m_imageData);
 	else if(m_bpp==3)
 		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_RGB, IL_UNSIGNED_BYTE, m_imageData);
-	else if(m_bpp==3)
+	else if(m_bpp==4)
 		ilCopyPixels(0, 0, 0, m_width, m_height, 1, IL_RGBA, IL_UNSIGNED_BYTE, m_imageData);
 
 	//Unbind and free

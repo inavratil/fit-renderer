@@ -291,7 +291,8 @@ void TScene::Redraw(bool delete_buffer)
 			m_tex_cache["MTEX_output"],
 			m_tex_cache["MTEX_ping"],
 			m_tex_cache["MTEX_pong"],
-			m_tex_cache["Stencil_color"]
+			m_tex_cache["Stencil_color"],
+			TextureCache::Instance()->Get("aliaserr_texture")
 		};
 		
 		//show alias error
