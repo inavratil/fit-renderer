@@ -125,7 +125,7 @@ vec3 DPCoordsFront()
     texCoords.w = 1.0;
 
 	vec2 d = computeDiff( texCoords );
-	//texCoords.xy += d;
+	texCoords.xy += d;
 
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
@@ -149,7 +149,7 @@ vec3 DPCoordsBack()
     texCoords.w = 1.0;
 
 	vec2 d = computeDiff( texCoords );
-	//texCoords.xy += d;
+	texCoords.xy += d;
 
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }

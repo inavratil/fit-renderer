@@ -136,8 +136,8 @@ void InitTweakBar()
     TwType sh_modes = TwDefineEnum("sh_modes", sh_mode, 3);
     TwAddVarRO(ui, "sh_mode", sh_modes, &dpshadow_method, "label='Mode' group='Shadows'");
 	//IPSM textures
-	TwEnumVal ipsm_tex[4] = { {OUTPUT, "Ouput"}, {PING, "Ping"}, {PONG, "Pong"}, {MASK, "Mask"} };
-	TwType ipsm_texs = TwDefineEnum("ipsm_texs", ipsm_tex, 4);
+	TwEnumVal ipsm_tex[5] = { {OUTPUT, "Ouput"}, {PING, "Ping"}, {PONG, "Pong"}, {MASK, "Mask"}, {CAM_ERR, "Camera error"} };
+	TwType ipsm_texs = TwDefineEnum("ipsm_texs", ipsm_tex, 5);
     TwAddVarRW(ui, "ipsm_tex", ipsm_texs, &ipsm_texPrev, "label='Texture' group='Shadows'");
     //parabola cut
     TwAddVarRO(ui, "parabola_cut", TW_TYPE_BOOLCPP, &parabola_cut, 

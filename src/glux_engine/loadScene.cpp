@@ -109,7 +109,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			{
 				unsigned int numTex = m->GetTextureCount(aiTextureType_NORMALS);
 
-				for(int j=0; j<numTex; ++j)
+				for(unsigned int j=0; j<numTex; ++j)
 				{
 					//Get ambient textures
 					texFound = m->GetTexture(aiTextureType_NORMALS, j, &pth);
@@ -128,7 +128,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			{
 				unsigned int numTex = m->GetTextureCount(aiTextureType_HEIGHT);
 
-				for(int j=0; j<numTex; ++j)
+				for(unsigned int j=0; j<numTex; ++j)
 				{
 					//Get ambient textures
 					texFound = m->GetTexture(aiTextureType_HEIGHT, j, &pth);

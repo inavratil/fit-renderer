@@ -62,6 +62,9 @@ void TScene::RenderDebug()
 
 	//then other with depth-only shader
 	m_materials["mat_aliasError"]->RenderMaterial();
+	glActiveTexture( GL_TEXTURE1 );
+	glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
+	SetUniform("mat_aliasError", "MTEX_2Dfunc_values", 1 );
 	
 	for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
 	{
@@ -75,9 +78,34 @@ void TScene::RenderDebug()
 		}
 	}
 
+	glActiveTexture( GL_TEXTURE1 );
+	glBindTexture( GL_TEXTURE_2D, 0 );
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, 0 );
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
     
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
+	/*
+	float *aerr_buffer = new float[128*128];
+	glBindTexture(GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"));
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, aerr_buffer);
+
+	float sum = 0.0;
+	int count = 0;
+	for( int i=0; i<(128*128); ++i )
+	{
+		if( aerr_buffer[i] > 0.0 )
+		{
+			sum += aerr_buffer[i];
+			count++;
+		}
+	}
+
+	delete aerr_buffer;
+
+	cout << sum/count << " ";
+	*/
 }

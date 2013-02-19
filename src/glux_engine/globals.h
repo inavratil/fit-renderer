@@ -122,7 +122,7 @@ enum FBOmode { NO_DEPTH, DEPTH_ONLY, DEPTH_AND_STENCIL };
 #define TWOSIGMA2(sigma) (2.0*glm::pow( (sigma),2.0f))
 #define FRAC_TWOPISIGMA2(sigma) (1.0f/glm::sqrt(2.0f*PI*glm::pow( (sigma),2.0f)))
 
-enum IPSMTextures { OUTPUT, PING, PONG, MASK };
+enum IPSMTextures { OUTPUT, PING, PONG, MASK, CAM_ERR };
 /**
 ****************************************************************************************************
 @brief Show message box (or output to console on Linux)
