@@ -118,6 +118,8 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
     m_msamples = msamples;
     if(msamples < 1) msamples = 1;              //don't accept 0 for multisample count
 
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
+
     glClearColor(0.0, 0.0, 0.0, 0.5); //clear color and depth
     glEnable(GL_DEPTH_TEST);          //enable depth buffer
     glDepthFunc(GL_LEQUAL);

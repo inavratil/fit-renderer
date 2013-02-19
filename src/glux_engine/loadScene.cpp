@@ -56,10 +56,10 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 
             //remove not-allowed chars from name
             string m_name = name_space + name.C_Str();
-            for(unsigned i=0; i<m_name.length(); i++)
+            for(unsigned j=0; j<m_name.length(); j++)
             {
-                if(m_name[i] < 0 || (!isalpha(m_name[i]) && !isdigit(m_name[i])) || m_name[i] > 128)
-					m_name.replace(i--,1,"");
+                if(m_name[j] < 0 || (!isalpha(m_name[j]) && !isdigit(m_name[j])) || m_name[j] > 128)
+					m_name.replace(j--,1,"");
             }
             cout<<"Adding material "<<m_name<<endl;
 
@@ -77,7 +77,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 				glm::vec3(ambient.r, ambient.g, ambient.b),		//ambient color
                 glm::vec3(diffuse.r, diffuse.g, diffuse.b),		//diffuse color
                 glm::vec3(specular.r, specular.g, specular.b),	//specular color
-				256.0f - 256.0f*shininess	
+				shininess	
 				);
 			mats.push_back(m_name);
 
@@ -85,16 +85,15 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			string path;
 			aiString pth;
 			aiReturn texFound;
-			unsigned int i=0;
 
 			//Loads up base textures for material
 			if(m->GetTextureCount(aiTextureType_DIFFUSE)>0)
 			{
 				unsigned int numTex = m->GetTextureCount(aiTextureType_DIFFUSE);
-				for(i=0; i<numTex; ++i)
+				for(int j=0; j<numTex; ++j)
 				{
 					//Get ambient textures
-					texFound = m->GetTexture(aiTextureType_DIFFUSE, i, &pth);
+					texFound = m->GetTexture(aiTextureType_DIFFUSE, j, &pth);
 					if(texFound==AI_FAILURE)
 						break;
 
@@ -110,10 +109,10 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			{
 				unsigned int numTex = m->GetTextureCount(aiTextureType_NORMALS);
 
-				for(i=0; i<numTex; ++i)
+				for(int j=0; j<numTex; ++j)
 				{
 					//Get ambient textures
-					texFound = m->GetTexture(aiTextureType_NORMALS, i, &pth);
+					texFound = m->GetTexture(aiTextureType_NORMALS, j, &pth);
 					if(texFound==AI_FAILURE)
 						break;
 
@@ -129,10 +128,10 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			{
 				unsigned int numTex = m->GetTextureCount(aiTextureType_HEIGHT);
 
-				for(i=0; i<numTex; ++i)
+				for(int j=0; j<numTex; ++j)
 				{
 					//Get ambient textures
-					texFound = m->GetTexture(aiTextureType_HEIGHT, i, &pth);
+					texFound = m->GetTexture(aiTextureType_HEIGHT, j, &pth);
 					if(texFound==AI_FAILURE)
 						break;
 
@@ -178,6 +177,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 		m_objects[oname] = o;
 
 		m_obj_cache[oname] = m_objects[oname]->Create(mesh);
+		m_objects[oname]->Resize( 50.0, 50.0, 50.0 );
 
 		//assign material
 		if(load_materials)
