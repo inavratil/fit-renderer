@@ -3,6 +3,7 @@ uniform sampler2D MTEX_2Dfunc_values;
 
 uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
 uniform vec3 near_far_bias; // near and far plane for cm-cams
+uniform vec4 range;
 
 in  vec4 o_vertex;
 out vec4 out_fragColor;
@@ -167,7 +168,10 @@ void main(void)
         curr_texCoords = front_coords;
     else
         curr_texCoords = back_coords;
-    //-- aliasing error
+    
+	vec4 zoomed_range = range / 128.0;					//-- prevod do [0..1]
+	//curr_texCoords.xy = (curr_texCoords.xy - zoomed_range.xz) / (zoomed_range.yw - zoomed_range.xz);
+	//-- aliasing error
 
     vec2 ds, dt;
     {

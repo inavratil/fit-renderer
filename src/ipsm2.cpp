@@ -657,4 +657,5 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	SetUniform("mat_aliasError", "lightModelView[1]", lightViewMatrix[1]);
 	SetUniform("mat_aliasError", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 	SetUniform("mat_aliasError", "grid_res", (float) m_shadow_technique->GetResolution());
+	SetUniform("mat_aliasError", "range", m_shadow_technique->GetGridRange());
 }
