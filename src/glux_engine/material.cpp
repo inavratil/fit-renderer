@@ -53,7 +53,7 @@ TMaterial::TMaterial(const char* name, unsigned id, glm::vec3 amb, glm::vec3 dif
     m_ambColor = amb;
     m_diffColor = diff;
     m_specColor = spec;
-    m_shininess = glm::clamp(shin, 0.0f, 64.0f);
+    m_shininess = shin;
     m_reflection = reflect;
     m_transparency = transp;
     m_lightModel = lm;

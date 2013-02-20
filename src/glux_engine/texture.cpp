@@ -96,7 +96,7 @@ GLint Texture::Load(const char *texname, int textype, const char *filename, int 
 #ifdef _LINUX_
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, m_imageData);
 #else
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, m_width, m_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, m_imageData);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_imageData);
 #endif
         else					//compress color maps
 #ifdef _LINUX_

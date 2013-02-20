@@ -77,7 +77,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 				glm::vec3(ambient.r, ambient.g, ambient.b),		//ambient color
                 glm::vec3(diffuse.r, diffuse.g, diffuse.b),		//diffuse color
                 glm::vec3(specular.r, specular.g, specular.b),	//specular color
-				shininess	
+				256.0f - 256.0f*shininess	
 				);
 			mats.push_back(m_name);
 
@@ -177,7 +177,6 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 		m_objects[oname] = o;
 
 		m_obj_cache[oname] = m_objects[oname]->Create(mesh);
-		m_objects[oname]->Resize( 50.0, 50.0, 50.0 );
 
 		//assign material
 		if(load_materials)
