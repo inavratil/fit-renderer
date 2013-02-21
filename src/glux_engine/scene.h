@@ -123,7 +123,7 @@ protected:
     int m_dpshadow_method;
     float m_min_depth, m_avg_depth, m_max_depth;
     glm::vec3 m_avg_normal;
-    float *m_select_buffer, *m_aerr_buffer;
+    float *m_select_buffer;
     glm::vec2 m_cut_angle;
 	//FIXME
 

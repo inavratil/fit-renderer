@@ -232,3 +232,15 @@ mat_aliasError:0(30) : error C1008: undefined variable "near_far"
 0(52) : error C1008: undefined variable "near_far"
 0(52) : error C1008: undefined variable "near_far"
 0(52) : error C1008: undefined variable "near_far"
+
+mat_aliasMipmap:0(23) : error C0000: syntax error, unexpected '}', expecting ',' or ';' at token "}"
+
+mat_compute_aliasError:0(109) : error C1068: too much data in type constructor
+0(109) : error C1035: assignment of incompatible types
+
+mat_aliasMipmap:0(22) : error C1067: too little data in type constructor
+
+mat_aliasMipmap:0(19) : error C1067: too little data in type constructor
+
+mat_compute_aliasError:0(109) : error C1008: undefined variable "fragCoord"
+0(109) : error C1008: undefined variable "fragCoord"

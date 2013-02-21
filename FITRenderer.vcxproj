@@ -179,6 +179,7 @@
     <None Include="data\shaders\shadow.vert" />
     <None Include="data\shaders\shadow_alias_error.frag" />
     <None Include="data\shaders\shadow_alias_error.vert" />
+    <None Include="data\shaders\shadow_alias_mipmap.frag" />
     <None Include="data\shaders\shadow_omni.frag" />
     <None Include="data\shaders\shadow_omni.vert" />
     <None Include="data\shaders\shadow_omni_tess.frag" />

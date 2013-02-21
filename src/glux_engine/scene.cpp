@@ -16,7 +16,6 @@ TScene::TScene()
     //FBO's
     m_useHDR = m_useSSAO = m_useNormalBuffer = false;
     m_f_buffer = m_r_buffer_depth = m_f_bufferMSAA = m_r_buffer_colorMSAA = m_r_buffer_depthMSAA = 0;
-    m_aerr_buffer = NULL;
     m_msamples = 0;
 
     //scene
@@ -66,7 +65,6 @@ TScene::~TScene()
     glDeleteVertexArrays(2, to_delete);
 
     delete [] m_select_buffer;
-    delete [] m_aerr_buffer;
 
     /*
     materials.clear();

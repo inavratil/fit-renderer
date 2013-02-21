@@ -1,8 +1,11 @@
 #include "scene.h"
+#include "data.h"
 
 //-- Vola se na konci funkce scene->PostInit()
 bool TScene::InitDebug()
 {
+	GLuint buffer, fbo, tex;
+
 	///////////////////////////////////////////////////////////////////////////////
 	//-- Render Alias error
 
@@ -12,7 +15,7 @@ bool TScene::InitDebug()
 		AddTexture("mat_aliasError", "data/tex/error_color.tga", RENDER_TEXTURE);
 		CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
 
-		GLuint buffer, fbo;
+
 
 		TextureCache::Instance()->Add("aliaserr_texture", 128.0, 128.0, GL_RGBA16F, GL_FLOAT);
 		
@@ -39,8 +42,25 @@ bool TScene::InitDebug()
 
 		// Go back to regular frame buffer rendering
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 
-		m_aerr_buffer = new float[m_resx*m_resy];
+	///////////////////////////////////////////////////////////////////////////////
+	//-- Mipmaps
+
+	{
+		glGenTextures(1, &tex);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128.0, 128.0, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glGenerateMipmap( GL_TEXTURE_2D );
+
+		TextureCache::Instance()->Add("aliaserr_mipmap", tex );
+		
+		AddMaterial("mat_aliasMipmap",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+		CustomShader("mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag");
 	}
 
 	return true;
@@ -108,4 +128,42 @@ void TScene::RenderDebug()
 
 	cout << sum/count << " ";
 	*/
+
+	///////////////////////////////////////////////////////////////////////////////
+	//-- Mipmaps
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER,  m_fbos["ipsm"]);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr"));
+	glBlitFramebuffer(0, 0, 128.0, 128.0, 0, 0, 128.0, 128.0, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER,  0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
+	
+	for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
+    {
+        glViewport(0, 0, j, j);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), i);
+		glClear(GL_COLOR_BUFFER_BIT );
+
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ));
+
+        SetUniform("mat_aliasMipmap", "mip_level", i-1);
+        RenderPass("mat_aliasMipmap");
+
+		glBindTexture( GL_TEXTURE_2D, 0 );
+    }
+    glViewport( 0, 0, 128.0, 128.0 ); //restore viewport
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

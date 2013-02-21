@@ -104,7 +104,4 @@ void main()
 			out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );
 		else
 			out_FragColor = vec4( color, new_res );
-
-	
-
 }

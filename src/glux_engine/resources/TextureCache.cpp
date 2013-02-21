@@ -53,6 +53,17 @@ void TextureCache::Add(const char* _name, int _resX, int _resY, GLint _internalF
 	glBindTexture(_target, 0);
 }
 
+void TextureCache::Add( const char* _name, GLuint _id )
+{
+	if( m_textureCache.find(_name) != m_textureCache.end() )
+	{
+		cerr<<"WARNING (TextureCache): texture with name "<<_name<<" already exist\n";
+		return;
+	}
+
+	m_textureCache[_name] = _id;
+}
+
 GLuint TextureCache::Get( const char* _name )
 {
 	if( m_textureCache.find(_name) == m_textureCache.end() )
