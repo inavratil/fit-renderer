@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "data.h"
 
 //-- Vola se na konci funkce scene->PostInit()
 bool TScene::InitDebug()
@@ -14,8 +13,6 @@ bool TScene::InitDebug()
 		AddMaterial("mat_aliasError");
 		AddTexture("mat_aliasError", "data/tex/error_color.tga", RENDER_TEXTURE);
 		CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
-
-
 
 		TextureCache::Instance()->Add("aliaserr_texture", 128.0, 128.0, GL_RGBA16F, GL_FLOAT);
 		
@@ -77,6 +74,7 @@ void TScene::RenderDebug()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"), 0);
 	glViewport( 0, 0, 128.0, 128.0 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

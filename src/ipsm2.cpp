@@ -42,7 +42,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 	//this->SetShadowTechnique( new BilinearWarpedShadow() );
 	//-- Spline shadow technique
 	this->SetShadowTechnique( new SplineWarpedShadow() );
-	m_shadow_technique->SetResolution( 16.0 );
+	m_shadow_technique->SetResolution( 17.0 );
 
     //create data textures
     try{

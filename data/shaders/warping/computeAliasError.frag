@@ -35,7 +35,11 @@ void main()
     //b = texture(tex_coords, fragTexCoord + vec2(1.0/128.0, 0.0) + vec2( 0.5/128.0 ) );
     //c = texture(tex_coords, fragTexCoord + vec2(1.0/128.0) + vec2( 0.5/128.0 ) );
     //d = texture(tex_coords, fragTexCoord + vec2(0.0, 1.0/128.0) + vec2( 0.5/128.0 ) );
-
+	
+	if( b.r > 90.0 || c.r > 90.0 || d.r > 90.0 )
+		out_FragColor = vec4( 0.0, 1.0, 1.0, 0.0 );
+	else
+	{
     //-----
 
     vec3 ac = vec3( c.xy-a.xy, 0.0 );
@@ -104,4 +108,5 @@ void main()
 			out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );
 		else
 			out_FragColor = vec4( color, new_res );
+	}
 }
