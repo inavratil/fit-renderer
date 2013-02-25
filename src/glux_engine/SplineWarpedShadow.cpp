@@ -38,19 +38,17 @@ bool SplineWarpedShadow::Initialize(TLight* _light)
 void SplineWarpedShadow::PreRender()
 {
 	int res = (int)this->GetResolution();
-	float* z_values = new float[res*res*2];
+	m_pFuncValues = new float[res*res*2];
 	
-	memset(z_values, 0, res*res*2*sizeof(float));
+	memset(m_pFuncValues, 0, res*res*2*sizeof(float));
 
 	glBindTexture(GL_TEXTURE_2D, m_iTexID);
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, z_values);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, m_pFuncValues);
 	glBindTexture(GL_TEXTURE_2D, 0 ); 
-
-	m_pFuncValues = z_values;
 
 	this->GenerateGrid();
 
-	delete[] z_values;
+	delete [] m_pFuncValues;
 	m_pFuncValues = NULL;
 }
 
@@ -116,6 +114,7 @@ glm::vec2 SplineWarpedShadow::ComputeDiff( glm::vec2 _P )
 #define I(i,j) (2*( (j)*(res) + (i) ))
 Splines4x4 SplineWarpedShadow::_GetSplinesValues( glm::vec2 _c )
 {
+
 	Splines4x4 ret;
 
 	if( m_pFuncValues == NULL ) 
@@ -124,6 +123,7 @@ Splines4x4 SplineWarpedShadow::_GetSplinesValues( glm::vec2 _c )
 	//-- v tomto pridade se bere skutecne rozliseni, tj. rozliseni textury
 	int res = (int)this->GetResolution();
 	int x = (int)_c.x, y = (int)_c.y;
+	assert( _c.x<res && _c.y<res );
 
 	//-- jedna bunka
 	// P3  ----

@@ -193,7 +193,7 @@ void main(void)
 		);
 	
 	Q = P * Mcr * Tx;
-	dx = dot(Q * Mcr, Ty);
+	dx = dot(Q * Mcr, Ty) * near_far_bias.z;
 
 	//-- diff Y
 
@@ -205,7 +205,7 @@ void main(void)
 		);
 	
 	Q = P * Mcr * Tx;
-	dy = dot(Q * Mcr, Ty);	
+	dy = dot(Q * Mcr, Ty) * near_far_bias.z;	
 
 	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
 	dx *= 2.0;

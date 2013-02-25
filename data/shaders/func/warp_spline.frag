@@ -66,7 +66,7 @@ vec2 computeDiff( vec4 _position )
 		);
 	
 	Q = P * Mcr * Tx;
-	delta.x = dot(Q * Mcr, Ty);
+	delta.x = dot(Q * Mcr, Ty) * near_far_bias.z;
 
 	//-- diff Y
 
@@ -78,7 +78,7 @@ vec2 computeDiff( vec4 _position )
 		);
 	
 	Q = P * Mcr * Tx;
-	delta.y = dot(Q * Mcr, Ty);	
+	delta.y = dot(Q * Mcr, Ty * near_far_bias.z);	
 
 	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
 	delta.x *= 2.0;

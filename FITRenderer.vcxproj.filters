@@ -177,6 +177,9 @@
     <ClInclude Include="src\glux_engine\hires_timer.h">
       <Filter>Header files</Filter>
     </ClInclude>
+    <ClInclude Include="src\precomputed_diffs.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\progress_bar.frag">

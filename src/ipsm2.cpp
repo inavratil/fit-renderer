@@ -4,6 +4,8 @@
 #include "glux_engine/BilinearWarpedShadow.h"
 #include "glux_engine/SplineWarpedShadow.h"
 
+#include "precomputed_diffs.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 //-- Defines
 
@@ -446,7 +448,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		limit /= POLY_BIAS;
 
 		//FIXME: limit pocitat nejak inteligentne bez bulharske konstanty
-		SetUniform("mat_aliasgradient", "limit", limit*2.0f);
+		SetUniform("mat_aliasgradient", "limit", limit);
 		RenderPass("mat_aliasgradient");
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -487,7 +489,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
 
 		//-- Simplified deformation model 
-		
+		/*
 		sigma = 1.0;
 		AddTexture("mat_aliasblur_horiz","MTEX_2Dfunc_values",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(m_shadow_technique->GetResolution()));
@@ -509,7 +511,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		RemoveTexture("mat_aliasblur_horiz","MTEX_2Dfunc_values");
 		RemoveTexture("mat_aliasblur_vert","MTEX_2Dfunc_values_ping");
-		
+		*/
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
