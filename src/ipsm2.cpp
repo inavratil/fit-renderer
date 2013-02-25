@@ -72,7 +72,13 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//2D polynomials coefficients
 		//FIXME: precision??? nestaci 16F ?
-		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
+		//CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
+		glGenTextures(1, &texid);
+		glBindTexture(GL_TEXTURE_2D, texid);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), 0, GL_RGBA, GL_FLOAT, precomp_diffs);
+		m_tex_cache["MTEX_2Dfunc_values"] = texid;
 		CreateDataTexture("MTEX_2Dfunc_values_ping", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
 		//glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         //glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -174,6 +180,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		AddMaterial("mat_mipmap_bb",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
 		AddTexture("mat_mipmap_bb","MTEX_mask",RENDER_TEXTURE);
 		CustomShader("mat_mipmap_bb","data/shaders/quad.vert", "data/shaders/warping/mipmap_boundingbox.frag");
+
 
 		//FIXME: Debug fbo a textury pro stencil test
 		{
@@ -453,7 +460,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
-
+#if 0
 		glm::vec4 func_range = m_shadow_technique->GetGrid()->GetRangeAsOriginStep();
 
 		glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
@@ -487,6 +494,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		if ( (string) m_shadow_technique->GetName() ==  "Spline" )
 			glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
+#endif
 
 		//-- Simplified deformation model 
 		/*
