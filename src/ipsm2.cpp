@@ -460,7 +460,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
-#if 0
 		glm::vec4 func_range = m_shadow_technique->GetGrid()->GetRangeAsOriginStep();
 
 		glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
@@ -489,12 +488,15 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			}
 
 			SetUniform("mat_get_2Dfunc_values", "range", func_range );	
-			RenderPass("mat_get_2Dfunc_values");
+			//RenderPass("mat_get_2Dfunc_values");
+			glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), 0, GL_RGBA, GL_FLOAT, precomp_diffs);
+			glBindTexture( GL_TEXTURE_2D, 0 );
+
 		}
 
 		if ( (string) m_shadow_technique->GetName() ==  "Spline" )
 			glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
-#endif
 
 		//-- Simplified deformation model 
 		/*

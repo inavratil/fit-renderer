@@ -48,8 +48,8 @@ bool TScene::InitDebug()
 		glGenTextures(1, &tex);
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128.0, 128.0, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glGenerateMipmap( GL_TEXTURE_2D );
@@ -106,7 +106,7 @@ void TScene::RenderDebug()
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
-	/*
+	
 	float *aerr_buffer = new float[128*128];
 	glBindTexture(GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"));
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, aerr_buffer);
@@ -125,7 +125,7 @@ void TScene::RenderDebug()
 	delete aerr_buffer;
 
 	cout << sum/count << " ";
-	*/
+	
 
 	///////////////////////////////////////////////////////////////////////////////
 	//-- Mipmaps
@@ -156,6 +156,7 @@ void TScene::RenderDebug()
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ));
 
+		SetUniform("mat_aliasMipmap", "offset", 0.5f/((float)j*2.0f));
         SetUniform("mat_aliasMipmap", "mip_level", i-1);
         RenderPass("mat_aliasMipmap");
 

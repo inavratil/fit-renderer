@@ -62,10 +62,10 @@ bool InitScene(int resx, int resy)
         */
 
         //skybox
-        s->AddMaterial("mat_sky",white,white,white,0.0,0.0,0.0,NONE);
-        s->AddTexture("mat_sky",cubemap);
-        s->AddObject("sky",CUBE,5000.0,5000.0);
-        s->SetMaterial("sky","mat_sky");
+        //s->AddMaterial("mat_sky",white,white,white,0.0,0.0,0.0,NONE);
+        //s->AddTexture("mat_sky",cubemap);
+        //s->AddObject("sky",CUBE,5000.0,5000.0);
+        //s->SetMaterial("sky","mat_sky");
 
         //s->AddObject("camera",CUBE, 10, 10);//"data/obj/camera.3ds");
         //s->AddMaterial("mat_camera", black, green);

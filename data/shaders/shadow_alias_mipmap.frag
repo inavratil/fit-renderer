@@ -6,14 +6,23 @@ uniform sampler2D mat_aliasError;
 
 //mipmap level from which we read
 uniform int mip_level;
+uniform float offset;
 
 in vec2 fragTexCoord;
 out vec4 out_FragColor;
 
 void main()
 {
-	vec4 texColor0 = textureLod( mat_aliasError, fragTexCoord, mip_level );
+	// vyraz "-vec2(offset)", protoze souradnice z levelu i+1 cte z pixel o souradnicich (1,1) v levelu i - brano v ramci 2x2 pixelu 
+	float errorVal00 = pow( textureLod( mat_aliasError, fragTexCoord-vec2(offset), mip_level ).a, 2.0);
+	float errorVal10 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(1,0) ).a, 2.0);
+	float errorVal01 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(0,1) ).a, 2.0);
+	float errorVal11 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(1,1) ).a, 2.0);
 	
-	//out_FragColor = vec4( texColor0.a + texColor1.a + texColor2.a + texColor3.a );
-	out_FragColor = vec4( texColor0.a*4.0 );
+	float maxWidth = max(errorVal00 + errorVal10, errorVal01 + errorVal11 );
+	float maxHeight = max(errorVal00 + errorVal01, errorVal10 + errorVal11 );
+
+	float maxVal = max(maxWidth, maxHeight);
+	out_FragColor = vec4( sqrt(errorVal00 + errorVal10 + errorVal01 + errorVal11) );
+	//out_FragColor = vec4( maxVal );
 }

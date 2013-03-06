@@ -109,4 +109,6 @@ void main()
 		else
 			out_FragColor = vec4( color, new_res );
 	}
+
+	//out_FragColor = vec4(fragTexCoord.xy*128.0, 0.0, 1.0);
 }
