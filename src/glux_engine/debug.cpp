@@ -106,7 +106,7 @@ void TScene::RenderDebug()
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
-	
+	/*
 	float *aerr_buffer = new float[128*128];
 	glBindTexture(GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"));
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, aerr_buffer);
@@ -125,44 +125,5 @@ void TScene::RenderDebug()
 	delete aerr_buffer;
 
 	cout << sum/count << " ";
-	
-
-	///////////////////////////////////////////////////////////////////////////////
-	//-- Mipmaps
-
-
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
-	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER,  m_fbos["ipsm"]);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr"));
-	glBlitFramebuffer(0, 0, 128.0, 128.0, 0, 0, 128.0, 128.0, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER,  0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
-	
-	for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
-    {
-        glViewport(0, 0, j, j);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), i);
-		glClear(GL_COLOR_BUFFER_BIT );
-
-		glActiveTexture( GL_TEXTURE0 );
-		glBindTexture( GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ));
-
-		SetUniform("mat_aliasMipmap", "offset", 0.5f/((float)j*2.0f));
-        SetUniform("mat_aliasMipmap", "mip_level", i-1);
-        RenderPass("mat_aliasMipmap");
-
-		glBindTexture( GL_TEXTURE_2D, 0 );
-    }
-    glViewport( 0, 0, 128.0, 128.0 ); //restore viewport
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	*/
 }

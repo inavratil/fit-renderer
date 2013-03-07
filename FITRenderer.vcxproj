@@ -105,6 +105,7 @@
     <ClCompile Include="src\glux_engine\loadScene.cpp" />
     <ClCompile Include="src\glux_engine\material.cpp" />
     <ClCompile Include="src\glux_engine\material_generator.cpp" />
+    <ClCompile Include="src\glux_engine\modifyGrid.cpp" />
     <ClCompile Include="src\glux_engine\object.cpp" />
     <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\render_target.cpp" />

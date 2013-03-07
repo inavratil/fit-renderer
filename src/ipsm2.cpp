@@ -15,6 +15,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //-- Global variables
 
+glm::vec4 g_precomputed_diffs[19*19];
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -25,6 +27,7 @@ const float COVERAGE[100] = { 0.2525314589560607, 0.2576326279264187, 0.26283603
 0.9136357166693593, 0.9210153086167311, 0.9281269295161807, 0.9349595375079411, 0.9415023695886816, 0.9477449771968978, 0.9536772614690937, 0.9592895079717747, 0.9645724207097471, 0.9695171552121149, 0.9741153504974227, 0.9783591597219075, 0.9822412793198499, 0.9857549764505119, 0.9888941145749449, 0.991653176994985, 0.9940272881980572, 0.9960122328654299, 0.9976044724143962, 0.9988011589619574,
 0.9996001466136796, 1 };
 
+void ModifyGrid(glm::vec4 *precomputed_diffs);
 
 /**
 ****************************************************************************************************
@@ -51,37 +54,20 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		CreateDataTexture("MTEX_debug", sh_res, sh_res, GL_RGBA16F, GL_FLOAT);
         //cam coords
-        CreateDataTexture("MTEX_coords", sh_res/8, sh_res/8, GL_RGBA32F, GL_FLOAT/*, GL_TEXTURE_2D, true*/);
-		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+        CreateDataTexture("MTEX_coords", sh_res/8, sh_res/8, GL_RGBA32F, GL_FLOAT);
+
 
         //output
         CreateDataTexture("MTEX_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		CreateDataTexture("MTEX_mask", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_TEXTURE_2D, true);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		CreateDataTexture("MTEX_mask", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
 		//blur
 		CreateDataTexture("MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		CreateDataTexture("MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		//2D polynomials coefficients
 		//FIXME: precision??? nestaci 16F ?
-		//CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
-		glGenTextures(1, &texid);
-		glBindTexture(GL_TEXTURE_2D, texid);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), 0, GL_RGBA, GL_FLOAT, precomp_diffs);
-		m_tex_cache["MTEX_2Dfunc_values"] = texid;
+		CreateDataTexture("MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
 		CreateDataTexture("MTEX_2Dfunc_values_ping", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT);
-		//glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		//FIXME: Tohle by melo prijit do Init metody dane shadow techniky
 		m_shadow_technique->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", m_tex_cache["MTEX_2Dfunc_values"], 1.0, ShaderFeature::FS );
 		//AddTexture("mat_aliasError","MTEX_2Dfunc_values",RENDER_TEXTURE);
@@ -400,22 +386,64 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		glDrawBuffers(1, mrt);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);
-
-
 		
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		//calculate custom mipmaps 
-		/*
-		int i,j;
-		for(i=1, j = sh_res/8/2; j>=1; i++, j/=2)
 		{
-			glViewport(0, 0, j, j);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["MTEX_mask"], i);
-			SetUniform("mat_mipmap_bb", "mip_level", i-1);
-			RenderPass("mat_mipmap_bb");
+			glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), 0);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+			glBindFramebuffer(GL_READ_FRAMEBUFFER,  m_fbos["ipsm"]);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr"));
+			glBlitFramebuffer(0, 0, 128.0, 128.0, 0, 0, 128.0, 128.0, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER,  0);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+
+			glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
+			glm::vec4 clear_color;
+			glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
+			glClearColor( 1, 1, 1, 1 );
+
+			for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
+			{
+				glViewport(0, 0, j, j);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), i);
+				glClear(GL_COLOR_BUFFER_BIT );
+
+				glActiveTexture( GL_TEXTURE0 );
+				glBindTexture( GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ));
+
+				SetUniform("mat_aliasMipmap", "offset", 0.5f/((float)j*2.0f));
+				SetUniform("mat_aliasMipmap", "mip_level", i-1);
+				RenderPass("mat_aliasMipmap");
+
+				glBindTexture( GL_TEXTURE_2D, 0 );
+			}
+			glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+
+			
+			memset(g_precomputed_diffs, 0, 19*19*sizeof(glm::vec4));
+			ModifyGrid(g_precomputed_diffs);
+
+			for(int j=0; j<19; ++j)
+			{
+				for(int i=0; i<19; ++i)
+				{
+					glm::vec4 v = g_precomputed_diffs[j*19+i];
+					cout << v.x << ", " << v.y << ", 0, 0, " << "\t";
+				}
+				cout << endl;
+			}
+			cout << "-------" << endl;
+
+			glViewport( 0, 0, 128.0, 128.0 ); //restore viewport
 		}
-		glViewport(0,0,sh_res/8,sh_res/8);  //restore viewport
-		*/
-		
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);		
+
 		glDisable(GL_DEPTH_TEST);
 
 		///////////////////////////////////////////////////////////////////////////////
