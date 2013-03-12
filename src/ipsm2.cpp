@@ -428,16 +428,16 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			memset(g_precomputed_diffs, 0, 19*19*sizeof(glm::vec4));
 			ModifyGrid(g_precomputed_diffs);
 
-			for(int j=0; j<19; ++j)
-			{
-				for(int i=0; i<19; ++i)
-				{
-					glm::vec4 v = g_precomputed_diffs[j*19+i];
-					cout << v.x << ", " << v.y << ", 0, 0, " << "\t";
-				}
-				cout << endl;
-			}
-			cout << "-------" << endl;
+			//for(int j=0; j<19; ++j)
+			//{
+			//	for(int i=0; i<19; ++i)
+			//	{
+			//		glm::vec4 v = g_precomputed_diffs[j*19+i];
+			//		cout << v.x << ", " << v.y << ", 0, 0, " << "\t";
+			//	}
+			//	cout << endl;
+			//}
+			//cout << "-------" << endl;
 
 			glViewport( 0, 0, 128.0, 128.0 ); //restore viewport
 		}
@@ -518,7 +518,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			SetUniform("mat_get_2Dfunc_values", "range", func_range );	
 			//RenderPass("mat_get_2Dfunc_values");
 			glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), 0, GL_RGBA, GL_FLOAT, precomp_diffs);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), 0, GL_RGBA, GL_FLOAT, g_precomputed_diffs);
 			glBindTexture( GL_TEXTURE_2D, 0 );
 
 		}
