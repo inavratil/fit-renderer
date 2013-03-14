@@ -310,7 +310,7 @@ void TScene::Redraw(bool delete_buffer)
 		m_shadow_technique->DrawGrid();
 	}
 
-	RenderDebug();
+	//RenderDebug();
 
     //finish drawing, restore buffers
     glBindVertexArray(0);

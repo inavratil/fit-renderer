@@ -10,7 +10,7 @@
 //-- Defines
 
 //#define DEBUG_DRAW 
-
+#define GRADIENT_METHOD
 
 ///////////////////////////////////////////////////////////////////////////////
 //-- Global variables
@@ -132,7 +132,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		// aliasing error
         AddMaterial("mat_camAndLightCoords_afterDP");
-        CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag");
+        CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag", m_shadow_technique->GetDefines(), "");
 
 		//blur
 		AddMaterial("mat_aliasblur_horiz",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
@@ -260,13 +260,17 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	SetUniform("mat_camAndLightCoords_afterDP", "cam_mv", m_viewMatrix );
 	SetUniform("mat_camAndLightCoords_afterDP", "cam_proj", m_projMatrix );
 	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
-	SetUniform("mat_camAndLightCoords_afterDP", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+	SetUniform("mat_camAndLightCoords_afterDP", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+	SetUniform("mat_camAndLightCoords_afterDP", "grid_res", (float) m_shadow_technique->GetResolution() );
+	SetUniform("mat_camAndLightCoords_afterDP", "funcTex", 0 );
 
 	glm::mat4 coeffsX = glm::mat4( 0.0 );
 	glm::mat4 coeffsY = glm::mat4( 0.0 );
 	glm::vec4 mask_range = glm::vec4( 128.0, 0.0, 128.0, 0.0 );
 
 	{
+		for( int rep=0; rep<10; ++rep )
+		{
 		glClearColor(99.0, 0.0, 0.0, 0.0);
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -290,8 +294,11 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//glEnable( GL_CULL_FACE);
 		glCullFace(GL_FRONT);
 
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
 		//DrawSceneDepth("mat_aliasError", lightViewMatrix);
 		DrawAliasError("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
+		glBindTexture( GL_TEXTURE_2D, 0 );
 
 		//if(!m_wireframe)
 		//	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -389,6 +396,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+#ifndef GRADIENT_METHOD
 		//calculate custom mipmaps 
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
@@ -441,7 +449,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 			glViewport( 0, 0, 128.0, 128.0 ); //restore viewport
 		}
-
+#endif
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);		
 
 		glDisable(GL_DEPTH_TEST);
@@ -450,16 +458,16 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//-- 3. Blur the alias error
 		//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
 
-		float sigma = 2.7;
+		float sigma = 10.0;
 	
 		AddTexture("mat_aliasblur_horiz","MTEX_output",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));
-		SetUniform("mat_aliasblur_horiz", "kernel_size", 9.0);
+		SetUniform("mat_aliasblur_horiz", "kernel_size", 31.0);
 		SetUniform("mat_aliasblur_horiz", "two_sigma_sq", TWOSIGMA2(sigma));
 		SetUniform("mat_aliasblur_horiz", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 		AddTexture("mat_aliasblur_vert","MTEX_ping",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(sh_res/8, sh_res/8));
-		SetUniform("mat_aliasblur_vert", "kernel_size", 9.0);
+		SetUniform("mat_aliasblur_vert", "kernel_size", 31.0);
 		SetUniform("mat_aliasblur_vert", "two_sigma_sq",TWOSIGMA2(sigma));
 		SetUniform("mat_aliasblur_vert", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 
@@ -483,7 +491,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		limit /= POLY_BIAS;
 
 		//FIXME: limit pocitat nejak inteligentne bez bulharske konstanty
-		SetUniform("mat_aliasgradient", "limit", limit);
+		SetUniform("mat_aliasgradient", "limit", glm::vec2(100.0f));
 		RenderPass("mat_aliasgradient");
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -515,11 +523,14 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 				SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetGrid()->GetResolution() );
 			}
 
+#ifdef GRADIENT_METHOD
 			SetUniform("mat_get_2Dfunc_values", "range", func_range );	
-			//RenderPass("mat_get_2Dfunc_values");
+			RenderPass("mat_get_2Dfunc_values");
+#else
 			glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), 0, GL_RGBA, GL_FLOAT, g_precomputed_diffs);
 			glBindTexture( GL_TEXTURE_2D, 0 );
+#endif
 
 		}
 
@@ -560,8 +571,17 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		///////////////////////////////////////////////////////////////////////////////
 
+		glBindFramebuffer( GL_FRAMEBUFFER, 0);
+
+		m_shadow_technique->DrawGrid();
+
+		RenderDebug();
+
 		glEnable(GL_DEPTH_TEST);
+		}
 	}
+		cout << endl;
+
 
 	for(int i=0; i<2; i++)
     {
@@ -633,6 +653,11 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);		
+	glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
+	glClear(GL_COLOR_BUFFER_BIT );
+	glBindFramebuffer( GL_FRAMEBUFFER, 0);
 	///////////////////////////////////////////////////////////////////////////////
 	//-- DEBUG DRAW
 #ifdef DEBUG_DRAW

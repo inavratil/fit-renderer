@@ -15,7 +15,7 @@ uniform ivec2 texsize;
 void main()
 {
 	float r = texture(bloom_texture, fragTexCoord).r;
-	if( r > 50.0 ) discard;
+	//if( r > 50.0 ) discard;
 
     vec4 result = vec4( 0.0 );
     float gauss_func, div_factor = 0.0;
