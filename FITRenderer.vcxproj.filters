@@ -91,6 +91,9 @@
     <ClCompile Include="src\glux_engine\modifyGrid.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\Singleton.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -181,6 +184,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\precomputed_diffs.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\Singleton.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

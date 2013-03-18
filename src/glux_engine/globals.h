@@ -68,7 +68,7 @@
 #include <assimp/scene.h>
 
 // Local classes
-
+#include "Singleton.h"
 
 
 ///verbose mode

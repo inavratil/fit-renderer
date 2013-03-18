@@ -120,6 +120,7 @@
     <ClCompile Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp" />
     <ClCompile Include="src\glux_engine\shadow.cpp" />
+    <ClCompile Include="src\glux_engine\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\SplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="src\glux_engine\shaderGen\ShaderFeature.h" />
     <ClInclude Include="src\glux_engine\shaderGen\shader_generator.h" />
     <ClInclude Include="src\glux_engine\shadow.h" />
+    <ClInclude Include="src\glux_engine\Singleton.h" />
     <ClInclude Include="src\glux_engine\SplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
     <ClInclude Include="src\main_ui.h" />
