@@ -15,7 +15,7 @@ uniform ivec2 texsize;
 void main()
 {
 	float r = texture(bloom_texture, fragTexCoord).r;
-	if( r > 50.0 ) discard;
+	//if( r > 50.0 ) discard;
 
     vec4 result = vec4( 0.0 );
     float gauss_func, div_factor = 0.0;
@@ -36,7 +36,7 @@ void main()
       disp_coord = coord + vec2(0.0, k_shift);
 #endif
 	  vec4 c = texture(bloom_texture, disp_coord);
-	  if( c.r > 50.0 ) continue;
+	  if( c.r > 50.0 ) c = vec4(0.0);
 
       gauss_func = frac_sqrt_two_sigma_sq*exp(-(abs(k_shift)*abs(k_shift))/two_sigma_sq);
       div_factor += gauss_func;

@@ -61,6 +61,10 @@ void main()
     float dp_K = 0.5 * abs( cross(dp_ac, dp_bd).z ); // zde by melo byt length misto abs, ale jelikoz z-ove 0, tak vysledek je pouze hodnota v z-ove ose
     //float dp_K = max( length(dp_ac+dp_bd), length(dp_ac-dp_bd) );
 
+	vec2 ds = vec2((b.x-a.x),(d.x-a.x)) * 128.0;
+	vec2 dt = vec2((b.y-a.y),(d.y-a.y)) * 128.0;
+	//ds = vec2(dFdx(a.x), dFdy(a.x)) * 128.0;
+    //dt = vec2(dFdx(a.y), dFdy(a.y)) * 128.0;
 //------------------------------------------------------------------------------
 //-- TEST: kompenzace chybi podle pokryti solid angle jednim pixelem v shadow mape
 
@@ -72,8 +76,11 @@ void main()
     //dp_K = dp_K*cover;
 
 //------------------------------------------------------------------------------
+    //float error = K/dp_K;
+	//float error = determinant( mat2(ds, dt) );
+	float error = max( length(ds+dt), length(ds-dt) );
 
-    float res_error = clamp(K/dp_K, 1.0/11.0, 11.0);
+    float res_error = clamp(error, 1.0/11.0, 11.0);
 
     if( res_error < 1.0 )
 
@@ -86,9 +93,9 @@ void main()
 //------------------------------------------------------------------------------
 //-- vypocet mozneho pokryti pixelu, aby chyba byla ~1.0
 
-    float error = K/dp_K;
+
     //float new_res = min( MAX_MIPLEVEL, round( log2( sqrt( error ) ) ) ); //sqrt - jaka ma byt nova hrana ctverce, log2 - pro to nejblizsi mocnina 2 (kvuli mipmape), round - pro zaokrouhleni na nejblizsi
-	float new_res = sqrt( error );
+	float new_res = error; // sqrt( error );
 
 //------------------------------------------------------------------------------
 
@@ -104,9 +111,9 @@ void main()
 		out_FragMask = vec4( 1.0 );
 	}
 		
-		if( new_res > 10.0)
-			out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );
-		else
+		//if( new_res > 10.0)
+		//	out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );
+		//else
 			out_FragColor = vec4( color, new_res );
 	}
 

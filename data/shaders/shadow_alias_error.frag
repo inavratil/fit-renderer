@@ -183,7 +183,7 @@ void main(void)
     float ma_error = 1.0/determinant( ma );
     float md_error = 1.0/max( length(ds+dt), length(ds-dt) );
 
-    float res_error = clamp(ma_error, 1.0/11.0, 11.0);
+    float res_error = clamp(md_error, 1.0/11.0, 11.0);
 
     if( res_error < 1.0 )
 
