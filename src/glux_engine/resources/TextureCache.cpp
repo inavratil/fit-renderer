@@ -1,22 +1,6 @@
 #include "TextureCache.h"
 
-TextureCache * TextureCache::m_pInstance = 0;
-
-TextureCache * TextureCache::Instance()
-{
-    if (m_pInstance == 0)
-        m_pInstance = new TextureCache();
-
-    return m_pInstance;
-}
-
-void TextureCache::Destroy()
-{
-    if (m_pInstance != 0)
-        delete m_pInstance;
-
-    m_pInstance = 0;
-}
+template<> TextureCache * Singleton<TextureCache>::m_pInstance = 0;
 
 TextureCache::TextureCache(void)
 {

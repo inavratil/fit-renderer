@@ -163,12 +163,15 @@ bool TScene::PostInit()
 	//-- Init debug stuff
 	InitDebug();
 
-    //Generate uniform buffers 
+	//-------------------------------------------------------------------------
+    //-- Generate uniform buffers 
     
     //for projection and shadow matrices
     glGenBuffers(1, &m_uniform_matrices);
     glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
     glBufferData(GL_UNIFORM_BUFFER, (m_shadow_textures + 1) * sizeof(glm::mat4), NULL, GL_STREAM_DRAW);
+	//update uniform buffer with projection matrix and camera position
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(m_projMatrix));
 	//attach uniform buffer and associate uniform block to this name
 	glBindBufferBase(GL_UNIFORM_BUFFER, UNIFORM_MATRICES, m_uniform_matrices);
 
@@ -185,7 +188,9 @@ bool TScene::PostInit()
     glBufferData(GL_UNIFORM_BUFFER, light_count * 6 * align, NULL, GL_STREAM_DRAW);
 	//attach uniform buffer and associate uniform block to this name
 	glBindBufferBase(GL_UNIFORM_BUFFER, UNIFORM_LIGHTS, m_uniform_lights);
-    
+
+
+	//-------------------------------------------------------------------------
     //do we have shadows from lights?
     int i;
     for(i = 0, m_il = m_lights.begin(); m_il != m_lights.end(); ++m_il, i++)
@@ -229,6 +234,7 @@ bool TScene::PostInit()
         }
 
         //fill uniform block with light settings. Be careful to offsets!!!
+		glBufferSubData( GL_UNIFORM_BUFFER, i*align, sizeof(glm::vec3), glm::value_ptr(glm::vec3(m_viewMatrix * glm::vec4((*m_il)->GetPos(), 1.0))) );
         int offset = light_count * align;
         glBufferSubData(GL_UNIFORM_BUFFER, offset + i*align, sizeof(glm::vec3), glm::value_ptr((*m_il)->GetColor(AMBIENT)));   //ambient
         offset += light_count * align;
@@ -238,11 +244,15 @@ bool TScene::PostInit()
         offset += light_count * align;
         GLfloat radius = (*m_il)->GetRadius();
         glBufferSubData(GL_UNIFORM_BUFFER, offset + i*align, sizeof(float), &radius);   //radius
+
+		
     }
     
 
+	//-------------------------------------------------------------------------
 
     cout<<"Baking materials...\n";
+
     //assign light count to all materials and then bake them
     for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
     {
@@ -257,22 +267,11 @@ bool TScene::PostInit()
         }
     }
 
+	//-------------------------------------------------------------------------
+
     //add screen quad for render targets
     AddScreenQuad();
-
-    //update uniform buffer with projection matrix and camera position
-    glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(m_projMatrix));
-    UpdateCameraUniform();
-		
-	//check FBO creation
-    if(!CheckFBO())
-    {
-        ShowMessage("ERROR: FBO creation for shadow map failed!",false);
-        return false;
-    }
-
-
+	    
     cout<<"Post Init OK\n";
     return true;
 }

@@ -1,22 +1,6 @@
 #include "FBOManager.h"
 
-FBOManager * FBOManager::m_pInstance = 0;
-
-FBOManager * FBOManager::Instance()
-{
-    if (m_pInstance == 0)
-        m_pInstance = new FBOManager();
-
-    return m_pInstance;
-}
-
-void FBOManager::Destroy()
-{
-    if (m_pInstance != 0)
-        delete m_pInstance;
-
-    m_pInstance = 0;
-}
+template<> FBOManager * Singleton<FBOManager>::m_pInstance = 0;
 
 FBOManager::FBOManager(void)
 {

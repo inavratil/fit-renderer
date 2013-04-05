@@ -3,13 +3,13 @@
 
 #include "globals.h"
 
-class TextureCache
+class TextureCache : public Singleton<TextureCache>
 { 
 
 //-- Members
 
 protected:
-	static TextureCache * m_pInstance;
+	//static TextureCache * m_pInstance;
 	///associative array with all textures
 	map<string,GLuint> m_textureCache;
     ///iterator for texture cache container
@@ -18,8 +18,8 @@ protected:
 //-- Static methods 
 
 public:
-    static TextureCache * Instance();
-	static void Destroy();
+    //static TextureCache * Instance();
+	//static void Destroy();
 
 
 //-- Public methods

@@ -466,16 +466,16 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//-- 3. Blur the alias error
 		//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
 
-		float sigma = 20.0;
+		float sigma = 2.7;
 	
 		AddTexture("mat_aliasblur_horiz","MTEX_output",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));
-		SetUniform("mat_aliasblur_horiz", "kernel_size", 65.0);
+		SetUniform("mat_aliasblur_horiz", "kernel_size", 9.0);
 		SetUniform("mat_aliasblur_horiz", "two_sigma_sq", TWOSIGMA2(sigma));
 		SetUniform("mat_aliasblur_horiz", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 		AddTexture("mat_aliasblur_vert","MTEX_ping",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(sh_res/8, sh_res/8));
-		SetUniform("mat_aliasblur_vert", "kernel_size", 65.0);
+		SetUniform("mat_aliasblur_vert", "kernel_size", 9.0);
 		SetUniform("mat_aliasblur_vert", "two_sigma_sq",TWOSIGMA2(sigma));
 		SetUniform("mat_aliasblur_vert", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 

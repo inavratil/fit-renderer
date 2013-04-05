@@ -8,7 +8,9 @@ bool InitScene(int resx, int resy)
     if(!s->PreInit(resx, resy, 0.1f, 10000.0f,45.0f, msaa, false, false)) 
         return false;
 
-    try{
+	//-------------------------------------------------------------------------
+
+    try {
         const char *cubemap[] = {   "data/tex/cubemaps/posx.tga", "data/tex/cubemaps/negx.tga",
             "data/tex/cubemaps/posy.tga", "data/tex/cubemaps/negy.tga",
             "data/tex/cubemaps/posz.tga", "data/tex/cubemaps/negz.tga" };
@@ -246,6 +248,8 @@ bool InitScene(int resx, int resy)
             //s->RotateObj("camera", rot.y, A_Y);
         }
 
+		//---------------------------------------------------------------------
+
 #ifdef USE_DP        
         //dual-paraboloid shadow parameters        
         s->SetShadow(0, SHADOW_RES, OMNI, 0.3f, true);
@@ -259,19 +263,21 @@ bool InitScene(int resx, int resy)
 #else
         s->SetShadow(0, SHADOW_RES, SPOT, 0.3f);
 #endif
+		s->SetCamType(cam_type);
 
+		//cast/receive shadows
+        s->ObjCastShadow("sky",false);
+        s->MatReceiveShadow("mat_sky",false);
         
+		//---------------------------------------------------------------------
+
         //toggle effects (HDR & SSAO)
         //s->UseHDR();
         //s->UseSSAO();
-
+		
         //prepare render to texture
-        s->CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT);
-
-        //cast/receive shadows
-        s->ObjCastShadow("sky",false);
-        s->MatReceiveShadow("mat_sky",false);
-
+        //s->CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT);
+		
         ////General HDR settings
         //s->SetUniform("mat_tonemap","exposure",1.0);
         //s->SetUniform("mat_tonemap","bloomFactor",0.3);
@@ -281,6 +287,8 @@ bool InitScene(int resx, int resy)
         //s->SetUniform("mat_bloom_hdr_ssao","intensity",0.7);
         //s->SetUniform("mat_bloom_hdr_ssao","radius",0.004);
         //s->SetUniform("mat_bloom_hdr_ssao","bias",1.5);
+
+		//---------------------------------------------------------------------
         
         s->AddMaterial("show_depth");
         s->CustomShader("show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag");
@@ -335,11 +343,12 @@ bool InitScene(int resx, int resy)
         cerr<<"Initialization failed.";
         return false;
     }
-    s->SetCamType(cam_type);
+
+	//-------------------------------------------------------------------------
+    
     return s->PostInit();
 }
 
-string name;
 //*****************************************************************************
 //Main drawing function
 void Redraw()
@@ -461,10 +470,9 @@ void KeyInput(SDLKey key)
 @param x X-coordinate of click
 @param y Y-coordinate of click
 ****************************************************************************************************/
-int status;                                     //which button?
 void MouseClick(SDL_Event event)
 { 
-    status = event.button.button;
+    int status = event.button.button;
 
     //hide cursor at moving
     if(status == SDL_BUTTON_LEFT)
@@ -480,6 +488,8 @@ void MouseClick(SDL_Event event)
 ****************************************************************************************************/
 void MouseMotion(SDL_Event event)
 {
+	int status = event.button.button;
+
     if(move_parab)
     {
         if(status == SDL_BUTTON_LEFT)

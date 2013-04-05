@@ -3,13 +3,13 @@
 
 #include "globals.h"
 
-class FBOManager
+class FBOManager : public Singleton<FBOManager>
 { 
 
 //-- Member variables
 
 protected:
-	static FBOManager * m_pInstance;
+	//static FBOManager * m_pInstance;
 
 	///associative array with all FBOs
 	map<string,GLuint> m_fbos;
@@ -22,8 +22,8 @@ public:
 	FBOManager(void);
 	virtual ~FBOManager(void);
 
-	static FBOManager * Instance();
-	static void Destroy();
+	//static FBOManager * Instance();
+	//static void Destroy();
 
 	void Add( const char* _name, GLuint _id );
 	GLuint Get( const char* _name );

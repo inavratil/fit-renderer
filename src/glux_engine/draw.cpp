@@ -100,7 +100,9 @@ void TScene::Redraw(bool delete_buffer)
     } //-- first
 #endif
 
-    ///draw all lights
+	//-------------------------------------------------------------------------
+    //-- draw all lights
+
     unsigned i;
     for(i=0, m_il = m_lights.begin(); m_il != m_lights.end(), i<m_lights.size(); ++m_il, i++)
     {
@@ -122,7 +124,9 @@ void TScene::Redraw(bool delete_buffer)
         }
     }
 
-    //HDR/SSAO renderer - render to texture
+	//-------------------------------------------------------------------------
+    //-- HDR/SSAO renderer - render to texture
+
     if(m_useHDR || m_useSSAO)
     {
         //render target viewport size
@@ -147,6 +151,8 @@ void TScene::Redraw(bool delete_buffer)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+	//-------------------------------------------------------------------------
+
 	glViewport(0,0,m_RT_resX,m_RT_resY);
 
 	if(delete_buffer)
@@ -169,7 +175,9 @@ void TScene::Redraw(bool delete_buffer)
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     
-    //HDR/SSAO renderer
+	//-------------------------------------------------------------------------
+    //-- HDR/SSAO renderer
+
     if(m_useHDR || m_useSSAO)
     {        
         //if MSAA enabled, copy from multisampled FBO to normal FBO
@@ -215,6 +223,8 @@ void TScene::Redraw(bool delete_buffer)
         glViewport(0,0,m_resx,m_resy);  //restore original scene viewport
         RenderPass("mat_tonemap");
     }
+
+	//-------------------------------------------------------------------------
 
 #if 0
     //GET CAMERA DISTANCE TO NEAREST OBJECT FROM Z-BUFFER
@@ -263,7 +273,9 @@ void TScene::Redraw(bool delete_buffer)
     }
 #endif
     
-	//show shadow maps 
+	//-------------------------------------------------------------------------
+	//-- show shadow maps 
+
     if(m_draw_shadow_map)
     {
         for(int i=1; i<2; i++)
@@ -283,6 +295,8 @@ void TScene::Redraw(bool delete_buffer)
             }
         }	
     }
+
+	//-------------------------------------------------------------------------
 
 	if(m_dpshadow_method == WARP_DPSM)
     {
