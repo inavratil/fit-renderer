@@ -65,7 +65,7 @@ void main(void)
 	//------------------------------------------------------------------------------------
 	//-- Initialization
 		
-	float dx,dy;
+	float dx = 0.0, dy = 0.0;
 
 	vec2 p = vertexEyeSpace.xy;				//-- zde je p v intervalu [-1..1]
 	p = p*0.5 + 0.5;	
