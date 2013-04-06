@@ -106,7 +106,7 @@ void TScene::RenderDebug()
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
-	
+	/*	
 	float *aerr_buffer = new float[128*128];
 	glBindTexture(GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"));
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, aerr_buffer);
@@ -125,5 +125,5 @@ void TScene::RenderDebug()
 	delete aerr_buffer;
 
 	cout << sum/count << " ";
-	
+	*/
 }

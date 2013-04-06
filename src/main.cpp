@@ -68,6 +68,9 @@ bool InitScene(int resx, int resy)
         //s->AddTexture("mat_sky",cubemap);
         //s->AddObject("sky",CUBE,5000.0,5000.0);
         //s->SetMaterial("sky","mat_sky");
+		//cast/receive shadows
+        //s->ObjCastShadow("sky",false);
+        //s->MatReceiveShadow("mat_sky",false);
 
         //s->AddObject("camera",CUBE, 10, 10);//"data/obj/camera.3ds");
         //s->AddMaterial("mat_camera", black, green);
@@ -265,9 +268,7 @@ bool InitScene(int resx, int resy)
 #endif
 		s->SetCamType(cam_type);
 
-		//cast/receive shadows
-        s->ObjCastShadow("sky",false);
-        s->MatReceiveShadow("mat_sky",false);
+
         
 		//---------------------------------------------------------------------
 

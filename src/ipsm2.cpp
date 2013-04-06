@@ -605,7 +605,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glEnable(GL_DEPTH_TEST);
 		}
 	}
+#ifdef ITERATION_ENABLED
 		cout << endl;
+#endif
 
 
 	for(int i=0; i<2; i++)
