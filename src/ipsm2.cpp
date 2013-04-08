@@ -4,13 +4,15 @@
 #include "glux_engine/BilinearWarpedShadow.h"
 #include "glux_engine/SplineWarpedShadow.h"
 
+#include "glux_engine/BlitPass.h"
+
 #include "precomputed_diffs.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //-- Defines
 
 //#define DEBUG_DRAW 
-#define GRADIENT_METHOD
+//#define GRADIENT_METHOD
 //#define ITERATION_ENABLED
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -228,6 +230,11 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		}
 		//End
+
+		//FIXME
+		m_passes["pass_blit_0"] = new BlitPass(m_tex_cache["MTEX_output"], TextureCache::Instance()->Get("aliaserr_mipmap" ));
+
+		
     }
     catch(int)
     {
@@ -407,18 +414,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 #ifndef GRADIENT_METHOD
 		//calculate custom mipmaps 
 		{
+			m_passes["pass_blit_0"]->Render();
+
 			glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), 0);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-			glBindFramebuffer(GL_READ_FRAMEBUFFER,  m_fbos["ipsm"]);
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr"));
-			glBlitFramebuffer(0, 0, 128.0, 128.0, 0, 0, 128.0, 128.0, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-			glBindFramebuffer(GL_READ_FRAMEBUFFER,  0);
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-
-			glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
 			glm::vec4 clear_color;
 			glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
 			glClearColor( 1, 1, 1, 1 );

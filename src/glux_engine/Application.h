@@ -24,7 +24,7 @@ public:
 //-- Private methods
 
 private: 
-	void Destroy();
+	void _Destroy();
 
 
 };

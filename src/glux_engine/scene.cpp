@@ -49,6 +49,7 @@ TScene::TScene()
 	//FIXME
 	m_texPreview_id = 0;
 	m_shadow_technique = NULL;
+	m_passes.clear();
 }
 
 /**
@@ -66,27 +67,14 @@ TScene::~TScene()
 
     delete [] m_select_buffer;
 
-    /*
-    materials.clear();
-    m_objects.clear();
-    m_lights.clear();
-    */
-//    delete [] select_buffer;
-
-    //free all objects, materials, textures...
-    for(m_im = m_materials.begin(); m_im != m_materials.end(); m_im++)
-        delete m_im->second;
-    for(m_io = m_objects.begin(); m_io != m_objects.end(); m_io++)
-        delete m_io->second;
-    for(m_il = m_lights.begin(); m_il != m_lights.end(); m_il++)
-        delete *m_il;
-
     delete m_font2D_tex;
     delete m_font2D_bkg;
 
     delete m_cam;
 
+	//FIXME
 	delete m_shadow_technique;
+
 }
 
 /**
@@ -301,9 +289,21 @@ uses the same textures)
 ***************************************************************************************************/
 void TScene::Destroy(bool delete_cache)
 {
-    m_objects.clear();
-    m_materials.clear();
-    m_lights.clear();
+	//free all objects, materials, textures...
+    for(m_im = m_materials.begin(); m_im != m_materials.end(); m_im++)
+        delete m_im->second;
+	m_materials.clear();
+    for(m_io = m_objects.begin(); m_io != m_objects.end(); m_io++)
+        delete m_io->second;
+	m_objects.clear();
+    for(m_il = m_lights.begin(); m_il != m_lights.end(); m_il++)
+        delete *m_il;
+	m_lights.clear();
+	//FIXME
+	for(m_it_pass = m_passes.begin(); m_it_pass != m_passes.end(); m_it_pass++)
+		delete m_it_pass->second;
+	m_passes.clear();    
+    
     m_fbos.clear();
 
     if(delete_cache)

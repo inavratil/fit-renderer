@@ -100,6 +100,12 @@
     <ClCompile Include="src\glux_engine\Singleton.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\Pass.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\BlitPass.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -199,6 +205,12 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\Singleton.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\Pass.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\BlitPass.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
   </ItemGroup>

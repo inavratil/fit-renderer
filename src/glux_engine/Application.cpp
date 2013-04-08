@@ -11,12 +11,12 @@ Application::~Application(void)
 
 int Application::Run()
 {
-	Destroy();
+	_Destroy();
 
 	return 0;
 }
 
-void Application::Destroy()
+void Application::_Destroy()
 {
 	//-- Terminate GUI
 	TwTerminate();

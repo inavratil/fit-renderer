@@ -15,6 +15,7 @@
 #include "shadow.h"
 #include "IShadowTechnique.h"
 #include "ScreenGrid.h"
+#include "Pass.h"
 
 #include "resources/SceneManager.h"
 #include "resources/TextureCache.h"
@@ -125,10 +126,13 @@ protected:
     glm::vec3 m_avg_normal;
     float *m_select_buffer;
     glm::vec2 m_cut_angle;
-	//FIXME
 
+	//FIXME
 	int m_texPreview_id;
-	IShadowTechnique* m_shadow_technique;
+	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
+	//-- array of render passes
+	map<string, PassPtr>				m_passes;
+	map<string, PassPtr>::iterator		m_it_pass;
 
 public:
     //basic constructor
