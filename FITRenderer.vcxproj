@@ -94,6 +94,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\glux_engine\Application.cpp" />
     <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\camera.cpp" />
     <ClCompile Include="src\glux_engine\debug.cpp" />
@@ -123,12 +124,14 @@
     <ClCompile Include="src\glux_engine\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\SplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
+    <ClCompile Include="src\IPSMApp.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ipsm2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ellipse_params.h" />
     <ClInclude Include="src\experiments.h" />
+    <ClInclude Include="src\glux_engine\Application.h" />
     <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\bitops.h" />
     <ClInclude Include="src\glux_engine\camera.h" />
@@ -156,6 +159,7 @@
     <ClInclude Include="src\glux_engine\Singleton.h" />
     <ClInclude Include="src\glux_engine\SplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
+    <ClInclude Include="src\IPSMApp.h" />
     <ClInclude Include="src\main_ui.h" />
     <ClInclude Include="src\precomputed_diffs.h" />
   </ItemGroup>

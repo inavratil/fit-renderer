@@ -69,7 +69,7 @@
 
 // Local classes
 #include "Singleton.h"
-
+#include "Application.h"
 
 ///verbose mode
 //#define VERBOSE

@@ -91,8 +91,14 @@
     <ClCompile Include="src\glux_engine\modifyGrid.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\Singleton.cpp">
+    <ClCompile Include="src\glux_engine\Application.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IPSMApp.cpp">
       <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\Singleton.cpp">
+      <Filter>Source files\SDK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -186,8 +192,14 @@
     <ClInclude Include="src\precomputed_diffs.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\Singleton.h">
+    <ClInclude Include="src\glux_engine\Application.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPSMApp.h">
       <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\Singleton.h">
+      <Filter>Header files\SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -372,9 +384,11 @@
   <ItemGroup>
     <Filter Include="Header files">
       <UniqueIdentifier>{ce323a84-47a9-4210-bfe4-f82414b0a450}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
     <Filter Include="Source files">
       <UniqueIdentifier>{c2f68786-acfa-41df-908c-8077d280ec40}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{1bebd64a-fe90-4add-b679-660d0f929c6f}</UniqueIdentifier>
@@ -411,6 +425,12 @@
     </Filter>
     <Filter Include="Source files\Resources">
       <UniqueIdentifier>{ee7bb9d5-6113-4404-b26a-19aa06491036}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\SDK">
+      <UniqueIdentifier>{b341f90d-5854-47cd-bb3b-a924faad756e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\SDK">
+      <UniqueIdentifier>{4e360059-2362-46c0-a7b3-d62902ece4f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 #include "main_ui.h"
 
+#include "IPSMApp.h"
+
 //*****************************************************************************
 //Initialize OpenGL settings for scene
 bool InitScene(int resx, int resy)
@@ -559,6 +561,8 @@ void WrongParams()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+	IPSMApp app;
+
     string param;
 
     //parse parameters
@@ -775,7 +779,7 @@ int main(int argc, char **argv)
 
     //deinitialize SDL and scene
     delete s;
-    TwTerminate();
-    SDL_Quit();
-    return 0;
+
+
+	return app.Run();
 }

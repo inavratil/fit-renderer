@@ -6,14 +6,12 @@
 
 enum VBOMembers { VBO_ARRAY, VBO_BUFFER, VBO_INDEX };
 
-class SceneManager
+class SceneManager : public Singleton<SceneManager>
 { 
 
 //-- Member variables
 
 protected:
-	static SceneManager * m_pInstance;
-
 	///associative array with all VBOs
 	map<string,VBO> m_vbos;
     ///iterator for vbos container
@@ -24,9 +22,6 @@ protected:
 public:
 	SceneManager(void);
 	virtual ~SceneManager(void);
-
-	static SceneManager * Instance();
-	static void Destroy();
 
 	void setVBO( string _name, VBO _vbo )
 	{
