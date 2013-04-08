@@ -107,6 +107,7 @@
     <ClCompile Include="src\glux_engine\loadScene.cpp" />
     <ClCompile Include="src\glux_engine\material.cpp" />
     <ClCompile Include="src\glux_engine\material_generator.cpp" />
+    <ClCompile Include="src\glux_engine\MipmapPass.cpp" />
     <ClCompile Include="src\glux_engine\modifyGrid.cpp" />
     <ClCompile Include="src\glux_engine\object.cpp" />
     <ClCompile Include="src\glux_engine\Pass.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="src\glux_engine\IShadowTechnique.h" />
     <ClInclude Include="src\glux_engine\light.h" />
     <ClInclude Include="src\glux_engine\material.h" />
+    <ClInclude Include="src\glux_engine\MipmapPass.h" />
     <ClInclude Include="src\glux_engine\object.h" />
     <ClInclude Include="src\glux_engine\Pass.h" />
     <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h" />

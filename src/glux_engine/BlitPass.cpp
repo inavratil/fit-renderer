@@ -1,5 +1,7 @@
 #include "BlitPass.h"
 
+#include "resources/FBOManager.h"
+
 //-----------------------------------------------------------------------------
 
 BlitPass::BlitPass( GLuint _tex_read, GLuint _tex_draw )
@@ -12,21 +14,14 @@ BlitPass::BlitPass( GLuint _tex_read, GLuint _tex_draw )
 	//-- initialize bounds
 	_InitBounds();
 
-	//-- generate FBOs' ids
-	glGenFramebuffers( 1, &m_fbo_read );
-	glGenFramebuffers( 1, &m_fbo_draw );
-	//-- bind FBO
-	glBindFramebuffer( GL_READ_FRAMEBUFFER, m_fbo_read );
-	//-- attach texture to the frame buffer
-	glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_read, 0);
-	//-- bind FBO
-	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_fbo_draw );
-	//-- attach texture to the frame buffer
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_draw, 0);
+	//FIXME: cele tohle generovani, attachovani a testovani FBO dat nekam zvlast
+	//Pass by mohl dedit tak z nejakeho 'FBOPouzivatel', ktery by jako clenskou promennou mel pointer na FBOManager.
+	//Pak by se jen zavolalo: 
+	//	m_fbo_read = m_FBO_manager->createAndAttach(m_tex_read);
+	
+	m_fbo_read = FBOManager::CreateAndAttach( m_tex_read, FBO_READ );
+	m_fbo_draw = FBOManager::CreateAndAttach( m_tex_draw, FBO_DRAW );
 
-	//-- unbind FBOs
-	glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
-	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 
 	//-- set default mask
 	m_mask = GL_COLOR_BUFFER_BIT;
