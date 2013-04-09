@@ -87,3 +87,32 @@ GLuint FBOManager::CreateAndAttach( GLuint _tex, GLenum _target )
 
 	return fbo;
 }
+
+//-----------------------------------------------------------------------------
+
+GLuint FBOManager::BindBuffer( GLuint _fbo )
+{
+	//-- save currently bound FBO
+	GLint tmp;
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &tmp );
+	m_lastFBO = tmp;
+	//-- we don't need to bind the same FBO
+	if( m_lastFBO != _fbo )
+		glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+
+	return m_lastFBO;
+}
+
+//-----------------------------------------------------------------------------
+
+void FBOManager::UnbindBuffer()
+{
+	//-- check, if some FBO is bound
+	GLint tmp;
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &tmp );
+	m_lastFBO = 0;
+	//-- if so, unbind it
+	if( !tmp )
+		glBindFramebuffer( GL_FRAMEBUFFER, m_lastFBO );
+	
+}

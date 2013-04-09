@@ -14,13 +14,13 @@ BlitPass::BlitPass( GLuint _tex_read, GLuint _tex_draw )
 	//-- initialize bounds
 	_InitBounds();
 
-	//FIXME: cele tohle generovani, attachovani a testovani FBO dat nekam zvlast
+	//FIXME: je to takhle spravne??
 	//Pass by mohl dedit tak z nejakeho 'FBOPouzivatel', ktery by jako clenskou promennou mel pointer na FBOManager.
 	//Pak by se jen zavolalo: 
 	//	m_fbo_read = m_FBO_manager->createAndAttach(m_tex_read);
 	
-	m_fbo_read = FBOManager::CreateAndAttach( m_tex_read, FBO_READ );
-	m_fbo_draw = FBOManager::CreateAndAttach( m_tex_draw, FBO_DRAW );
+	m_fbo_read = m_FBOManager->CreateAndAttach( m_tex_read, FBO_READ );
+	m_fbo_draw = m_FBOManager->CreateAndAttach( m_tex_draw, FBO_DRAW );
 
 
 	//-- set default mask

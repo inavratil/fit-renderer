@@ -56,8 +56,7 @@ bool TScene::InitDebug()
 
 		TextureCache::Instance()->Add("aliaserr_mipmap", tex );
 		
-		AddMaterial("mat_aliasMipmap",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		CustomShader("mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag");
+
 	}
 
 	return true;

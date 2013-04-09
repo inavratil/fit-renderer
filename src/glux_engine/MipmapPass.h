@@ -11,12 +11,14 @@ class MipmapPass : public Pass
 // -- Member variables
 
 protected:
+	GLuint			m_fbo;
+	GLuint			m_tex;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
 public:
-	MipmapPass(void);
+	MipmapPass( GLuint _tex );
 	virtual ~MipmapPass(void);
 	
 	virtual void Render();

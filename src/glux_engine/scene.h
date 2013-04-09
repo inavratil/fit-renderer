@@ -127,12 +127,29 @@ protected:
     float *m_select_buffer;
     glm::vec2 m_cut_angle;
 
+	//-----------------------------------------------------------------------------
 	//FIXME
 	int m_texPreview_id;
 	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
+	//FIXME: Tohle by melo prijit do tridy Application
 	//-- array of render passes
 	map<string, PassPtr>				m_passes;
 	map<string, PassPtr>::iterator		m_it_pass;
+	//-- FBO Manager
+	FBOManagerPtr						m_FBOManager;
+
+	void AppendPass( string _name, PassPtr _pass )
+	{
+		if(m_passes.find(_name) != m_passes.end())
+		{
+			cerr<<"WARNING (AppendPass): pass with name "<<_name<<" already exist.\n";
+			return;
+		}
+		_pass->SetFBOManager( m_FBOManager );
+		m_passes[_name] = _pass;
+	}
+	//-----------------------------------------------------------------------------
+	
 
 public:
     //basic constructor

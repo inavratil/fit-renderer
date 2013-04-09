@@ -49,7 +49,10 @@ TScene::TScene()
 	//FIXME
 	m_texPreview_id = 0;
 	m_shadow_technique = NULL;
+	//FIXME: do tridy Application
 	m_passes.clear();
+	m_FBOManager = new FBOManager();
+	
 }
 
 /**

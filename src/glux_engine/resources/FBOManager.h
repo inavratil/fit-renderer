@@ -19,6 +19,10 @@ protected:
     ///iterator for fbos container
     map<string,GLuint>::iterator m_ifbo;
 
+	//-- ID of lastly bound FBO
+	GLuint			m_lastFBO;
+
+
 //-----------------------------------------------------------------------------
 //-- Public methods
 
@@ -38,7 +42,12 @@ public:
 	static GLuint CreateAndAttach( GLuint _tex, GLenum _target = FBO_BOTH );
 	//TODO: pro vice FBO? a textur?
 	//static GLuint CreateAndAttachNum( GLuint _tex, GLenum _target = FBO_BOTH );
+
+	GLuint BindBuffer( GLuint _fbo );
+	void UnbindBuffer();
 };
+
+typedef FBOManager* FBOManagerPtr;
 
 #endif
 
