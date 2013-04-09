@@ -67,11 +67,6 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-// Local classes
-#include "Application.h"
-#include "Singleton.h"
-
-
 ///verbose mode
 //#define VERBOSE
 

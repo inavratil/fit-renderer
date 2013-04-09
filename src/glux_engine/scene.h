@@ -16,6 +16,7 @@
 #include "IShadowTechnique.h"
 #include "ScreenGrid.h"
 #include "Pass.h"
+#include "CustomShader.h"
 
 #include "resources/SceneManager.h"
 #include "resources/TextureCache.h"
@@ -131,13 +132,19 @@ protected:
 	//FIXME
 	int m_texPreview_id;
 	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
+
 	//FIXME: Tohle by melo prijit do tridy Application
-	//-- array of render passes
+protected:
+	//-- associative array with custom shaders and its iterator
+    map<string,CustomShaderPtr>				m_custom_shaders;
+    map<string,CustomShaderPtr>::iterator	m_it_custom_shaders;
+	//-- associative array of render passes
 	map<string, PassPtr>				m_passes;
 	map<string, PassPtr>::iterator		m_it_pass;
 	//-- FBO Manager
 	FBOManagerPtr						m_FBOManager;
 
+public:
 	void AppendPass( string _name, PassPtr _pass )
 	{
 		if(m_passes.find(_name) != m_passes.end())
@@ -148,6 +155,13 @@ protected:
 		_pass->SetFBOManager( m_FBOManager );
 		m_passes[_name] = _pass;
 	}
+	
+	void AddCustomShader( const char* _name, const char* _vert_file, const char* _frag_file, 
+                      const char* _vert_defines = "", const char* _frag_defines = "" )
+	{
+			m_custom_shaders[_name] = new TCustomShader( _name, m_custom_shaders.size() );
+            LoadScreen(); //update loading screen
+    }
 	//-----------------------------------------------------------------------------
 	
 
@@ -654,5 +668,6 @@ public:
     }
 };
 
+typedef TScene* ScenePtr;
 
 #endif

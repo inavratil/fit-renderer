@@ -98,9 +98,11 @@
     <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\BlitPass.cpp" />
     <ClCompile Include="src\glux_engine\camera.cpp" />
+    <ClCompile Include="src\glux_engine\CustomShader.cpp" />
     <ClCompile Include="src\glux_engine\debug.cpp" />
     <ClCompile Include="src\glux_engine\draw.cpp" />
     <ClCompile Include="src\glux_engine\font.cpp" />
+    <ClCompile Include="src\glux_engine\GeometryMaterial.cpp" />
     <ClCompile Include="src\glux_engine\IShadowTechnique.cpp" />
     <ClCompile Include="src\glux_engine\light.cpp" />
     <ClCompile Include="src\glux_engine\load3DS.cpp" />
@@ -119,6 +121,7 @@
     <ClCompile Include="src\glux_engine\resources\TextureCache.cpp" />
     <ClCompile Include="src\glux_engine\scene.cpp" />
     <ClCompile Include="src\glux_engine\ScreenGrid.cpp" />
+    <ClCompile Include="src\glux_engine\Shader.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.cpp" />
@@ -140,7 +143,9 @@
     <ClInclude Include="src\glux_engine\BlitPass.h" />
     <ClInclude Include="src\glux_engine\camera.h" />
     <ClInclude Include="src\glux_engine\compute.h" />
+    <ClInclude Include="src\glux_engine\CustomShader.h" />
     <ClInclude Include="src\glux_engine\engine.h" />
+    <ClInclude Include="src\glux_engine\GeometryMaterial.h" />
     <ClInclude Include="src\glux_engine\globals.h" />
     <ClInclude Include="src\glux_engine\hires_timer.h" />
     <ClInclude Include="src\glux_engine\IShadowTechnique.h" />
@@ -156,6 +161,7 @@
     <ClInclude Include="src\glux_engine\resources\TextureCache.h" />
     <ClInclude Include="src\glux_engine\scene.h" />
     <ClInclude Include="src\glux_engine\ScreenGrid.h" />
+    <ClInclude Include="src\glux_engine\Shader.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.h" />

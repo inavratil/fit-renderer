@@ -2,6 +2,7 @@
 #define _APPLICATION_H_
 
 #include "globals.h"
+#include "scene.h"
 
 class Application
 { 
@@ -10,6 +11,7 @@ class Application
 // -- Member variables
 
 protected:
+	ScenePtr		m_scene;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 

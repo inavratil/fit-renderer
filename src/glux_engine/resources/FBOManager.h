@@ -2,6 +2,7 @@
 #define _FBOMANAGER_H_
 
 #include "globals.h"
+#include "Singleton.h"
 
 #define FBO_READ GL_READ_FRAMEBUFFER
 #define FBO_DRAW GL_DRAW_FRAMEBUFFER

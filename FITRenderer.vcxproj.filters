@@ -109,6 +109,15 @@
     <ClCompile Include="src\glux_engine\MipmapPass.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\Shader.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\GeometryMaterial.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\CustomShader.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -217,6 +226,15 @@
       <Filter>Header files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\MipmapPass.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\Shader.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\GeometryMaterial.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\CustomShader.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
   </ItemGroup>

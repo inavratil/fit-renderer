@@ -2,6 +2,7 @@
 #define _IPSMAPP_H_
 
 #include "globals.h"
+#include "glux_engine/Application.h"
 
 class IPSMApp : public Application
 { 

@@ -2,6 +2,7 @@
 #define _TEXTURECACHE_H_
 
 #include "globals.h"
+#include "Singleton.h"
 
 class TextureCache : public Singleton<TextureCache>
 { 
