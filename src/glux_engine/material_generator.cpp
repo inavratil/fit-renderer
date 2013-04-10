@@ -162,9 +162,9 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
         "  mat4 " + SG_MAT_PROJ + ";\n";
 
     //add also shadow matrices into uniform block (for each light). Only if shadow map is bound to material
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
-        if(m_it->second->GetType() == SHADOW)
-            vert_vars += "  mat4 " + m_it->first + "_texMatrix;\n";
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
+        if(m_it_textures->second->GetType() == SHADOW)
+            vert_vars += "  mat4 " + m_it_textures->first + "_texMatrix;\n";
 
     //finish uniform block
     vert_vars +=    
@@ -191,13 +191,13 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 	//-- 1.2 Apply displacement mapping to vertex position and normal
     
     bool displace = false;
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
-        if(m_it->second->GetType() == DISPLACE)
+        if(m_it_textures->second->GetType() == DISPLACE)
         {
-            string texname = m_it->second->GetName();
+            string texname = m_it_textures->second->GetName();
             //add texture samplers: for normal and displacement map (assume that normal map is present)
-            if(m_it->second->HasTiles())
+            if(m_it_textures->second->HasTiles())
                 vert_vars += 
 					"uniform float " + texname + "_tileX, " + texname + "_tileY;\n";
             vert_vars += 
@@ -205,7 +205,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                 "uniform sampler2D "+ texname + ";\n";
             vert_main +=  "  //displace vertex\n";
             //tiles: tile texture coordinate
-            if(m_it->second->HasTiles())
+            if(m_it_textures->second->HasTiles())
                 vert_main += 
 					"  vec4 dv = textureLod(" + texname + ", in_Coord*vec2(" + texname + "_tileX, " + texname + "_tileY), 0.0);\n";
             //no tiles
@@ -224,12 +224,12 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     //require also normal map
     if(displace)
     {
-        for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+        for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
         {
-            if(m_it->second->GetType() == BUMP)
+            if(m_it_textures->second->GetType() == BUMP)
             {
-                string texname = m_it->second->GetName();
-                if(m_it->second->HasTiles())
+                string texname = m_it_textures->second->GetName();
+                if(m_it_textures->second->HasTiles())
                     vert_vars += 
 						"uniform float " + texname + "_tileX, " + texname + "_tileY;\n";
                 vert_vars += 
@@ -238,7 +238,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                 vert_main	+= 
 					"  //displace normal using normal map\n";
                 //tiles: tile texture coordinate
-                if(m_it->second->HasTiles())
+                if(m_it_textures->second->HasTiles())
                     vert_main += 
 						"  dNormal += normalize(texture(" + texname + ",in_Coord*vec2(" + texname + "_tileX, " + texname + "_tileY)).rgb * 2.0 - 1.0);\n\n";
                 //no tiles
@@ -299,31 +299,31 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 
     //******************************
     //iterate through textures
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
 		//------------------------------------------------------------------------------
         //-- 1.4.1 calculate shadow matrices for frag. shader (projected shadow and texture matrix)
         
 		// FIXME: Shadow "textury" sem nepatri. MUSI SE TO UDELAT JINAK !!!!
-		if(m_it->second->GetType() == SHADOW)
+		if(m_it_textures->second->GetType() == SHADOW)
         {
-            vert_vars += "out vec4 " + m_it->first + "_projShadow;\n";
-            vert_main += "  " + m_it->first + "_projShadow = " + m_it->first + "_texMatrix * in_ModelViewMatrix * "+SG_V4_VERTCOORD+";   //calculate shadow texture projection\n";
+            vert_vars += "out vec4 " + m_it_textures->first + "_projShadow;\n";
+            vert_main += "  " + m_it_textures->first + "_projShadow = " + m_it_textures->first + "_texMatrix * in_ModelViewMatrix * "+SG_V4_VERTCOORD+";   //calculate shadow texture projection\n";
         }
 
 		//------------------------------------------------------------------------------
         //-- 1.4.2 send 3D coordinates for cube map
 
-        if(m_it->second->GetType() == CUBEMAP)
+        if(m_it_textures->second->GetType() == CUBEMAP)
         {
-            vert_vars += "out vec3 " + m_it->first + "_cubeCoords;\n";
-            vert_main += "  " + m_it->first + "_cubeCoords = "+SG_V4_VERTCOORD+".xyz;\n";
+            vert_vars += "out vec3 " + m_it_textures->first + "_cubeCoords;\n";
+            vert_main += "  " + m_it_textures->first + "_cubeCoords = "+SG_V4_VERTCOORD+".xyz;\n";
         }
 
 		//------------------------------------------------------------------------------
         //-- 1.4.3 send 3D coordinates for environment cube map
 
-        if(m_it->second->GetType() == CUBEMAP_ENV)
+        if(m_it_textures->second->GetType() == CUBEMAP_ENV)
         {
             vert_vars += "out vec3 r_normal, r_eyeVec;\n";
             vert_main += 
@@ -401,12 +401,12 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     frag_main += "  vec2 texCoord = fragTexCoord;\n";
 
     //for parallax/depth map, we modify texture coordinate
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {    
-        if(m_it->second->GetType() == PARALLAX)
+        if(m_it_textures->second->GetType() == PARALLAX)
         {
             string offset;
-            offset = num2str(m_it->second->GetIntensity());  //parallax offset value
+            offset = num2str(m_it_textures->second->GetIntensity());  //parallax offset value
             frag_main +=
                 "  //simple parallax mapping, modify texture coordinates\n"
                 "  float height = texture(" + m_name + "ParallaxA,  texCoord).r;\n"
@@ -416,47 +416,47 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
         }
     }
 
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
 		
-        if(!m_it->second->Empty() &&
+        if(!m_it_textures->second->Empty() &&
 			//FIXME: misto SHADOW* sem ma prijit CUSTOM 
-			m_it->second->GetType() != SHADOW && 
-			m_it->second->GetType() != SHADOW_OMNI && 
+			m_it_textures->second->GetType() != SHADOW && 
+			m_it_textures->second->GetType() != SHADOW_OMNI && 
 			//FIXME: Lepsi ..
-			m_it->second->GetType() != CUSTOM &&
-			m_it->second->GetType() != DISPLACE )
+			m_it_textures->second->GetType() != CUSTOM &&
+			m_it_textures->second->GetType() != DISPLACE )
         {
-            frag_main += "\n  vec4 " + m_it->first + "_texture;\n";
+            frag_main += "\n  vec4 " + m_it_textures->first + "_texture;\n";
 
             //cube map, we add different sampler + 3D coordinates
-            if(m_it->second->GetType() == CUBEMAP) 
-                frag_vars += "uniform samplerCube "+ m_it->first + ";\nin vec3 " + m_it->first + "_cubeCoords;\n\n";
+            if(m_it_textures->second->GetType() == CUBEMAP) 
+                frag_vars += "uniform samplerCube "+ m_it_textures->first + ";\nin vec3 " + m_it_textures->first + "_cubeCoords;\n\n";
             //environment cube map, we need cube sampler and normal + view vector
-            else if(m_it->second->GetType() == CUBEMAP_ENV) 
+            else if(m_it_textures->second->GetType() == CUBEMAP_ENV) 
             {
-                frag_vars += "uniform samplerCube "+ m_it->first + ";\n"
-                    "uniform float " + m_it->first + "_intensity;\n"
+                frag_vars += "uniform samplerCube "+ m_it_textures->first + ";\n"
+                    "uniform float " + m_it_textures->first + "_intensity;\n"
                     "in vec3 r_normal, r_eyeVec;\n\n";
             }
             //regular 2D texture sampler
             else 
             {
                 //texture intensity
-                frag_vars += "uniform float " + m_it->first + "_intensity;\n";
+                frag_vars += "uniform float " + m_it_textures->first + "_intensity;\n";
                 //texture tiles (if set)
-                if(m_it->second->HasTiles())
+                if(m_it_textures->second->HasTiles())
                 {
-                    frag_vars += "uniform float " + m_it->first + "_tileX," + m_it->first + "_tileY;\n";
+                    frag_vars += "uniform float " + m_it_textures->first + "_tileX," + m_it_textures->first + "_tileY;\n";
                     frag_main +=
-                        "  //" + m_it->first + ", texture tiles\n"
-                        "  vec2 " + m_it->first + "_texcoord = texCoord * vec2(" + m_it->first + "_tileX, " + m_it->first + "_tileY) ;\n";
+                        "  //" + m_it_textures->first + ", texture tiles\n"
+                        "  vec2 " + m_it_textures->first + "_texcoord = texCoord * vec2(" + m_it_textures->first + "_tileX, " + m_it_textures->first + "_tileY) ;\n";
                 }
                 //no tiles
                 else
-                    frag_main += "  vec2 " + m_it->first + "_texcoord = texCoord;\n";
+                    frag_main += "  vec2 " + m_it_textures->first + "_texcoord = texCoord;\n";
 
-                frag_vars += "uniform sampler2D "+ m_it->first + ";\n";
+                frag_vars += "uniform sampler2D "+ m_it_textures->first + ";\n";
             }
         }
     }
@@ -516,37 +516,37 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     //-- 3.4 texture application according to texture type
 
     string alpha_test = "";
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
-        if(!m_it->second->Empty())
+        if(!m_it_textures->second->Empty())
         {
             //skip displacement map
-            if(m_it->second->GetType() == DISPLACE)
+            if(m_it_textures->second->GetType() == DISPLACE)
                 continue;
 
 			//------------------------------------------------------------------------------
             //-- 3.4.1 shadow maps - set shadow samplers and call function to project and create soft shadows
 
 			// FIXME: Shadow "textury" sem nepatri. MUSI SE TO UDELAT JINAK !!!!
-            else if(m_it->second->GetType() == SHADOW)
+            else if(m_it_textures->second->GetType() == SHADOW)
             {
-                frag_vars += "in vec4 " + m_it->first + "_projShadow;\n";
+                frag_vars += "in vec4 " + m_it_textures->first + "_projShadow;\n";
                 frag_vars +=
-                    "uniform float " + m_it->first + "_intensity;\n"
-                    "uniform sampler2DShadow " + m_it->first + ";\n";
+                    "uniform float " + m_it_textures->first + "_intensity;\n"
+                    "uniform sampler2DShadow " + m_it_textures->first + ";\n";
 
                 //insert shadow function (only once)
-                if(m_it->first.find("ShadowA") != string::npos)
+                if(m_it_textures->first.find("ShadowA") != string::npos)
                     frag_func += LoadFunc("shadow");
 
                 frag_main += "\n  //Shadow map projection\n"
-                    "  color *= PCFShadow(" + m_it->first + "," + m_it->first + "_projShadow, " + m_it->first + "_intensity);\n";
+                    "  color *= PCFShadow(" + m_it_textures->first + "," + m_it_textures->first + "_projShadow, " + m_it_textures->first + "_intensity);\n";
             }
-            else if(m_it->second->GetType() == SHADOW_OMNI)
+            else if(m_it_textures->second->GetType() == SHADOW_OMNI)
             {
                 frag_vars +=
-                    "uniform float " + m_it->first + "_intensity;\n"
-                    "uniform sampler2DArray " + m_it->first + ";\n";
+                    "uniform float " + m_it_textures->first + "_intensity;\n"
+                    "uniform sampler2DArray " + m_it_textures->first + ";\n";
 
                 //do we use parabola cut?
                 if(dpshadow_method == CUT)
@@ -555,28 +555,28 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                     frag_vars += "#define USE_PCF\n";
 
                 //insert shadow function (only once)
-                if(m_it->first.find("ShadowOMNI_A") != string::npos)
+                if(m_it_textures->first.find("ShadowOMNI_A") != string::npos)
 					if( dpshadow_method == CUT || dpshadow_method == DPSM  )
 						frag_func += LoadFunc("shadow_cut");
 						
 
 				//FIXME: jako parametr funkce dat m_variables["ObjSpacePosition"]
                 frag_main += "\n  //Shadow map projection\n"
-                    "  color *= ShadowOMNI(" + m_it->first + ", " + m_it->first + "_intensity);\n";
+                    "  color *= ShadowOMNI(" + m_it_textures->first + ", " + m_it_textures->first + "_intensity);\n";
             }
 
             //other texture types
             else
             {
                 //should we use alpha testing?
-                if(m_it->second->GetType() == ALPHA)
-                    alpha_test = "  //alpha test\n  if( all(lessThan(" + m_it->first + "_texture.rgb, vec3(0.25)))) discard;\n";
+                if(m_it_textures->second->GetType() == ALPHA)
+                    alpha_test = "  //alpha test\n  if( all(lessThan(" + m_it_textures->first + "_texture.rgb, vec3(0.25)))) discard;\n";
 
                 ///3.4.2 environment maps - add normal and eye vector variables(if per-pixel)
-                if(m_it->second->GetType() == ENV)
+                if(m_it_textures->second->GetType() == ENV)
                 {
                     //when we have more env maps, insert env function only once
-                    if(m_it->first.find("EnvB") == string::npos)
+                    if(m_it_textures->first.find("EnvB") == string::npos)
                     {
 
                         if(m_lightModel != PHONG)
@@ -587,7 +587,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                 }
 
                 //reflect fragment from environment cubemap
-                if(m_it->second->GetType() == CUBEMAP_ENV)
+                if(m_it_textures->second->GetType() == CUBEMAP_ENV)
                 {
                     if(bump)    //if we have bump map, modify reflection vector to get bumpy reflections
                         frag_main += "  vec3 reflVec = reflect(normalize(r_eyeVec), normalize(bump_normal)); //bumped reflection vector for cubemap\n";
@@ -596,8 +596,8 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
                 }
 
                 //compute fragment color from texel(not for bump/parallax map)
-                if(m_it->second->GetType() != BUMP && m_it->second->GetType() != PARALLAX)
-                    frag_main += computeTexel(m_it->second,m_it->first);
+                if(m_it_textures->second->GetType() != BUMP && m_it_textures->second->GetType() != PARALLAX)
+                    frag_main += computeTexel(m_it_textures->second,m_it_textures->first);
 
             }
         }
@@ -713,12 +713,12 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     //*************************************
     ///4 Get uniform variables for textures (using Texture::GetUniforms() )
     int i=0;
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
-        if(!m_it->second->Empty())
+        if(!m_it_textures->second->Empty())
         {
-            m_it->second->GetUniforms(m_shader);
-            m_it->second->ActivateTexture(i,true);
+            m_it_textures->second->GetUniforms(m_shader);
+            m_it_textures->second->ActivateTexture(i,true);
             i++;
         }
     }

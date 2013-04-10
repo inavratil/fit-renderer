@@ -143,6 +143,8 @@ protected:
 	map<string, PassPtr>::iterator		m_it_pass;
 	//-- FBO Manager
 	FBOManagerPtr						m_FBOManager;
+	//-- Texture Cache
+	TextureCachePtr						m_texture_cache;
 
 public:
 	void AppendPass( string _name, PassPtr _pass )

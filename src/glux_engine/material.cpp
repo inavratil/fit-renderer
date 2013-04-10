@@ -46,10 +46,9 @@ string LoadShader(const char* source)
 @param transp material transparency
 @param lm light model (can be PHONG,GOURAUD,NONE)
 ***************************************************************************************************/
-TMaterial::TMaterial(const char* name, unsigned id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, GLfloat shin, GLfloat reflect, GLfloat transp, GLint lm)
+TMaterial::TMaterial(const char* name, unsigned id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, GLfloat shin, GLfloat reflect, GLfloat transp, GLint lm) :
+	Shader( name, id )
 {
-    m_name = name;
-    m_matID = id;
     m_ambColor = amb;
     m_diffColor = diff;
     m_specColor = spec;
@@ -84,9 +83,6 @@ TMaterial::~TMaterial()
         glDetachObjectARB(m_shader,m_v_shader);
         glDeleteObjectARB(m_shader);
     }
-    //free textures
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); m_it++)
-        delete m_it->second;
 }
 
 
@@ -100,10 +96,10 @@ to them stored in TMaterial::textures field)
 string TMaterial::NextTexture(string texname)
 {
     int i = 1;
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
-        ///find first empty texture, add index to m_it's name and return this name
-        if(texname == m_it->first || m_it->first.empty() )
+        ///find first empty texture, add index to m_it_textures's name and return this name
+        if(texname == m_it_textures->first || m_it_textures->first.empty() )
         {
             string rep;
             rep = num2str(char('A' + i));
@@ -298,9 +294,9 @@ void TMaterial::RemoveShadows()
 {
     vector<string> to_erase;
 
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
-        if(strstr(m_it->first.c_str(),"Shadow") != NULL)
-            to_erase.push_back(m_it->first);
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
+        if(strstr(m_it_textures->first.c_str(),"Shadow") != NULL)
+            to_erase.push_back(m_it_textures->first);
 
     for(unsigned i=0; i<to_erase.size(); i++)
         m_textures.erase(to_erase[i]);
@@ -322,11 +318,11 @@ void TMaterial::RenderMaterial()
 
     ///activate textures attached to material (Texture::ActivateTexture() )
     int i=0;
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
-        if(!m_it->second->Empty())
+        if(!m_it_textures->second->Empty())
         {
-            m_it->second->ActivateTexture(i);
+            m_it_textures->second->ActivateTexture(i);
             i++;
         }
     }
@@ -513,12 +509,12 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
     //*************************************
     ///4 Get uniform variables for textures (using Texture::GetUniforms() )
     int i=0;
-    for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it)
+    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
-        if(!m_it->second->Empty())
+        if(!m_it_textures->second->Empty())
         {
-            m_it->second->GetUniforms(m_shader);
-            m_it->second->ActivateTexture(i,true);
+            m_it_textures->second->GetUniforms(m_shader);
+            m_it_textures->second->ActivateTexture(i,true);
             i++;
         }
     }

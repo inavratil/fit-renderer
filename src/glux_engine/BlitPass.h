@@ -12,10 +12,9 @@ class BlitPass : public Pass
 
 protected:
 	GLuint		m_tex_read;
-	GLuint		m_tex_draw;
 
 	GLuint		m_fbo_read;
-	GLuint		m_fbo_draw;
+	
 
 	GLuint		m_mask;
 	GLuint		m_filter;
@@ -31,6 +30,8 @@ public:
 	virtual ~BlitPass(void);
 
 	virtual void Render();
+	virtual void Activate();
+	virtual void Deactivate();
 
 	//-- Set/Get Filter
 	void SetFilter( GLuint _filter ){ m_filter = _filter; };

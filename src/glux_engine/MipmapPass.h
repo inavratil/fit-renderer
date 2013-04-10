@@ -11,8 +11,7 @@ class MipmapPass : public Pass
 // -- Member variables
 
 protected:
-	GLuint			m_fbo;
-	GLuint			m_tex;
+	
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -22,6 +21,8 @@ public:
 	virtual ~MipmapPass(void);
 	
 	virtual void Render();
+	virtual void Activate();
+	virtual void Deactivate();
 
 };
 

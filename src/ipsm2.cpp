@@ -234,13 +234,14 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//FIXME
 		//-- blit pass
-		BlitPass *bp = new BlitPass(m_tex_cache["MTEX_output"], TextureCache::Instance()->Get("aliaserr_mipmap" ));
+		BlitPass *bp = new BlitPass(m_tex_cache["MTEX_output"], m_texture_cache->Get("aliaserr_mipmap" ));
 		AppendPass("pass_blit_0", bp );
 
 		//-- mipmap pass
 		AddMaterial("mat_aliasMipmap",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
 		CustomShader("mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag");
-		MipmapPass *mp = new MipmapPass( TextureCache::Instance()->Get("aliaserr_mipmap" ) );
+		Pass *mp = new Pass( m_texture_cache->Get("aliaserr_mipmap" ) );
+		AppendPass("pass_alias_mipmap", mp);
 		
     }
     catch(int)
@@ -421,33 +422,41 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 #ifndef GRADIENT_METHOD
 		//calculate custom mipmaps 
 		{
-			m_passes["pass_blit_0"]->Render();
+			//-----------------------------------------------------------------------------
+			
+			m_passes["pass_blit_0"]->Process();
+
+			//-----------------------------------------------------------------------------
 
 			glm::vec4 clear_color;
 			glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
 			glClearColor( 1, 1, 1, 1 );
 
-			glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), 0);
+			m_passes["pass_alias_mipmap"]->Activate();
+			
+			glActiveTexture( GL_TEXTURE0 );
+			glBindTexture( GL_TEXTURE_2D,  m_passes["pass_alias_mipmap"]->GetTexture( 0 ) );
 
 			for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
 			{
 				glViewport(0, 0, j, j);
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), i);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_passes["pass_alias_mipmap"]->GetTexture( 0 ), i);
 				glClear(GL_COLOR_BUFFER_BIT );
-
-				glActiveTexture( GL_TEXTURE0 );
-				glBindTexture( GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ));
 
 				SetUniform("mat_aliasMipmap", "offset", 0.5f/((float)j*2.0f));
 				SetUniform("mat_aliasMipmap", "mip_level", i-1);
 				RenderPass("mat_aliasMipmap");
 
-				glBindTexture( GL_TEXTURE_2D, 0 );
+				
 			}
+
+			glBindTexture( GL_TEXTURE_2D, 0 );
+
+			m_passes["pass_alias_mipmap"]->Deactivate();
 
 			glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
 
+			//-----------------------------------------------------------------------------
 			
 			memset(g_precomputed_diffs, 0, 19*19*sizeof(glm::vec4));
 			ModifyGrid(g_precomputed_diffs);

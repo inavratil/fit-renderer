@@ -36,5 +36,7 @@ public:
 	void SetFilter( const char* _name, GLfloat  _filter );
 };
 
+typedef TextureCache* TextureCachePtr;
+
 #endif
 

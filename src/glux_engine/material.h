@@ -6,6 +6,7 @@
 #define _MATERIAL_H_
 
 #include "texture.h"
+#include "Shader.h"
 #include "shaderGen/ShaderFeature.h"
 
 ///Aligned buffer size
@@ -54,14 +55,12 @@ struct TShader
 
 ///@class TMaterial
 ///@brief hold all material properties necessary to create dynamic shader - light models textures and colors
-class TMaterial
+class TMaterial : public Shader
 {
 private:
     //properties
-    string m_name;
-    unsigned m_matID;
-    map<string,Texture*> m_textures;          //textures list    
-    map<string,Texture*>::iterator m_it;			 //texture iterator
+   
+
     //material properties
     glm::vec3 m_ambColor, m_diffColor, m_specColor;
     GLfloat m_shininess, m_transparency, m_reflection;
@@ -89,14 +88,7 @@ public:
     //free dynamic data
     ~TMaterial();
 
-    ///@brief get material name
-    string GetName(){ 
-        return m_name; 
-    }
-    ///@brief get material ID
-    unsigned GetID(){ 
-        return m_matID; 
-    }
+
     ///@brief set transparency value
     void SetTransparency(GLfloat value){ 
         m_transparency = value; 
@@ -253,9 +245,9 @@ public:
 
     ///Get first alpha texture ID
     GLuint GetAlphaTexID(){
-        for(m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it){
-            if(m_it->second->GetType() == ALPHA)
-                return m_it->second->GetID();
+        for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures){
+            if(m_it_textures->second->GetType() == ALPHA)
+                return m_it_textures->second->GetID();
         }
         return 0;
     }

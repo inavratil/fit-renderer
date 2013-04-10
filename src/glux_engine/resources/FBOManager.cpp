@@ -70,11 +70,19 @@ bool FBOManager::CheckFBO()
 
 //-----------------------------------------------------------------------------
 
-GLuint FBOManager::CreateAndAttach( GLuint _tex, GLenum _target )
+GLuint FBOManager::CreateFBO()
 {
 	GLuint fbo;
 	glGenFramebuffers( 1, &fbo );
-	
+	return fbo;
+}
+
+//-----------------------------------------------------------------------------
+
+GLuint FBOManager::CreateFBOAndAttachTexture( GLuint _tex, GLenum _target )
+{
+	GLuint fbo = CreateFBO();
+		
 	//-- bind FBO
 	glBindFramebuffer( _target, fbo );
 	//-- attach texture to the frame buffer
