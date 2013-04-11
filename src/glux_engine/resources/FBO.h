@@ -7,6 +7,9 @@
 #define FBO_DRAW GL_DRAW_FRAMEBUFFER
 #define FBO_BOTH GL_FRAMEBUFFER
 
+//-- FBO creation mode
+enum FBOModes { FBO_NO_DEPTH, FBO_DEPTH_ONLY, FBO_DEPTH_AND_STENCIL };
+
 class FBO
 { 
 
@@ -15,7 +18,9 @@ class FBO
 
 protected:
 	GLuint			m_id;
-	GLuint			m_lastFBO;
+	GLuint			m_lastFBO;	
+	unsigned int	m_width;
+	unsigned int	m_height;
 	
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -34,7 +39,10 @@ public:
 	GLuint Bind( GLenum _target = FBO_BOTH );
 	void Unbind( GLenum _target = FBO_BOTH );
 
-	void AttachTexture( GLuint _tex, unsigned _attachment = 0 );
+	void AttachColorTexture( GLuint _tex, unsigned _attachment = 0 );
+	void AttachDepthTexture( GLuint _tex );
+	void AttachDepthBuffer( unsigned _mode );
+	bool CheckStatus(); 
 
 };
 

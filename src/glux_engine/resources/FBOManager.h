@@ -8,9 +8,6 @@
 
 #define FBO_COLOR0 GL_COLOR_ATTACHMENT0
 
-//-- FBO creation mode
-enum FBOModes { FBO_NO_DEPTH, FBO_DEPTH_ONLY, FBO_DEPTH_AND_STENCIL };
-
 class FBOManager : public Singleton<FBOManager>
 { 
 
@@ -38,8 +35,7 @@ public:
 	FBOPtr Get( const char* _name );
 	GLuint GetID( const char* _name );
 	
-	FBOPtr CreateFBO( const char* _name = "", unsigned _mode = FBO_DEPTH_ONLY );
-	FBOPtr CreateFBOAndAttachTexture( const char* _name, GLuint _tex, GLenum _target = FBO_BOTH );
+	FBOPtr CreateFBO( const char* _name = "" );
 	//TODO: pro vice FBO? a textur?
 	//static GLuint CreateAndAttachNum( GLuint _tex, GLenum _target = FBO_BOTH );
 

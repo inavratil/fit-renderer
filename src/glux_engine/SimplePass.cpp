@@ -49,7 +49,7 @@ void SimplePass::Activate()
 	for(int i=0; i<m_output_textures.size(); ++i)
 	{
 		PassTexture t = m_output_textures[i];
-		m_fbo->AttachTexture( t.id, t.pos );
+		m_fbo->AttachColorTexture( t.id, t.pos );
 	}
 	m_activated = true;
 }

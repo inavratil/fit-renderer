@@ -52,8 +52,8 @@ void BlitPass::Activate()
 {	
 	//FIXME: zde se musi 2x bindovat stejne FBO
 	//-- attach textures
-	m_fbo_read->AttachTexture( m_tex_read );
-	m_fbo_draw->AttachTexture( m_tex_draw );
+	m_fbo_read->AttachColorTexture( m_tex_read );
+	m_fbo_draw->AttachColorTexture( m_tex_draw );
 
 	//-- bind read and draw FBO
 	m_fbo_read->Bind( FBO_READ );

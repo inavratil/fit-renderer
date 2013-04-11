@@ -29,7 +29,7 @@ FBOPtr FBOManager::Get( const char* _name )
 {
 	if( m_fbos.find(_name) == m_fbos.end() )
 	{
-		cerr<<"WARNING (FBOManager): no fbo with name "<<_name<<"\n";
+		cerr<<"WARNING: no fbo with name "<<_name<<" ("<<__FILE__<<", "<<__LINE__<<").\n";
 		return 0;
 	}
 
@@ -42,7 +42,7 @@ GLuint FBOManager::GetID( const char* _name )
 {
 	if( m_fbos.find(_name) == m_fbos.end() )
 	{
-		cerr<<"WARNING (FBOManager): no fbo with name "<<_name<<"\n";
+		cerr<<"WARNING: no fbo with name "<<_name<<" ("<<__FILE__<<", "<<__LINE__<<").\n";
 		return 0;
 	}
 
@@ -96,34 +96,18 @@ bool FBOManager::CheckFBO()
 	if( fbo_mode > NO_DEPTH )
         glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, depth);
 */
-FBOPtr FBOManager::CreateFBO( const char* _name, unsigned _mode )
+FBOPtr FBOManager::CreateFBO( const char* _name )
 {
+	//-- create
 	FBOPtr fbo = new FBO();
 
+	//-- setup name
 	string name = _name;
 	if( name.empty() )
-		name = "FBO"+m_fbos.size();
-
+		name = "FBO"+num2str(m_fbos.size());
+	
+	//-- add the FBO to th list
 	Add( name.c_str(), fbo );
-
-	return fbo;
-}
-
-//-----------------------------------------------------------------------------
-
-FBOPtr FBOManager::CreateFBOAndAttachTexture( const char* _name, GLuint _tex, GLenum _target )
-{
-	FBOPtr fbo = CreateFBO( _name );
-		
-	//-- bind FBO
-	fbo->Bind();
-	//-- attach texture to the frame buffer
-	glFramebufferTexture2D(_target, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _tex, 0);
-	//-- check FBO status
-	if(!CheckFBO())
-		ShowMessage("ERROR: FBO creation failed!",false);
-	//-- unbind FBO
-	fbo->Unbind();
 
 	return fbo;
 }
@@ -134,7 +118,7 @@ GLuint FBOManager::BindBuffer( const char* _name, GLenum _target )
 {
 	if( m_fbos.find(_name) == m_fbos.end() )
 	{
-		cerr<<"WARNING (FBOManager): no fbo with name "<<_name<<"\n";
+		cerr<<"WARNING: no fbo with name "<<_name<<" ("<<__FILE__<<", "<<__LINE__<<").\n";
 		return 0;
 	}
 
@@ -147,7 +131,7 @@ void FBOManager::UnbindBuffer( const char* _name, GLenum _target )
 {
 	if( m_fbos.find(_name) == m_fbos.end() )
 	{
-		cerr<<"WARNING (FBOManager): no fbo with name "<<_name<<"\n";
+		cerr<<"WARNING: no fbo with name "<<_name<<" ("<<__FILE__<<", "<<__LINE__<<").\n";
 		return;
 	}
 

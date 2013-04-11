@@ -4,7 +4,6 @@
 bool TScene::InitDebug()
 {
 	GLuint buffer, fbo, tex;
-
 	///////////////////////////////////////////////////////////////////////////////
 	//-- Render Alias error
 
@@ -14,6 +13,7 @@ bool TScene::InitDebug()
 		AddTexture("mat_aliasError", "data/tex/error_color.tga", RENDER_TEXTURE);
 		CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
 
+		//-- texture
 		GLuint tex_aliaserr = m_texture_cache->Create2DManual("aliaserr_texture",
 			128.0, 128.0,	//-- width and height
 			GL_RGBA16F,		//-- internal format
@@ -21,7 +21,9 @@ bool TScene::InitDebug()
 			GL_NEAREST,		//-- filtering
 			false			//-- mipmap generation
 			);
-		m_FBOManager->CreateFBOAndAttachTexture( "dbg_aliaserr", tex_aliaserr );
+		//-- FBO
+		FBOPtr fbo_aliaserr = m_FBOManager->CreateFBO( "dbg_aliaserr" );
+		fbo_aliaserr->AttachColorTexture( tex_aliaserr );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -50,7 +52,6 @@ void TScene::RenderDebug()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 	m_FBOManager->Get("dbg_aliaserr")->Bind();
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"), 0);
 	glViewport( 0, 0, 128.0, 128.0 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

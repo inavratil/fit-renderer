@@ -70,9 +70,66 @@ void FBO::Unbind( GLenum _target )
 
 //-----------------------------------------------------------------------------
 
-void FBO::AttachTexture( GLuint _tex, unsigned _attachment )
+void FBO::AttachColorTexture( GLuint _tex, unsigned _attachment )
 {
 	Bind();
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+_attachment, _tex, 0);
 	Unbind();
+}
+
+//-----------------------------------------------------------------------------
+
+void FBO::AttachDepthTexture( GLuint _tex )
+{
+	Bind();
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _tex, 0);
+	Unbind();
+}
+
+//-----------------------------------------------------------------------------
+
+void FBO::AttachDepthBuffer( unsigned _mode )
+{
+	//-- setup depth buffers
+	GLuint depth;
+    if( _mode > FBO_NO_DEPTH )
+    {
+        //-- create renderbuffers
+        glGenRenderbuffers(1, &depth);
+        glBindRenderbuffer(GL_RENDERBUFFER, depth);
+        //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, resX, resY);
+    }
+	if( _mode > FBO_NO_DEPTH )
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, depth);
+}
+
+//-----------------------------------------------------------------------------
+
+bool FBO::CheckStatus()
+{
+	Bind();
+    //check FBO creation
+    GLenum FBOstat = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(FBOstat != GL_FRAMEBUFFER_COMPLETE)
+    {
+        if(FBOstat ==  GL_FRAMEBUFFER_UNDEFINED) 
+            ShowMessage("FBO ERROR:GL_FRAMEBUFFER_UNDEFINED");
+        if(FBOstat ==  GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT) 
+            ShowMessage("FBO ERROR:GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+        if(FBOstat ==  GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT) 
+            ShowMessage("FBO ERROR:GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+        if(FBOstat ==  GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER) 
+            ShowMessage("FBO ERROR:GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
+        if(FBOstat ==  GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER) 
+            ShowMessage("FBO ERROR:GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+        if(FBOstat ==  GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE) 
+            ShowMessage("FBO ERROR:GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
+        if(FBOstat ==  GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS) 
+            ShowMessage("FBO ERROR:GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
+        if(FBOstat ==  GL_FRAMEBUFFER_UNSUPPORTED) 
+            ShowMessage("FBO ERROR:GL_FRAMEBUFFER_UNSUPPORTED");
+        return false;
+    }
+	Unbind();
+    return true;
 }
