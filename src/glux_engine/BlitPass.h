@@ -12,10 +12,11 @@ class BlitPass : public Pass
 
 protected:
 	GLuint		m_tex_read;
+	GLuint		m_tex_draw;
 
 	GLuint		m_fbo_read;
+	GLuint		m_fbo_draw;
 	
-
 	GLuint		m_mask;
 	GLuint		m_filter;
 
@@ -26,7 +27,8 @@ protected:
 //-- Public methods 
 
 public:
-	BlitPass(GLuint _input_tex, GLuint _output_tex);
+	BlitPass();
+	BlitPass( GLuint _read_tex, GLuint _draw_tex );
 	virtual ~BlitPass(void);
 
 	virtual void Render();
@@ -49,11 +51,16 @@ public:
 	void SetDstBounds( glm::ivec4 _bounds ){ m_dst_bounds = _bounds; };
 	glm::ivec4 GetDstBounds(){ return m_dst_bounds; };
 
+	void AttachReadTexture( GLuint _tex );
+	void AttachDrawTexture( GLuint _tex );
+
+	void UpdateBounds();
 //-----------------------------------------------------------------------------
 //-- Private methods 
 
 private:
-	void _InitBounds();
+	void _Init();
+	
 };
 
 #endif

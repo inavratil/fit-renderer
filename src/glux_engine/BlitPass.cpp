@@ -4,17 +4,43 @@
 
 //-----------------------------------------------------------------------------
 
-BlitPass::BlitPass( GLuint _tex_read, GLuint _tex_draw ) :
-	Pass( _tex_draw )
+BlitPass::BlitPass() :
+	m_tex_read( 0 ),
+	m_tex_draw( 0 )
 {
-	//-- assign textures to read from and draw to
-	assert( _tex_read != 0 );
-	m_tex_read = _tex_read;
+	_Init();
+}
 
-	//-- initialize bounds
-	_InitBounds();
+//-----------------------------------------------------------------------------
 
-	m_fbo_read = m_FBOManager->CreateFBOAndAttachTexture( m_tex_read, FBO_READ );
+BlitPass::BlitPass( GLuint _read_tex, GLuint _draw_tex ) :
+	m_tex_read( _read_tex ),
+	m_tex_draw( _draw_tex )
+{
+	_Init();
+	UpdateBounds();
+}
+
+//-----------------------------------------------------------------------------
+
+BlitPass::~BlitPass(void)
+{
+	//-- delete read and draw texture names
+	glDeleteTextures( 1, &m_tex_read );
+	glDeleteTextures( 1, &m_tex_draw );
+	//-- delete read and draw FBO names
+	glDeleteFramebuffers( 1, &m_fbo_read );
+	glDeleteFramebuffers( 1, &m_fbo_draw );
+	
+}
+
+//-----------------------------------------------------------------------------
+
+void BlitPass::_Init()
+{
+	//-- generates ids for FBOs
+	m_fbo_read = m_FBOManager->CreateFBO();
+	m_fbo_draw = m_FBOManager->CreateFBO();
 	
 	//-- set default mask
 	m_mask = GL_COLOR_BUFFER_BIT;
@@ -24,21 +50,20 @@ BlitPass::BlitPass( GLuint _tex_read, GLuint _tex_draw ) :
 
 //-----------------------------------------------------------------------------
 
-BlitPass::~BlitPass(void)
-{
-	//-- delete read texture names
-	glDeleteTextures( 1, &m_tex_read );
-	//-- delete read FBO names
-	glDeleteFramebuffers( 1, &m_fbo_read );
-	
+void BlitPass::Activate()
+{	
+	//-- bind read FBO and attach texture
+	glBindFramebuffer( GL_READ_FRAMEBUFFER, m_fbo_read );
+	m_FBOManager->AttachTexture( m_fbo_read, m_tex_read );	
+	//-- bind draw FBO and attach texture
+	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_fbo_draw );
+	m_FBOManager->AttachTexture( m_fbo_draw, m_tex_draw );	
 }
 
 //-----------------------------------------------------------------------------
 
 void BlitPass::Render()
 {
-	Pass::Render();
-
 	//-- do blit
 	glBlitFramebuffer(
 		m_src_bounds.x, m_src_bounds.y,		//-- source lower-left corner
@@ -52,28 +77,32 @@ void BlitPass::Render()
 
 //-----------------------------------------------------------------------------
 
-void BlitPass::Activate()
-{
-	Pass::Activate();
-
-	//-- bind read and draw FBOs
-	glBindFramebuffer( GL_READ_FRAMEBUFFER, m_fbo_read );
-	
-}
-
-//-----------------------------------------------------------------------------
-
 void BlitPass::Deactivate()
 {
 	//-- unbind read and draw FBOs
 	glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
-
-	Pass::Deactivate();
+	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 }
 
 //-----------------------------------------------------------------------------
 
-void BlitPass::_InitBounds()
+void BlitPass::AttachReadTexture( GLuint _tex )
+{
+	m_tex_read = _tex;
+	UpdateBounds();
+}
+
+//-----------------------------------------------------------------------------
+
+void BlitPass::AttachDrawTexture( GLuint _tex )
+{
+	m_tex_draw = _tex;
+	UpdateBounds();
+}
+
+//-----------------------------------------------------------------------------
+
+void BlitPass::UpdateBounds()
 {
 	//-- initialize variables
 	m_src_bounds = glm::ivec4( 0 );
@@ -86,7 +115,7 @@ void BlitPass::_InitBounds()
 	glBindTexture( GL_TEXTURE_2D, 0 );
 
 	//-- get draw texture size to set bounds
-	glBindTexture( GL_TEXTURE_2D, m_output_textures[0].id );
+	glBindTexture( GL_TEXTURE_2D, m_tex_draw );
 	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &m_dst_bounds.z);
 	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &m_dst_bounds.w);
 	glBindTexture( GL_TEXTURE_2D, 0 );

@@ -101,7 +101,7 @@ GLuint FBOManager::CreateFBOAndAttachTexture( GLuint _tex, GLenum _target )
 GLuint FBOManager::BindBuffer( GLuint _fbo )
 {
 	//-- save currently bound FBO
-	GLint tmp;
+	int tmp;
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &tmp );
 	m_lastFBO = tmp;
 	//-- we don't need to bind the same FBO
@@ -123,4 +123,13 @@ void FBOManager::UnbindBuffer()
 	if( !tmp )
 		glBindFramebuffer( GL_FRAMEBUFFER, m_lastFBO );
 	
+}
+
+//-----------------------------------------------------------------------------
+
+void FBOManager::AttachTexture( GLuint _fbo, GLuint _tex, unsigned _attachment )
+{
+	BindBuffer( _fbo );
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+_attachment, GL_TEXTURE_2D, _tex, 0);
+	UnbindBuffer();
 }

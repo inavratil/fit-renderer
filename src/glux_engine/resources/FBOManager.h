@@ -7,6 +7,7 @@
 #define FBO_READ GL_READ_FRAMEBUFFER
 #define FBO_DRAW GL_DRAW_FRAMEBUFFER
 #define FBO_BOTH GL_FRAMEBUFFER
+#define FBO_COLOR0 GL_COLOR_ATTACHMENT0
 
 class FBOManager : public Singleton<FBOManager>
 { 
@@ -48,6 +49,7 @@ public:
 
 	GLuint BindBuffer( GLuint _fbo );
 	void UnbindBuffer();
+	void AttachTexture( GLuint _fbo, GLuint _tex, unsigned _attachment = 0 );
 };
 
 typedef FBOManager* FBOManagerPtr;

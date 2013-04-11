@@ -109,10 +109,8 @@
     <ClCompile Include="src\glux_engine\loadScene.cpp" />
     <ClCompile Include="src\glux_engine\material.cpp" />
     <ClCompile Include="src\glux_engine\material_generator.cpp" />
-    <ClCompile Include="src\glux_engine\MipmapPass.cpp" />
     <ClCompile Include="src\glux_engine\modifyGrid.cpp" />
     <ClCompile Include="src\glux_engine\object.cpp" />
-    <ClCompile Include="src\glux_engine\Pass.cpp" />
     <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\render_target.cpp" />
     <ClCompile Include="src\glux_engine\resources\FBO.cpp" />
@@ -127,6 +125,7 @@
     <ClCompile Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp" />
     <ClCompile Include="src\glux_engine\shadow.cpp" />
+    <ClCompile Include="src\glux_engine\SimplePass.cpp" />
     <ClCompile Include="src\glux_engine\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\SplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
@@ -151,7 +150,6 @@
     <ClInclude Include="src\glux_engine\IShadowTechnique.h" />
     <ClInclude Include="src\glux_engine\light.h" />
     <ClInclude Include="src\glux_engine\material.h" />
-    <ClInclude Include="src\glux_engine\MipmapPass.h" />
     <ClInclude Include="src\glux_engine\object.h" />
     <ClInclude Include="src\glux_engine\Pass.h" />
     <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h" />
@@ -168,6 +166,7 @@
     <ClInclude Include="src\glux_engine\shaderGen\ShaderFeature.h" />
     <ClInclude Include="src\glux_engine\shaderGen\shader_generator.h" />
     <ClInclude Include="src\glux_engine\shadow.h" />
+    <ClInclude Include="src\glux_engine\SimplePass.h" />
     <ClInclude Include="src\glux_engine\Singleton.h" />
     <ClInclude Include="src\glux_engine\SplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\texture.h" />

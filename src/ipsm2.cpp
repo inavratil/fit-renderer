@@ -5,7 +5,7 @@
 #include "glux_engine/SplineWarpedShadow.h"
 
 #include "glux_engine/BlitPass.h"
-#include "glux_engine/MipmapPass.h"
+#include "glux_engine/SimplePass.h"
 
 #include "precomputed_diffs.h"
 
@@ -234,14 +234,15 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//FIXME
 		//-- blit pass
-		BlitPass *bp = new BlitPass(m_tex_cache["MTEX_output"], m_texture_cache->Get("aliaserr_mipmap" ));
+		BlitPass *bp = new BlitPass( m_tex_cache["MTEX_output"], m_texture_cache->Get("aliaserr_mipmap" ) );
 		AppendPass("pass_blit_0", bp );
 
 		//-- mipmap pass
 		AddMaterial("mat_aliasMipmap",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
 		CustomShader("mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag");
-		Pass *mp = new Pass( m_texture_cache->Get("aliaserr_mipmap" ) );
+		Pass *mp = new SimplePass(m_texture_cache->Get("aliaserr_mipmap" ));
 		AppendPass("pass_alias_mipmap", mp);
+		
 		
     }
     catch(int)
@@ -433,21 +434,19 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			glClearColor( 1, 1, 1, 1 );
 
 			m_passes["pass_alias_mipmap"]->Activate();
-			
+						
 			glActiveTexture( GL_TEXTURE0 );
-			glBindTexture( GL_TEXTURE_2D,  m_passes["pass_alias_mipmap"]->GetTexture( 0 ) );
+			glBindTexture( GL_TEXTURE_2D,  m_texture_cache->Get("aliaserr_mipmap" ) );
 
 			for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
 			{
 				glViewport(0, 0, j, j);
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_passes["pass_alias_mipmap"]->GetTexture( 0 ), i);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture_cache->Get("aliaserr_mipmap" ), i);
 				glClear(GL_COLOR_BUFFER_BIT );
 
 				SetUniform("mat_aliasMipmap", "offset", 0.5f/((float)j*2.0f));
 				SetUniform("mat_aliasMipmap", "mip_level", i-1);
-				RenderPass("mat_aliasMipmap");
-
-				
+				RenderPass("mat_aliasMipmap");				
 			}
 
 			glBindTexture( GL_TEXTURE_2D, 0 );
