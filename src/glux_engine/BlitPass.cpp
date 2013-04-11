@@ -38,9 +38,7 @@ void BlitPass::_Init()
 {
 	//-- generates ids for FBOs
 	m_fbo_read = m_FBOManager->CreateFBO();
-	m_fbo_read->SetTarget( FBO_READ );
 	m_fbo_draw = m_FBOManager->CreateFBO();
-	m_fbo_draw->SetTarget( FBO_DRAW );
 	
 	//-- set default mask
 	m_mask = GL_COLOR_BUFFER_BIT;
@@ -52,12 +50,14 @@ void BlitPass::_Init()
 
 void BlitPass::Activate()
 {	
-	//-- bind read FBO and attach texture
-	m_fbo_read->Bind();
-	m_FBOManager->AttachTexture( m_fbo_read->GetID(), m_tex_read );	
-	//-- bind draw FBO and attach texture
-	m_fbo_draw->Bind();
-	m_FBOManager->AttachTexture( m_fbo_draw->GetID(), m_tex_draw );	
+	//FIXME: zde se musi 2x bindovat stejne FBO
+	//-- attach textures
+	m_fbo_read->AttachTexture( m_tex_read );
+	m_fbo_draw->AttachTexture( m_tex_draw );
+
+	//-- bind read and draw FBO
+	m_fbo_read->Bind( FBO_READ );
+	m_fbo_draw->Bind( FBO_DRAW );
 }
 
 //-----------------------------------------------------------------------------
@@ -80,8 +80,8 @@ void BlitPass::Render()
 void BlitPass::Deactivate()
 {
 	//-- unbind read and draw FBOs
-	glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
-	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+	m_fbo_read->Unbind( FBO_READ );
+	m_fbo_draw->Unbind( FBO_DRAW );
 }
 
 //-----------------------------------------------------------------------------

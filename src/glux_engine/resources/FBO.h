@@ -15,7 +15,6 @@ class FBO
 
 protected:
 	GLuint			m_id;
-	GLuint			m_target;
 	GLuint			m_lastFBO;
 	
 //-----------------------------------------------------------------------------
@@ -23,7 +22,6 @@ protected:
 
 public:
 	FBO(void);
-	FBO( GLenum _target );
 	virtual ~FBO(void);
 
 	void Init();
@@ -32,12 +30,11 @@ public:
 	//-- Set/Get id
 	void SetID( GLuint _id ){ m_id = _id; }
 	GLuint GetID(){ return m_id; }
-	//-- Set/Get target
-	void SetTarget( GLenum _target ){ m_target = _target; }
-	GLenum GetTarget(){ return m_target; }
 
-	GLuint Bind();
-	void Unbind();
+	GLuint Bind( GLenum _target = FBO_BOTH );
+	void Unbind( GLenum _target = FBO_BOTH );
+
+	void AttachTexture( GLuint _tex, unsigned _attachment = 0 );
 
 };
 

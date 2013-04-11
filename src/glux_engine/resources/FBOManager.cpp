@@ -130,38 +130,26 @@ FBOPtr FBOManager::CreateFBOAndAttachTexture( const char* _name, GLuint _tex, GL
 
 //-----------------------------------------------------------------------------
 
-GLuint FBOManager::BindBuffer( GLuint _fbo )
+GLuint FBOManager::BindBuffer( const char* _name, GLenum _target )
 {
-	//-- save currently bound FBO
-	int tmp;
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &tmp );
-	m_lastFBO = tmp;
-	//-- we don't need to bind the same FBO
-	if( m_lastFBO != _fbo )
-		glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+	if( m_fbos.find(_name) == m_fbos.end() )
+	{
+		cerr<<"WARNING (FBOManager): no fbo with name "<<_name<<"\n";
+		return 0;
+	}
 
-	return m_lastFBO;
+	return m_fbos[_name]->Bind( _target );
 }
 
 //-----------------------------------------------------------------------------
 
-void FBOManager::UnbindBuffer()
+void FBOManager::UnbindBuffer( const char* _name, GLenum _target )
 {
-	//-- check, if some FBO is bound
-	GLint tmp;
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &tmp );
-	m_lastFBO = 0;
-	//-- if so, unbind it
-	if( !tmp )
-		glBindFramebuffer( GL_FRAMEBUFFER, m_lastFBO );
-	
-}
+	if( m_fbos.find(_name) == m_fbos.end() )
+	{
+		cerr<<"WARNING (FBOManager): no fbo with name "<<_name<<"\n";
+		return;
+	}
 
-//-----------------------------------------------------------------------------
-
-void FBOManager::AttachTexture( GLuint _fbo, GLuint _tex, unsigned _attachment )
-{
-	BindBuffer( _fbo );
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+_attachment, GL_TEXTURE_2D, _tex, 0);
-	UnbindBuffer();
+	m_fbos[_name]->Unbind( _target );	
 }

@@ -43,9 +43,8 @@ public:
 	//TODO: pro vice FBO? a textur?
 	//static GLuint CreateAndAttachNum( GLuint _tex, GLenum _target = FBO_BOTH );
 
-	GLuint BindBuffer( GLuint _fbo );
-	void UnbindBuffer();
-	void AttachTexture( GLuint _fbo, GLuint _tex, unsigned _attachment = 0 );
+	GLuint BindBuffer( const char* _name, GLenum _target = FBO_BOTH );
+	void UnbindBuffer( const char* _name, GLenum _target = FBO_BOTH );
 	
 //-----------------------------------------------------------------------------
 //-- Static methods

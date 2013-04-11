@@ -45,13 +45,11 @@ void SimplePass::_Init()
 
 void SimplePass::Activate()
 {
-	assert(m_FBOManager);
-
 	m_fbo->Bind();
 	for(int i=0; i<m_output_textures.size(); ++i)
 	{
 		PassTexture t = m_output_textures[i];
-		m_FBOManager->AttachTexture (m_fbo->GetID(), t.id, t.pos );
+		m_fbo->AttachTexture( t.id, t.pos );
 	}
 	m_activated = true;
 }
@@ -68,7 +66,7 @@ void SimplePass::Render()
 
 void SimplePass::Deactivate()
 {
-	m_FBOManager->UnbindBuffer();
+	m_fbo->Unbind();
 	m_activated = false;
 }
 
