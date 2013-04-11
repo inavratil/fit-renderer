@@ -34,8 +34,7 @@ protected:
 //-- Public methods 
 
 public:
-	SimplePass( FBOManagerPtr _fbo_manager );
-	SimplePass( FBOManagerPtr _fbo_manager, GLuint _tex );
+	SimplePass( FBOManagerPtr _fbo_manager, unsigned _width, unsigned _height  );
 	virtual ~SimplePass(void);
 	
 //-----------------------------------------------------------------------------
@@ -57,7 +56,7 @@ public:
 
 //-----------------------------------------------------------------------------
 private:
-	void _Init();
+	void _Init( unsigned _width, unsigned _height );
 
 };
 

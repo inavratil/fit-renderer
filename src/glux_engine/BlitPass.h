@@ -29,8 +29,7 @@ protected:
 //-- Public methods 
 
 public:
-	BlitPass( FBOManagerPtr _fbo_manager );
-	BlitPass( FBOManagerPtr _fbo_manager , GLuint _read_tex, GLuint _draw_tex );
+	BlitPass( FBOManagerPtr _fbo_manager, unsigned _width, unsigned _height );
 	virtual ~BlitPass(void);
 
 	virtual void Render();
@@ -61,7 +60,7 @@ public:
 //-- Private methods 
 
 private:
-	void _Init();
+	void _Init( unsigned _width, unsigned _height );
 	
 };
 

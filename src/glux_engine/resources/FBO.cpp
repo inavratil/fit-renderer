@@ -2,7 +2,9 @@
 
 //-----------------------------------------------------------------------------
 
-FBO::FBO(void)
+FBO::FBO( unsigned _width, unsigned _height ) :
+	m_width( _width ),
+	m_height( _height )
 {
 	Init();
 }
@@ -18,7 +20,11 @@ FBO::~FBO(void)
 
 void FBO::Init()
 {
+	//-- init FBO's id
 	glGenFramebuffers( 1, &m_id );
+
+	//-- init viewport size
+	m_viewport = glm::vec4( 0 );
 }
 
 //-----------------------------------------------------------------------------

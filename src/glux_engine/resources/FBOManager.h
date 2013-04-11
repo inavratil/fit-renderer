@@ -35,7 +35,7 @@ public:
 	FBOPtr Get( const char* _name );
 	GLuint GetID( const char* _name );
 	
-	FBOPtr CreateFBO( const char* _name = "" );
+	FBOPtr CreateFBO( unsigned _width, unsigned _height, const char* _name = "");
 	//TODO: pro vice FBO? a textur?
 	//static GLuint CreateAndAttachNum( GLuint _tex, GLenum _target = FBO_BOTH );
 

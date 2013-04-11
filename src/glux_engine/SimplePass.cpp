@@ -2,22 +2,12 @@
 
 //-----------------------------------------------------------------------------
 
-SimplePass::SimplePass( FBOManagerPtr _fbo_manager ) :
+SimplePass::SimplePass( FBOManagerPtr _fbo_manager, unsigned _width, unsigned _height  ) :
 	Pass( _fbo_manager ),
 	m_shader(""),
 	m_activated( false )
 {
-	_Init();
-}
-
-//-----------------------------------------------------------------------------
-SimplePass::SimplePass( FBOManagerPtr _fbo_manager, GLuint _tex ) :
-	Pass( _fbo_manager ),
-	m_shader(""),
-	m_activated( false )
-{
-	_Init();
-	AttachOutputTexture( 0, _tex );
+	_Init( _width, _height );
 }
 
 //-----------------------------------------------------------------------------
@@ -34,10 +24,10 @@ SimplePass::~SimplePass(void)
 
 //-----------------------------------------------------------------------------
 
-void SimplePass::_Init()
+void SimplePass::_Init( unsigned _width, unsigned _height )
 {
 	//-- setup FBO
-	m_fbo = m_FBOManager->CreateFBO();
+	m_fbo = m_FBOManager->CreateFBO( _width, _height );
 
 	//-- get max number of attachments in the system
 	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &m_max_attachments );

@@ -231,14 +231,28 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//End
 
 		//FIXME
+		//-- texture
+		GLuint tex_aliaserr_mipmap = m_texture_cache->Create2DManual("aliaserr_mipmap",
+			128.0, 128.0,	//-- width and height
+			GL_RGBA16F,		//-- internal format
+			GL_FLOAT,		//-- type of the date
+			GL_NEAREST,		//-- filtering
+			true			//-- mipmap generation
+			);
 		//-- blit pass
-		BlitPass *bp = new BlitPass( m_FBOManager, m_tex_cache["MTEX_output"], m_texture_cache->Get("aliaserr_mipmap" ) );
+		BlitPass *bp = new BlitPass( m_FBOManager, 128, 128 );
+		bp->AttachReadTexture( m_tex_cache["MTEX_output"] );
+		bp->AttachDrawTexture( tex_aliaserr_mipmap );
 		AppendPass("pass_blit_0", bp );
 
 		//-- mipmap pass
+		//-- shader
 		AddMaterial("mat_aliasMipmap",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
 		CustomShader("mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag");
-		Pass *mp = new SimplePass( m_FBOManager,  m_texture_cache->Get("aliaserr_mipmap" ));
+
+		//-- pass
+		SimplePass *mp = new SimplePass( m_FBOManager, 128, 128);
+		mp->AttachOutputTexture(0, tex_aliaserr_mipmap); 
 		AppendPass("pass_alias_mipmap", mp);
 		
 		

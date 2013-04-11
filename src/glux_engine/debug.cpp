@@ -22,7 +22,7 @@ bool TScene::InitDebug()
 			false			//-- mipmap generation
 			);
 		//-- FBO
-		FBOPtr fbo_aliaserr = m_FBOManager->CreateFBO( "dbg_aliaserr" );
+		FBOPtr fbo_aliaserr = m_FBOManager->CreateFBO( 128, 128, "dbg_aliaserr" );
 		fbo_aliaserr->AttachColorTexture( tex_aliaserr );
 	}
 
@@ -30,13 +30,7 @@ bool TScene::InitDebug()
 	//-- Mipmaps
 
 	{
-		m_texture_cache->Create2DManual("aliaserr_mipmap",
-			128.0, 128.0,	//-- width and height
-			GL_RGBA16F,		//-- internal format
-			GL_FLOAT,		//-- type of the date
-			GL_NEAREST,		//-- filtering
-			true			//-- mipmap generation
-			);
+
 	}
 
 	return true;

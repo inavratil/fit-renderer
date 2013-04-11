@@ -4,23 +4,12 @@
 
 //-----------------------------------------------------------------------------
 
-BlitPass::BlitPass( FBOManagerPtr _fbo_manager ) :
+BlitPass::BlitPass( FBOManagerPtr _fbo_manager, unsigned _width, unsigned _height ) :
 	Pass( _fbo_manager ),
 	m_tex_read( 0 ),
 	m_tex_draw( 0 )
 {
-	_Init();
-}
-
-//-----------------------------------------------------------------------------
-
-BlitPass::BlitPass( FBOManagerPtr _fbo_manager,  GLuint _read_tex, GLuint _draw_tex ) :
-	Pass( _fbo_manager ),	
-	m_tex_read( _read_tex ),
-	m_tex_draw( _draw_tex )
-{
-	_Init();
-	UpdateBounds();
+	_Init( _width, _height );
 }
 
 //-----------------------------------------------------------------------------
@@ -34,11 +23,11 @@ BlitPass::~BlitPass(void)
 
 //-----------------------------------------------------------------------------
 
-void BlitPass::_Init()
+void BlitPass::_Init( unsigned _width, unsigned _height )
 {
 	//-- generates ids for FBOs
-	m_fbo_read = m_FBOManager->CreateFBO();
-	m_fbo_draw = m_FBOManager->CreateFBO();
+	m_fbo_read = m_FBOManager->CreateFBO( _width, _height );
+	m_fbo_draw = m_FBOManager->CreateFBO( _width, _height );
 	
 	//-- set default mask
 	m_mask = GL_COLOR_BUFFER_BIT;

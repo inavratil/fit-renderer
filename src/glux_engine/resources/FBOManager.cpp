@@ -96,10 +96,10 @@ bool FBOManager::CheckFBO()
 	if( fbo_mode > NO_DEPTH )
         glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, depth);
 */
-FBOPtr FBOManager::CreateFBO( const char* _name )
+FBOPtr FBOManager::CreateFBO( unsigned _width, unsigned _height, const char* _name )
 {
 	//-- create
-	FBOPtr fbo = new FBO();
+	FBOPtr fbo = new FBO( _width, _height );
 
 	//-- setup name
 	string name = _name;

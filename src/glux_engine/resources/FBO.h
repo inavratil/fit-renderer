@@ -21,12 +21,14 @@ protected:
 	GLuint			m_lastFBO;	
 	unsigned int	m_width;
 	unsigned int	m_height;
+
+	glm::vec4		m_viewport;
 	
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
 public:
-	FBO(void);
+	FBO( unsigned _width, unsigned _height );
 	virtual ~FBO(void);
 
 	void Init();
