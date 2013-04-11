@@ -25,7 +25,7 @@ protected:
 	//FIXME: tohle by mely byt pointer na Shader a ne string
 	string					m_shader;
 	vector<PassTexture>		m_output_textures;
-	GLuint					m_fbo;
+	FBOPtr					m_fbo;
 
 	bool					m_activated;
 	int						m_max_attachments;
@@ -34,8 +34,8 @@ protected:
 //-- Public methods 
 
 public:
-	SimplePass();
-	SimplePass( GLuint _tex );
+	SimplePass( FBOManagerPtr _fbo_manager );
+	SimplePass( FBOManagerPtr _fbo_manager, GLuint _tex );
 	virtual ~SimplePass(void);
 	
 //-----------------------------------------------------------------------------

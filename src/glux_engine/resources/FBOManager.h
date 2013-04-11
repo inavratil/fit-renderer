@@ -3,11 +3,13 @@
 
 #include "globals.h"
 #include "Singleton.h"
+#include "FBO.h"
 
-#define FBO_READ GL_READ_FRAMEBUFFER
-#define FBO_DRAW GL_DRAW_FRAMEBUFFER
-#define FBO_BOTH GL_FRAMEBUFFER
+
 #define FBO_COLOR0 GL_COLOR_ATTACHMENT0
+
+//-- FBO creation mode
+enum FBOModes { FBO_NO_DEPTH, FBO_DEPTH_ONLY, FBO_DEPTH_AND_STENCIL };
 
 class FBOManager : public Singleton<FBOManager>
 { 
@@ -17,9 +19,9 @@ class FBOManager : public Singleton<FBOManager>
 
 protected:
 	///associative array with all FBOs
-	map<string,GLuint> m_fbos;
+	map<string,FBOPtr> m_fbos;
     ///iterator for fbos container
-    map<string,GLuint>::iterator m_ifbo;
+    map<string,FBOPtr>::iterator m_it_fbos;
 
 	//-- ID of lastly bound FBO
 	GLuint			m_lastFBO;
@@ -32,24 +34,25 @@ public:
 	FBOManager(void);
 	virtual ~FBOManager(void);
 
-	void Add( const char* _name, GLuint _id );
-	GLuint Get( const char* _name );
-
-//-----------------------------------------------------------------------------
-//-- Static methods
-
-public:
-
-	static bool CheckFBO();
+	void Add( const char* _name, FBOPtr _fbo );
+	FBOPtr Get( const char* _name );
+	GLuint GetID( const char* _name );
 	
-	GLuint CreateFBO();
-	GLuint CreateFBOAndAttachTexture( GLuint _tex, GLenum _target = FBO_BOTH );
+	FBOPtr CreateFBO( const char* _name = "", unsigned _mode = FBO_DEPTH_ONLY );
+	FBOPtr CreateFBOAndAttachTexture( const char* _name, GLuint _tex, GLenum _target = FBO_BOTH );
 	//TODO: pro vice FBO? a textur?
 	//static GLuint CreateAndAttachNum( GLuint _tex, GLenum _target = FBO_BOTH );
 
 	GLuint BindBuffer( GLuint _fbo );
 	void UnbindBuffer();
 	void AttachTexture( GLuint _fbo, GLuint _tex, unsigned _attachment = 0 );
+	
+//-----------------------------------------------------------------------------
+//-- Static methods
+
+public:
+
+	static bool CheckFBO();
 };
 
 typedef FBOManager* FBOManagerPtr;

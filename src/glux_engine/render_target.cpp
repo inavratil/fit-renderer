@@ -90,40 +90,6 @@ void TScene::RenderSmallQuad(const char* material, float offset_x, float offset_
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-
-bool TScene::CreateFBO(const char* name, int resX, int resY, GLuint tex, int fbo_mode)
-{
-    GLuint depth, buffer;
-
-    if( fbo_mode > NO_DEPTH )
-    {
-        //create renderbuffers
-        glGenRenderbuffers(1, &depth);
-        glBindRenderbuffer(GL_RENDERBUFFER, depth);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, resX, resY);
-    }
-
-    glGenFramebuffers(1, &buffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, buffer);
-
-    //attach texture to the frame buffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
-    if( fbo_mode > NO_DEPTH )
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, depth);
-
-    //check FBO creation
-    if(!CheckFBO())
-    {
-        ShowMessage("ERROR: FBO creation failed!",false);
-        return false;
-    }
-
-    m_fbos[name] = buffer;
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    return true;
-}
-
 /**
 ****************************************************************************************************
 @brief Check framebuffer status

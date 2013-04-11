@@ -177,8 +177,6 @@
   <ItemGroup>
     <None Include="data\shaders\bloom_ssao.frag" />
     <None Include="data\shaders\blur.frag" />
-    <None Include="data\shaders\debug_draw.frag" />
-    <None Include="data\shaders\debug_draw.vert" />
     <None Include="data\shaders\func\blur.frag" />
     <None Include="data\shaders\func\env.frag" />
     <None Include="data\shaders\func\light.frag" />

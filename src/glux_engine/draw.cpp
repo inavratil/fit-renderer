@@ -314,7 +314,7 @@ void TScene::Redraw(bool delete_buffer)
 		{
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, previewTexs[m_texPreview_id]);                
-			//glBindTexture(GL_TEXTURE_2D, m_tex_cache["MTEX_warped_depth_color"]);
+			//glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get("MTEX_warped_depth_color"));
 			//SetUniform("mat_quad_array", "index", 1.0);
 			RenderPass("mat_quad");
 			glBindTexture(GL_TEXTURE_2D, 0);

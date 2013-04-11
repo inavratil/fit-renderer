@@ -2,7 +2,8 @@
 
 //-----------------------------------------------------------------------------
 
-SimplePass::SimplePass() :
+SimplePass::SimplePass( FBOManagerPtr _fbo_manager ) :
+	Pass( _fbo_manager ),
 	m_shader(""),
 	m_activated( false )
 {
@@ -10,7 +11,10 @@ SimplePass::SimplePass() :
 }
 
 //-----------------------------------------------------------------------------
-SimplePass::SimplePass( GLuint _tex )
+SimplePass::SimplePass( FBOManagerPtr _fbo_manager, GLuint _tex ) :
+	Pass( _fbo_manager ),
+	m_shader(""),
+	m_activated( false )
 {
 	_Init();
 	AttachOutputTexture( 0, _tex );
@@ -24,7 +28,8 @@ SimplePass::~SimplePass(void)
 	for(int i=0; i<m_output_textures.size(); ++i)
 		glDeleteTextures( 1, &m_output_textures[i].id );
 	//-- delete FBO's names
-	glDeleteFramebuffers( 1, &m_fbo );
+	GLuint fbo = m_fbo->GetID();
+	glDeleteFramebuffers( 1, &fbo );
 }
 
 //-----------------------------------------------------------------------------
@@ -42,11 +47,11 @@ void SimplePass::Activate()
 {
 	assert(m_FBOManager);
 
-	m_FBOManager->BindBuffer( m_fbo );
+	m_fbo->Bind();
 	for(int i=0; i<m_output_textures.size(); ++i)
 	{
 		PassTexture t = m_output_textures[i];
-		m_FBOManager->AttachTexture (m_fbo, t.id, t.pos );
+		m_FBOManager->AttachTexture (m_fbo->GetID(), t.id, t.pos );
 	}
 	m_activated = true;
 }

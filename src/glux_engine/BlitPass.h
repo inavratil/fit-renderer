@@ -3,6 +3,8 @@
 
 #include "globals.h"
 #include "Pass.h"
+#include "resources/FBO.h"
+
 
 class BlitPass : public Pass
 { 
@@ -14,8 +16,8 @@ protected:
 	GLuint		m_tex_read;
 	GLuint		m_tex_draw;
 
-	GLuint		m_fbo_read;
-	GLuint		m_fbo_draw;
+	FBOPtr		m_fbo_read;
+	FBOPtr		m_fbo_draw;
 	
 	GLuint		m_mask;
 	GLuint		m_filter;
@@ -27,8 +29,8 @@ protected:
 //-- Public methods 
 
 public:
-	BlitPass();
-	BlitPass( GLuint _read_tex, GLuint _draw_tex );
+	BlitPass( FBOManagerPtr _fbo_manager );
+	BlitPass( FBOManagerPtr _fbo_manager , GLuint _read_tex, GLuint _draw_tex );
 	virtual ~BlitPass(void);
 
 	virtual void Render();

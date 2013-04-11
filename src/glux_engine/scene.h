@@ -633,8 +633,6 @@ public:
     void CreateHDRRenderTarget(int resX = -1, int resY = -1, GLint tex_format = GL_RGBA16F, GLenum tex_type = GL_FLOAT, bool normal_buffer = false);
     //resize render target textures
     void ResizeHDRRenderTarget(int resX, int resY, GLint tex_format = GL_RGBA16F, GLenum tex_type = GL_FLOAT);
-    //create fbo
-    bool CreateFBO(const char* name, int resX, int resY, GLuint tex, int fbo_mode = DEPTH_ONLY );
     //check framebuffer status
     bool CheckFBO();
     //render screen quad with attached shader

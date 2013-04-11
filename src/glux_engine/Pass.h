@@ -16,7 +16,7 @@ protected:
 //-- Public methods 
 
 public:
-	Pass(void){};
+	Pass( FBOManagerPtr _fbo_manager ){ m_FBOManager = _fbo_manager; };
 	virtual ~Pass(void){};
 
 //-----------------------------------------------------------------------------

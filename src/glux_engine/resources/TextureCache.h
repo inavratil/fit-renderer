@@ -7,6 +7,7 @@
 class TextureCache : public Singleton<TextureCache>
 { 
 
+//-----------------------------------------------------------------------------
 //-- Members
 
 protected:
@@ -16,24 +17,38 @@ protected:
     ///iterator for texture cache container
     map<string,GLuint>::iterator m_itTextureCache;
 
-//-- Static methods 
-
-public:
-    //static TextureCache * Instance();
-	//static void Destroy();
-
-
+//-----------------------------------------------------------------------------
 //-- Public methods
 
 public:
 	TextureCache(void);
 	virtual ~TextureCache(void);
 
-	void Add( const char* _name, int _resX, int _resY, GLint _internalFormat, GLenum _dataType, GLenum _target = GL_TEXTURE_2D, bool _mipmaps = false);
+	GLuint CreateTexture( GLenum _target, GLenum _filter, bool _mipmaps );
+	GLuint Create2DManual( 
+		const char* _name, 
+		int _resX, int _resY,
+		GLint _internalFormat,
+		GLenum _dataType, 
+		GLenum _filter,
+		bool _mipmaps
+		);
+	GLuint Create2DArrayManual( 
+		const char* _name, 
+		int _resX, int _resY,
+		int _numLayers,
+		GLint _internalFormat,
+		GLenum _dataType, 
+		GLenum _filter,
+		bool _mipmaps
+		);
+	
 	void Add( const char* _name, GLuint _id );
 	GLuint Get( const char* _name );
 
 	void SetFilter( const char* _name, GLfloat  _filter );
+
+
 };
 
 typedef TextureCache* TextureCachePtr;

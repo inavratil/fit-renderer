@@ -56,10 +56,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
     //create data textures
     try{
 
-		CreateDataTexture("MTEX_debug", sh_res, sh_res, GL_RGBA16F, GL_FLOAT);
         //cam coords
         CreateDataTexture("MTEX_coords", sh_res/8, sh_res/8, GL_RGBA32F, GL_FLOAT);
-
 
         //output
         CreateDataTexture("MTEX_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
@@ -89,22 +87,26 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, r_buffer);
 		m_fbos["ipsm"] = fbo;
 
-
-		glGenTextures(1, (*ii)->GetShadowTexID());
-		glBindTexture(GL_TEXTURE_2D_ARRAY, *(*ii)->GetShadowTexID());
-		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT, sh_res, sh_res, 2, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
+		GLuint tex_shadow = m_texture_cache->Create2DArrayManual("tex_shadow",
+			sh_res, sh_res,			//-- width and height
+			2,						//-- number of layers
+			GL_DEPTH_COMPONENT,		//-- internal format
+			GL_FLOAT,				//-- type of the date
+			GL_NEAREST,				//-- filtering
+			false					//-- mipmap generation
+			);
+		(*ii)->SetShadowTexID( tex_shadow );
 		
-		//FIXME: temporary color texture
-		glGenTextures(1, &texid);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, texid);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA16F, sh_res, sh_res, 2, 0, GL_RGBA, GL_FLOAT, NULL);
-        m_tex_cache["MTEX_warped_depth_color"] = texid;
+		//FIXME: temporary color texture. It should be GL_DEPTH_COMPONENT
+		GLuint tex_warped_depth = m_texture_cache->Create2DArrayManual("MTEX_warped_depth_color",
+			sh_res, sh_res,	//-- width and height
+			2,				//-- number of layers
+			GL_RGBA16F,		//-- internal format
+			GL_FLOAT,		//-- type of the date
+			GL_NEAREST,		//-- filtering
+			false			//-- mipmap generation
+			);
 
 		//glGenRenderbuffers(1, &r_buffer);
         //glBindRenderbuffer(GL_RENDERBUFFER, r_buffer);
@@ -112,7 +114,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		glGenFramebuffers(1, &fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_tex_cache["MTEX_warped_depth_color"], 0, 0);	    
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_texture_cache->Get("MTEX_warped_depth_color"), 0, 0);	    
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *(*ii)->GetShadowTexID(), 0, 0);	    
 		//glDrawBuffer(GL_NONE); 
         //glReadBuffer(GL_NONE);
@@ -128,10 +130,6 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //add shaders handling multiresolution rendering
-
-		//FIXME: debug shader
-		AddMaterial("mat_debug_draw");
-        CustomShader("mat_debug_draw","data/shaders/debug_draw.vert", "data/shaders/debug_draw.frag");
 
 
 		// aliasing error
@@ -234,13 +232,13 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 		//FIXME
 		//-- blit pass
-		BlitPass *bp = new BlitPass( m_tex_cache["MTEX_output"], m_texture_cache->Get("aliaserr_mipmap" ) );
+		BlitPass *bp = new BlitPass( m_FBOManager, m_tex_cache["MTEX_output"], m_texture_cache->Get("aliaserr_mipmap" ) );
 		AppendPass("pass_blit_0", bp );
 
 		//-- mipmap pass
 		AddMaterial("mat_aliasMipmap",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
 		CustomShader("mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag");
-		Pass *mp = new SimplePass(m_texture_cache->Get("aliaserr_mipmap" ));
+		Pass *mp = new SimplePass( m_FBOManager,  m_texture_cache->Get("aliaserr_mipmap" ));
 		AppendPass("pass_alias_mipmap", mp);
 		
 		
@@ -297,10 +295,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		{
 		glClearColor(99.0, 0.0, 0.0, 0.0);
 
-		///////////////////////////////////////////////////////////////////////////////
-		//-- 1. Render scene from light point of view and store per pixel camera-screen 
-		//--	coordinates and light-screen coordinates
-		//FIXME: Jake je rozliseni vystupu???
+///////////////////////////////////////////////////////////////////////////////
+//-- 1. Render scene from light point of view and store per pixel camera-screen 
+//--	coordinates and light-screen coordinates
+//FIXME: Jake je rozliseni vystupu???
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
@@ -394,9 +392,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		}
 		*/
 
-		///////////////////////////////////////////////////////////////////////////////
-		//-- 2. Compute alias error based on the coordinates data computed in step 1
-		//--	Input: MTEX_coords (error texture)
+///////////////////////////////////////////////////////////////////////////////
+//-- 2. Compute alias error based on the coordinates data computed in step 1
+//--	Input: MTEX_coords (error texture)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
@@ -478,9 +476,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		glDisable(GL_DEPTH_TEST);
 
-		///////////////////////////////////////////////////////////////////////////////
-		//-- 3. Blur the alias error
-		//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
+///////////////////////////////////////////////////////////////////////////////
+//-- 3. Blur the alias error
+//--	input: MTEX_ouput (horiz), MTEX_ping (vert)
 
 		float sigma = 2.7;
 	
@@ -505,8 +503,8 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		RemoveTexture("mat_aliasblur_horiz","MTEX_output");
 		RemoveTexture("mat_aliasblur_vert","MTEX_ping");
 
-		///////////////////////////////////////////////////////////////////////////////
-		//-- 4. Compute gradient and store the result per-pixel into 128x128 texture
+///////////////////////////////////////////////////////////////////////////////
+//-- 4. Compute gradient and store the result per-pixel into 128x128 texture
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -587,9 +585,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		RemoveTexture("mat_aliasblur_vert","MTEX_2Dfunc_values_ping");
 		*/
 
-		///////////////////////////////////////////////////////////////////////////////
-		//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
-		//-- odtud zacina cast, ktera je pro kazdou warpovaci metodu jina. Proto se pouziva abstraktni trida shadow_technique
+///////////////////////////////////////////////////////////////////////////////
+//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
+//-- odtud zacina cast, ktera je pro kazdou warpovaci metodu jina. Proto se pouziva abstraktni trida shadow_technique
 		
 		m_shadow_technique->SetTexId(m_tex_cache["MTEX_2Dfunc_values"]);
 		m_shadow_technique->PreRender();
@@ -629,7 +627,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	for(int i=0; i<2; i++)
     {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_warped_depth"]);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_tex_cache["MTEX_warped_depth_color"], 0, i);
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_texture_cache->Get("MTEX_warped_depth_color"), 0, i);
 	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *l->GetShadowTexID(), 0, i);	    
 	//glDrawBuffers(1, mrt);
 
@@ -703,28 +701,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	glClear(GL_COLOR_BUFFER_BIT );
 	glBindFramebuffer( GL_FRAMEBUFFER, 0);
 #endif
-	///////////////////////////////////////////////////////////////////////////////
-	//-- DEBUG DRAW
-#ifdef DEBUG_DRAW
-	glBindFramebuffer(GL_FRAMEBUFFER, m_aerr_f_buffer);
-	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_debug"], 0);
-	glDrawBuffers(1, mrt);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glViewport( 0, 0, sh_res, sh_res );
-
-	SetUniform("mat_debug_draw", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-	SetUniform("mat_debug_draw", "lightViewMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
-
-	glEnable(GL_CLIP_PLANE0);
-
-	DrawAliasError("mat_debug_draw",m_viewMatrix);
-
-	glDisable(GL_CLIP_PLANE0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-#endif
 	///////////////////////////////////////////////////////////////////////////////
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

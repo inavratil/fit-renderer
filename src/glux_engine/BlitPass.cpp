@@ -4,7 +4,8 @@
 
 //-----------------------------------------------------------------------------
 
-BlitPass::BlitPass() :
+BlitPass::BlitPass( FBOManagerPtr _fbo_manager ) :
+	Pass( _fbo_manager ),
 	m_tex_read( 0 ),
 	m_tex_draw( 0 )
 {
@@ -13,7 +14,8 @@ BlitPass::BlitPass() :
 
 //-----------------------------------------------------------------------------
 
-BlitPass::BlitPass( GLuint _read_tex, GLuint _draw_tex ) :
+BlitPass::BlitPass( FBOManagerPtr _fbo_manager,  GLuint _read_tex, GLuint _draw_tex ) :
+	Pass( _fbo_manager ),	
 	m_tex_read( _read_tex ),
 	m_tex_draw( _draw_tex )
 {
@@ -28,10 +30,6 @@ BlitPass::~BlitPass(void)
 	//-- delete read and draw texture names
 	glDeleteTextures( 1, &m_tex_read );
 	glDeleteTextures( 1, &m_tex_draw );
-	//-- delete read and draw FBO names
-	glDeleteFramebuffers( 1, &m_fbo_read );
-	glDeleteFramebuffers( 1, &m_fbo_draw );
-	
 }
 
 //-----------------------------------------------------------------------------
@@ -40,7 +38,9 @@ void BlitPass::_Init()
 {
 	//-- generates ids for FBOs
 	m_fbo_read = m_FBOManager->CreateFBO();
+	m_fbo_read->SetTarget( FBO_READ );
 	m_fbo_draw = m_FBOManager->CreateFBO();
+	m_fbo_draw->SetTarget( FBO_DRAW );
 	
 	//-- set default mask
 	m_mask = GL_COLOR_BUFFER_BIT;
@@ -53,11 +53,11 @@ void BlitPass::_Init()
 void BlitPass::Activate()
 {	
 	//-- bind read FBO and attach texture
-	glBindFramebuffer( GL_READ_FRAMEBUFFER, m_fbo_read );
-	m_FBOManager->AttachTexture( m_fbo_read, m_tex_read );	
+	m_fbo_read->Bind();
+	m_FBOManager->AttachTexture( m_fbo_read->GetID(), m_tex_read );	
 	//-- bind draw FBO and attach texture
-	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_fbo_draw );
-	m_FBOManager->AttachTexture( m_fbo_draw, m_tex_draw );	
+	m_fbo_draw->Bind();
+	m_FBOManager->AttachTexture( m_fbo_draw->GetID(), m_tex_draw );	
 }
 
 //-----------------------------------------------------------------------------

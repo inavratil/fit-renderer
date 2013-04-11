@@ -14,49 +14,27 @@ bool TScene::InitDebug()
 		AddTexture("mat_aliasError", "data/tex/error_color.tga", RENDER_TEXTURE);
 		CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
 
-		TextureCache::Instance()->Add("aliaserr_texture", 128.0, 128.0, GL_RGBA16F, GL_FLOAT);
-		
-		//create renderbuffers
-		glGenRenderbuffers(1, &buffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, buffer);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,m_resx, m_resy);
-
-		glGenFramebuffers(1, &fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-		//attach texture to the frame buffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"), 0);
-		//glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, buffer);
-
-		FBOManager::Instance()->Add("dbg_aliaserr", fbo);
-
-		//check FBO creation
-		if(!CheckFBO())
-		{
-			ShowMessage("ERROR: FBO creation for dbg_aliaserr failed!",false);
-			return false;
-		}
-
-		// Go back to regular frame buffer rendering
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		GLuint tex_aliaserr = m_texture_cache->Create2DManual("aliaserr_texture",
+			128.0, 128.0,	//-- width and height
+			GL_RGBA16F,		//-- internal format
+			GL_FLOAT,		//-- type of the date
+			GL_NEAREST,		//-- filtering
+			false			//-- mipmap generation
+			);
+		m_FBOManager->CreateFBOAndAttachTexture( "dbg_aliaserr", tex_aliaserr );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 	//-- Mipmaps
 
 	{
-		glGenTextures(1, &tex);
-		glBindTexture(GL_TEXTURE_2D, tex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128.0, 128.0, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glGenerateMipmap( GL_TEXTURE_2D );
-
-		TextureCache::Instance()->Add("aliaserr_mipmap", tex );
-		
-
+		m_texture_cache->Create2DManual("aliaserr_mipmap",
+			128.0, 128.0,	//-- width and height
+			GL_RGBA16F,		//-- internal format
+			GL_FLOAT,		//-- type of the date
+			GL_NEAREST,		//-- filtering
+			true			//-- mipmap generation
+			);
 	}
 
 	return true;
@@ -66,13 +44,12 @@ void TScene::RenderDebug()
 {
 	///////////////////////////////////////////////////////////////////////////////
 	//-- Render Alias error
-	glGetError();
 	glEnable(GL_DEPTH_TEST);
 
 	if(m_wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, FBOManager::Instance()->Get("dbg_aliaserr") );
+	m_FBOManager->Get("dbg_aliaserr")->Bind();
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"), 0);
 	glViewport( 0, 0, 128.0, 128.0 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
