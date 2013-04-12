@@ -51,7 +51,6 @@ TScene::TScene()
 	m_shadow_technique = NULL;
 	//FIXME: do tridy Application
 	m_passes.clear();
-	m_FBOManager = new FBOManager();
 	m_texture_cache = new TextureCache();
 	
 }

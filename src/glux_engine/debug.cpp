@@ -9,11 +9,10 @@ bool TScene::InitDebug()
 	//-- Render Alias error
 
 	{
-		//shader showing shadow map alias error
+		//-- shader showing shadow map alias error
 		AddMaterial("mat_aliasError");
 		AddTexture("mat_aliasError", "data/tex/error_color.tga", RENDER_TEXTURE);
 		CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
-
 		//-- texture
 		GLuint tex_aliaserr = m_texture_cache->Create2DManual("aliaserr_texture",
 			128.0, 128.0,	//-- width and height
@@ -22,12 +21,10 @@ bool TScene::InitDebug()
 			GL_NEAREST,		//-- filtering
 			false			//-- mipmap generation
 			);
-		//-- FBO
-		FBOPtr fbo_aliaserr = m_FBOManager->CreateFBO( 128, 128, "dbg_aliaserr" );
-		fbo_aliaserr->AttachColorTexture( tex_aliaserr );
-
+		//-- pass
 		SimplePass* pass_eyespace_aliaserror = new SimplePass( 128, 128 );
 		pass_eyespace_aliaserror->AttachOutputTexture( 0, tex_aliaserr );
+		AppendPass( "pass_eyespace_aliaserror", pass_eyespace_aliaserror );
 	}
 
 	return true;
@@ -42,9 +39,7 @@ void TScene::RenderDebug()
 	if(m_wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
-	m_FBOManager->Get("dbg_aliaserr")->Bind();
-	glViewport( 0, 0, 128.0, 128.0 );
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_passes["pass_eyespace_aliaserror"]->Activate();
 
 	//then other with depth-only shader
 	glActiveTexture( GL_TEXTURE1 );
@@ -58,7 +53,7 @@ void TScene::RenderDebug()
 	glActiveTexture( GL_TEXTURE0 );
 	glBindTexture( GL_TEXTURE_2D, 0 );
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	m_passes["pass_eyespace_aliaserror"]->Deactivate();
     
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);

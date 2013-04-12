@@ -115,7 +115,6 @@
     <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\render_target.cpp" />
     <ClCompile Include="src\glux_engine\resources\FBO.cpp" />
-    <ClCompile Include="src\glux_engine\resources\FBOManager.cpp" />
     <ClCompile Include="src\glux_engine\resources\SceneManager.cpp" />
     <ClCompile Include="src\glux_engine\resources\TextureCache.cpp" />
     <ClCompile Include="src\glux_engine\scene.cpp" />
@@ -155,7 +154,6 @@
     <ClInclude Include="src\glux_engine\Pass.h" />
     <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\resources\FBO.h" />
-    <ClInclude Include="src\glux_engine\resources\FBOManager.h" />
     <ClInclude Include="src\glux_engine\resources\SceneManager.h" />
     <ClInclude Include="src\glux_engine\resources\TextureCache.h" />
     <ClInclude Include="src\glux_engine\scene.h" />

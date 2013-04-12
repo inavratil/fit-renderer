@@ -20,7 +20,6 @@
 
 #include "resources/SceneManager.h"
 #include "resources/TextureCache.h"
-#include "resources/FBOManager.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
@@ -141,8 +140,6 @@ protected:
 	//-- associative array of render passes
 	map<string, PassPtr>				m_passes;
 	map<string, PassPtr>::iterator		m_it_pass;
-	//-- FBO Manager
-	FBOManagerPtr						m_FBOManager;
 	//-- Texture Cache
 	TextureCachePtr						m_texture_cache;
 
@@ -157,7 +154,7 @@ public:
 		if( _pass->Validate() )
 			m_passes[_name] = _pass;
 	}
-	
+
 	void AddCustomShader( const char* _name, const char* _vert_file, const char* _frag_file, 
                       const char* _vert_defines = "", const char* _frag_defines = "" )
 	{
