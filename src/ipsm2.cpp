@@ -66,22 +66,10 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag");
 #endif
 		//-- textures
-		GLuint tex_coords = m_texture_cache->Create2DManual(
-			"tex_camAndLightCoords",
-			sh_res/8, sh_res/8,
-			GL_RGB16F,
-			GL_FLOAT,
-			GL_NEAREST,
-			false
-			);
-		GLuint tex_stencil_color = m_texture_cache->Create2DManual(
-			"tex_stencil_color",
-			128, 128,
-			GL_RGBA16F,
-			GL_FLOAT,
-			GL_NEAREST,
-			false
-			);
+		GLuint tex_coords = 
+			m_texture_cache->Create2DManual( "tex_camAndLightCoords", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
+		GLuint tex_stencil_color = 
+			m_texture_cache->Create2DManual( "tex_stencil_color", 128, 128, GL_RGBA16F,	GL_FLOAT, GL_NEAREST, false );
 
 		//-- pass
 		SimplePassPtr pass_coords = new SimplePass( sh_res/8, sh_res/8 );
@@ -92,14 +80,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 //-----------------------------------------------------------------------------
         //-- output
 		//-- textures
-		GLuint tex_output = m_texture_cache->Create2DManual(
-			"tex_output",
-			sh_res/8, sh_res/8,
-			GL_RGBA16F,
-			GL_FLOAT,
-			GL_NEAREST,
-			false
-			);
+		GLuint tex_output = 
+			m_texture_cache->Create2DManual( "tex_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
 		//-- shader
         AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
         //AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
@@ -254,7 +236,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//FIXME
 		//-- texture
 		GLuint tex_aliaserr_mipmap = m_texture_cache->Create2DManual("aliaserr_mipmap",
-			128.0, 128.0,	//-- width and height
+			128, 128,		//-- width and height
 			GL_RGBA16F,		//-- internal format
 			GL_FLOAT,		//-- type of the date
 			GL_NEAREST,		//-- filtering
