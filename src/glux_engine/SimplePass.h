@@ -28,6 +28,7 @@ protected:
 	vector<PassTexture>		m_output_textures;
 	FBOPtr					m_fbo;
 
+	bool					m_depthbuffer_used;
 	bool					m_activated;
 	int						m_max_attachments;
 
@@ -44,9 +45,13 @@ public:
 	virtual void Activate();
 	virtual void Deactivate();
 
+	virtual bool Validate();
+
 //-----------------------------------------------------------------------------
 
 	void AttachOutputTexture( unsigned _pos, GLuint _tex );
+	void EnableDepthBuffer(){ m_depthbuffer_used = true; }
+	void DisableDepthBuffer(){ m_depthbuffer_used = false; }
 
 	//-- Set/Get shader
 	void SetShader( string _name ){ m_shader = _name; }

@@ -4,7 +4,8 @@
 
 FBO::FBO( unsigned _width, unsigned _height ) :
 	m_width( _width ),
-	m_height( _height )
+	m_height( _height ),
+	m_depthbuffer( 0 )
 {
 	Init();
 }
@@ -33,6 +34,8 @@ void FBO::Destroy()
 {
 	glDeleteFramebuffers( 1, &m_id );
 	m_id = 0;
+	glDeleteRenderbuffers( 1, &m_depthbuffer );
+	m_depthbuffer = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -96,17 +99,26 @@ void FBO::AttachDepthTexture( GLuint _tex )
 
 void FBO::AttachDepthBuffer( unsigned _mode )
 {
+	//-- check if depth buffer is attached
+	if( m_depthbuffer )
+	{
+		cerr << "WARNING (FBO): Depth buffer already attached." << endl; 
+		return;
+	}
+
 	//-- setup depth buffers
-	GLuint depth;
     if( _mode > FBO_NO_DEPTH )
     {
         //-- create renderbuffers
-        glGenRenderbuffers(1, &depth);
-        glBindRenderbuffer(GL_RENDERBUFFER, depth);
-        //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, resX, resY);
-    }
-	if( _mode > FBO_NO_DEPTH )
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, depth);
+        glGenRenderbuffers( 1, &m_depthbuffer );
+        glBindRenderbuffer( GL_RENDERBUFFER, m_depthbuffer );
+        glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_width, m_height );
+		glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+
+		Bind();
+		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT ,GL_RENDERBUFFER, m_depthbuffer );
+		Unbind();
+    }        
 }
 
 //-----------------------------------------------------------------------------

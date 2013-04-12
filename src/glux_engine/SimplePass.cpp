@@ -4,7 +4,8 @@
 
 SimplePass::SimplePass( unsigned _width, unsigned _height  ) :
 	m_shader(""),
-	m_activated( false )
+	m_activated( false ),
+	m_depthbuffer_used( true )
 {
 	_Init( _width, _height );
 }
@@ -34,11 +35,7 @@ void SimplePass::_Init( unsigned _width, unsigned _height )
 void SimplePass::Activate()
 {
 	m_fbo->Bind();
-	for(int i=0; i<m_output_textures.size(); ++i)
-	{
-		PassTexture t = m_output_textures[i];
-		m_fbo->AttachColorTexture( t.id, t.pos );
-	}
+
 	m_activated = true;
 }
 
@@ -56,6 +53,35 @@ void SimplePass::Deactivate()
 {
 	m_fbo->Unbind();
 	m_activated = false;
+}
+
+//-----------------------------------------------------------------------------
+
+bool SimplePass::Validate()
+{
+	m_valid = true;
+	
+	//-- create depth renderbuffer
+	if( m_depthbuffer_used )
+	{	
+		m_fbo->AttachDepthBuffer();
+	}
+	
+	//-- attach color textures
+	for(int i=0; i<m_output_textures.size(); ++i)
+	{
+		PassTexture t = m_output_textures[i];
+		m_fbo->AttachColorTexture( t.id, t.pos );
+	}
+
+	if(!m_fbo->CheckStatus())
+    {
+		cerr<<"ERROR (SimplePass): Pass validation failed due to error in FBO.\n";
+		m_valid = false;
+    }
+	
+
+	return m_valid;
 }
 
 //-----------------------------------------------------------------------------

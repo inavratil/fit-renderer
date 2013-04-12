@@ -154,7 +154,8 @@ public:
 			cerr<<"WARNING (AppendPass): pass with name "<<_name<<" already exist.\n";
 			return;
 		}
-		m_passes[_name] = _pass;
+		if( _pass->Validate() )
+			m_passes[_name] = _pass;
 	}
 	
 	void AddCustomShader( const char* _name, const char* _vert_file, const char* _frag_file, 

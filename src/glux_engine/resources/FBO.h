@@ -19,8 +19,9 @@ class FBO
 protected:
 	GLuint			m_id;
 	GLuint			m_lastFBO;	
-	unsigned int	m_width;
-	unsigned int	m_height;
+	int				m_width;
+	int				m_height;
+	GLuint			m_depthbuffer;
 
 	glm::vec4		m_viewport;
 	
@@ -38,12 +39,16 @@ public:
 	void SetID( GLuint _id ){ m_id = _id; }
 	GLuint GetID(){ return m_id; }
 
+	//-- Get width/height
+	int GetWidth(){ return m_width; }
+	int GetHeight(){ return m_height; }
+
 	GLuint Bind( GLenum _target = FBO_BOTH );
 	void Unbind( GLenum _target = FBO_BOTH );
 
 	void AttachColorTexture( GLuint _tex, unsigned _attachment = 0 );
 	void AttachDepthTexture( GLuint _tex );
-	void AttachDepthBuffer( unsigned _mode );
+	void AttachDepthBuffer( unsigned _mode = FBO_DEPTH_ONLY );
 	bool CheckStatus(); 
 
 };

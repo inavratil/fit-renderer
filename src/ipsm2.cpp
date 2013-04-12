@@ -253,6 +253,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//-- pass
 		SimplePass *mp = new SimplePass( 128, 128 );
 		mp->AttachOutputTexture(0, tex_aliaserr_mipmap); 
+		mp->DisableDepthBuffer();
 		AppendPass("pass_alias_mipmap", mp);
 		
 		

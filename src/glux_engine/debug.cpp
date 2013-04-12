@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "SimplePass.h"
 
 //-- Vola se na konci funkce scene->PostInit()
 bool TScene::InitDebug()
@@ -24,13 +25,9 @@ bool TScene::InitDebug()
 		//-- FBO
 		FBOPtr fbo_aliaserr = m_FBOManager->CreateFBO( 128, 128, "dbg_aliaserr" );
 		fbo_aliaserr->AttachColorTexture( tex_aliaserr );
-	}
 
-	///////////////////////////////////////////////////////////////////////////////
-	//-- Mipmaps
-
-	{
-
+		SimplePass* pass_eyespace_aliaserror = new SimplePass( 128, 128 );
+		pass_eyespace_aliaserror->AttachOutputTexture( 0, tex_aliaserr );
 	}
 
 	return true;

@@ -115,6 +115,9 @@
     <ClCompile Include="src\glux_engine\resources\FBOManager.cpp">
       <Filter>Source files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\Pass.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">

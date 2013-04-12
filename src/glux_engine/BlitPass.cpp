@@ -40,11 +40,6 @@ void BlitPass::_Init( unsigned _width, unsigned _height )
 
 void BlitPass::Activate()
 {	
-	//FIXME: zde se musi 2x bindovat stejne FBO
-	//-- attach textures
-	m_fbo_read->AttachColorTexture( m_tex_read );
-	m_fbo_draw->AttachColorTexture( m_tex_draw );
-
 	//-- bind read and draw FBO
 	m_fbo_read->Bind( FBO_READ );
 	m_fbo_draw->Bind( FBO_DRAW );
@@ -76,9 +71,32 @@ void BlitPass::Deactivate()
 
 //-----------------------------------------------------------------------------
 
+bool BlitPass::Validate()
+{
+	m_valid = true;
+	
+	if(!m_fbo_read->CheckStatus())
+    {
+		cerr<<"ERROR (BlitPass): Pass validation failed due to error in FBO.\n";
+		m_valid = false;
+    }
+
+	if(!m_fbo_draw->CheckStatus())
+    {
+		cerr<<"ERROR (BlitPass): Pass validation failed due to error in FBO.\n";
+		m_valid = false;
+    }
+
+	return m_valid;
+}
+
+//-----------------------------------------------------------------------------
+
 void BlitPass::AttachReadTexture( GLuint _tex )
 {
 	m_tex_read = _tex;
+	//-- attach texture
+	m_fbo_read->AttachColorTexture( m_tex_read );
 	UpdateBounds();
 }
 
@@ -87,6 +105,8 @@ void BlitPass::AttachReadTexture( GLuint _tex )
 void BlitPass::AttachDrawTexture( GLuint _tex )
 {
 	m_tex_draw = _tex;
+	//-- attach texture
+	m_fbo_draw->AttachColorTexture( m_tex_draw );
 	UpdateBounds();
 }
 

@@ -31,10 +31,15 @@ public:
 	BlitPass( unsigned _width, unsigned _height );
 	virtual ~BlitPass(void);
 
+//-----------------------------------------------------------------------------
+	//-- Virtual Methods
 	virtual void Render();
 	virtual void Activate();
 	virtual void Deactivate();
 
+	virtual bool Validate();
+
+//-----------------------------------------------------------------------------
 	//-- Set/Get Filter
 	void SetFilter( GLuint _filter ){ m_filter = _filter; };
 	GLuint GetFilter(){ return m_filter; };
