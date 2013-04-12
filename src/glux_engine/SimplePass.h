@@ -66,5 +66,7 @@ private:
 
 };
 
+typedef SimplePass* SimplePassPtr;
+
 #endif
 

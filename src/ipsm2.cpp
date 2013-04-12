@@ -56,8 +56,38 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
     //create data textures
     try{
 
-        //cam coords
-        CreateDataTexture("MTEX_coords", sh_res/8, sh_res/8, GL_RGBA32F, GL_FLOAT);
+//-----------------------------------------------------------------------------
+		//-- cam coords
+		//-- shader
+		AddMaterial("mat_camAndLightCoords_afterDP");
+#ifdef ITERATION_ENABLED
+        CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag", m_shadow_technique->GetDefines(), "");
+#else
+		CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag");
+#endif
+		//-- textures
+		GLuint tex_coords = m_texture_cache->Create2DManual(
+			"tex_camAndLightCoords",
+			sh_res/8, sh_res/8,
+			GL_RGB16F,
+			GL_FLOAT,
+			GL_NEAREST,
+			false
+			);
+		GLuint tex_stencil_color = m_texture_cache->Create2DManual(
+			"Stencil_color",
+			128, 128,
+			GL_RGBA16F,
+			GL_FLOAT,
+			GL_NEAREST,
+			false
+			);
+
+		//-- pass
+		SimplePassPtr pass_coords = new SimplePass( sh_res/8, sh_res/8 );
+		pass_coords->AttachOutputTexture( 0, tex_coords );
+		pass_coords->AttachOutputTexture( 1, tex_stencil_color );
+		AppendPass("pass_coords", pass_coords );
 
         //output
         CreateDataTexture("MTEX_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
@@ -83,9 +113,9 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     
 		//attach texture to the frame buffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, r_buffer);
 		m_fbos["ipsm"] = fbo;
+
 
 		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
 		GLuint tex_shadow = m_texture_cache->Create2DArrayManual("tex_shadow",
@@ -133,12 +163,6 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 
 		// aliasing error
-        AddMaterial("mat_camAndLightCoords_afterDP");
-#ifdef ITERATION_ENABLED
-        CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag", m_shadow_technique->GetDefines(), "");
-#else
-		CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag");
-#endif
 
 		//blur
 		AddMaterial("mat_aliasblur_horiz",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
@@ -163,7 +187,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
         //alias quad
         AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
+        //AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
         AddTexture("mat_compute_aliasError", "data/tex/error_color.tga");
         //AddTexture("mat_compute_aliasError","MTEX_coverage",RENDER_TEXTURE);
         CustomShader("mat_compute_aliasError","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
@@ -196,12 +220,6 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 128.0, 128.0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 			m_tex_cache["Stencil_depth"] = texid;
 
-			glGenTextures(1, &texid);
-			glBindTexture(GL_TEXTURE_2D, texid);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128.0, 128.0, 0, GL_RGBA, GL_FLOAT, NULL);
-			m_tex_cache["Stencil_color"] = texid;
 
 			glGenFramebuffers(1, &fbo);
 			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -315,15 +333,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 //--	coordinates and light-screen coordinates
 //FIXME: Jake je rozliseni vystupu???
 
-		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_coords"], 0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, m_tex_cache["Stencil_color"], 0);
-		glDrawBuffers(2, mrt);
+		//-----------------------------------------------------------------------------
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glViewport( 0, 0, sh_res/8, sh_res/8 );
-
+		m_passes["pass_coords"]->Activate();
+		
 		//if(m_wireframe)
 		//    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 		glEnable( GL_CLIP_PLANE0 );
@@ -333,7 +346,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
-		//DrawSceneDepth("mat_aliasError", lightViewMatrix);
 		DrawGeometry("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
 		glBindTexture( GL_TEXTURE_2D, 0 );
 
@@ -343,9 +355,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glCullFace(GL_BACK);
 		glDisable( GL_CULL_FACE);
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);
+		m_passes["pass_coords"]->Deactivate();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//-----------------------------------------------------------------------------
 
 		//FIXME: tenhle kod by mel prijit do PreRender metody, ale zatim neni vyresen pristup globalni pristup k texturam
 		if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
@@ -356,7 +368,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 
 			float mask_values[128*128];
-			glBindTexture(GL_TEXTURE_2D, m_tex_cache["Stencil_color"]);
+			glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get( "Stencil_color" ) );
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
 
 			for(int i=0; i<128; ++i)
@@ -375,41 +387,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 				m_shadow_technique->UpdateGridRange( mask_range );
 		}
-		//FIXME: Stencil test
-		/*
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_stencil_test"]);
-			glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["Stencil_color"], 0);
-			glDrawBuffers(1, mrt);
-			glViewport( 0, 0, 128.0, 128.0 );
-
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-			//RenderPass("mat_move_grid");
-
-			
-			glDepthMask( GL_FALSE );
-			//glEnable(GL_STENCIL_TEST);
-			//glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-			//glStencilFunc(GL_ALWAYS, 255, 0xffffffff);
-
-			SetUniform("mat_stencil_test", "cam_mv", m_viewMatrix );
-			SetUniform("mat_stencil_test", "cam_proj", m_projMatrix );
-			SetUniform("mat_stencil_test", "near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-
-			DrawAliasError("mat_stencil_test", lightViewMatrix[1]);
-
-			glDisable(GL_STENCIL_TEST);
-			glDepthMask( GL_TRUE );
-			
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-		*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //-- 2. Compute alias error based on the coordinates data computed in step 1
-//--	Input: MTEX_coords (error texture)
+//--	Input: tex_camAndLightCoords (error texture)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
@@ -423,10 +404,14 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//FIXME: opravdu mohu pouzit tex_coords v plnem rozliseni, pri mensim rozliseni se bude brat jenom kazda n-ta hodnota
 		//		textureOffset se pousouva v rozliseni textury, takze kdyz je rozliseni 1024, posune se o pixel v tomto rozliseni
 		//		pri rendrovani do 128x128 je mi toto chovani ale na prd ?????
-		SetUniform("mat_compute_aliasError", "tex_coords", 0);
-		SetUniform("mat_compute_aliasError", "tex_error", 1);
+		glActiveTexture( GL_TEXTURE1 );
+		glBindTexture( GL_TEXTURE_2D, m_texture_cache->Get( "tex_camAndLightCoords" ) );
+		SetUniform("mat_compute_aliasError", "tex_error", 0);
+		SetUniform("mat_compute_aliasError", "tex_coords", 1);
 		//SetUniform("mat_compute_aliasError", "tex_coverage", 1); // musi byt 1, protoze tex_error je ze souboru (asi?)
 		RenderPass("mat_compute_aliasError");
+		glBindTexture( GL_TEXTURE_2D, 0 );
+		glActiveTexture( GL_TEXTURE0 );
 
 		glDrawBuffers(1, mrt);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);

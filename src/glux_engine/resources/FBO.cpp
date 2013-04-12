@@ -5,7 +5,8 @@
 FBO::FBO( unsigned _width, unsigned _height ) :
 	m_width( _width ),
 	m_height( _height ),
-	m_depthbuffer( 0 )
+	m_depthbuffer( 0 ),
+	m_includedBuffers( 0 )
 {
 	Init();
 }
@@ -25,8 +26,13 @@ void FBO::Init()
 	glGenFramebuffers( 1, &m_id );
 
 	//-- init viewport size
-	m_viewport = glm::vec4( 0, 0, m_width, m_height );
-	m_last_viewport = glm::vec4( 0 );
+	m_viewport = glm::ivec4( 0 );
+	m_viewport.z = m_width;
+	m_viewport.w = m_height;
+	m_last_viewport = glm::ivec4( 0 );
+
+	//-- clear attachment list
+	m_color_attachments.clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -57,15 +63,24 @@ GLuint FBO::Bind( GLenum _target )
 	if( m_lastFBO != m_id )
 		glBindFramebuffer( _target, m_id );
 
+	//-- set draw buffers according to number of color attachments
+	if( m_color_attachments.size() )
+	{
+		vector<GLenum> list_att;
+		for( m_it_ca = m_color_attachments.begin(); 
+			m_it_ca != m_color_attachments.end();
+			m_it_ca++
+			)
+			list_att.push_back( GL_COLOR_ATTACHMENT0 + m_it_ca->first );
+		glDrawBuffers( list_att.size(), &list_att[0] );
+	}
+
 	//-- set viewport
 	glGetIntegerv( GL_VIEWPORT, glm::value_ptr( m_last_viewport ) );
 	glViewport( m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w );
 
 	//-- clear attached buffers
-	GLbitfield mask = GL_COLOR_BUFFER_BIT;
-	if( m_depthbuffer )
-		mask |= GL_DEPTH_BUFFER_BIT;
-	glClear( mask );
+	glClear( m_includedBuffers );
 
 	return m_lastFBO;
 	
@@ -89,16 +104,24 @@ void FBO::Unbind( GLenum _target )
 
 	//-- restore viewport setting
 	glViewport( m_last_viewport.x, m_last_viewport.y, m_last_viewport.z, m_last_viewport.w );
-	m_last_viewport = glm::vec4( 0 );
+	m_last_viewport = glm::ivec4( 0 );
+
+	//-- restore draw buffers to some default value
+	GLenum mrt[] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers( 1, mrt );
 }
 
 //-----------------------------------------------------------------------------
 
-void FBO::AttachColorTexture( GLuint _tex, unsigned _attachment )
+void FBO::AttachColorTexture( GLuint _tex, int _attachment )
 {
 	Bind();
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+_attachment, _tex, 0);
 	Unbind();
+
+	m_includedBuffers |= GL_COLOR_BUFFER_BIT;
+	//-- assign the texture to the list
+	m_color_attachments[_attachment] = _tex;
 }
 
 //-----------------------------------------------------------------------------
@@ -108,6 +131,8 @@ void FBO::AttachDepthTexture( GLuint _tex )
 	Bind();
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _tex, 0);
 	Unbind();
+
+	m_includedBuffers |= GL_DEPTH_BUFFER_BIT;
 }
 
 //-----------------------------------------------------------------------------
@@ -133,6 +158,8 @@ void FBO::AttachDepthBuffer( unsigned _mode )
 		Bind();
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT ,GL_RENDERBUFFER, m_depthbuffer );
 		Unbind();
+
+		m_includedBuffers |= GL_DEPTH_BUFFER_BIT;
     }        
 }
 

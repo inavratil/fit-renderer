@@ -22,9 +22,13 @@ protected:
 	int				m_width;
 	int				m_height;
 	GLuint			m_depthbuffer;
+	GLbitfield		m_includedBuffers;
 
 	glm::ivec4		m_viewport;
 	glm::ivec4		m_last_viewport;
+
+	map<int, GLuint>			m_color_attachments;
+	map<int, GLuint>::iterator	m_it_ca;
 	
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -47,7 +51,7 @@ public:
 	GLuint Bind( GLenum _target = FBO_BOTH );
 	void Unbind( GLenum _target = FBO_BOTH );
 
-	void AttachColorTexture( GLuint _tex, unsigned _attachment = 0 );
+	void AttachColorTexture( GLuint _tex, int _attachment = 0 );
 	void AttachDepthTexture( GLuint _tex );
 	void AttachDepthBuffer( unsigned _mode = FBO_DEPTH_ONLY );
 	bool CheckStatus(); 
