@@ -337,33 +337,6 @@ void TScene::Destroy(bool delete_cache)
     //glDeleteBuffers(4, to_delete);
 }
 
-
-/**
-****************************************************************************************************
-//@brief Adds one texture to all materials
-****************************************************************************************************/
-void TScene::AddTextureToMaterials(const char *texname, const char *file, GLint textype, GLint texmode,
-                                    GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso)
-{
-    for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
-    {
-        ///find out, if texture hasn't been loaded yet
-        m_it = m_tex_cache.find(texname);
-        GLint cache;
-        ///if no match, load texture normally
-        if(m_it == m_tex_cache.end() )
-            cache = -1;
-        ///else use existing texture
-        else
-            cache = m_it->second;
-        ///then save texture ID to cache
-        int texID;
-        if( (texID = m_im->second->LoadTexture( texname, textype, file, texmode, intensity, tileX, tileY, mipmap, aniso, cache)) == ERR)
-            throw ERR;
-        m_tex_cache[texname] = texID;
-    }
-}
-
 /**
 ****************************************************************************************************
 @brief Add texture to scene. If texture has been loaded, a texture pointer from cache is used

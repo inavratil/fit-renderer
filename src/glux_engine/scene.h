@@ -400,10 +400,7 @@ public:
             m_materials[name]->SetSceneID(m_sceneID);
             LoadScreen(); //update loading screen
     }
-    //add texture to materials
-    void AddTextureToMaterials(const char *texname, const char *file, GLint textype = BASE, GLint texmode = MODULATE,
-        GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool mipmap = true, bool aniso = false);
-
+   
     //add texture
     void AddTexture(const char *name, const char *file, GLint textype = BASE, GLint texmode = MODULATE,
         GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool mipmap = true, bool aniso = false);
