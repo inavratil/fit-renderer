@@ -1,6 +1,7 @@
 #ifndef _SIMPLEPASS_H_
 #define _SIMPLEPASS_H_
 
+#include "globals.h"
 #include "Pass.h"
 
 
@@ -34,7 +35,7 @@ protected:
 //-- Public methods 
 
 public:
-	SimplePass( FBOManagerPtr _fbo_manager, unsigned _width, unsigned _height  );
+	SimplePass( unsigned _width, unsigned _height  );
 	virtual ~SimplePass(void);
 	
 //-----------------------------------------------------------------------------

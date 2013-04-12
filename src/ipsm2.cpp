@@ -240,7 +240,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			true			//-- mipmap generation
 			);
 		//-- blit pass
-		BlitPass *bp = new BlitPass( m_FBOManager, 128, 128 );
+		BlitPass *bp = new BlitPass( 128, 128 );
 		bp->AttachReadTexture( m_tex_cache["MTEX_output"] );
 		bp->AttachDrawTexture( tex_aliaserr_mipmap );
 		AppendPass("pass_blit_0", bp );
@@ -251,7 +251,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		CustomShader("mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag");
 
 		//-- pass
-		SimplePass *mp = new SimplePass( m_FBOManager, 128, 128);
+		SimplePass *mp = new SimplePass( 128, 128 );
 		mp->AttachOutputTexture(0, tex_aliaserr_mipmap); 
 		AppendPass("pass_alias_mipmap", mp);
 		
@@ -333,7 +333,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
 		//DrawSceneDepth("mat_aliasError", lightViewMatrix);
-		DrawAliasError("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
+		DrawGeometry("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
 		glBindTexture( GL_TEXTURE_2D, 0 );
 
 		//if(!m_wireframe)

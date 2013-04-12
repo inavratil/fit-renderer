@@ -76,9 +76,6 @@
     <ClCompile Include="src\glux_engine\resources\SceneManager.cpp">
       <Filter>Source files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\resources\FBOManager.cpp">
-      <Filter>Source files\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\resources\FBO.cpp">
       <Filter>Source files\Resources</Filter>
     </ClCompile>
@@ -114,6 +111,9 @@
     </ClCompile>
     <ClCompile Include="src\glux_engine\SimplePass.cpp">
       <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\resources\FBOManager.cpp">
+      <Filter>Source files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +189,6 @@
     <ClInclude Include="src\glux_engine\resources\SceneManager.h">
       <Filter>Header files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\resources\FBOManager.h">
-      <Filter>Header files\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\resources\FBO.h">
       <Filter>Header files\Resources</Filter>
     </ClInclude>
@@ -233,6 +230,9 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\Pass.h">
       <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\resources\FBOManager.h">
+      <Filter>Header files\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

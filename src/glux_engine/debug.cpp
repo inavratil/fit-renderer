@@ -50,22 +50,11 @@ void TScene::RenderDebug()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//then other with depth-only shader
-	m_materials["mat_aliasError"]->RenderMaterial();
 	glActiveTexture( GL_TEXTURE1 );
 	glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
 	SetUniform("mat_aliasError", "MTEX_2Dfunc_values", 1 );
 	
-	for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
-	{
-		if( m_io->second->GetSceneID() == m_sceneID )
-		{
-			//update matrix
-			glm::mat4 m = m_viewMatrix * m_io->second->GetMatrix();
-			SetUniform("mat_aliasError", "in_ModelViewMatrix", m);
-
-			m_io->second->Draw( m_materials["mat_aliasError"]->IsTessellated() );
-		}
-	}
+	DrawGeometry( "mat_aliasError", m_viewMatrix );
 
 	glActiveTexture( GL_TEXTURE1 );
 	glBindTexture( GL_TEXTURE_2D, 0 );

@@ -1,11 +1,8 @@
 #include "BlitPass.h"
 
-#include "resources/FBOManager.h"
-
 //-----------------------------------------------------------------------------
 
-BlitPass::BlitPass( FBOManagerPtr _fbo_manager, unsigned _width, unsigned _height ) :
-	Pass( _fbo_manager ),
+BlitPass::BlitPass( unsigned _width, unsigned _height ) :
 	m_tex_read( 0 ),
 	m_tex_draw( 0 )
 {
@@ -19,6 +16,10 @@ BlitPass::~BlitPass(void)
 	//-- delete read and draw texture names
 	glDeleteTextures( 1, &m_tex_read );
 	glDeleteTextures( 1, &m_tex_draw );
+
+	//-- delete FBOs
+	delete m_fbo_read;
+	delete m_fbo_draw;
 }
 
 //-----------------------------------------------------------------------------
@@ -26,8 +27,8 @@ BlitPass::~BlitPass(void)
 void BlitPass::_Init( unsigned _width, unsigned _height )
 {
 	//-- generates ids for FBOs
-	m_fbo_read = m_FBOManager->CreateFBO( _width, _height );
-	m_fbo_draw = m_FBOManager->CreateFBO( _width, _height );
+	m_fbo_read = new FBO( _width, _height );
+	m_fbo_draw = new FBO( _width, _height );
 	
 	//-- set default mask
 	m_mask = GL_COLOR_BUFFER_BIT;

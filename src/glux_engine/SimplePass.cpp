@@ -2,8 +2,7 @@
 
 //-----------------------------------------------------------------------------
 
-SimplePass::SimplePass( FBOManagerPtr _fbo_manager, unsigned _width, unsigned _height  ) :
-	Pass( _fbo_manager ),
+SimplePass::SimplePass( unsigned _width, unsigned _height  ) :
 	m_shader(""),
 	m_activated( false )
 {
@@ -17,9 +16,8 @@ SimplePass::~SimplePass(void)
 	//-- delete texture's names
 	for(int i=0; i<m_output_textures.size(); ++i)
 		glDeleteTextures( 1, &m_output_textures[i].id );
-	//-- delete FBO's names
-	GLuint fbo = m_fbo->GetID();
-	glDeleteFramebuffers( 1, &fbo );
+	//-- delete FBO
+	delete m_fbo;
 }
 
 //-----------------------------------------------------------------------------
@@ -27,7 +25,7 @@ SimplePass::~SimplePass(void)
 void SimplePass::_Init( unsigned _width, unsigned _height )
 {
 	//-- setup FBO
-	m_fbo = m_FBOManager->CreateFBO( _width, _height );
+	m_fbo = new FBO( _width, _height );
 
 	//-- get max number of attachments in the system
 	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &m_max_attachments );

@@ -1,7 +1,7 @@
 #ifndef _PASS_H_
 #define _PASS_H_
 
-#include "resources/FBOManager.h"
+#include "resources/FBO.h"
 
 class Pass
 { 
@@ -10,13 +10,12 @@ class Pass
 // -- Member variables
 
 protected:
-	FBOManagerPtr			m_FBOManager;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
 public:
-	Pass( FBOManagerPtr _fbo_manager ){ m_FBOManager = _fbo_manager; };
+	Pass(){};
 	virtual ~Pass(void){};
 
 //-----------------------------------------------------------------------------
@@ -32,12 +31,6 @@ public:
 		Render();
 		Deactivate();
 	}
-
-	//-- Set/Get FBO Manager
-	void SetFBOManager( FBOManagerPtr _fboManager ){ m_FBOManager = _fboManager; }
-	FBOManagerPtr GetFBOManager(){ return m_FBOManager; }
-
-
 };
 
 typedef Pass* PassPtr;

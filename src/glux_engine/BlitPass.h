@@ -3,7 +3,6 @@
 
 #include "globals.h"
 #include "Pass.h"
-#include "resources/FBO.h"
 
 
 class BlitPass : public Pass
@@ -29,7 +28,7 @@ protected:
 //-- Public methods 
 
 public:
-	BlitPass( FBOManagerPtr _fbo_manager, unsigned _width, unsigned _height );
+	BlitPass( unsigned _width, unsigned _height );
 	virtual ~BlitPass(void);
 
 	virtual void Render();

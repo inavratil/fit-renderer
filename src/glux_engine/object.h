@@ -133,7 +133,7 @@ public:
         m_shadow_cast = flag; 
     }
     ///@brief Does object cast shadow
-    bool IsShadow(){ 
+    bool IsShadowCaster(){ 
         return m_shadow_cast; 
     }
 

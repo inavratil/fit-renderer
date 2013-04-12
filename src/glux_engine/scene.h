@@ -154,7 +154,6 @@ public:
 			cerr<<"WARNING (AppendPass): pass with name "<<_name<<" already exist.\n";
 			return;
 		}
-		_pass->SetFBOManager( m_FBOManager );
 		m_passes[_name] = _pass;
 	}
 	
@@ -184,7 +183,7 @@ public:
     //draw all objects in scene
     void DrawScene(int drawmode);
     void DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix);
-    void DrawAliasError(const char* alias_mat, glm::mat4& lightMatrix);
+    void DrawGeometry(const char* _shader, glm::mat4& _mvMatrix );
 
     //draw load screen
     void LoadScreen(bool swap = true);

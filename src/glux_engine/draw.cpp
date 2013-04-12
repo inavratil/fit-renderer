@@ -397,7 +397,7 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
             unsigned matID = m_im->second->GetID();
             for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
             {
-                if(m_io->second->IsShadow() && m_io->second->GetSceneID() == m_sceneID 
+                if(m_io->second->IsShadowCaster() && m_io->second->GetSceneID() == m_sceneID 
                 && m_io->second->GetMatID() == matID)
                 {
                     //update matrix
@@ -414,38 +414,23 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
 }
 
 
-void TScene::DrawAliasError(const char* alias_mat, glm::mat4& lightMatrix)
+void TScene::DrawGeometry(const char* _shader, glm::mat4& _mvMatrix )
 {
     //then other with depth-only shader
-    m_materials[alias_mat]->RenderMaterial();
-    bool tess = m_materials[alias_mat]->IsTessellated();
+	m_materials[_shader]->RenderMaterial();
 
-    //draw objects in mode according to their material
-    for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
-    {
-        if(!m_im->second->IsScreenSpace() && m_im->second->GetTransparency() == 0.0)
-        {
-            ///get material ID and render all objects attached to this material
-            unsigned matID = m_im->second->GetID();
-            for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
-            {
-                if(m_io->second->IsShadow() && m_io->second->GetSceneID() == m_sceneID && m_io->second->GetMatID() == matID)
-                {
-                    //update matrix
-                    glm::mat4 m = lightMatrix * m_io->second->GetMatrix();
-                    m_materials[alias_mat]->SetUniform("in_ModelViewMatrix", m);
+	for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
+	{
+		if(m_io->second->IsShadowCaster() && m_io->second->GetSceneID() == m_sceneID )
+		{
+			//update matrix
+			glm::mat4 m = _mvMatrix * m_io->second->GetMatrix();
+			m_materials[_shader]->SetUniform("in_ModelViewMatrix", m);
 
-                    //TODO: hack na zobrazeni kamery
-                    if(m_io->first == "camera")
-                        m_materials[alias_mat]->SetUniform("is_camera",1);
-                    else
-                        m_materials[alias_mat]->SetUniform("is_camera",0);
+			m_io->second->Draw(m_materials[_shader]->IsTessellated());
+		}
+	}
 
-                    m_io->second->Draw(tess);
-                }
-            }
-        }
-    }
 }
 
 
