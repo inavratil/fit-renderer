@@ -25,7 +25,8 @@ void FBO::Init()
 	glGenFramebuffers( 1, &m_id );
 
 	//-- init viewport size
-	m_viewport = glm::vec4( 0 );
+	m_viewport = glm::vec4( 0, 0, m_width, m_height );
+	m_last_viewport = glm::vec4( 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -56,6 +57,16 @@ GLuint FBO::Bind( GLenum _target )
 	if( m_lastFBO != m_id )
 		glBindFramebuffer( _target, m_id );
 
+	//-- set viewport
+	glGetIntegerv( GL_VIEWPORT, glm::value_ptr( m_last_viewport ) );
+	glViewport( m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w );
+
+	//-- clear attached buffers
+	GLbitfield mask = GL_COLOR_BUFFER_BIT;
+	if( m_depthbuffer )
+		mask |= GL_DEPTH_BUFFER_BIT;
+	glClear( mask );
+
 	return m_lastFBO;
 	
 }
@@ -75,6 +86,10 @@ void FBO::Unbind( GLenum _target )
 	
 	glBindFramebuffer( _target, m_lastFBO );
 	m_lastFBO = 0;
+
+	//-- restore viewport setting
+	glViewport( m_last_viewport.x, m_last_viewport.y, m_last_viewport.z, m_last_viewport.w );
+	m_last_viewport = glm::vec4( 0 );
 }
 
 //-----------------------------------------------------------------------------

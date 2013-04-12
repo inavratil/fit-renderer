@@ -23,7 +23,8 @@ protected:
 	int				m_height;
 	GLuint			m_depthbuffer;
 
-	glm::vec4		m_viewport;
+	glm::ivec4		m_viewport;
+	glm::ivec4		m_last_viewport;
 	
 //-----------------------------------------------------------------------------
 //-- Public methods 
