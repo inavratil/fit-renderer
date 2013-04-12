@@ -11,7 +11,8 @@ void ModifyGrid(glm::vec4 *precomputed_diffs)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	for(int i=0; i<res*res; ++i )
-		if( data[i] == 0.0 ) data[i] = 1.0;
+		if( data[i] == 0.0 ) 
+			data[i] = 1.0;
 	
 	//for( int j=0; j<res; j++  )
 	//{

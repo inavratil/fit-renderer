@@ -75,7 +75,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			false
 			);
 		GLuint tex_stencil_color = m_texture_cache->Create2DManual(
-			"Stencil_color",
+			"tex_stencil_color",
 			128, 128,
 			GL_RGBA16F,
 			GL_FLOAT,
@@ -89,9 +89,28 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		pass_coords->AttachOutputTexture( 1, tex_stencil_color );
 		AppendPass("pass_coords", pass_coords );
 
-        //output
-        CreateDataTexture("MTEX_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
-		CreateDataTexture("MTEX_mask", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
+//-----------------------------------------------------------------------------
+        //-- output
+		//-- textures
+		GLuint tex_output = m_texture_cache->Create2DManual(
+			"tex_output",
+			sh_res/8, sh_res/8,
+			GL_RGBA16F,
+			GL_FLOAT,
+			GL_NEAREST,
+			false
+			);
+		//-- shader
+        AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+        //AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
+        AddTexture("mat_compute_aliasError", "data/tex/error_color.tga");
+        CustomShader("mat_compute_aliasError","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
+		//-- pass
+		SimplePassPtr pass_compute_aliasError = new SimplePass( sh_res/8, sh_res/8 );
+		pass_compute_aliasError->AttachOutputTexture( 0, tex_output );
+		pass_compute_aliasError->DisableDepthBuffer();
+		AppendPass("pass_compute_aliasError", pass_compute_aliasError );
+//-----------------------------------------------------------------------------
 		//blur
 		CreateDataTexture("MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
 		CreateDataTexture("MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
@@ -185,18 +204,6 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//AddTexture("mat_depth_with_warping","MTEX_2Dfunc_values", RENDER_TEXTURE );
 		CustomShader("mat_depth_with_warping","data/shaders/warping/drawDepthWithWarping.vert", "data/shaders/warping/drawDepthWithWarping.frag", m_shadow_technique->GetDefines(), "");
 
-        //alias quad
-        AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        //AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
-        AddTexture("mat_compute_aliasError", "data/tex/error_color.tga");
-        //AddTexture("mat_compute_aliasError","MTEX_coverage",RENDER_TEXTURE);
-        CustomShader("mat_compute_aliasError","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
-
-		//custom mipmap from mask
-		AddMaterial("mat_mipmap_bb",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		AddTexture("mat_mipmap_bb","MTEX_mask",RENDER_TEXTURE);
-		CustomShader("mat_mipmap_bb","data/shaders/quad.vert", "data/shaders/warping/mipmap_boundingbox.frag");
-
 
 		//FIXME: Debug fbo a textury pro stencil test
 		{
@@ -237,10 +244,6 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			//FIXME: debug shader - stencil test
-			AddMaterial("mat_stencil_test",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-			CustomShader("mat_stencil_test","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/dbg_stencil_test.frag");
-
 			AddMaterial("mat_move_grid",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
 			AddTexture("mat_move_grid","move_grid",RENDER_TEXTURE);
 			CustomShader("mat_move_grid","data/shaders/warping/move_grid.vert", "data/shaders/warping/move_grid.frag");
@@ -259,7 +262,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			);
 		//-- blit pass
 		BlitPass *bp = new BlitPass( 128, 128 );
-		bp->AttachReadTexture( m_tex_cache["MTEX_output"] );
+		bp->AttachReadTexture( m_texture_cache->Get( "tex_output" ) );
 		bp->AttachDrawTexture( tex_aliaserr_mipmap );
 		AppendPass("pass_blit_0", bp );
 
@@ -362,13 +365,8 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//FIXME: tenhle kod by mel prijit do PreRender metody, ale zatim neni vyresen pristup globalni pristup k texturam
 		if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
 		{
-			//glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_mask"] ); 
-			//glGenerateMipmap( GL_TEXTURE_2D );
-			//glBindTexture( GL_TEXTURE_2D, 0 ); 
-
-
 			float mask_values[128*128];
-			glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get( "Stencil_color" ) );
+			glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get( "tex_stencil_color" ) );
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
 
 			for(int i=0; i<128; ++i)
@@ -392,14 +390,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 //-- 2. Compute alias error based on the coordinates data computed in step 1
 //--	Input: tex_camAndLightCoords (error texture)
 
-		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_output"], 0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, m_tex_cache["MTEX_mask"], 0);
-		glDrawBuffers(2, mrt);
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glViewport( 0, 0, sh_res/8, sh_res/8 );
+		m_passes["pass_compute_aliasError"]->Activate();
 
 		//FIXME: opravdu mohu pouzit tex_coords v plnem rozliseni, pri mensim rozliseni se bude brat jenom kazda n-ta hodnota
 		//		textureOffset se pousouva v rozliseni textury, takze kdyz je rozliseni 1024, posune se o pixel v tomto rozliseni
@@ -413,10 +404,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glBindTexture( GL_TEXTURE_2D, 0 );
 		glActiveTexture( GL_TEXTURE0 );
 
-		glDrawBuffers(1, mrt);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D, 0, 0);
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		m_passes["pass_compute_aliasError"]->Deactivate();	
 
 #ifndef GRADIENT_METHOD
 		//calculate custom mipmaps 
@@ -482,7 +470,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		float sigma = 2.7;
 	
-		AddTexture("mat_aliasblur_horiz","MTEX_output",RENDER_TEXTURE);
+		//AddTexture("mat_aliasblur_horiz","MTEX_output",RENDER_TEXTURE);
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));
 		SetUniform("mat_aliasblur_horiz", "kernel_size", 9.0);
 		SetUniform("mat_aliasblur_horiz", "two_sigma_sq", TWOSIGMA2(sigma));
@@ -495,12 +483,19 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_ping"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D,  m_texture_cache->Get("tex_output" ) );
+		//glBindTexture( GL_TEXTURE_2D,  m_tex_cache["MTEX_output"] );
+		SetUniform("mat_aliasblur_horiz", "bloom_texture", 0);
 		RenderPass("mat_aliasblur_horiz");
+		glBindTexture( GL_TEXTURE_2D, 0 );
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_pong"], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		RenderPass("mat_aliasblur_vert");
 
-		RemoveTexture("mat_aliasblur_horiz","MTEX_output");
+		//RemoveTexture("mat_aliasblur_horiz","MTEX_output");
 		RemoveTexture("mat_aliasblur_vert","MTEX_ping");
 
 ///////////////////////////////////////////////////////////////////////////////

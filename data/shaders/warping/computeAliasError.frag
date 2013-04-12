@@ -3,7 +3,6 @@
 
 in vec2 fragTexCoord;
 layout ( location = 0 ) out vec4 out_FragColor;
-layout ( location = 1 ) out vec4 out_FragMask;
 uniform sampler2D tex_coords;
 uniform sampler2D tex_error;
 //uniform sampler2D tex_coverage;
@@ -101,15 +100,8 @@ void main()
 
 	
 	out_FragColor = vec4( 0.0 );
-	out_FragMask = vec4( 0.0 );
 
 	float depth_thres = 15.0;
-	
-	if( IsInsideFrustum( a.xy ) )
-	//if( length(ac)>depth_thres || length(bd)>depth_thres )
-	{
-		out_FragMask = vec4( 1.0 );
-	}
 		
 		//if( new_res > 10.0)
 		//	out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );

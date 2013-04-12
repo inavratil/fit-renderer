@@ -302,11 +302,11 @@ void TScene::Redraw(bool delete_buffer)
     {
 		GLuint previewTexs[] =
 	{	
-			m_tex_cache["MTEX_output"],
+			m_texture_cache->Get("tex_output"),
 			m_tex_cache["MTEX_ping"],
 			m_tex_cache["MTEX_pong"],
 			m_tex_cache["Stencil_color"],
-			TextureCache::Instance()->Get("aliaserr_texture")
+			m_texture_cache->Get("aliaserr_texture")
 		};
 		
 		//show alias error
