@@ -16,10 +16,9 @@ TextureCache::~TextureCache(void)
 
 //-----------------------------------------------------------------------------
 
-TexturePtr TextureCache::CreateTexture( GLenum _target, GLenum _filter, bool _mipmaps )
+GLuint TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLint _internalFormat, GLenum _dataType, GLenum _filter, bool _mipmaps )
 {
-	//create texture
-	TexturePtr tex = new Texture( _target );
+	TexturePtr tex = new Texture( TEX_2D );
 
 	//-- set up filtering
     GLenum filter = _filter;
@@ -30,18 +29,8 @@ TexturePtr TextureCache::CreateTexture( GLenum _target, GLenum _filter, bool _mi
 		else if( filter == GL_LINEAR )
 			filter = GL_NEAREST_MIPMAP_LINEAR;
 	}
-	
-	//following properties can be set only in normal 2D textures
-	tex->SetFiltering( filter );	
+	tex->SetFiltering( filter );
 	tex->SetWrap( GL_CLAMP_TO_EDGE );
-
-	return tex;
-}
-//-----------------------------------------------------------------------------
-
-GLuint TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLint _internalFormat, GLenum _dataType, GLenum _filter, bool _mipmaps )
-{
-	TexturePtr tex = CreateTexture( TEX_2D, _filter, _mipmaps );
 
 	GLenum format = GL_RGBA;
 	if( _internalFormat == GL_DEPTH_COMPONENT )
@@ -73,7 +62,20 @@ GLuint TextureCache::Create2DArrayManual(
 	bool _mipmaps
 	)
 {
-	TexturePtr tex = CreateTexture( TEX_2D_ARRAY, _filter, _mipmaps );
+	TexturePtr tex = new Texture( TEX_2D_ARRAY );
+
+	//-- set up filtering
+    GLenum filter = _filter;
+    if(_mipmaps)
+	{
+		if( filter == GL_NEAREST )
+			filter = GL_NEAREST_MIPMAP_NEAREST;
+		else if( filter == GL_LINEAR )
+			filter = GL_NEAREST_MIPMAP_LINEAR;
+	}
+	tex->SetFiltering( filter );
+	//-- set up warping
+	tex->SetWrap( GL_CLAMP_TO_EDGE );
 
 	GLenum format = GL_RGBA;
 	if( _internalFormat == GL_DEPTH_COMPONENT )
@@ -89,6 +91,20 @@ GLuint TextureCache::Create2DArrayManual(
     Add( _name, tex );
 
 	tex->Unbind();
+
+	return tex->GetID();
+}
+
+//-----------------------------------------------------------------------------
+
+GLuint TextureCache::CreateFromImage( const char* _name, const char* _file )
+{
+	TexturePtr tex = new Texture( TEX_2D );
+	//-- set up filtering
+    GLenum filter = GL_LINEAR_MIPMAP_LINEAR;
+	tex->SetFiltering( filter );
+	//-- set up warping
+	tex->SetWrap( GL_REPEAT );
 
 	return tex->GetID();
 }

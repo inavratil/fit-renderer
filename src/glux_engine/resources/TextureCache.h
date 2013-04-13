@@ -24,7 +24,6 @@ public:
 	TextureCache(void);
 	virtual ~TextureCache(void);
 
-	TexturePtr CreateTexture( GLenum _target, GLenum _filter, bool _mipmaps );
 	GLuint Create2DManual( 
 		const char* _name, 
 		int _resX, int _resY,
@@ -42,6 +41,7 @@ public:
 		GLenum _filter,
 		bool _mipmaps
 		);
+	GLuint CreateFromImage( const char* _name, const char* _file );
 	
 	void Add( const char* _name, TexturePtr _tex );
 	GLuint Get( const char* _name );
