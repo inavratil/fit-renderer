@@ -124,21 +124,3 @@ GLuint TextureCache::Get( const char* _name )
 }
 
 //-----------------------------------------------------------------------------
-
-void TextureCache::SetFilter( const char* _name, GLfloat  _filter )
-{
-	if( m_textureCache.find(_name) == m_textureCache.end() )
-	{
-		cerr<<"WARNING (TextureCache): no texture with name "<<_name<<"\n";
-		return;
-	}
-
-	glBindTexture( GL_TEXTURE_2D, m_textureCache[_name] );
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filter);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filter);
-
-	glBindTexture( GL_TEXTURE_2D, 0 );
-}
-
-//-----------------------------------------------------------------------------

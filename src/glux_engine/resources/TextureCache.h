@@ -11,7 +11,6 @@ class TextureCache : public Singleton<TextureCache>
 //-- Members
 
 protected:
-	//static TextureCache * m_pInstance;
 	///associative array with all textures
 	map<string,GLuint> m_textureCache;
     ///iterator for texture cache container
@@ -45,9 +44,6 @@ public:
 	
 	void Add( const char* _name, GLuint _id );
 	GLuint Get( const char* _name );
-
-	void SetFilter( const char* _name, GLfloat  _filter );
-
 
 };
 

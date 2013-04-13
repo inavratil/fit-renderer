@@ -15,9 +15,9 @@ bool Texture::isILInitialized = false;
 ****************************************************************************************************
 @brief reset basic values (null name and texture data)
 ****************************************************************************************************/
-Texture::Texture()
+Texture::Texture( GLenum _target )
 {
-	Init();
+	Init( _target );
 }
 
 //-----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ Texture::~Texture()
 
 //-----------------------------------------------------------------------------
 
-void Texture::Init()
+void Texture::Init( GLenum _target )
 {
 	//-- init properties
 	m_texname = "null";
@@ -44,7 +44,7 @@ void Texture::Init()
     m_texmode = MODULATE;
     m_tileX = m_tileY = 1.0;
     m_texLoc = m_tileXLoc = m_tileYLoc = -1;
-	m_target = GL_TEXTURE_2D;
+	m_target = _target;
 
 	//-- init texture id
 	glGenTextures( 1, &m_texID );

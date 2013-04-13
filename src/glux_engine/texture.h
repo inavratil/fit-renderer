@@ -42,11 +42,11 @@ private:
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
-public:    
-    Texture();
+public:
+    Texture( GLenum _target = TEX_2D );
     ~Texture();
 
-	void Init();
+	void Init( GLenum _target );
 	void Destroy();
 
 //-----------------------------------------------------------------------------
@@ -125,5 +125,7 @@ public:
         return (m_tileX > 1 || m_tileY > 1); 
     }
 };
+
+typedef Texture* TexturePtr;
 
 #endif
