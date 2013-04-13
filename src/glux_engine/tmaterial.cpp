@@ -139,13 +139,6 @@ string TMaterial::NextTexture(string texname)
     return texname;
 }
 
-GLint TMaterial::LoadTexture(string _texname, int _textype, const char *filename, int _texmode,
-                    GLfloat _intensity, GLfloat _tileX, GLfloat _tileY, bool mipmap, bool aniso, GLint cache)
-{
-    string name = NextTexture( _texname + "AuxA" );
-    return m_textures[name]->Load(name.c_str(), _textype, filename, _texmode, _intensity, _tileX, _tileY, mipmap, aniso, cache);
-}
-
 
 /**
 ****************************************************************************************************

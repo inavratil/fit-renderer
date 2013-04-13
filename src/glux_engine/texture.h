@@ -10,21 +10,27 @@
 #define _TEXTURE_H_
 #include "globals.h"
 
-///Two possible types of TGA image
-enum TGAtypes{COMPRESSED,UNCOMPRESSED};
+//-- Texture targets
+enum TextureTargets { TEX_2D, TEX_3D, TEX_2D_ARRAY, TEX_CUBE };
 
 ///@class Texture 
 ///@brief holds texture parameters and contains functions to load texture from external file
 ///Textures are connected to shaders via uniform variables
 class Texture
 {
+//-----------------------------------------------------------------------------
+//-- Member variables
+
 private:
-    int m_textype;                  //texture type
-    string m_texname;               //texture name
+	GLuint	m_texID;                 //texture ID
+	GLuint	m_last_tex;				//-- lastly bound texture
+    int		m_textype;                  //texture type
+    string	m_texname;               //texture name
+	GLuint	m_target;				//-- texture target
 
     GLubyte *m_imageData;           //image data
     GLuint m_width, m_height, m_bpp;    //width, height
-    GLuint m_texID;                 //texture ID
+    
     int m_texmode;
 
     GLfloat m_intensity;            //texture intensity
@@ -34,9 +40,24 @@ private:
 
 	static bool isILInitialized;
 
+//-----------------------------------------------------------------------------
+//-- Public methods 
 public:    
     Texture();
     ~Texture();
+
+	void Init();
+	void Destroy();
+
+//-----------------------------------------------------------------------------
+	GLuint Bind();
+	void Unbind();
+
+	void SetFiltering( GLenum _filter, bool _mipmaps = false );
+
+	//-- Set/Get target
+	void SetTarget( GLenum _target ){ m_target = _target; }
+	GLenum GetTarget(){ return m_target; }
 
     ///@brief set texture name
     void SetName(string name){ 
@@ -83,14 +104,13 @@ public:
     void SetID(GLuint id){ 
         m_texID = id; 
     }
+	///@brief Get OpenGL texture ID
+    GLuint GetID(){ 
+        return m_texID; 
+    }
     ///@brief Set texture type
     void SetType(int type){ 
         m_textype = type; 
-    }
-
-    ///@brief Get OpenGL texture ID
-    GLuint GetID(){ 
-        return m_texID; 
     }
     ///@brief Get texture type
     int GetType(){ 

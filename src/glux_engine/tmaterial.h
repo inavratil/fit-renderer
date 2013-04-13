@@ -104,10 +104,6 @@ public:
 	}
 	void SetShininess( float _shin ){ m_shininess = _shin; }
 
-    //???
-    GLint LoadTexture(string _texname, int _textype, const char *filename, int _texmode,
-        GLfloat _intensity, GLfloat _tileX, GLfloat _tileY, bool mipmap, bool aniso, GLint cache);
-
     //texture from file
     GLint AddTexture(const char *file, GLint textype, GLint texmode,
                      GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso, GLint cache);
@@ -129,15 +125,6 @@ public:
     ***************************************/
     void DeleteTexture(string texname){ 
         m_textures.erase(texname); 
-    }
-
-    /**
-    @brief Change texture ID (thus change pointer to texture object)
-    @param texname texture name
-    @param id texture ID
-    ***************************************/
-    void SetTexID(string texname, GLuint id){ 
-        m_textures[texname]->SetID(id); 
     }
 
     //add shadow map

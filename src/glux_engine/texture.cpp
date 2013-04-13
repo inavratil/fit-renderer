@@ -2,14 +2,14 @@
 ****************************************************************************************************
 ****************************************************************************************************
 @file: texture.cpp
-@brief load TGA textures from file and converts them to suitable OpenGL format. TGA files can be
-* compressed or uncompressed
-Loading TGA texture code adapted from: http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=33
+@brief 
 ****************************************************************************************************
 ***************************************************************************************************/
 #include "texture.h"
 
 bool Texture::isILInitialized = false;
+
+//-----------------------------------------------------------------------------
 
 /**
 ****************************************************************************************************
@@ -17,14 +17,10 @@ bool Texture::isILInitialized = false;
 ****************************************************************************************************/
 Texture::Texture()
 {
-    m_texname = "null";
-    m_textype = BASE;
-    m_imageData = NULL;
-    m_texID = m_width = m_height = m_bpp = 0;
-    m_texmode = MODULATE;
-    m_tileX = m_tileY = 1.0;
-    m_texLoc = m_tileXLoc = m_tileYLoc = -1;
+	Init();
 }
+
+//-----------------------------------------------------------------------------
 
 /**
 ****************************************************************************************************
@@ -33,8 +29,103 @@ Texture::Texture()
 ****************************************************************************************************/
 Texture::~Texture()
 {
-    glDeleteTextures(1,&m_texID);
+    Destroy();
 }
+
+//-----------------------------------------------------------------------------
+
+void Texture::Init()
+{
+	//-- init properties
+	m_texname = "null";
+    m_textype = BASE;
+    m_imageData = NULL;
+    m_last_tex = m_width = m_height = m_bpp = 0;
+    m_texmode = MODULATE;
+    m_tileX = m_tileY = 1.0;
+    m_texLoc = m_tileXLoc = m_tileYLoc = -1;
+	m_target = GL_TEXTURE_2D;
+
+	//-- init texture id
+	glGenTextures( 1, &m_texID );
+}
+
+//-----------------------------------------------------------------------------
+
+void Texture::Destroy()
+{
+	glDeleteTextures( 1, &m_texID );
+	m_texID = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+GLuint Texture::Bind()
+{
+	//-- save currently bound FBO
+	int tmp;
+	switch( m_target )
+	{
+	case TEX_2D: 
+		glGetIntegerv( GL_TEXTURE_BINDING_2D, &tmp );
+		break;
+	case TEX_3D: 
+		glGetIntegerv( GL_TEXTURE_BINDING_3D, &tmp );
+		break;
+	case TEX_2D_ARRAY: 
+		glGetIntegerv( GL_TEXTURE_BINDING_2D_ARRAY, &tmp );
+		break;
+	case TEX_CUBE: 
+		glGetIntegerv( GL_TEXTURE_BINDING_CUBE_MAP, &tmp );
+		break;
+	}
+
+	m_last_tex = tmp;
+
+	//-- we don't need to bind the same texture
+	if( m_last_tex != m_texID )
+		glBindTexture( m_target, m_texID );	
+
+	return m_last_tex;
+}
+
+//-----------------------------------------------------------------------------
+
+void Texture::Unbind()
+{
+	//-- check currently bound texture
+	int tmp;
+	switch( m_target )
+	{
+	case TEX_2D: 
+		glGetIntegerv( GL_TEXTURE_BINDING_2D, &tmp );
+		break;
+	case TEX_3D: 
+		glGetIntegerv( GL_TEXTURE_BINDING_3D, &tmp );
+		break;
+	case TEX_2D_ARRAY: 
+		glGetIntegerv( GL_TEXTURE_BINDING_2D_ARRAY, &tmp );
+		break;
+	case TEX_CUBE: 
+		glGetIntegerv( GL_TEXTURE_BINDING_CUBE_MAP, &tmp );
+		break;
+	}
+	//-- we don't have to unbind different texture
+	if( tmp != m_texID ) return;
+
+	glBindTexture( m_target, m_last_tex );
+	m_last_tex = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void Texture::SetFiltering( GLenum _filter, bool _mipmaps )
+{
+	Bind();
+	Unbind();
+}
+
+//-----------------------------------------------------------------------------
 
 /**
 ****************************************************************************************************
@@ -66,7 +157,6 @@ GLint Texture::Load(const char *texname, int textype, const char *filename, int 
             return ERR;
 
         //texture generation
-        glGenTextures(1, &m_texID);
         glBindTexture(GL_TEXTURE_2D, m_texID);
 
         //texture with anisotropic filtering
@@ -153,7 +243,6 @@ GLint Texture::Load(const char *texname, int textype,
     else      //load texture from file
     {
         //texture generation
-        glGenTextures(1, &m_texID);
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_texID);
 
         //load 6 images for cube map
@@ -226,7 +315,6 @@ GLint Texture::Load(const char *texname, int textype, const void *texdata, glm::
     m_height = (int)tex_size.y;
 
     //texture generation
-    glGenTextures(1, &m_texID);
     glBindTexture(GL_TEXTURE_2D, m_texID);
 
     //texture with anisotropic filtering
