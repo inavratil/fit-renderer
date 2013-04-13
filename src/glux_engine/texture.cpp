@@ -64,24 +64,19 @@ GLuint Texture::Bind()
 {
 	//-- save currently bound FBO
 	int tmp;
-	GLenum target = GL_TEXTURE_2D;
 	switch( m_target )
 	{
 	case TEX_2D: 
 		glGetIntegerv( GL_TEXTURE_BINDING_2D, &tmp );
-		target = GL_TEXTURE_2D;
 		break;
 	case TEX_3D: 
 		glGetIntegerv( GL_TEXTURE_BINDING_3D, &tmp );
-		target = GL_TEXTURE_3D;
 		break;
 	case TEX_2D_ARRAY: 
 		glGetIntegerv( GL_TEXTURE_BINDING_2D_ARRAY, &tmp );
-		target = GL_TEXTURE_2D_ARRAY;
 		break;
 	case TEX_CUBE: 
 		glGetIntegerv( GL_TEXTURE_BINDING_CUBE_MAP, &tmp );
-		target = GL_TEXTURE_CUBE_MAP;
 		break;
 	}
 
@@ -89,7 +84,7 @@ GLuint Texture::Bind()
 
 	//-- we don't need to bind the same texture
 	if( m_last_tex != m_texID )
-		glBindTexture( target, m_texID );	
+		glBindTexture( m_target, m_texID );	
 
 	return m_last_tex;
 }
@@ -100,30 +95,25 @@ void Texture::Unbind()
 {
 	//-- check currently bound texture
 	int tmp;
-	GLenum target = GL_TEXTURE_2D;
 	switch( m_target )
 	{
 	case TEX_2D: 
 		glGetIntegerv( GL_TEXTURE_BINDING_2D, &tmp );
-		target = GL_TEXTURE_2D;
 		break;
 	case TEX_3D: 
 		glGetIntegerv( GL_TEXTURE_BINDING_3D, &tmp );
-		target = GL_TEXTURE_3D;
 		break;
 	case TEX_2D_ARRAY: 
 		glGetIntegerv( GL_TEXTURE_BINDING_2D_ARRAY, &tmp );
-		target = GL_TEXTURE_2D_ARRAY;
 		break;
 	case TEX_CUBE: 
 		glGetIntegerv( GL_TEXTURE_BINDING_CUBE_MAP, &tmp );
-		target = GL_TEXTURE_CUBE_MAP;
 		break;
 	}
 	//-- we don't have to unbind different texture
 	if( tmp != m_texID ) return;
 
-	glBindTexture( target, m_last_tex );
+	glBindTexture( m_target, m_last_tex );
 	m_last_tex = 0;
 }
 
@@ -131,15 +121,23 @@ void Texture::Unbind()
 
 void Texture::SetFiltering( GLenum _filter )
 {
-	GLenum target = GetTarget();
 	Bind();
-	glTexParameterf( target, GL_TEXTURE_MIN_FILTER, _filter );
-	glTexParameterf( target, GL_TEXTURE_MAG_FILTER, _filter );
+	glTexParameterf( m_target, GL_TEXTURE_MIN_FILTER, _filter );
+	glTexParameterf( m_target, GL_TEXTURE_MAG_FILTER, _filter );
 	Unbind();
 }
 
 //-----------------------------------------------------------------------------
 
+void Texture::SetWrap( GLenum _param )
+{
+	Bind();
+	glTexParameterf( m_target, GL_TEXTURE_WRAP_S, _param );
+	glTexParameterf( m_target, GL_TEXTURE_WRAP_T, _param );
+	Unbind();
+}
+
+//-----------------------------------------------------------------------------
 /**
 ****************************************************************************************************
 @brief load TGA texture as texture image. If texture has been loaded, a texture pointer from cache is used

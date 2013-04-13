@@ -11,13 +11,21 @@
 #include "globals.h"
 
 //-- Texture targets
-enum TextureTargets { TEX_2D, TEX_3D, TEX_2D_ARRAY, TEX_CUBE };
+const GLenum TEX_2D			= GL_TEXTURE_2D;
+const GLenum TEX_3D			= GL_TEXTURE_3D;
+const GLenum TEX_2D_ARRAY	= GL_TEXTURE_2D_ARRAY;
+const GLenum TEX_CUBE		= GL_TEXTURE_CUBE_MAP;
+
+//-- Parameters
+const GLenum TEX_WRAP_S		= GL_TEXTURE_WRAP_S;
+const GLenum TEX_WRAP_T		= GL_TEXTURE_WRAP_T;
 
 ///@class Texture 
 ///@brief holds texture parameters and contains functions to load texture from external file
 ///Textures are connected to shaders via uniform variables
 class Texture
 {
+
 //-----------------------------------------------------------------------------
 //-- Member variables
 
@@ -54,38 +62,16 @@ public:
 	void Unbind();
 
 	void SetFiltering( GLenum _filter );
+	void SetWrap( GLenum _param );
 
 	//-- Set/Get target
 	void SetTarget( GLenum _target ){ m_target = _target; }
-	GLenum GetTarget()
-	{
-		GLenum target;
-		switch( m_target )
-		{
-		case TEX_2D: 
-			target = GL_TEXTURE_2D;
-			break;
-		case TEX_3D: 
-			target = GL_TEXTURE_3D;
-			break;
-		case TEX_2D_ARRAY: 
-			target = GL_TEXTURE_2D_ARRAY;
-			break;
-		case TEX_CUBE: 
-			target = GL_TEXTURE_CUBE_MAP;
-			break;
-		}
-		return target; 
-	}
+	GLenum GetTarget(){	return m_target; }
 
     ///@brief set texture name
-    void SetName(string name){ 
-        m_texname = name; 
-    }
+    void SetName(string name){ m_texname = name; }
     ///@brief get texture name
-    string GetName(){ 
-        return m_texname; 
-    }
+    string GetName(){ return m_texname; }
 
     //create texture from TGA file
     GLint Load(const char *texname, int textype, const char *filename, int texmode, 

@@ -20,8 +20,6 @@ TexturePtr TextureCache::CreateTexture( GLenum _target, GLenum _filter, bool _mi
 {
 	//create texture
 	TexturePtr tex = new Texture( _target );
-    //GLuint texid;
-    //glGenTextures(1, &texid);
 
 	//-- set up filtering
     GLenum filter = _filter;
@@ -33,15 +31,9 @@ TexturePtr TextureCache::CreateTexture( GLenum _target, GLenum _filter, bool _mi
 			filter = GL_NEAREST_MIPMAP_LINEAR;
 	}
 	
-	//FIXME: Leave the texture bound!
-    //glBindTexture(_target, texid);
-	tex->SetFiltering( filter );
-
 	//following properties can be set only in normal 2D textures
-	tex->Bind();
-	glTexParameterf(tex->GetTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(tex->GetTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	tex->Unbind();
+	tex->SetFiltering( filter );	
+	tex->SetWrap( GL_CLAMP_TO_EDGE );
 
 	return tex;
 }
@@ -64,7 +56,6 @@ GLuint TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLi
     //add created textures into cache
     Add( _name, tex );
 
-	//glBindTexture(GL_TEXTURE_2D, 0);
 	tex->Unbind();
 
 	return tex->GetID();
@@ -97,7 +88,6 @@ GLuint TextureCache::Create2DArrayManual(
     //add created textures into cache
     Add( _name, tex );
 
-	//glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 	tex->Unbind();
 
 	return tex->GetID();
