@@ -53,11 +53,30 @@ public:
 	GLuint Bind();
 	void Unbind();
 
-	void SetFiltering( GLenum _filter, bool _mipmaps = false );
+	void SetFiltering( GLenum _filter );
 
 	//-- Set/Get target
 	void SetTarget( GLenum _target ){ m_target = _target; }
-	GLenum GetTarget(){ return m_target; }
+	GLenum GetTarget()
+	{
+		GLenum target;
+		switch( m_target )
+		{
+		case TEX_2D: 
+			target = GL_TEXTURE_2D;
+			break;
+		case TEX_3D: 
+			target = GL_TEXTURE_3D;
+			break;
+		case TEX_2D_ARRAY: 
+			target = GL_TEXTURE_2D_ARRAY;
+			break;
+		case TEX_CUBE: 
+			target = GL_TEXTURE_CUBE_MAP;
+			break;
+		}
+		return target; 
+	}
 
     ///@brief set texture name
     void SetName(string name){ 

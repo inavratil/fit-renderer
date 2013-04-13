@@ -16,11 +16,12 @@ TextureCache::~TextureCache(void)
 
 //-----------------------------------------------------------------------------
 
-GLuint TextureCache::CreateTexture( GLenum _target, GLenum _filter, bool _mipmaps )
+TexturePtr TextureCache::CreateTexture( GLenum _target, GLenum _filter, bool _mipmaps )
 {
 	//create texture
-    GLuint texid;
-    glGenTextures(1, &texid);
+	TexturePtr tex = new Texture( _target );
+    //GLuint texid;
+    //glGenTextures(1, &texid);
 
 	//-- set up filtering
     GLenum filter = _filter;
@@ -33,37 +34,40 @@ GLuint TextureCache::CreateTexture( GLenum _target, GLenum _filter, bool _mipmap
 	}
 	
 	//FIXME: Leave the texture bound!
-    glBindTexture(_target, texid);
+    //glBindTexture(_target, texid);
+	tex->SetFiltering( filter );
 
 	//following properties can be set only in normal 2D textures
-	glTexParameterf(_target, GL_TEXTURE_MIN_FILTER, filter);
-	glTexParameterf(_target, GL_TEXTURE_MAG_FILTER, filter);
-	glTexParameterf(_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	tex->Bind();
+	glTexParameterf(tex->GetTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(tex->GetTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	tex->Unbind();
 
-	return texid;
+	return tex;
 }
 //-----------------------------------------------------------------------------
 
 GLuint TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLint _internalFormat, GLenum _dataType, GLenum _filter, bool _mipmaps )
 {
-	GLuint texid = CreateTexture( GL_TEXTURE_2D, _filter, _mipmaps );
+	TexturePtr tex = CreateTexture( TEX_2D, _filter, _mipmaps );
 
 	GLenum format = GL_RGBA;
 	if( _internalFormat == GL_DEPTH_COMPONENT )
 		format = GL_DEPTH_COMPONENT;
 
+	tex->Bind();
 	glTexImage2D(GL_TEXTURE_2D, 0, _internalFormat, _resX, _resY, 0, format, _dataType, NULL);
 
 	if(_mipmaps)
 		glGenerateMipmap(GL_TEXTURE_2D);
 
     //add created textures into cache
-    Add( _name, texid );
+    Add( _name, tex );
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	tex->Unbind();
 
-	return texid;
+	return tex->GetID();
 }
 
 //-----------------------------------------------------------------------------
@@ -78,28 +82,30 @@ GLuint TextureCache::Create2DArrayManual(
 	bool _mipmaps
 	)
 {
-	GLuint texid = CreateTexture( GL_TEXTURE_2D_ARRAY, _filter, _mipmaps );
+	TexturePtr tex = CreateTexture( TEX_2D_ARRAY, _filter, _mipmaps );
 
 	GLenum format = GL_RGBA;
 	if( _internalFormat == GL_DEPTH_COMPONENT )
 		format = GL_DEPTH_COMPONENT;
 
+	tex->Bind();
 	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, _internalFormat, _resX, _resY, _numLayers, 0, format, _dataType, NULL);
 
 	if(_mipmaps)
 		glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
     //add created textures into cache
-    Add( _name, texid );
+    Add( _name, tex );
 
-	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	//glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	tex->Unbind();
 
-	return texid;
+	return tex->GetID();
 }
 
 //-----------------------------------------------------------------------------
 
-void TextureCache::Add( const char* _name, GLuint _id )
+void TextureCache::Add( const char* _name, TexturePtr _tex )
 {
 	if( m_textureCache.find(_name) != m_textureCache.end() )
 	{
@@ -107,7 +113,7 @@ void TextureCache::Add( const char* _name, GLuint _id )
 		return;
 	}
 
-	m_textureCache[_name] = _id;
+	m_textureCache[_name] = _tex;
 }
 
 //-----------------------------------------------------------------------------
@@ -120,6 +126,20 @@ GLuint TextureCache::Get( const char* _name )
 		return 0;
 	}
 
+	//FIXME: muze vracet blbosti
+	return m_textureCache[_name]->GetID();
+}
+
+//-----------------------------------------------------------------------------
+
+TexturePtr TextureCache::GetPtr( const char* _name )
+{
+	if( m_textureCache.find(_name) == m_textureCache.end() )
+	{
+		cerr<<"WARNING (TextureCache): no texture with name "<<_name<<"\n";
+	}
+
+	//FIXME: muze vracet blbosti
 	return m_textureCache[_name];
 }
 

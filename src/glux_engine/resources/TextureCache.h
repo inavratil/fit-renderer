@@ -3,6 +3,7 @@
 
 #include "globals.h"
 #include "Singleton.h"
+#include "texture.h"
 
 class TextureCache : public Singleton<TextureCache>
 { 
@@ -12,9 +13,9 @@ class TextureCache : public Singleton<TextureCache>
 
 protected:
 	///associative array with all textures
-	map<string,GLuint> m_textureCache;
+	map<string,TexturePtr> m_textureCache;
     ///iterator for texture cache container
-    map<string,GLuint>::iterator m_itTextureCache;
+    map<string,TexturePtr>::iterator m_itTextureCache;
 
 //-----------------------------------------------------------------------------
 //-- Public methods
@@ -23,7 +24,7 @@ public:
 	TextureCache(void);
 	virtual ~TextureCache(void);
 
-	GLuint CreateTexture( GLenum _target, GLenum _filter, bool _mipmaps );
+	TexturePtr CreateTexture( GLenum _target, GLenum _filter, bool _mipmaps );
 	GLuint Create2DManual( 
 		const char* _name, 
 		int _resX, int _resY,
@@ -42,8 +43,9 @@ public:
 		bool _mipmaps
 		);
 	
-	void Add( const char* _name, GLuint _id );
+	void Add( const char* _name, TexturePtr _tex );
 	GLuint Get( const char* _name );
+	TexturePtr GetPtr( const char* _name );
 
 };
 
