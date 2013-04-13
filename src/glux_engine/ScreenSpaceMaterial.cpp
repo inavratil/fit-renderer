@@ -1,15 +1,15 @@
-#include "CustomShader.h"
+#include "ScreenSpaceMaterial.h"
 
 //-----------------------------------------------------------------------------
 
-TCustomShader::TCustomShader( const char* _name, unsigned _id ) :
+ScreenSpaceMaterial::ScreenSpaceMaterial( const char* _name, unsigned _id ) :
 	Material( _name, _id )
 {
 }
 
 //-----------------------------------------------------------------------------
 
-TCustomShader::~TCustomShader(void)
+ScreenSpaceMaterial::~ScreenSpaceMaterial(void)
 {
 }
 

@@ -100,9 +100,6 @@
     <ClCompile Include="src\glux_engine\GeometryMaterial.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\CustomShader.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\SimplePass.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
@@ -116,6 +113,9 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\Material.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\ScreenSpaceMaterial.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
   </ItemGroup>
@@ -219,9 +219,6 @@
     <ClInclude Include="src\glux_engine\GeometryMaterial.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\CustomShader.h">
-      <Filter>Header files\SDK</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\SimplePass.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
@@ -235,6 +232,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\Material.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\ScreenSpaceMaterial.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
   </ItemGroup>

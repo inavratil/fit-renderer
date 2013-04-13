@@ -136,7 +136,6 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
 
 	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
     
-	TMaterial* mat = new TMaterial( "mat_progress_bar" );
     AddMaterial("mat_progress_bar", white, white, white, 0.0, 0.0, 0.0, SCREEN_SPACE);
     AddTexture("mat_progress_bar","data/load.png");
     CustomShader("mat_progress_bar","data/shaders/quad.vert", "data/shaders/progress_bar.frag");
@@ -542,13 +541,18 @@ void TScene::AddObject(const char *name, const char* file)
 ***************************************************************************************************/
 void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 lpos, GLfloat radius)
 { 
-    //object for light
+    //-- name
     string m_name = "default_light_" + num2str(m_lights.size());
-    AddMaterial(m_name.c_str(), 2.0f*diff, 2.0f*diff, 2.0f*diff, 0.0, 0.0, 0.0);
+	//-- material
+	TMaterial* mat = new TMaterial( m_name.c_str() );
+	mat->SetColor( 2.0f*diff, 2.0f*diff, 2.0f*diff );
+	mat->SetShininess( 0.0 );
+	mat->ReceiveShadow( false );
+	AddMaterial( mat );
+	//-- object for light
     AddObject(m_name.c_str(), "data/obj/light.3ds");
     SetMaterial(m_name.c_str(), m_name.c_str());
     ObjCastShadow(m_name.c_str(), false);
-    MatReceiveShadow(m_name.c_str(), false);
 
     //create new and push into list
     TLight *l = new TLight(_lights, amb, diff, spec, lpos, radius);

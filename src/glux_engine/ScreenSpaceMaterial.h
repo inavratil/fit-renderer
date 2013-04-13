@@ -1,9 +1,9 @@
-#ifndef _CUSTOMSHADER_H_
-#define _CUSTOMSHADER_H_
+#ifndef _SCREENSPACEMATERIAL_H_
+#define _SCREENSPACEMATERIAL_H_
 
 #include "Material.h"
 
-class TCustomShader : public Material
+class ScreenSpaceMaterial : public Material
 { 
 
 //-----------------------------------------------------------------------------
@@ -15,13 +15,13 @@ protected:
 //-- Public methods 
 
 public:
-	TCustomShader( const char* _name, unsigned _id );
-	virtual ~TCustomShader(void);
+	ScreenSpaceMaterial( const char* _name, unsigned _id );
+	virtual ~ScreenSpaceMaterial(void);
 
 
 };
 
-typedef TCustomShader* CustomShaderPtr;
+typedef ScreenSpaceMaterial* ScreenSpaceMaterialPtr;
 
 #endif
 

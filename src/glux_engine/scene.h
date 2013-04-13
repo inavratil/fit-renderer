@@ -16,7 +16,6 @@
 #include "IShadowTechnique.h"
 #include "ScreenGrid.h"
 #include "Pass.h"
-#include "CustomShader.h"
 
 #include "resources/SceneManager.h"
 #include "resources/TextureCache.h"
@@ -135,9 +134,6 @@ protected:
 
 	//FIXME: Tohle by melo prijit do tridy Application
 protected:
-	//-- associative array with custom shaders and its iterator
-    map<string,CustomShaderPtr>				m_custom_shaders;
-    map<string,CustomShaderPtr>::iterator	m_it_custom_shaders;
 	//-- associative array of render passes
 	map<string, PassPtr>				m_passes;
 	map<string, PassPtr>::iterator		m_it_pass;
@@ -157,13 +153,6 @@ public:
 		if( _pass->Validate() )
 			m_passes[_name] = _pass;
 	}
-
-	void AddCustomShader( const char* _name, const char* _vert_file, const char* _frag_file, 
-                      const char* _vert_defines = "", const char* _frag_defines = "" )
-	{
-			m_custom_shaders[_name] = new TCustomShader( _name, m_custom_shaders.size() );
-            LoadScreen(); //update loading screen
-    }
 	//-----------------------------------------------------------------------------
 	
 
@@ -395,6 +384,12 @@ public:
 
     /////////////////////////////////////// MATERIALS&TEXTURES /////////////////////////////////
 
+	TMaterial* GetMaterial( const char* _name )
+	{
+		if(m_materials.find(_name) == m_materials.end())
+			cerr<<"ERROR (GetMaterial): no material with name "<<_name<<"\n";
+		return m_materials[_name];
+	}
 	void AddMaterial( TMaterial* _mat )
 	{
 		if( !_mat ) return;
@@ -525,15 +520,6 @@ public:
         else 
             m_objects[obj_name]->CastShadow(flag); 
     } 
-
-	//FIXME: NAVRH:  presunout asi jinam, napr. do SceneManagera. Lepsi by byl zapis mat->DoReceiveShadow( flag )
-    ///@brief Enable/disable shadow receiving for selected material (by name) (see TMaterial::ReceiveShadow() )
-    void MatReceiveShadow(const char *mat_name, bool flag){ 
-        if(m_materials.find(mat_name) == m_materials.end()) 
-            cerr<<"WARNING (receive shadow): no material with name"<<mat_name<<"!\n"; 
-        else 
-            m_materials[mat_name]->ReceiveShadow(flag); 
-    }
 
     ///@brief Change shadow paraboloid rotation
     void RotateParaboloid(glm::vec3 angle){

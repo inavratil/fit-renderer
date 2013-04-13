@@ -57,26 +57,15 @@ struct TShader
 ///@brief hold all material properties necessary to create dynamic shader - light models textures and colors
 class TMaterial : public Material
 {
-private:
-    //properties
-   
+private:  
 
     //material properties
     glm::vec3 m_ambColor, m_diffColor, m_specColor;
     GLfloat m_shininess, m_transparency, m_reflection;
 
-    //shader
-    string m_source;          //custom shader source
-    GLint m_f_shader, m_tc_shader, m_te_shader, m_g_shader, m_v_shader, m_shader;
-    map<const char*,GLint> m_shader_locations;
-    GLint m_sh_loc;
-
     //other variables
     bool m_baked, m_custom_shader, m_receive_shadows, m_useMRT, m_is_alpha, m_is_tessellated;
     int m_lightModel;     ///lightModel - also indicates whether algorithm works in screen space
-
-    //scene ID - when drawing more scenes than 1
-    int m_sceneID;
 
 	vector<ShaderFeature*>::iterator	m_if;
 	vector<ShaderFeature*>				m_features;
@@ -166,39 +155,6 @@ public:
     //load custom shader - all stages
     bool CustomShader(TShader *vertex, TShader *tess_control, TShader *tess_eval, TShader *geometry, TShader *fragment);
 
-    ///@brief Set float uniform value in shader
-    void SetUniform(const char* v_name, float value){
-        glProgramUniform1f(m_shader, glGetUniformLocation(m_shader,v_name), value);
-    }
-    ///@brief Set double uniform value in shader. It is treated like float
-    void SetUniform(const char* v_name, double value){
-        glProgramUniform1f(m_shader, glGetUniformLocation(m_shader,v_name), (float)value);
-    }
-    ///@brief Set int uniform value in shader
-    void SetUniform(const char* v_name, int value){
-        glProgramUniform1i(m_shader, glGetUniformLocation(m_shader,v_name), value);
-    }
-    ///@brief Set ivec2 value
-    void SetUniform(const char* v_name, glm::ivec2 value){
-        glProgramUniform2iv(m_shader, glGetUniformLocation(m_shader,v_name), 1, glm::value_ptr(value));
-    }
-    ///@brief Set vec2 value
-    void SetUniform(const char* v_name, glm::vec2 value){
-        glProgramUniform2fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, glm::value_ptr(value));
-    }
-    ///@brief Set vec3 value
-    void SetUniform(const char* v_name, glm::vec3 value){
-        glProgramUniform3fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, glm::value_ptr(value));
-    }
-    ///@brief Set vec4 value
-    void SetUniform(const char* v_name, glm::vec4 value){
-        glProgramUniform4fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, glm::value_ptr(value));
-    }
-    ///@brief Set mat4x4 value
-    void SetUniform(const char* v_name, glm::mat4 &value){
-        glProgramUniformMatrix4fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, 0, glm::value_ptr(value));
-    }
-
     ///@brief Toggle use of MRT
     void UseMRT(bool flag){ 
         m_useMRT = flag; 
@@ -221,16 +177,6 @@ public:
     ///@brief should we render material as reflective?
     GLfloat GetReflect(){ 
         return m_reflection; 
-    }
-
-    ///Get scene ID
-    int GetSceneID(){  
-        return m_sceneID; 
-    }
-
-    ///Set scene ID
-    void SetSceneID(int id){  
-        m_sceneID = id; 
     }
 
     ///Is shader custom?

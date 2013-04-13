@@ -98,7 +98,7 @@
     <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\BlitPass.cpp" />
     <ClCompile Include="src\glux_engine\camera.cpp" />
-    <ClCompile Include="src\glux_engine\CustomShader.cpp" />
+    <ClCompile Include="src\glux_engine\ScreenSpaceMaterial.cpp" />
     <ClCompile Include="src\glux_engine\debug.cpp" />
     <ClCompile Include="src\glux_engine\draw.cpp" />
     <ClCompile Include="src\glux_engine\font.cpp" />
@@ -143,7 +143,7 @@
     <ClInclude Include="src\glux_engine\BlitPass.h" />
     <ClInclude Include="src\glux_engine\camera.h" />
     <ClInclude Include="src\glux_engine\compute.h" />
-    <ClInclude Include="src\glux_engine\CustomShader.h" />
+    <ClInclude Include="src\glux_engine\ScreenSpaceMaterial.h" />
     <ClInclude Include="src\glux_engine\engine.h" />
     <ClInclude Include="src\glux_engine\GeometryMaterial.h" />
     <ClInclude Include="src\glux_engine\globals.h" />
