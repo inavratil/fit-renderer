@@ -52,6 +52,7 @@ TScene::TScene()
 	//FIXME: do tridy Application
 	m_passes.clear();
 	m_texture_cache = new TextureCache();
+	m_material_manager = new MaterialManager();
 	
 }
 
@@ -77,7 +78,8 @@ TScene::~TScene()
 
 	//FIXME
 	delete m_shadow_technique;
-
+	delete m_texture_cache;
+	delete m_material_manager;
 }
 
 /**

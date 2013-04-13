@@ -1,9 +1,9 @@
 #ifndef _GEOMETRYMATERIAL_H_
 #define _GEOMETRYMATERIAL_H_
 
-#include "Shader.h"
+#include "Material.h"
 
-class GeometryMaterial : public Shader
+class GeometryMaterial : public Material
 { 
 
 //-----------------------------------------------------------------------------

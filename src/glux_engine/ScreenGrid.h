@@ -3,7 +3,7 @@
 
 #include "globals.h"
 #include "resources/SceneManager.h"
-#include "material.h"
+#include "tmaterial.h"
 #include "IShadowTechnique.h"
 
 class IShadowTechnique;

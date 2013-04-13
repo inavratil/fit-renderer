@@ -1,9 +1,9 @@
-#ifndef _CUSTOMSHADER_H_
-#define _CUSTOMSHADER_H_
+#ifndef _MATERIALMANAGER_H_
+#define _MATERIALMANAGER_H_
 
-#include "Material.h"
+#include "tmaterial.h"
 
-class TCustomShader : public Material
+class MaterialManager
 { 
 
 //-----------------------------------------------------------------------------
@@ -15,13 +15,13 @@ protected:
 //-- Public methods 
 
 public:
-	TCustomShader( const char* _name, unsigned _id );
-	virtual ~TCustomShader(void);
+	MaterialManager(void);
+	virtual ~MaterialManager(void);
 
-
+	MaterialPtr	Create( const char* _name );
 };
 
-typedef TCustomShader* CustomShaderPtr;
+typedef MaterialManager* MaterialManagerPtr;
 
 #endif
 

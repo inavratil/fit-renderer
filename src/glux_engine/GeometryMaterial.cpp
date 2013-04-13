@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 
 GeometryMaterial::GeometryMaterial(const char* _name, unsigned _id) :
-	Shader( _name, _id )
+	Material( _name, _id )
 {
 }
 

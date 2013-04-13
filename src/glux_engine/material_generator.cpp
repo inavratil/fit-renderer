@@ -2,7 +2,7 @@
 @file material_generator.cpp
 @brief dynamic shader creation
 ***************************************************************************************************/
-#include "material.h"
+#include "tmaterial.h"
 #include "utils.hpp"
 
 #include "shaderGen/shader_generator.h"

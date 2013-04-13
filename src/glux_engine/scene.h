@@ -9,7 +9,7 @@
 #define _SCENE_H_
 
 #include "globals.h"
-#include "material.h"
+#include "tmaterial.h"
 #include "light.h"
 #include "camera.h"
 #include "shadow.h"
@@ -20,6 +20,7 @@
 
 #include "resources/SceneManager.h"
 #include "resources/TextureCache.h"
+#include "resources/MaterialManager.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
@@ -142,6 +143,8 @@ protected:
 	map<string, PassPtr>::iterator		m_it_pass;
 	//-- Texture Cache
 	TextureCachePtr						m_texture_cache;
+	//-- Material Manager
+	MaterialManagerPtr					m_material_manager;
 
 public:
 	void AppendPass( string _name, PassPtr _pass )
