@@ -395,6 +395,13 @@ public:
 
     /////////////////////////////////////// MATERIALS&TEXTURES /////////////////////////////////
 
+	void AddMaterial( TMaterial* _mat )
+	{
+		if( !_mat ) return;
+		_mat->SetSceneID( m_sceneID );
+		_mat->SetID( m_materials.size() );
+		m_materials[_mat->GetName()] = _mat;
+	}
     ///@brief Add new material(see TMaterial()) to list
     void AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
         GLfloat shin = 64.0, GLfloat reflect = 0.0, GLfloat transp = 0.0, GLint lm = PHONG){

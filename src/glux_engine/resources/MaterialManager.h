@@ -1,11 +1,10 @@
 #ifndef _MATERIALMANAGER_H_
 #define _MATERIALMANAGER_H_
 
-#include "tmaterial.h"
+#include "Material.h"
 
 class MaterialManager
 { 
-
 //-----------------------------------------------------------------------------
 // -- Member variables
 

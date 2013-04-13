@@ -83,6 +83,7 @@ private:
 
 public:
     //material creation
+	TMaterial( const char* _name );
     TMaterial(const char* name, unsigned id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, 
               GLfloat shin, GLfloat reflect, GLfloat transp, GLint lm);
     //free dynamic data
@@ -255,6 +256,6 @@ public:
 	void AddFeature( ShaderFeature* _pFeat );
 };
 
-typedef TMaterial* MaterialPtr;
+typedef TMaterial* TMaterialPtr;
 
 #endif

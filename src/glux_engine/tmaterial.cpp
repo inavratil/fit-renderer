@@ -33,6 +33,21 @@ string LoadShader(const char* source)
 ////////////////////////////////////////////////////////////////////////////////
 
 
+TMaterial::TMaterial( const char* _name ) :
+	Material( _name, -1 )
+{
+	TMaterial(
+		_name,
+		-1,			//-- material id
+		black, 		//-- ambient
+		silver, 	//-- diffuse
+		white,		//-- specular
+        64.0, 		//-- shininess
+		0.0, 		//-- reflection
+		0.0, 		//-- transparency
+		PHONG		//-- light model
+		);
+}
 /**
 ****************************************************************************************************
 @brief Direct creation of desired material

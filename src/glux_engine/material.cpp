@@ -2,7 +2,14 @@
 
 //-----------------------------------------------------------------------------
 
-Material::Material( const char* _name, unsigned _id ) :
+Material::Material( const char* _name )
+{
+	Material( _name, -1 );
+}
+
+//-----------------------------------------------------------------------------
+
+Material::Material( const char* _name, int _id ) :
 	m_name( _name ),
 	m_id( _id )
 {
