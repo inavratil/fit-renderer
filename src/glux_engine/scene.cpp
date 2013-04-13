@@ -136,6 +136,7 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
 
 	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
     
+	TMaterial* mat = new TMaterial( "mat_progress_bar" );
     AddMaterial("mat_progress_bar", white, white, white, 0.0, 0.0, 0.0, SCREEN_SPACE);
     AddTexture("mat_progress_bar","data/load.png");
     CustomShader("mat_progress_bar","data/shaders/quad.vert", "data/shaders/progress_bar.frag");

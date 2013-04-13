@@ -36,7 +36,8 @@ string LoadShader(const char* source)
 TMaterial::TMaterial( const char* _name ) :
 	Material( _name, -1 )
 {
-	TMaterial(
+
+	_Init(
 		_name,
 		-1,			//-- material id
 		black, 		//-- ambient
@@ -61,10 +62,40 @@ TMaterial::TMaterial( const char* _name ) :
 @param transp material transparency
 @param lm light model (can be PHONG,GOURAUD,NONE)
 ***************************************************************************************************/
-TMaterial::TMaterial(const char* name, unsigned id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, GLfloat shin, GLfloat reflect, GLfloat transp, GLint lm) :
+TMaterial::TMaterial(const char* name, int id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, GLfloat shin, GLfloat reflect, GLfloat transp, GLint lm) :
 	Material( name, id )
 {
-    m_ambColor = amb;
+	_Init(
+		name,
+		id,
+		amb,
+		diff,
+		spec,
+		shin,
+		reflect,
+		transp,
+		lm
+		);
+}
+
+/**
+****************************************************************************************************
+@brief Destroy material data, detache shaders
+***************************************************************************************************/
+TMaterial::~TMaterial()
+{
+    if(m_shader != 0)
+    {
+        glDetachObjectARB(m_shader,m_f_shader);
+        glDetachObjectARB(m_shader,m_g_shader);
+        glDetachObjectARB(m_shader,m_v_shader);
+        glDeleteObjectARB(m_shader);
+    }
+}
+
+void TMaterial::_Init( const char* name, int id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, GLfloat shin, GLfloat reflect, GLfloat transp, GLint lm )
+{
+	m_ambColor = amb;
     m_diffColor = diff;
     m_specColor = spec;
     m_shininess = shin;
@@ -84,23 +115,6 @@ TMaterial::TMaterial(const char* name, unsigned id, glm::vec3 amb, glm::vec3 dif
     m_is_alpha = false;
     m_is_tessellated = false;
 }
-
-/**
-****************************************************************************************************
-@brief Destroy material data, detache shaders
-***************************************************************************************************/
-TMaterial::~TMaterial()
-{
-    if(m_shader != 0)
-    {
-        glDetachObjectARB(m_shader,m_f_shader);
-        glDetachObjectARB(m_shader,m_g_shader);
-        glDetachObjectARB(m_shader,m_v_shader);
-        glDeleteObjectARB(m_shader);
-    }
-}
-
-
 /**
 ****************************************************************************************************
 @brief Finds and returns next free texture name in list (important to synchronize generated texture names

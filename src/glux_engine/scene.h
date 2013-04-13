@@ -401,13 +401,15 @@ public:
 		_mat->SetSceneID( m_sceneID );
 		_mat->SetID( m_materials.size() );
 		m_materials[_mat->GetName()] = _mat;
+		LoadScreen(); //update loading screen
 	}
     ///@brief Add new material(see TMaterial()) to list
     void AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
         GLfloat shin = 64.0, GLfloat reflect = 0.0, GLfloat transp = 0.0, GLint lm = PHONG){
-            TMaterial *m = new TMaterial(name, m_materials.size(), amb, diff, spec, shin, reflect, transp, lm);
-            m_materials[name] = m;
-            m_materials[name]->SetSceneID(m_sceneID);
+            TMaterial *m = new TMaterial(name, -1, amb, diff, spec, shin, reflect, transp, lm);
+            m->SetSceneID(m_sceneID);
+			m->SetID( m_materials.size() );
+			m_materials[name] = m;
             LoadScreen(); //update loading screen
     }
    

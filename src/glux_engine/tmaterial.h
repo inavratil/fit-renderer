@@ -84,11 +84,12 @@ private:
 public:
     //material creation
 	TMaterial( const char* _name );
-    TMaterial(const char* name, unsigned id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, 
+    TMaterial(const char* name, int id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, 
               GLfloat shin, GLfloat reflect, GLfloat transp, GLint lm);
     //free dynamic data
     ~TMaterial();
 
+	void _Init( const char* name, int id, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, GLfloat shin, GLfloat reflect, GLfloat transp, GLint lm );
 
     ///@brief set transparency value
     void SetTransparency(GLfloat value){ 
@@ -106,6 +107,13 @@ public:
         case SPECULAR: m_specColor = color; break;
         }
     }
+	void SetColor( glm::vec3 _amb, glm::vec3 _diff, glm::vec3 _spec )
+	{
+		m_ambColor = _amb;
+		m_diffColor = _diff;
+		m_specColor = _spec;
+	}
+	void SetShininess( float _shin ){ m_shininess = _shin; }
 
     //???
     GLint LoadTexture(string _texname, int _textype, const char *filename, int _texmode,

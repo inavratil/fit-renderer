@@ -351,7 +351,7 @@ void TScene::DrawScene(int drawmode)
 
             ///attach material shader
             m_im->second->RenderMaterial();
-            unsigned matID = m_im->second->GetID();
+            int matID = m_im->second->GetID();
 
             ///render all objects attached to this material
             for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
@@ -394,7 +394,7 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
             }                
 
             ///get material ID and render all objects attached to this material
-            unsigned matID = m_im->second->GetID();
+            int matID = m_im->second->GetID();
             for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
             {
                 if(m_io->second->IsShadowCaster() && m_io->second->GetSceneID() == m_sceneID 

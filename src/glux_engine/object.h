@@ -54,7 +54,7 @@ private:
 
     int m_type;
     string m_name;     //object name
-    unsigned m_matID;  //attached material ID
+    int m_matID;  //attached material ID
     VBO m_vbo;         //vertex buffer object
     GLenum m_drawmode; //VBO drawing mode
     bool m_element_indices;			//do we  have element indices instead of vertex array?
@@ -142,7 +142,7 @@ public:
         return m_name; 
     }
     ///@brief Return material ID attached to object
-    unsigned GetMatID(){ 
+    int GetMatID(){ 
         return m_matID; 
     }
     ///@brief Return object position
