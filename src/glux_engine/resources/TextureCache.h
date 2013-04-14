@@ -17,6 +17,8 @@ protected:
     ///iterator for texture cache container
     map<string,TexturePtr>::iterator m_itTextureCache;
 
+	bool	m_is_IL_Initialized;
+
 //-----------------------------------------------------------------------------
 //-- Public methods
 
@@ -46,6 +48,8 @@ public:
 	void Add( const char* _name, TexturePtr _tex );
 	GLuint Get( const char* _name );
 	TexturePtr GetPtr( const char* _name );
+
+	GLuint LoadImage( const char* _filename );
 
 };
 

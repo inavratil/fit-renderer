@@ -4,7 +4,8 @@ template<> TextureCache * Singleton<TextureCache>::m_pInstance = 0;
 
 //-----------------------------------------------------------------------------
 
-TextureCache::TextureCache(void)
+TextureCache::TextureCache(void) :
+	m_is_IL_Initialized( false )
 {
 }
 
@@ -99,14 +100,123 @@ GLuint TextureCache::Create2DArrayManual(
 
 GLuint TextureCache::CreateFromImage( const char* _name, const char* _file )
 {
+	//FIXME: tohle nejak nastavit z venku
+	bool mipmap = true;
+	bool aniso = true;
+
 	TexturePtr tex = new Texture( TEX_2D );
+
 	//-- set up filtering
     GLenum filter = GL_LINEAR_MIPMAP_LINEAR;
 	tex->SetFiltering( filter );
 	//-- set up warping
 	tex->SetWrap( GL_REPEAT );
 
+	GLuint image_id = LoadImage( _file );
+
+	if( !image_id )
+		return 0;
+
+	tex->Bind();
+	//texture with anisotropic filtering
+	if(aniso)
+	{
+		//find out, if GFX supports aniso filtering
+		if(!GLEW_EXT_texture_filter_anisotropic)
+		{
+			cout<<"Anisotropic filtering not supported. Using linear instead.\n";
+		}
+		else
+		{
+			float maxAnisotropy;
+			//find out maximum supported anisotropy
+			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+		}
+	}
+	//Get image attributes
+	int width, height, bpp;
+	width = ilGetInteger(IL_IMAGE_WIDTH);
+	height = ilGetInteger(IL_IMAGE_HEIGHT);
+	bpp = ilGetInteger(IL_IMAGE_BPP);
+
+	if((width <= 0) || (height <= 0) )
+	{
+		ShowMessage("Unknown image type!");
+		return false;
+	}
+
+	//Allocate memory for image
+	unsigned imageSize = (bpp * width * height);
+	GLubyte* imageData = new GLubyte[imageSize];
+
+	if(imageData == NULL)
+	{
+		ShowMessage("Can't allocate image data!");
+		return false;
+	}
+
+	//Copy pixels
+	if(bpp==1)
+		ilCopyPixels(0, 0, 0, width, height, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, imageData);
+	else if(bpp==3)
+		ilCopyPixels(0, 0, 0, width, height, 1, IL_RGB, IL_UNSIGNED_BYTE, imageData);
+	else if(bpp==4)
+		ilCopyPixels(0, 0, 0, width, height, 1, IL_RGBA, IL_UNSIGNED_BYTE, imageData);
+
+	if(tex->GetType() == BUMP)	//don't compress bump maps
+#ifdef _LINUX_
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, imageData);
+#else
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+#endif
+	else					//compress color maps
+#ifdef _LINUX_
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, imageData);
+#else
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+#endif
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	if(mipmap)
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+	//Unbind and free
+	tex->Unbind();
+	ilBindImage( 0 );
+	ilDeleteImage( image_id );
+	delete [] imageData;
+
+	cout<<"Image loaded: "<< _file <<"\n";
+
 	return tex->GetID();
+}
+
+//-----------------------------------------------------------------------------
+
+GLuint TextureCache::LoadImage( const char* _filename )
+{
+	if(!_filename)
+		return 0;
+
+	//Opens image
+	if(!m_is_IL_Initialized)
+	{
+		ilInit();
+		m_is_IL_Initialized = true;
+	}
+
+	ILuint id = 0;
+	ilGenImages(1, &id);
+	ilBindImage(id);
+
+	if(!ilLoadImage(_filename))
+	{
+		ShowMessage("Cannot open texture file!");
+		return 0;
+	}
+
+	return id;
 }
 
 //-----------------------------------------------------------------------------
