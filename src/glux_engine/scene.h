@@ -425,13 +425,6 @@ public:
 
     //bind material to object
     void SetMaterial(const char* obj_name, const char *mat_name);
-    ///@brief Set material transparency
-    void SetTransparency(const char* mat_name, GLfloat value){
-        if(m_materials.find(mat_name) == m_materials.end())
-            cerr<<"WARNING (SetTransparency): no material with name "<<mat_name<<"\n";
-        else
-            m_materials[mat_name]->SetTransparency(value);
-    }
 
     ///@brief Load custom shader from file. Shader can be then applied to any material
     ///(see TMaterial::CustomShader() ). Vertex and fragment shader only
@@ -467,15 +460,6 @@ public:
         for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
             m_im->second->BakeMaterial(m_lights.size()); 
     }
-
-    ///@brief Set material color
-    void SetMaterialColor(const char *name, int component, glm::vec3 color){
-        if(m_materials.find(name) == m_materials.end())
-            cerr<<"WARNING (SetMaterialColor): no material with name "<<name<<"\n";
-        else
-            m_materials[name]->SetColor(component, color);
-    }
-
 
 	///////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////SHADOWS ///////////////////////////////////////

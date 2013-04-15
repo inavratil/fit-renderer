@@ -15,9 +15,12 @@ protected:
 //-- Public methods 
 
 public:
-	ScreenSpaceMaterial( const char* _name, unsigned _id );
+	ScreenSpaceMaterial( const char* _name, const char* _vs, const char* _fs );
 	virtual ~ScreenSpaceMaterial(void);
 
+//-----------------------------------------------------------------------------
+//-- Private methods 
+	void _Init();
 
 };
 

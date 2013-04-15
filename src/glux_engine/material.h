@@ -14,6 +14,7 @@ protected:
 	string	m_name;
     int		m_id;
     int		m_sceneID;	//-- scene ID - when drawing more scenes than 1
+	bool	m_is_screenspace;
 	
 	//-- associative array of input textures
 	map<string,Texture*>			m_textures;		//-- textures list    
@@ -79,6 +80,9 @@ public:
         glProgramUniformMatrix4fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, 0, glm::value_ptr(value));
     }
 
+//-----------------------------------------------------------------------------
+private:
+	void _Init( const char* _name, int _id );
 
 };
 

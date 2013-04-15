@@ -2,8 +2,8 @@
 
 //-----------------------------------------------------------------------------
 
-ScreenSpaceMaterial::ScreenSpaceMaterial( const char* _name, unsigned _id ) :
-	Material( _name, _id )
+ScreenSpaceMaterial::ScreenSpaceMaterial( const char* _name, const char* _vs, const char* _fs ) :
+	Material( _name )
 {
 }
 
@@ -11,6 +11,13 @@ ScreenSpaceMaterial::ScreenSpaceMaterial( const char* _name, unsigned _id ) :
 
 ScreenSpaceMaterial::~ScreenSpaceMaterial(void)
 {
+}
+
+//-----------------------------------------------------------------------------
+
+void ScreenSpaceMaterial::_Init()
+{
+	m_is_screenspace = true;
 }
 
 //-----------------------------------------------------------------------------

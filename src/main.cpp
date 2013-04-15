@@ -88,7 +88,7 @@ bool InitScene(int resx, int resy)
             
             s->LoadScene("data/obj/scenes/car.3ds");
             //glass
-            s->SetTransparency("sklo",0.7f);
+            //FIXME: nastavit v LoadScene: s->SetTransparency("sklo",0.7f);
 
             s->AddTexture("pletivo", "data/tex/alpha/fence.tga",ALPHA);
             s->AddTexture("body",cubemap, CUBEMAP_ENV, ADD, 0.4f);

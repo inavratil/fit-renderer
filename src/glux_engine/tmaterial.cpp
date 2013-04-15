@@ -108,6 +108,7 @@ void TMaterial::_Init( const char* name, int id, glm::vec3 amb, glm::vec3 diff, 
     m_baked = false;
     m_useMRT = false;
     m_custom_shader = false;
+	m_is_screenspace = false;
     if(m_lightModel == SCREEN_SPACE)  //screen space quad cannot receive shadows
         m_receive_shadows = false;
     else
@@ -304,7 +305,7 @@ void TMaterial::AddTextureFromCache(int type, GLuint id, GLfloat intensity)
 	//FIXME: need to check if texutre with id exists in the cache
 
     //don't add shadow map for materials whose don't want to receive shadows!
-    if(!m_receive_shadows) 
+	if(!m_receive_shadows) 
         return;
 
 	//create texture
