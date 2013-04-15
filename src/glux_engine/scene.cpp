@@ -135,10 +135,17 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
     glBindVertexArray(0);
 
 	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
-    
-    AddMaterial("mat_progress_bar", white, white, white, 0.0, 0.0, 0.0, SCREEN_SPACE);
-    AddTexture("mat_progress_bar","data/load.png");
-    CustomShader("mat_progress_bar","data/shaders/quad.vert", "data/shaders/progress_bar.frag");
+
+	
+	TMaterialPtr mat = new TMaterial( "mat_progress_bar" );
+	TexturePtr tex = m_texture_cache->CreateFromImage( "data/load.png" );
+	mat->AddTexture( tex );
+	mat->CustomShader( "data/shaders/quad.vert", "data/shaders/progress_bar.frag", "", "" );
+	AddMaterial( mat );
+	
+    //AddMaterial("mat_progress_bar", white, white, white, 0.0, 0.0, 0.0, SCREEN_SPACE);
+    //AddTexture("mat_progress_bar","data/load.png");
+    //CustomShader("mat_progress_bar","data/shaders/quad.vert", "data/shaders/progress_bar.frag");
 
     return true;
 }

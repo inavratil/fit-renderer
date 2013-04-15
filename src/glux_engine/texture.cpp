@@ -43,8 +43,9 @@ void Texture::Init( GLenum _target )
     m_last_tex = m_width = m_height = m_bpp = 0;
     m_texmode = MODULATE;
     m_tileX = m_tileY = 1.0;
-    m_texLoc = m_tileXLoc = m_tileYLoc = -1;
+	m_texLoc = m_tileXLoc = m_tileYLoc = m_intensityLoc = -1;
 	m_target = _target;
+	m_intensity = 1.0;
 
 	//-- init texture id
 	glGenTextures( 1, &m_texID );

@@ -140,6 +140,39 @@ string TMaterial::NextTexture(string texname)
 }
 
 
+GLuint TMaterial::AddTexture( TexturePtr _tex )
+{
+	//-- 1. generate new texture name (material name + texture mode (base, env, bump...) using TMaterial::NextTexture()
+    string texname;
+	switch(_tex->GetType())
+    {
+        //base map
+    case BASE: texname = NextTexture(m_name + "_Base_A"); break;
+        //alpha map
+    case ALPHA: texname = NextTexture(m_name + "_Alpha_A"); m_is_alpha = true; break;
+        //environment map
+    case ENV: texname = NextTexture(m_name + "_Env_A"); break;
+        //bump map
+    case BUMP: texname = NextTexture(m_name + "_Bump_A"); break;
+        //parallax map
+    case PARALLAX: texname = NextTexture(m_name + "_Parallax_A"); break;   
+        //displacement map
+    case DISPLACE: texname = NextTexture(m_name + "_Displace_A"); break; 
+        //cube map
+    case CUBEMAP: texname = NextTexture(m_name + "_Cube_A"); break; 
+        //environment cube map
+    case CUBEMAP_ENV: texname = m_name + "_CubeEnv_A"; break;//NextTexture(m_name + "CubeEnvA"); break; 
+        //render textures
+    case RENDER_TEXTURE: 
+    case RENDER_TEXTURE_MULTISAMPLE: 
+        texname = _tex->GetName(); 
+        break; 
+	}
+
+	m_textures[texname] = _tex;
+	return _tex->GetID();
+}
+
 /**
 ****************************************************************************************************
 @brief Add texture from external file. If texture has been loaded, a texture pointer from cache is used

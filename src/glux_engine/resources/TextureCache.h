@@ -43,10 +43,8 @@ public:
 		GLenum _filter,
 		bool _mipmaps
 		);
-	GLuint CreateFromImage( const char* _filename );
+	TexturePtr CreateFromImage( const char* _filename );
 
-	string NextTextureName( string _texname );
-	
 	void Add( const char* _name, TexturePtr _tex );
 	GLuint Get( const char* _name );
 	TexturePtr GetPtr( const char* _name );

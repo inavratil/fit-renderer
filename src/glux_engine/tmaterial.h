@@ -104,6 +104,8 @@ public:
 	}
 	void SetShininess( float _shin ){ m_shininess = _shin; }
 
+	GLuint AddTexture( TexturePtr _tex );
+
     //texture from file
     GLint AddTexture(const char *file, GLint textype, GLint texmode,
                      GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso, GLint cache);

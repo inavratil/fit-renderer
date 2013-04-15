@@ -17,7 +17,8 @@ TextureCache::~TextureCache(void)
 		m_it_texture_cache != m_texture_cache.end();
 		m_it_texture_cache++
 		)
-		delete m_it_texture_cache->second;
+		if( m_it_texture_cache->second )
+			delete m_it_texture_cache->second;
 }
 
 //-----------------------------------------------------------------------------
@@ -54,6 +55,7 @@ GLuint TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLi
 	tex->Unbind();
 
 	tex->SetName( _name );
+	tex->SetType( RENDER_TEXTURE );
 
 	return tex->GetID();
 }
@@ -101,18 +103,18 @@ GLuint TextureCache::Create2DArrayManual(
 	tex->Unbind();
 	
 	tex->SetName( _name );
+	tex->SetType( RENDER_TEXTURE );
 
 	return tex->GetID();
 }
 
 //-----------------------------------------------------------------------------
 
-GLuint TextureCache::CreateFromImage( const char* _filename )
+TexturePtr TextureCache::CreateFromImage( const char* _filename )
 {
 	//FIXME: tohle nejak nastavit z venku
 	bool mipmap = true;
 	bool aniso = true;
-	GLuint image_id;
 	
 	//-----------------------------------------------------------------------------
 	// Texture, LoadImage
@@ -126,9 +128,9 @@ GLuint TextureCache::CreateFromImage( const char* _filename )
 		m_is_IL_Initialized = true;
 	}
 
-	ILuint id = 0;
-	ilGenImages(1, &id);
-	ilBindImage(id);
+	ILuint image_id = 0;
+	ilGenImages(1, &image_id);
+	ilBindImage(image_id);
 
 	if(!ilLoadImage(_filename))
 	{
@@ -221,69 +223,15 @@ GLuint TextureCache::CreateFromImage( const char* _filename )
 
 	cout<<"Image loaded: "<< _filename <<"\n";
 
-
-	//-- generate new texture name (filename + texture mode (base, env, bump...) using NextTextureName()
-	string filename = _filename;
-	string texname;
-	switch(tex->GetType())
-    {
-        //base map
-    case BASE: texname = NextTextureName(filename + "_Base_A"); break;
-        //alpha map
-    case ALPHA: texname = NextTextureName(filename + "_Alpha_A"); /*FIXME: tady se nastavovalo m_is_alpha=true;*/ ; break;
-        //environment map
-    case ENV: texname = NextTextureName(filename + "_Env_A"); break;
-        //bump map
-    case BUMP: texname = NextTextureName(filename + "_Bump_A"); break;
-        //parallax map
-    case PARALLAX: texname = NextTextureName(filename + "_Parallax_A"); break;   
-        //displacement map
-    case DISPLACE: texname = NextTextureName(filename + "_Displace_A"); break; 
-        //cube map
-    case CUBEMAP: texname = NextTextureName(filename + "_Cube_A"); break; 
-        //environment cube map
-    case CUBEMAP_ENV: texname = filename + "_CubeEnv_A"; break;//NextTexture(filename + "CubeEnv_A"); break; 
-
-    default: texname = NextTextureName(filename + "_Base_A"); break;
-    };
 	//-- add created textures into cache
-    Add( _filename, tex );
+	Add( _filename, tex );
 	
 	tex->SetSize( width, height );
 	tex->SetBpp( bpp );
-	tex->SetName( texname );
+	tex->SetName( "image" );
 
-	return tex->GetID();
+	return tex;
 }
-
-//-----------------------------------------------------------------------------
-
-/**
-****************************************************************************************************
-@brief Finds and returns next free texture name in list (important to synchronize generated texture names
-to them stored in TMaterial::textures field)
-@param texname suffix, texture type (like Base, Bump, Env...) 
-@return new texture name
-***************************************************************************************************/
-string TextureCache::NextTextureName( string _texname )
-{
-    int i = 1;
-    for( m_it_texture_cache = m_texture_cache.begin(); 
-		m_it_texture_cache != m_texture_cache.end(); 
-		++m_it_texture_cache)
-    {
-        ///find first empty texture, add index to m_it_textures's name and return this name
-        if(_texname == m_it_texture_cache->first || m_it_texture_cache->first.empty() )
-        {
-            string rep;
-            rep = num2str(char('A' + i));
-            _texname.replace(_texname.length()-1, rep.size(), rep.c_str());
-            i++;
-        }
-    }
-    return _texname;
-}
-
 
 //-----------------------------------------------------------------------------
 
