@@ -13,9 +13,9 @@ class TextureCache : public Singleton<TextureCache>
 
 protected:
 	///associative array with all textures
-	map<string,TexturePtr> m_textureCache;
+	map<string,TexturePtr> m_texture_cache;
     ///iterator for texture cache container
-    map<string,TexturePtr>::iterator m_itTextureCache;
+    map<string,TexturePtr>::iterator m_it_texture_cache;
 
 	bool	m_is_IL_Initialized;
 
@@ -43,7 +43,9 @@ public:
 		GLenum _filter,
 		bool _mipmaps
 		);
-	GLuint CreateFromImage( const char* _name, const char* _file );
+	GLuint CreateFromImage( const char* _filename );
+
+	string NextTextureName( string _texname );
 	
 	void Add( const char* _name, TexturePtr _tex );
 	GLuint Get( const char* _name );

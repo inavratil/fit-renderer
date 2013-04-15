@@ -154,6 +154,7 @@ instead of reloading from file
 @param cache whether we should use cached texture image or load new
 @return new texture ID
 ****************************************************************************************************/
+
 GLint Texture::Load(const char *texname, int textype, const char *filename, int texmode,
     GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso, GLint cache)
 {

@@ -13,6 +13,11 @@ TextureCache::TextureCache(void) :
 
 TextureCache::~TextureCache(void)
 {
+	for( m_it_texture_cache = m_texture_cache.begin();
+		m_it_texture_cache != m_texture_cache.end();
+		m_it_texture_cache++
+		)
+		delete m_it_texture_cache->second;
 }
 
 //-----------------------------------------------------------------------------
@@ -47,6 +52,8 @@ GLuint TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLi
     Add( _name, tex );
 
 	tex->Unbind();
+
+	tex->SetName( _name );
 
 	return tex->GetID();
 }
@@ -92,13 +99,15 @@ GLuint TextureCache::Create2DArrayManual(
     Add( _name, tex );
 
 	tex->Unbind();
+	
+	tex->SetName( _name );
 
 	return tex->GetID();
 }
 
 //-----------------------------------------------------------------------------
 
-GLuint TextureCache::CreateFromImage( const char* _name, const char* _filename )
+GLuint TextureCache::CreateFromImage( const char* _filename )
 {
 	//FIXME: tohle nejak nastavit z venku
 	bool mipmap = true;
@@ -212,50 +221,108 @@ GLuint TextureCache::CreateFromImage( const char* _name, const char* _filename )
 
 	cout<<"Image loaded: "<< _filename <<"\n";
 
+
+	//-- generate new texture name (filename + texture mode (base, env, bump...) using NextTextureName()
+	string filename = _filename;
+	string texname;
+	switch(tex->GetType())
+    {
+        //base map
+    case BASE: texname = NextTextureName(filename + "_Base_A"); break;
+        //alpha map
+    case ALPHA: texname = NextTextureName(filename + "_Alpha_A"); /*FIXME: tady se nastavovalo m_is_alpha=true;*/ ; break;
+        //environment map
+    case ENV: texname = NextTextureName(filename + "_Env_A"); break;
+        //bump map
+    case BUMP: texname = NextTextureName(filename + "_Bump_A"); break;
+        //parallax map
+    case PARALLAX: texname = NextTextureName(filename + "_Parallax_A"); break;   
+        //displacement map
+    case DISPLACE: texname = NextTextureName(filename + "_Displace_A"); break; 
+        //cube map
+    case CUBEMAP: texname = NextTextureName(filename + "_Cube_A"); break; 
+        //environment cube map
+    case CUBEMAP_ENV: texname = filename + "_CubeEnv_A"; break;//NextTexture(filename + "CubeEnv_A"); break; 
+
+    default: texname = NextTextureName(filename + "_Base_A"); break;
+    };
+	//-- add created textures into cache
+    Add( _filename, tex );
+	
 	tex->SetSize( width, height );
 	tex->SetBpp( bpp );
+	tex->SetName( texname );
 
 	return tex->GetID();
 }
 
 //-----------------------------------------------------------------------------
 
+/**
+****************************************************************************************************
+@brief Finds and returns next free texture name in list (important to synchronize generated texture names
+to them stored in TMaterial::textures field)
+@param texname suffix, texture type (like Base, Bump, Env...) 
+@return new texture name
+***************************************************************************************************/
+string TextureCache::NextTextureName( string _texname )
+{
+    int i = 1;
+    for( m_it_texture_cache = m_texture_cache.begin(); 
+		m_it_texture_cache != m_texture_cache.end(); 
+		++m_it_texture_cache)
+    {
+        ///find first empty texture, add index to m_it_textures's name and return this name
+        if(_texname == m_it_texture_cache->first || m_it_texture_cache->first.empty() )
+        {
+            string rep;
+            rep = num2str(char('A' + i));
+            _texname.replace(_texname.length()-1, rep.size(), rep.c_str());
+            i++;
+        }
+    }
+    return _texname;
+}
+
+
+//-----------------------------------------------------------------------------
+
 void TextureCache::Add( const char* _name, TexturePtr _tex )
 {
-	if( m_textureCache.find(_name) != m_textureCache.end() )
+	if( m_texture_cache.find(_name) != m_texture_cache.end() )
 	{
 		cerr<<"WARNING (TextureCache): texture with name "<<_name<<" already exist\n";
 		return;
 	}
 
-	m_textureCache[_name] = _tex;
+	m_texture_cache[_name] = _tex;
 }
 
 //-----------------------------------------------------------------------------
 
 GLuint TextureCache::Get( const char* _name )
 {
-	if( m_textureCache.find(_name) == m_textureCache.end() )
+	if( m_texture_cache.find(_name) == m_texture_cache.end() )
 	{
 		cerr<<"WARNING (TextureCache): no texture with name "<<_name<<"\n";
 		return 0;
 	}
 
 	//FIXME: muze vracet blbosti
-	return m_textureCache[_name]->GetID();
+	return m_texture_cache[_name]->GetID();
 }
 
 //-----------------------------------------------------------------------------
 
 TexturePtr TextureCache::GetPtr( const char* _name )
 {
-	if( m_textureCache.find(_name) == m_textureCache.end() )
+	if( m_texture_cache.find(_name) == m_texture_cache.end() )
 	{
 		cerr<<"WARNING (TextureCache): no texture with name "<<_name<<"\n";
 	}
 
 	//FIXME: muze vracet blbosti
-	return m_textureCache[_name];
+	return m_texture_cache[_name];
 }
 
 //-----------------------------------------------------------------------------
