@@ -436,15 +436,6 @@ public:
             if(!m_materials[name]->CustomShader(vert_source, frag_source, vert_defines, frag_defines))
                 throw ERR;
     }
-    ///@brief Load custom shader from file. Shader can be then applied to any material
-    ///(see TMaterial::CustomShader() ). Geometry and tesselaltion shaders are optional
-    void CustomShader(const char *name, TShader *vertex, TShader *tess_control, TShader *tess_eval, TShader *geometry, TShader *fragment){
-        if(m_materials.find(name) == m_materials.end())
-            cerr<<"WARNING (CustomShader): no material with name "<<name<<"\n";
-        else
-            if(!m_materials[name]->CustomShader(vertex, tess_control, tess_eval,geometry, fragment))
-                throw ERR;
-    }
 
     ///@brief Set uniform variable in material shader (see TMaterial::SetUniform() )
     template<class UNIFORM>
@@ -453,12 +444,6 @@ public:
             cerr<<"WARNING (SetUniform): no material with name "<<m_name<<"\n";
         else
             m_materials[m_name]->SetUniform(v_name, value);
-    }
-
-    ///@brief Force regeneration of all materials
-    void BakeAllMaterials(){ 
-        for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
-            m_im->second->BakeMaterial(m_lights.size()); 
     }
 
 	///////////////////////////////////////////////////////////////////////////////////////////

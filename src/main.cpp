@@ -322,6 +322,7 @@ bool InitScene(int resx, int resy)
 		s->CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag");
 
 		//optionally, add tessellation for paraboloid projection
+		/*
 		if(s->DPGetTessellation())
 		{        
 			TShader vert("data/shaders/shadow_omni_tess.vert", "");
@@ -340,6 +341,7 @@ bool InitScene(int resx, int resy)
 			s->AddMaterial("_mat_shadow_warp_tess", white, white, white, 64.0, 0.0, 0.0, NONE);
 			s->CustomShader("_mat_shadow_warp_tess", &warp_vert, &warp_tcon, &warp_teval, NULL, &warp_frag);
 		}
+		*/
     }
     catch(int)
     {
