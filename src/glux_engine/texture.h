@@ -68,6 +68,12 @@ public:
 	void SetTarget( GLenum _target ){ m_target = _target; }
 	GLenum GetTarget(){	return m_target; }
 
+	//-- Set/Get
+	void SetWidth( GLuint _width ){ m_width = _width; }
+	void SetHeight( GLuint _height ){ m_height = _height; }
+	void SetSize( GLuint _width, GLuint _height ){ m_width = _width; m_height = _height; }
+	void SetBpp( GLuint _bpp ){ m_bpp = _bpp; }
+
     ///@brief set texture name
     void SetName(string name){ m_texname = name; }
     ///@brief get texture name

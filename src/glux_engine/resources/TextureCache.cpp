@@ -98,42 +98,35 @@ GLuint TextureCache::Create2DArrayManual(
 
 //-----------------------------------------------------------------------------
 
-GLuint TextureCache::CreateFromImage( const char* _name, const char* _file )
+GLuint TextureCache::CreateFromImage( const char* _name, const char* _filename )
 {
 	//FIXME: tohle nejak nastavit z venku
 	bool mipmap = true;
 	bool aniso = true;
-
-	TexturePtr tex = new Texture( TEX_2D );
-
-	//-- set up filtering
-    GLenum filter = GL_LINEAR_MIPMAP_LINEAR;
-	tex->SetFiltering( filter );
-	//-- set up warping
-	tex->SetWrap( GL_REPEAT );
-
-	GLuint image_id = LoadImage( _file );
-
-	if( !image_id )
+	GLuint image_id;
+	
+	//-----------------------------------------------------------------------------
+	// Texture, LoadImage
+	if(!_filename)
 		return 0;
 
-	tex->Bind();
-	//texture with anisotropic filtering
-	if(aniso)
+	//Opens image
+	if(!m_is_IL_Initialized)
 	{
-		//find out, if GFX supports aniso filtering
-		if(!GLEW_EXT_texture_filter_anisotropic)
-		{
-			cout<<"Anisotropic filtering not supported. Using linear instead.\n";
-		}
-		else
-		{
-			float maxAnisotropy;
-			//find out maximum supported anisotropy
-			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
-		}
+		ilInit();
+		m_is_IL_Initialized = true;
 	}
+
+	ILuint id = 0;
+	ilGenImages(1, &id);
+	ilBindImage(id);
+
+	if(!ilLoadImage(_filename))
+	{
+		ShowMessage("Cannot open texture file!");
+		return 0;
+	}
+
 	//Get image attributes
 	int width, height, bpp;
 	width = ilGetInteger(IL_IMAGE_WIDTH);
@@ -164,6 +157,37 @@ GLuint TextureCache::CreateFromImage( const char* _name, const char* _file )
 	else if(bpp==4)
 		ilCopyPixels(0, 0, 0, width, height, 1, IL_RGBA, IL_UNSIGNED_BYTE, imageData);
 
+	ilBindImage( 0 );
+	ilDeleteImage( image_id );
+
+	//-----------------------------------------------------------------------------
+
+	TexturePtr tex = new Texture( TEX_2D );
+	tex->Bind();
+
+	//texture with anisotropic filtering
+	if(aniso)
+	{
+		//find out, if GFX supports aniso filtering
+		if(!GLEW_EXT_texture_filter_anisotropic)
+		{
+			cout<<"Anisotropic filtering not supported. Using linear instead.\n";
+		}
+		else
+		{
+			float maxAnisotropy;
+			//find out maximum supported anisotropy
+			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+		}
+	}
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	//mip-mapped texture (if set)
+	if(mipmap)
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+	else
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	
 	if(tex->GetType() == BUMP)	//don't compress bump maps
 #ifdef _LINUX_
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, imageData);
@@ -183,40 +207,15 @@ GLuint TextureCache::CreateFromImage( const char* _name, const char* _file )
 
 	//Unbind and free
 	tex->Unbind();
-	ilBindImage( 0 );
-	ilDeleteImage( image_id );
+
 	delete [] imageData;
 
-	cout<<"Image loaded: "<< _file <<"\n";
+	cout<<"Image loaded: "<< _filename <<"\n";
+
+	tex->SetSize( width, height );
+	tex->SetBpp( bpp );
 
 	return tex->GetID();
-}
-
-//-----------------------------------------------------------------------------
-
-GLuint TextureCache::LoadImage( const char* _filename )
-{
-	if(!_filename)
-		return 0;
-
-	//Opens image
-	if(!m_is_IL_Initialized)
-	{
-		ilInit();
-		m_is_IL_Initialized = true;
-	}
-
-	ILuint id = 0;
-	ilGenImages(1, &id);
-	ilBindImage(id);
-
-	if(!ilLoadImage(_filename))
-	{
-		ShowMessage("Cannot open texture file!");
-		return 0;
-	}
-
-	return id;
 }
 
 //-----------------------------------------------------------------------------

@@ -62,7 +62,7 @@ void Texture::Destroy()
 
 GLuint Texture::Bind()
 {
-	//-- save currently bound FBO
+	//-- save currently bound texture
 	int tmp;
 	switch( m_target )
 	{

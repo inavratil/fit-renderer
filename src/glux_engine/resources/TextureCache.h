@@ -49,8 +49,6 @@ public:
 	GLuint Get( const char* _name );
 	TexturePtr GetPtr( const char* _name );
 
-	GLuint LoadImage( const char* _filename );
-
 };
 
 typedef TextureCache* TextureCachePtr;
