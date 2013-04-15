@@ -104,7 +104,9 @@ public:
 	}
 	void SetShininess( float _shin ){ m_shininess = _shin; }
 
-	GLuint AddTexture( TexturePtr _tex );
+	//finds next free texture in the list
+    string NextTexture(string textype);		//FIXME: do rodicovske tridy
+	GLuint AddTexture( TexturePtr _tex );	//FIXME: do rodicovske tridy
 
     //texture from file
     GLint AddTexture(const char *file, GLint textype, GLint texmode,
@@ -119,8 +121,7 @@ public:
 	//remove texture
 	void RemoveTexture( const char *_texName );
 
-    //finds next free texture in the list
-    string NextTexture(string textype);   
+  
     /**
     @brief Delete texture specified by name
     @param texname texture name

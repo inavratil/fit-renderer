@@ -79,19 +79,27 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 //-----------------------------------------------------------------------------
         //-- output
-		//-- textures
-		GLuint tex_output = 
-			m_texture_cache->Create2DManual( "tex_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-		//-- shader
-        AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        //AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
-        AddTexture("mat_compute_aliasError", "data/tex/error_color.tga");
-        CustomShader("mat_compute_aliasError","data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag");
-		//-- pass
-		SimplePassPtr pass_compute_aliasError = new SimplePass( sh_res/8, sh_res/8 );
-		pass_compute_aliasError->AttachOutputTexture( 0, tex_output );
-		pass_compute_aliasError->DisableDepthBuffer();
-		AppendPass("pass_compute_aliasError", pass_compute_aliasError );
+		{
+			//-- textures
+			GLuint tex_output = 
+				m_texture_cache->Create2DManual( "tex_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
+			//-- shader
+			TMaterialPtr mat = new TMaterial( "mat_compute_aliasError" );
+			mat->AddTexture( m_texture_cache->CreateFromImage( "data/tex/error_color.tga" ) );
+			mat->AddTexture( m_texture_cache->GetPtr( "tex_camAndLightCoords" ) );
+			mat->CustomShader( "data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag", "", "" );
+			mat->ReceiveShadow( false );
+			AddMaterial( mat );
+			//AddMaterial("mat_compute_aliasError",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+			//AddTexture("mat_compute_aliasError","MTEX_coords",RENDER_TEXTURE);
+			//AddTexture("mat_compute_aliasError", );
+			//CustomShader("mat_compute_aliasError",);
+			//-- pass
+			SimplePassPtr pass_compute_aliasError = new SimplePass( sh_res/8, sh_res/8 );
+			pass_compute_aliasError->AttachOutputTexture( 0, tex_output );
+			pass_compute_aliasError->DisableDepthBuffer();
+			AppendPass("pass_compute_aliasError", pass_compute_aliasError );
+		}
 //-----------------------------------------------------------------------------
 		//blur
 		CreateDataTexture("MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT);
