@@ -4,30 +4,6 @@
 ***************************************************************************************************/
 #include "tmaterial.h"
 
-/**
-****************************************************************************************************
-@brief Load custom shader from file
-@param source shader source file 
-@return string with shader source
-***************************************************************************************************/
-string LoadShader(const char* source)
-{
-    ifstream fin(source);
-    if(!fin) 
-    {
-        string msg = "Cannot open shader ";
-        msg += source;
-        ShowMessage(msg.c_str(), false);
-        return "null";
-    }
-    string data;
-    char ch;
-    while(fin.get(ch))
-        data+=ch;
-
-    return data;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 //************************* TMaterial methods ********************************//
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,12 +60,12 @@ TMaterial::TMaterial(const char* name, int id, glm::vec3 amb, glm::vec3 diff, gl
 ***************************************************************************************************/
 TMaterial::~TMaterial()
 {
-    if(m_shader != 0)
+    if(m_program != 0)
     {
-        glDetachObjectARB(m_shader,m_f_shader);
-        glDetachObjectARB(m_shader,m_g_shader);
-        glDetachObjectARB(m_shader,m_v_shader);
-        glDeleteObjectARB(m_shader);
+        glDetachObjectARB(m_program,m_f_shader);
+        glDetachObjectARB(m_program,m_g_shader);
+        glDetachObjectARB(m_program,m_v_shader);
+        glDeleteObjectARB(m_program);
     }
 }
 
@@ -104,7 +80,7 @@ void TMaterial::_Init( const char* name, int id, glm::vec3 amb, glm::vec3 diff, 
     m_lightModel = lm;
     m_sceneID = 0;
 
-    m_shader = -1;
+    m_program = -1;
     m_baked = false;
     m_useMRT = false;
     m_custom_shader = false;
@@ -114,7 +90,6 @@ void TMaterial::_Init( const char* name, int id, glm::vec3 amb, glm::vec3 diff, 
     else
         m_receive_shadows = true;
     m_is_alpha = false;
-    m_is_tessellated = false;
 }
 /**
 ****************************************************************************************************
@@ -370,7 +345,7 @@ void TMaterial::RenderMaterial()
     cout<<"Rendering "<<m_name;
 #endif
     ///enable shader
-    glUseProgram(m_shader);
+    glUseProgram(m_program);
 
     ///activate textures attached to material (Texture::ActivateTexture() )
     int i=0;
@@ -385,7 +360,7 @@ void TMaterial::RenderMaterial()
 
 	for( m_if = m_features.begin(); m_if != m_features.end(); ++m_if )
 	{
-		(*m_if)->ActivateTextures( m_shader, i );
+		(*m_if)->ActivateTextures( m_program, i );
 	}
 
 #ifdef VERBOSE
@@ -408,7 +383,7 @@ geometry and tesselation shaders optional
 bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *tess_eval, TShader *geometry, TShader *fragment)
 {
     //check OpenGL 4 support(when tessellation shaders present)
-    m_is_tessellated = false;
+    m_has_tessellation_shader = false;
     if(tess_control != NULL && tess_eval != NULL && !GLEW_ARB_gpu_shader5)
     {
         cout<<"OpenGL 4 not supported, can't use tessellation!\n";
@@ -459,15 +434,15 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
     glCompileShader(m_f_shader);
 
     //create and link shader program
-    m_shader = glCreateProgram();
-    glAttachShader(m_shader,m_f_shader);
-    glAttachShader(m_shader,m_v_shader);
+    m_program = glCreateProgram();
+    glAttachShader(m_program,m_f_shader);
+    glAttachShader(m_program,m_v_shader);
 
 
     //do we have tessellation shaders?
     if(tess_control != NULL && tess_eval != NULL)
     {
-        m_is_tessellated = true;
+        m_has_tessellation_shader = true;
         //then load, create, compile and attach tessellation shaders
         m_tc_shader = glCreateShader(GL_TESS_CONTROL_SHADER);
         m_te_shader = glCreateShader(GL_TESS_EVALUATION_SHADER);
@@ -485,8 +460,8 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
         glShaderSource(m_te_shader, 1, &te, NULL);
         glCompileShader(m_tc_shader);
         glCompileShader(m_te_shader);
-        glAttachShader(m_shader,m_tc_shader);
-        glAttachShader(m_shader,m_te_shader);
+        glAttachShader(m_program,m_tc_shader);
+        glAttachShader(m_program,m_te_shader);
     }
 
     //do we have geometry shader?
@@ -503,12 +478,12 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
         const char *gg = geometry_shader.c_str();
         glShaderSource(m_g_shader, 1, &gg,NULL);
         glCompileShader(m_g_shader);
-        glAttachShader(m_shader,m_g_shader);
+        glAttachShader(m_program,m_g_shader);
     }
 
     //final shader linking
-    glLinkProgram(m_shader);
-    glUseProgram(m_shader);
+    glLinkProgram(m_program);
+    glUseProgram(m_program);
 
     //shader creation status: print error if any
     ofstream fout("shader_log.txt", ios_base::app);
@@ -569,7 +544,7 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
     {
         if(!m_it_textures->second->Empty())
         {
-            m_it_textures->second->GetUniforms(m_shader);
+            m_it_textures->second->GetUniforms(m_program);
             m_it_textures->second->ActivateTexture(i,true);
             i++;
         }
@@ -584,12 +559,12 @@ bool TMaterial::CustomShader(TShader *vertex, TShader *tess_control, TShader *te
         SetUniform("material.shininess",m_shininess);
 
         //setup uniform buffers
-        GLint uniformIndex = glGetUniformBlockIndex(m_shader, "Matrices");
+        GLint uniformIndex = glGetUniformBlockIndex(m_program, "Matrices");
         if(uniformIndex >= 0)
-            glUniformBlockBinding(m_shader, uniformIndex, UNIFORM_MATRICES);
-        uniformIndex = glGetUniformBlockIndex(m_shader, "Lights");
+            glUniformBlockBinding(m_program, uniformIndex, UNIFORM_MATRICES);
+        uniformIndex = glGetUniformBlockIndex(m_program, "Lights");
         if(uniformIndex >= 0)
-            glUniformBlockBinding(m_shader, uniformIndex, UNIFORM_LIGHTS);
+            glUniformBlockBinding(m_program, uniformIndex, UNIFORM_LIGHTS);
     }
 
     glUseProgram(0);

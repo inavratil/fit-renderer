@@ -9,9 +9,6 @@
 #include "Material.h"
 #include "shaderGen/ShaderFeature.h"
 
-///Aligned buffer size
-#define BUFFER 512
-
 ///white color
 const glm::vec3 white(1.0f,1.0f,1.0f);
 ///black color
@@ -37,20 +34,7 @@ const glm::vec3 magenta(1.0f,0.0f,1.0f);
 ///cyan color
 const glm::vec3 cyan(0.0f,1.0f,1.0f);
 
-///@struct TShader
-///@brief structure for shader properties
-struct TShader
-{
-    int type;
-    string source;
-    string defines;
 
-    TShader(const char* s, const char* d){
-        type = FRAGMENT;
-        source = s;
-        defines = d;
-    }
-};
 
 
 ///@class TMaterial
@@ -64,7 +48,7 @@ private:
     GLfloat m_shininess, m_transparency, m_reflection;
 
     //other variables
-    bool m_baked, m_custom_shader, m_receive_shadows, m_useMRT, m_is_alpha, m_is_tessellated;
+    bool m_baked, m_custom_shader, m_receive_shadows, m_useMRT, m_is_alpha;
     int m_lightModel;     ///lightModel - also indicates whether algorithm works in screen space
 
 	vector<ShaderFeature*>::iterator	m_if;
@@ -174,18 +158,13 @@ public:
         return m_custom_shader;  
     }
 
-    ///Is shader using tessellation stage?
-    bool IsTessellated(){  
-        return m_is_tessellated;  
-    }
-
     ///Has shader material alpha channel?
     bool IsAlpha(){  
         return m_is_alpha; 
     }
     ///Has material valid shader?
     bool IsShaderOK(){
-        return (m_shader > 0);
+        return (m_program > 0);
     }
 
     ///Get first alpha texture ID

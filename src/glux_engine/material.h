@@ -3,6 +3,24 @@
 
 #include "texture.h"
 
+///Aligned buffer size
+#define BUFFER 512
+
+///@struct TShader
+///@brief structure for shader properties
+struct TShader
+{
+    int type;
+    string source;
+    string defines;
+
+    TShader(const char* s, const char* d){
+        type = FRAGMENT;
+        source = s;
+        defines = d;
+    }
+};
+
 class Material
 { 
 
@@ -21,10 +39,11 @@ protected:
     map<string,Texture*>::iterator	m_it_textures;	//-- texture iterator
 
 	//-- shader
+	bool	m_has_tessellation_shader;
 	//FIXME: not used	string m_source;          //custom shader source
 	//FIXME: not used	map<const char*,GLint> m_shader_locations;
     //FIXME: not used	GLint m_sh_loc;
-    GLint m_f_shader, m_tc_shader, m_te_shader, m_g_shader, m_v_shader, m_shader;
+    GLint m_f_shader, m_tc_shader, m_te_shader, m_g_shader, m_v_shader, m_program;
     
 
 //-----------------------------------------------------------------------------
@@ -46,43 +65,50 @@ public:
     int GetSceneID(){ return m_sceneID; }
     void SetSceneID(int _id){ m_sceneID = _id; }
 
+	string LoadShader( const char* _filename );
+	//-- Is shader using tessellation stage?
+    bool HasTessellationShader(){  
+        return m_has_tessellation_shader;  
+    }
+
 //-----------------------------------------------------------------------------
     ///@brief Set float uniform value in shader
     void SetUniform(const char* v_name, float value){
-        glProgramUniform1f(m_shader, glGetUniformLocation(m_shader,v_name), value);
+        glProgramUniform1f(m_program, glGetUniformLocation(m_program,v_name), value);
     }
     ///@brief Set double uniform value in shader. It is treated like float
     void SetUniform(const char* v_name, double value){
-        glProgramUniform1f(m_shader, glGetUniformLocation(m_shader,v_name), (float)value);
+        glProgramUniform1f(m_program, glGetUniformLocation(m_program,v_name), (float)value);
     }
     ///@brief Set int uniform value in shader
     void SetUniform(const char* v_name, int value){
-        glProgramUniform1i(m_shader, glGetUniformLocation(m_shader,v_name), value);
+        glProgramUniform1i(m_program, glGetUniformLocation(m_program,v_name), value);
     }
     ///@brief Set ivec2 value
     void SetUniform(const char* v_name, glm::ivec2 value){
-        glProgramUniform2iv(m_shader, glGetUniformLocation(m_shader,v_name), 1, glm::value_ptr(value));
+        glProgramUniform2iv(m_program, glGetUniformLocation(m_program,v_name), 1, glm::value_ptr(value));
     }
     ///@brief Set vec2 value
     void SetUniform(const char* v_name, glm::vec2 value){
-        glProgramUniform2fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, glm::value_ptr(value));
+        glProgramUniform2fv(m_program, glGetUniformLocation(m_program,v_name), 1, glm::value_ptr(value));
     }
     ///@brief Set vec3 value
     void SetUniform(const char* v_name, glm::vec3 value){
-        glProgramUniform3fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, glm::value_ptr(value));
+        glProgramUniform3fv(m_program, glGetUniformLocation(m_program,v_name), 1, glm::value_ptr(value));
     }
     ///@brief Set vec4 value
     void SetUniform(const char* v_name, glm::vec4 value){
-        glProgramUniform4fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, glm::value_ptr(value));
+        glProgramUniform4fv(m_program, glGetUniformLocation(m_program,v_name), 1, glm::value_ptr(value));
     }
     ///@brief Set mat4x4 value
     void SetUniform(const char* v_name, glm::mat4 &value){
-        glProgramUniformMatrix4fv(m_shader, glGetUniformLocation(m_shader,v_name), 1, 0, glm::value_ptr(value));
+        glProgramUniformMatrix4fv(m_program, glGetUniformLocation(m_program,v_name), 1, 0, glm::value_ptr(value));
     }
 
 //-----------------------------------------------------------------------------
 private:
 	void _Init( const char* _name, int _id );
+
 
 };
 

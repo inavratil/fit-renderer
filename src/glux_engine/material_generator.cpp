@@ -112,9 +112,6 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 
     cout<<"Baking material "<<m_name<<endl;
 
-	if( m_name == "JoinedMateria#12" )
-		int QQ = 1;
-
     string tmp = m_name;        //temporary string for comparison
 	
 	//shader version. If OpenGL4 is supported, use 400, else 330
@@ -694,12 +691,12 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     glCompileShader(m_f_shader);
 
     //create and link shader program
-    m_shader = glCreateProgram();
-    glAttachShader(m_shader,m_f_shader);
-    glAttachShader(m_shader,m_v_shader);
+    m_program = glCreateProgram();
+    glAttachShader(m_program,m_f_shader);
+    glAttachShader(m_program,m_v_shader);
 
-    glLinkProgram(m_shader);
-    glUseProgram(m_shader);
+    glLinkProgram(m_program);
+    glUseProgram(m_program);
 
     //shader creation status
     glGetShaderInfoLog(m_v_shader, BUFFER, &len, log);
@@ -717,7 +714,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     {
         if(!m_it_textures->second->Empty())
         {
-            m_it_textures->second->GetUniforms(m_shader);
+            m_it_textures->second->GetUniforms(m_program);
             m_it_textures->second->ActivateTexture(i,true);
             i++;
         }
@@ -732,12 +729,12 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     m_baked = true;
 
     //setup uniform buffers
-    GLint uniformIndex = glGetUniformBlockIndex(m_shader, "Matrices");
+    GLint uniformIndex = glGetUniformBlockIndex(m_program, "Matrices");
     if(uniformIndex >= 0)
-        glUniformBlockBinding(m_shader, uniformIndex, UNIFORM_MATRICES);
-    uniformIndex = glGetUniformBlockIndex(m_shader, "Lights");
+        glUniformBlockBinding(m_program, uniformIndex, UNIFORM_MATRICES);
+    uniformIndex = glGetUniformBlockIndex(m_program, "Lights");
     if(uniformIndex >= 0)
-        glUniformBlockBinding(m_shader, uniformIndex, UNIFORM_LIGHTS);
+        glUniformBlockBinding(m_program, uniformIndex, UNIFORM_LIGHTS);
     glUseProgram(0);
 
     //print_uniform_block_info(shader, uniformIndex);
