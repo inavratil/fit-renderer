@@ -13,9 +13,6 @@ bool TScene::InitDebug()
 		ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag" );
 		mat->AddTexture( m_texture_cache->CreateFromImage( "data/tex/error_color.tga" ) );
 		AddMaterial( mat );
-		//AddMaterial("mat_aliasError");
-		//AddTexture("mat_aliasError", "data/tex/error_color.tga", RENDER_TEXTURE);
-		//CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
 		//-- texture
 		GLuint tex_aliaserr = m_texture_cache->Create2DManual("aliaserr_texture",
 			128.0, 128.0,	//-- width and height

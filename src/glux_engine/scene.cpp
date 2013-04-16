@@ -252,7 +252,8 @@ bool TScene::PostInit()
 
 	//-------------------------------------------------------------------------
 
-    cout<<"Baking materials...\n";
+    cout<<"\nBaking materials ...\n";
+	cout<<"-------------------------------------------------------------------------------"<<endl;
 
     //assign light count to all materials and then bake them
     for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
@@ -275,6 +276,34 @@ bool TScene::PostInit()
     AddScreenQuad();
 	    
     cout<<"Post Init OK\n";
+    
+	GLenum Active[2]={ GL_ACTIVE_ATTRIBUTES,GL_ACTIVE_UNIFORMS };
+	GLenum MaxLenght[2]={ GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,GL_ACTIVE_UNIFORM_MAX_LENGTH };
+
+	GLuint PROG = 64;
+	{//loop over set of types {attribute,uniform}
+        GLint Num;//number of active parameter
+        glGetProgramiv(PROG,GL_ACTIVE_UNIFORMS,&Num);//number
+
+        GLint BufLen;//length of the longest attribute name
+        glGetProgramiv(PROG,GL_ACTIVE_UNIFORM_MAX_LENGTH,&BufLen);
+
+        char*Buffer=new char[BufLen+1];//alocate buffer
+        for(GLint i=0;i<Num;++i)
+		{//loop over active parameter
+            GLenum Type;//type of parameter
+            GLint Size;//size of parameter
+            std::string Name;//name of parameter
+            GLint Location;//location of parameter
+            glGetActiveUniform(PROG,i,BufLen,NULL,&Size,&Type,Buffer);
+            Location=glGetUniformLocation(PROG,Buffer);//location
+            Name=std::string(Buffer);//convert buffer to string
+
+			cout<< Location << ", " << Type << ", " << Name << ", " <<Size << endl;
+        }
+        delete[]Buffer;//free buffer
+    }
+
     return true;
 }
 

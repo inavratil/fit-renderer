@@ -160,9 +160,27 @@ int Material::RenderMaterial()
     for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
         if(!m_it_textures->second->Empty())
-        {
-            m_it_textures->second->ActivateTexture(i);
-            i++;
+		{
+
+			//m_it_textures->second->ActivateTexture(i);
+			///1. set uniform values in shader (tiles, texture unit, texture matrix and intensity)
+			GLint loc = glGetUniformLocation(m_program, m_it_textures->first.c_str() );
+			glProgramUniform1i(m_program, loc, i);
+
+			///2. activate and bind texture
+			glActiveTexture(GL_TEXTURE0 + i);
+			//Various texture targets
+			GLint type = m_it_textures->second->GetType();
+			GLuint id = m_it_textures->second->GetID();
+			if(type == CUBEMAP || type == CUBEMAP_ENV)        //for cube map
+				glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+			else if(type == SHADOW_OMNI)                         //for texture array
+				glBindTexture(GL_TEXTURE_2D_ARRAY, id);
+			else if(type == RENDER_TEXTURE_MULTISAMPLE)          //for multisampled texture
+				glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, id);
+			else                                                    //for regular 2D texture
+				glBindTexture(GL_TEXTURE_2D, id);
+			i++;
         }
     }
 

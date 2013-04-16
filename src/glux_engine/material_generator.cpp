@@ -465,13 +465,13 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
         frag_func += LoadFunc("light");
 
         ///3.3.1.1 if is present bump texture, modify normal (bump mapping)
-        tmp = m_name; tmp += "BumpA";
+        tmp = m_name; tmp += "_Bump_A";
         if( m_textures.find(tmp) != m_textures.end() )
         {
             //bump = true;
             //frag_main +=
             //    "  //bump-mapping\n"
-            //    "  vec3 bump_normal = normal + normalize(texture(" + m_name + "BumpA, " + tmp + "_texcoord).xyz*2.0 - " + m_name + "BumpA_intensity);\n"
+            //    "  vec3 bump_normal = normal + normalize(texture(" + m_name + "_Bump_A, " + tmp + "_texcoord).xyz*2.0 - " + m_name + "_Bump_A_intensity);\n"
             //    "  vec4 color = LightModel(bump_normal,eyeVec);\n";   
             frag_main +="  vec4 color = LightModel(normal,eyeVec);\n";
         }
@@ -490,7 +490,7 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     }
 
 //------------------------------------------------------------------------------
-//-- 3.3.3 else constant shading - only material diffuse is in computation
+//-- 3.3.3 else constant shading - only material diffuse is in computations
 
     else
     {
@@ -671,15 +671,19 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 	if( !CheckShaderStatus() )
 		return false;
 
-
     //*************************************
     ///4 Get uniform variables for textures (using Texture::GetUniforms() )
+
     int i=0;
     for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
         if(!m_it_textures->second->Empty())
         {
-            m_it_textures->second->GetUniforms(m_program);
+
+
+			///2. get uniforms location
+			GLint m_texLoc = glGetUniformLocation(m_program, m_it_textures->first.c_str());
+
             m_it_textures->second->ActivateTexture(i,true);
             i++;
         }

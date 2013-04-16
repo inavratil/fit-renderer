@@ -119,7 +119,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 					if(texFound==AI_FAILURE)
 						break;
 
-					path = "data/tex/";
+					path = "data/tex/normal/";
 					path += pth.C_Str();
 
 					TexturePtr tex = m_texture_cache->CreateFromImage( path.c_str() );
@@ -141,7 +141,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 					if(texFound==AI_FAILURE)
 						break;
 
-					path = "data/tex/";
+					path = "data/tex/normal/";
 					path += pth.C_Str();
 
 					TexturePtr tex = m_texture_cache->CreateFromImage( path.c_str() );
