@@ -155,7 +155,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 	}//if(load_materials)
 
 	//update load list
-	UpdateLoadList(scene->mNumMeshes + 2*scene->mNumMaterials);
+	UpdateLoadList(scene->mNumMeshes);
 
 	cout<<"Adding "<<scene->mNumMeshes<<" objects, ";
 

@@ -35,6 +35,7 @@ protected:
     int		m_sceneID;	//-- scene ID - when drawing more scenes than 1
 	bool	m_is_screenspace;
 	bool	m_has_alpha_channel;
+	bool	m_baked;
 	
 	//-- associative array of input textures
 	map<string,Texture*>			m_textures;		//-- textures list    

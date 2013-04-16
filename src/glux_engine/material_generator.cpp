@@ -107,7 +107,7 @@ string computeTexel(Texture *t, string name)
 bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 {
     //dont't bake linked custom shader
-    if(m_custom_shader)
+    if(m_baked)
         return true;
 
     cout<<"Baking material "<<m_name<<endl;

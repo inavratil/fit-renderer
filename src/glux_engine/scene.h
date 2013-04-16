@@ -392,7 +392,8 @@ public:
 		_mat->SetSceneID( m_sceneID );
 		_mat->SetID( m_materials.size() );
 		m_materials[_mat->GetName()] = _mat;
-		LoadScreen(); //update loading screen
+		UpdateLoadList( 1 );
+		//LoadScreen(); //update loading screen
 	}
     ///@brief Add new material(see TMaterial()) to list
     void AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
@@ -401,7 +402,8 @@ public:
             m->SetSceneID(m_sceneID);
 			m->SetID( m_materials.size() );
 			m_materials[name] = m;
-            LoadScreen(); //update loading screen
+            //LoadScreen(); //update loading screen
+			UpdateLoadList( 1 );
     }
 
     //bind material to object

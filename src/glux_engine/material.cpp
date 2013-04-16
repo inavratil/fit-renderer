@@ -40,6 +40,7 @@ void Material::_Init( const char* _name, int _id )
 
 	m_has_alpha_channel = false;
 	m_has_tessellation_shader = false;
+	m_baked = false;
 
 	m_f_source = m_tc_source = m_te_source = m_g_source = m_v_source = "";
 }
@@ -149,6 +150,8 @@ int Material::RenderMaterial()
 	#ifdef VERBOSE
     cout<<"Rendering "<<m_name;
 	#endif
+	if( !m_baked ) BakeMaterial( 1 );
+
     ///enable shader
     glUseProgram(m_program);
 

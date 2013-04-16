@@ -23,7 +23,6 @@ void ScreenSpaceMaterial::_Init( const char* _name, const char* _vs, const char*
 	m_v_source = _vs_defines + LoadShader( _vs );
 	m_f_source = _fs_defines + LoadShader( _fs );
 
-	CustomShader();
 	m_is_screenspace = true;
 }
 
@@ -39,16 +38,13 @@ geometry and tesselation shaders optional
 @param geometry geometry shader sources
 @param fragment fragment shader sources
 ***************************************************************************************************/
-//bool ScreenSpaceMaterial::BakeMaterial( int , int , bool  )
-bool ScreenSpaceMaterial::CustomShader()
+bool ScreenSpaceMaterial::BakeMaterial( int , int , bool  )
 {
-	if( !BuildProgram() ) 
-		return false;
-	if( !CheckShaderStatus() )
-		return false;
+	if( m_baked ) return true;
+	if( !BuildProgram() ) return false;
+	if( !CheckShaderStatus() ) return false;
 
-    //*************************************
-    ///4 Get uniform variables for textures (using Texture::GetUniforms() )
+    //-- Get uniform variables for textures (using Texture::GetUniforms() )
     int i=0;
     for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
@@ -60,7 +56,7 @@ bool ScreenSpaceMaterial::CustomShader()
         }
     }
 	
-    //m_baked = true;
+    m_baked = true;
     //m_custom_shader = true;
     return true;
 }

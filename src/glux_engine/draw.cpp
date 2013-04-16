@@ -455,8 +455,7 @@ void TScene::LoadScreen(bool swap)
         loaded = 0.7f;
     
     //draw progress bar
-    if(m_materials["mat_progress_bar"]->IsShaderOK())
-        m_materials["mat_progress_bar"]->RenderMaterial();
+    m_materials["mat_progress_bar"]->RenderMaterial();
     
     GLfloat vertattribs[] = { -0.7f,-0.2f, loaded,-0.2f, -0.7f,-0.3f, loaded,-0.3f };
 
