@@ -22,6 +22,13 @@ Material::~Material(void)
 	//for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); m_it_textures++)
 	//	if( m_it_textures->second )
 	//		delete m_it_textures->second;
+	if(m_program != 0)
+    {
+        glDetachObjectARB(m_program,m_f_shader);
+        glDetachObjectARB(m_program,m_g_shader);
+        glDetachObjectARB(m_program,m_v_shader);
+        glDeleteObjectARB(m_program);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -33,6 +40,8 @@ void Material::_Init( const char* _name, int _id )
 
 	m_has_alpha_channel = false;
 	m_has_tessellation_shader = false;
+
+	m_f_source = m_tc_source = m_te_source = m_g_source = m_v_source = "";
 }
 
 //-----------------------------------------------------------------------------
@@ -63,7 +72,7 @@ string Material::NextTexture( string _texname )
 
 //-----------------------------------------------------------------------------
 
-GLuint Material::AddTexturePtr( TexturePtr _tex )
+GLuint Material::AddTexture( TexturePtr _tex )
 {
 	//-- 1. generate new texture name (material name + texture mode (base, env, bump...) using TMaterial::NextTexture()
     string texname;
@@ -98,9 +107,13 @@ GLuint Material::AddTexturePtr( TexturePtr _tex )
 
 //-----------------------------------------------------------------------------
 
-void Material::RemoveTexture( const char *_texName )
-{	
-	m_textures.erase(_texName);
+/**
+@brief Delete texture specified by name
+@param texname texture name
+***************************************/
+void  Material::DeleteTexture( const char *_texName )
+{ 
+	m_textures.erase(_texName); 
 }
 
 //-----------------------------------------------------------------------------
@@ -154,3 +167,157 @@ int Material::RenderMaterial()
 }
 
 //-----------------------------------------------------------------------------
+
+GLuint Material::BuildShader( GLuint _program, GLenum _shader_type )
+{
+	string source;
+	GLenum type;
+	GLuint shader;
+
+	switch( _shader_type )
+	{
+	case FRAG_SHADER: 
+		source = m_f_source; 
+		type = GL_FRAGMENT_SHADER;
+		break;
+	case VERT_SHADER: 
+		source = m_v_source; 
+		type = GL_VERTEX_SHADER;
+		break;
+	case GEOM_SHADER: 
+		source = m_g_source; 
+		type = GL_GEOMETRY_SHADER;
+		break;
+	case TC_SHADER: 
+		source = m_tc_source; 
+		type = GL_TESS_CONTROL_SHADER;
+		break;
+	case TE_SHADER: 
+		source = m_te_source; 
+		type = GL_TESS_EVALUATION_SHADER;
+		break;
+	default: 
+		return 0;
+	}
+	//-- check if shaders are loaded correctly (i.e. if file exist)
+	if( source == "null" )
+        return 0;
+	//-- check OpenGL 4 support (when tessellation shaders present)
+	if( (_shader_type == TC_SHADER || _shader_type == TE_SHADER) && !GLEW_ARB_gpu_shader5)
+    {
+        cerr << "WARNING: OpenGL 4 not supported, can't use tessellation shaders!\n";
+        return 0;
+    }
+
+	//-- shader version. If OpenGL4 is supported, use 400, else 330
+    string version = "#version 330 compatibility\n";
+    if(GLEW_ARB_gpu_shader5)
+        version = "#version 400 core\n";
+
+	if( _shader_type == TC_SHADER || _shader_type == TE_SHADER )
+		m_has_tessellation_shader = true;
+	 
+    //then load, create, compile and attach tessellation shaders
+    shader = glCreateShader(type);
+
+    //load and link shader
+	source = version + source;
+    const char *s = source.c_str();
+  
+    glShaderSource(shader, 1, &s, NULL);
+    glCompileShader(shader);
+    glAttachShader(_program,shader);
+
+	return shader;
+}
+
+//-----------------------------------------------------------------------------
+
+GLuint Material::BuildProgram()
+{
+	m_program = glCreateProgram();
+
+	m_v_shader = BuildShader( m_program, VERT_SHADER );
+	m_f_shader = BuildShader( m_program, FRAG_SHADER );
+
+	if( !m_tc_source.empty() && !m_te_source.empty() )
+	{
+		m_tc_shader = BuildShader( m_program, TC_SHADER );
+		m_te_shader = BuildShader( m_program, TE_SHADER );
+	}
+	if( !m_g_source.empty() )
+		m_g_shader = BuildShader( m_program, GEOM_SHADER );
+
+	glLinkProgram( m_program );
+
+	return m_program;
+
+}
+
+//-----------------------------------------------------------------------------
+
+bool Material::CheckShaderStatus()
+{
+	if( !m_program ) return false;
+	
+	glUseProgram( m_program );
+
+	bool compile_err = false;
+	char log[BUFFER]; 
+	int len;
+
+    //shader creation status: print error if any
+    ofstream fout("shader_log.txt", ios_base::app);
+
+    glGetShaderInfoLog(m_v_shader, BUFFER, &len, log);
+    
+    //log from vertex shader
+    if(strstr(log, "succes") == NULL && len > 0) 
+    {
+        fout<<endl<<m_name<<":"<<log;  
+        cout<<endl<<m_name<<":"<<log;  
+        compile_err = true;
+    }
+    //log from tessellation shaders
+	if( !m_tc_source.empty() && !m_te_source.empty())
+    {
+        glGetShaderInfoLog(m_tc_shader, BUFFER, &len, log);
+        if(strstr(log, "succes") == NULL && len > 0) 
+        {
+            fout<<endl<<m_name<<":"<<log;  
+            cout<<endl<<m_name<<":"<<log;
+            compile_err = true;
+        }
+        glGetShaderInfoLog(m_te_shader, BUFFER, &len, log);
+        if(strstr(log, "succes") == NULL && len > 0) 
+        {
+            fout<<endl<<m_name<<":"<<log;  
+            cout<<endl<<m_name<<":"<<log;
+            compile_err = true;
+        }
+    }
+    //log from geometry shader
+    if( !m_g_source.empty() )
+    {
+        glGetShaderInfoLog(m_g_shader, BUFFER, &len, log);
+        if(strstr(log, "succes") == NULL && len > 0) 
+        {
+            fout<<endl<<m_name<<":"<<log;  
+            cout<<endl<<m_name<<":"<<log;
+            compile_err = true;
+        }
+    }
+    //log from fragment shader
+    glGetShaderInfoLog(m_f_shader, BUFFER, &len, log);
+    if(strstr(log, "succes") == NULL && len > 0) 
+    {
+        fout<<endl<<m_name<<":"<<log;   
+        cout<<endl<<m_name<<":"<<log;
+        compile_err = true;
+    }
+    fout.close();
+
+	glUseProgram( 0 );
+
+	return !compile_err;
+}

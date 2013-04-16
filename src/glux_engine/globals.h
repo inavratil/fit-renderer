@@ -87,10 +87,6 @@ enum LightTypes{SPOT, OMNI};
 //enum DPShadowParams{CUT, AUTOROT};
 enum DPShadowMethods{DPSM, IPSM, CUT, WARP_DPSM};
 
-
-///Shader types
-enum ShaderTypes{VERTEX, TESS_CONTROL, TESS_EVAL, GEOMETRY, FRAGMENT};
-
 ///Texture types
 enum TextureTypes{BASE,ENV,BUMP,PARALLAX,DISPLACE,CUBEMAP,CUBEMAP_ENV, ALPHA, SHADOW, SHADOW_OMNI, 
                   RENDER_TEXTURE, RENDER_TEXTURE_MULTISAMPLE, CUSTOM};

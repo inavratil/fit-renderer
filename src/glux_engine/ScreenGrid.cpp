@@ -1,5 +1,6 @@
 #include "ScreenGrid.h"
 
+
 ScreenGrid::ScreenGrid( float _res )
 {
 	_Init( glm::vec4(0.0, _res, 0.0, _res), _res );
@@ -23,12 +24,11 @@ void ScreenGrid::_Init( glm::vec4 _range, float _res )
 
 	UpdateRange( _range );
 
-	TShader grid_vert("data/shaders/warping/dbg_polynomials_grid.vert", "");
-	TShader grid_frag("data/shaders/warping/dbg_polynomials_grid.frag", "");
+	//TShader grid_vert("data/shaders/warping/dbg_polynomials_grid.vert", "");
+	//TShader grid_frag("data/shaders/warping/dbg_polynomials_grid.frag", "");
 	
 	m_pMat = NULL;
-	m_pMat = new TMaterial("mat_drawScreenGrid", 0, white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-	m_pMat->CustomShader(&grid_vert, NULL, NULL, NULL, &grid_frag);
+	m_pMat = new ScreenSpaceMaterial("mat_drawScreenGrid", "data/shaders/warping/dbg_polynomials_grid.vert", "data/shaders/warping/dbg_polynomials_grid.frag" );
 
 	this->InitVertexData();
 }

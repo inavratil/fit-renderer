@@ -103,7 +103,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 					path += pth.C_Str();
 					
 					TexturePtr tex = m_texture_cache->CreateFromImage( path.c_str() );
-					mat->AddTexturePtr( tex );
+					mat->AddTexture( tex );
 					//AddTexture(m_name.c_str(), path.c_str(), BASE, MODULATE, 1.0f, 1.0f, 1.0f, true, true);
 				}
 			}
@@ -125,7 +125,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 
 					TexturePtr tex = m_texture_cache->CreateFromImage( path.c_str() );
 					tex->SetType( BUMP );
-					mat->AddTexturePtr( tex );
+					mat->AddTexture( tex );
 					//AddTexture(m_name.c_str(), path.c_str(), BUMP, MODULATE, 1.0f, 1.0f, 1.0f, true, true);
 				}
 			}
@@ -147,7 +147,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 
 					TexturePtr tex = m_texture_cache->CreateFromImage( path.c_str() );
 					tex->SetType( BUMP );
-					mat->AddTexturePtr( tex );
+					mat->AddTexture( tex );
 					//AddTexture(m_name.c_str(), path.c_str(), BUMP, MODULATE, 1.0f, 1.0f, 1.0f, true, true);
 				}
 			}

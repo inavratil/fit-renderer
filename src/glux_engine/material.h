@@ -6,6 +6,7 @@
 ///Aligned buffer size
 #define BUFFER 512
 
+enum ShaderTypes { FRAG_SHADER, VERT_SHADER, GEOM_SHADER, TC_SHADER, TE_SHADER };
 ///@struct TShader
 ///@brief structure for shader properties
 struct TShader
@@ -15,7 +16,7 @@ struct TShader
     string defines;
 
     TShader(const char* s, const char* d){
-        type = FRAGMENT;
+        type = FRAG_SHADER;
         source = s;
         defines = d;
     }
@@ -44,7 +45,8 @@ protected:
 	//FIXME: not used	string m_source;          //custom shader source
 	//FIXME: not used	map<const char*,GLint> m_shader_locations;
     //FIXME: not used	GLint m_sh_loc;
-    GLint m_f_shader, m_tc_shader, m_te_shader, m_g_shader, m_v_shader, m_program;
+    GLint	m_f_shader, m_tc_shader, m_te_shader, m_g_shader, m_v_shader, m_program;
+	string	m_f_source, m_tc_source, m_te_source, m_g_source, m_v_source;
     
 
 //-----------------------------------------------------------------------------
@@ -56,10 +58,13 @@ public:
 	virtual ~Material(void);
 
 	string NextTexture( string _texname );
-	GLuint AddTexturePtr( TexturePtr _tex );
-	void RemoveTexture( const char *_texName );
+	GLuint AddTexture( TexturePtr _tex );
+	void DeleteTexture( const char *_texName );
 
 	string LoadShader( const char* _filename );
+	GLuint BuildShader( GLuint _program, GLenum _shader_type );
+	GLuint BuildProgram();
+	bool CheckShaderStatus();
 
 	
     //dynamically generate material shader

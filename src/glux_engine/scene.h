@@ -55,12 +55,6 @@ protected:
     
     int m_shadow_textures;    //count of shader textures
 
-    ///texture cache: all loaded textures are stored here; if there's request for load of already
-    ///loaded texture, cache texture will be used. Cache contains source file and pointer to
-    ///already created texture
-    //map<string,GLuint> m_tex_cache;
-    ///iterator for texture cache container
-    //map<string,GLuint>::iterator m_it;
     ///3DS objects cache - purpose is the same as texture cache
     map<string,VBO> m_obj_cache;
     ///iterator for object cache container
@@ -409,35 +403,9 @@ public:
 			m_materials[name] = m;
             LoadScreen(); //update loading screen
     }
-   
-    //add texture
-    //void AddTexture(const char *name, const char *file, GLint textype = BASE, GLint texmode = MODULATE,
-    //    GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool mipmap = true, bool aniso = false);
-
-    //add cubemap
-    //void AddTexture(const char *name, const char **files, GLint textype = CUBEMAP, GLint texmode = MODULATE,
-    //    GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool aniso = false);
-
-    //add texture from data
-    //void AddTextureData(const char *mat_name, const char *tex_name, const void *data, glm::vec2 tex_size, GLenum tex_format = GL_RGB, GLenum data_type = GL_UNSIGNED_BYTE, 
-    //    GLint textype = BASE, GLint texmode = MODULATE, GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool mipmap = true, bool aniso = false);
-
-	//remove texture
-	//void RemoveTexture( const char *name, const char *_texName );
 
     //bind material to object
     void SetMaterial(const char* obj_name, const char *mat_name);
-
-    ///@brief Load custom shader from file. Shader can be then applied to any material
-    ///(see TMaterial::CustomShader() ). Vertex and fragment shader only
-    //void CustomShader(const char *name, const char* vert_source, const char* frag_source, 
-    //                  const char *vert_defines = " ", const char *frag_defines = " "){
-    //    if(m_materials.find(name) == m_materials.end())
-    //        cerr<<"WARNING (CustomShader): no material with name "<<name<<"\n";
-    //    else
-    //        if(!m_materials[name]->CustomShader(vert_source, frag_source, vert_defines, frag_defines))
-    //            throw ERR;
-    //}
 
     ///@brief Set uniform variable in material shader (see TMaterial::SetUniform() )
     template<class UNIFORM>

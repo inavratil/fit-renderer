@@ -137,8 +137,7 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
 	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
 
 	ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_progress_bar", "data/shaders/quad.vert", "data/shaders/progress_bar.frag" );
-	mat->AddTexturePtr( m_texture_cache->CreateFromImage( "data/load.png" ) );
-	//mat->CustomShader( , "", "" );
+	mat->AddTexture( m_texture_cache->CreateFromImage( "data/load.png" ) );
 	AddMaterial( mat );
 	
     return true;
@@ -265,6 +264,7 @@ bool TScene::PostInit()
             //   m_im->second->UseMRT(true);
             //bake material
             m_im->second->BakeMaterial(m_lights.size(), m_dpshadow_method, m_use_pcf);
+
             LoadScreen();
         }
     }
@@ -348,142 +348,6 @@ void TScene::Destroy(bool delete_cache)
     //glDeleteBuffers(4, to_delete);
 }
 
-/**
-****************************************************************************************************
-@brief Add texture to scene. If texture has been loaded, a texture pointer from cache is used
-instead of reloading from file
-@param name texture name
-@param file external texture file (.tga)
-@param textype texture type (can be BASE,ENV,BUMP,PARALLAX,DISPLACE,CUBEMAP,CUBEMAP_ENV, ALPHA, SHADOW,
-                                    SHADOW_OMNI, RENDER_TEXTURE, RENDER_TEXTURE_MULTISAMPLE)
-@param texmode texture addition mode (can be ADD,MODULATE,DECAL,BLEND)
-@param intensity texture color intensity (or bump intensity)
-@param tileX count of horizontal tiles
-@param tileY count of vertical tiles
-@param mipmap should we generate mipmaps?
-@param aniso should we use anisotropic filtering?
-***************************************************************************************************/
-/*
-void TScene::AddTexture(const char *name, const char *file, GLint textype, GLint texmode,
-                        GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso)
-{
-    //material existence control
-    if(m_materials.find(name) == m_materials.end())
-    {
-        cerr<<"WARNING (AddTexture): no material with name "<<name<<"\n";
-        return;
-    }
-    ///find out, if texture hasn't been loaded yet
-    m_it = m_tex_cache.find(file);
-    GLint cache;
-    ///if no match, load texture normally
-    if( m_it == m_tex_cache.end() )
-        cache = -1;
-    ///else use existing texture
-    else
-        cache = m_it->second;
-    ///then save texture ID to cache
-    int texID;
-    if( (texID = m_materials[name]->AddTexture(file,textype,texmode,intensity,tileX,tileY,mipmap,aniso,cache)) == ERR)
-        throw ERR;
-    else
-        m_tex_cache[file] = texID;
-    //LoadScreen();	//update loading screen
-}
-*/
-
-/**
-****************************************************************************************************
-@brief Add cubemap texture to scene. If texture has been loaded, a texture pointer from cache is used
-instead of reloading from file
-@param name texture name
-@param files array of 6 external texture files (.tga)
-@param textype texture type (CUBEMAP)
-@param texmode texture addition mode (can be ADD,MODULATE,DECAL,BLEND)
-@param intensity texture color intensity (or bump intensity)
-@param tileX count of horizontal tiles
-@param tileY count of vertical tiles
-@param aniso should we use anisotropic filtering?
-***************************************************************************************************/
-/*
-void TScene::AddTexture(const char *name, const char **files, GLint textype, GLint texmode,
-                        GLfloat intensity, GLfloat tileX, GLfloat tileY, bool aniso)
-{
-    //material existence control
-    if(m_materials.find(name) == m_materials.end())
-    {
-        cerr<<"WARNING (AddTexture): no material with name "<<name<<"\n";
-        return;
-    }
-
-    //find out, if texture hasn't been loaded yet
-    m_it = m_tex_cache.find(files[0]);
-    GLint cache;
-    ///if no match, load texture normally
-    if( m_it == m_tex_cache.end() )
-        cache = -1;
-    ///else use existing texture
-    else
-        cache = m_it->second;
-    ///then save texture ID to cache
-    int texID;
-    if( (texID = m_materials[name]->AddTexture(files,textype,texmode,intensity,tileX,tileY,aniso,cache)) == ERR)
-        throw ERR;
-    m_tex_cache[files[0]] = texID;
-    //LoadScreen();	//update loading screen
-}
-*/
-
-/**
-****************************************************************************************************
-@brief Add texture from given data
-@param name material name
-@param tex_name texture name
-@param data texture data in any format (int, float...)
-@param tex_size texture width and height
-@param tex_format OpenGL texture format (can be GL_RGBA, GL_RGBA16F or GL_RGBA32F)
-@param data_type internal data format (can be GL_UNSIGNED_BYTE or GL_FLOAT)
-@param textype texture type (can be BASE,ENV,BUMP)
-@param texmode texture addition mode (can be ADD,MODULATE,DECAL,BLEND)
-@param intensity texture color intensity (or bump intensity)
-@param tileX count of horizontal tiles
-@param tileY count of vertical tiles
-@param mipmap sholud we generate mipmaps for texture?
-@param aniso should we use anisotropic filtering?
-***************************************************************************************************/
-/*
-void TScene::AddTextureData(const char *name, const char *tex_name, const void *data, glm::vec2 tex_size, GLenum tex_format, GLenum data_type, 
-        GLint textype, GLint texmode, GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso)
-{
-    //material existence control
-    if(m_materials.find(name) == m_materials.end())
-    {
-        cerr<<"WARNING (AddTextureData): no material with name "<<name<<"\n";
-        return;
-    }
-    //save texture ID to cache
-    int texID;
-    if( (texID = m_materials[name]->AddTextureData(tex_name,textype,data,tex_size,tex_format,data_type,
-                                                   texmode,intensity,tileX,tileY,mipmap,aniso)) == ERR)
-        throw ERR;
-    else
-        m_tex_cache[tex_name] = texID;
-    //LoadScreen();	//update loading screen
-}
-*/
-/*
-void TScene::RemoveTexture( const char *name, const char *_texName )
-{
-	//material existence control
-    if(m_materials.find(name) == m_materials.end())
-    {
-        cerr<<"WARNING (AddTextureData): no material with name "<<name<<"\n";
-        return;
-    }
-
-	m_materials[name]->RemoveTexture(_texName);
-}
-*/
 /**
 ****************************************************************************************************
 @brief Bind material(identified by mat_name) to object(identified by obj_name)

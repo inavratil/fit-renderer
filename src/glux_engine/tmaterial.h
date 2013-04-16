@@ -88,46 +88,17 @@ public:
 	}
 	void SetShininess( float _shin ){ m_shininess = _shin; }
 
-	//finds next free texture in the list
-    //string NextTexture(string textype);		//FIXME: do rodicovske tridy
-	//GLuint AddTexture( TexturePtr _tex );	//FIXME: do rodicovske tridy
-
-    //texture from file
-    GLint AddTexture(const char *file, GLint textype, GLint texmode,
-                     GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso, GLint cache);
     //from cubemap
-    GLint AddTexture(const char **files, GLint textype, GLint texmode,
-                     GLfloat intensity, GLfloat tileX, GLfloat tileY, bool aniso, GLint cache);
+    //GLint AddTexture(const char **files, GLint textype, GLint texmode,
+    //                 GLfloat intensity, GLfloat tileX, GLfloat tileY, bool aniso, GLint cache);
     //from data
-    GLint AddTextureData(const char *texname, GLint textype, const void *texdata, glm::vec2 tex_size, GLenum tex_format, GLenum data_type, 
-                        GLint texmode, GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso);
-
-	//remove texture
-	void RemoveTexture( const char *_texName );
-
-  
-    /**
-    @brief Delete texture specified by name
-    @param texname texture name
-    ***************************************/
-    void DeleteTexture(string texname){ 
-        m_textures.erase(texname); 
-    }
+    //GLint AddTextureData(const char *texname, GLint textype, const void *texdata, glm::vec2 tex_size, GLenum tex_format, GLenum data_type, 
+    //                    GLint texmode, GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso);
 
     //add shadow map
     void AddTextureFromCache(int type, GLuint id, GLfloat intensity);
     //remove all shadow maps
     void RemoveShadows();
-
-
-    //load custom shader - vertex and fragment stage only
-    bool CustomShader(const char* vert_source, const char* frag_source, const char *vert_defines, const char *frag_defines){
-        TShader vert(vert_source, vert_defines);
-        TShader frag(frag_source, frag_defines);
-        return CustomShader(&vert, NULL, NULL, NULL, &frag);
-    }
-    //load custom shader - all stages
-    bool CustomShader(TShader *vertex, TShader *tess_control, TShader *tess_eval, TShader *geometry, TShader *fragment);
 
     ///@brief Toggle use of MRT
     void UseMRT(bool flag){ 

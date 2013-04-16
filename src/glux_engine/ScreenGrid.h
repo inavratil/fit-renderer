@@ -3,7 +3,7 @@
 
 #include "globals.h"
 #include "resources/SceneManager.h"
-#include "tmaterial.h"
+#include "ScreenSpaceMaterial.h"
 #include "IShadowTechnique.h"
 
 class IShadowTechnique;
@@ -26,7 +26,7 @@ protected:
 	int m_iNumLines;
 	int m_iResolution;
 
-	TMaterial*		m_pMat;
+	Material*		m_pMat;
 
 public:
 	ScreenGrid( glm::vec4 _range, float _res );
