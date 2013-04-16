@@ -16,6 +16,7 @@
 #include "IShadowTechnique.h"
 #include "ScreenGrid.h"
 #include "Pass.h"
+#include "ScreenSpaceMaterial.h"
 
 #include "resources/SceneManager.h"
 #include "resources/TextureCache.h"
@@ -38,9 +39,9 @@ protected:
     map<string,TObject*>::iterator m_io;
 
     ///associative array with all materials
-    map<string,TMaterial*> m_materials;
+    map<string,Material*> m_materials;
     ///iterator for materials container
-    map<string,TMaterial*>::iterator m_im;
+    map<string,Material*>::iterator m_im;
     
 	///associative array with all lights
     vector<TLight*> m_lights;
@@ -57,9 +58,9 @@ protected:
     ///texture cache: all loaded textures are stored here; if there's request for load of already
     ///loaded texture, cache texture will be used. Cache contains source file and pointer to
     ///already created texture
-    map<string,GLuint> m_tex_cache;
+    //map<string,GLuint> m_tex_cache;
     ///iterator for texture cache container
-    map<string,GLuint>::iterator m_it;
+    //map<string,GLuint>::iterator m_it;
     ///3DS objects cache - purpose is the same as texture cache
     map<string,VBO> m_obj_cache;
     ///iterator for object cache container
@@ -384,13 +385,14 @@ public:
 
     /////////////////////////////////////// MATERIALS&TEXTURES /////////////////////////////////
 
-	TMaterial* GetMaterial( const char* _name )
+	Material* GetMaterial( const char* _name )
 	{
 		if(m_materials.find(_name) == m_materials.end())
 			cerr<<"ERROR (GetMaterial): no material with name "<<_name<<"\n";
 		return m_materials[_name];
 	}
-	void AddMaterial( TMaterial* _mat )
+
+	void AddMaterial( Material* _mat )
 	{
 		if( !_mat ) return;
 		_mat->SetSceneID( m_sceneID );
@@ -409,33 +411,33 @@ public:
     }
    
     //add texture
-    void AddTexture(const char *name, const char *file, GLint textype = BASE, GLint texmode = MODULATE,
-        GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool mipmap = true, bool aniso = false);
+    //void AddTexture(const char *name, const char *file, GLint textype = BASE, GLint texmode = MODULATE,
+    //    GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool mipmap = true, bool aniso = false);
 
     //add cubemap
-    void AddTexture(const char *name, const char **files, GLint textype = CUBEMAP, GLint texmode = MODULATE,
-        GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool aniso = false);
+    //void AddTexture(const char *name, const char **files, GLint textype = CUBEMAP, GLint texmode = MODULATE,
+    //    GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool aniso = false);
 
     //add texture from data
-    void AddTextureData(const char *mat_name, const char *tex_name, const void *data, glm::vec2 tex_size, GLenum tex_format = GL_RGB, GLenum data_type = GL_UNSIGNED_BYTE, 
-        GLint textype = BASE, GLint texmode = MODULATE, GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool mipmap = true, bool aniso = false);
+    //void AddTextureData(const char *mat_name, const char *tex_name, const void *data, glm::vec2 tex_size, GLenum tex_format = GL_RGB, GLenum data_type = GL_UNSIGNED_BYTE, 
+    //    GLint textype = BASE, GLint texmode = MODULATE, GLfloat intensity = 1.0, GLfloat tileX = 1.0, GLfloat tileY = 1.0, bool mipmap = true, bool aniso = false);
 
 	//remove texture
-	void RemoveTexture( const char *name, const char *_texName );
+	//void RemoveTexture( const char *name, const char *_texName );
 
     //bind material to object
     void SetMaterial(const char* obj_name, const char *mat_name);
 
     ///@brief Load custom shader from file. Shader can be then applied to any material
     ///(see TMaterial::CustomShader() ). Vertex and fragment shader only
-    void CustomShader(const char *name, const char* vert_source, const char* frag_source, 
-                      const char *vert_defines = " ", const char *frag_defines = " "){
-        if(m_materials.find(name) == m_materials.end())
-            cerr<<"WARNING (CustomShader): no material with name "<<name<<"\n";
-        else
-            if(!m_materials[name]->CustomShader(vert_source, frag_source, vert_defines, frag_defines))
-                throw ERR;
-    }
+    //void CustomShader(const char *name, const char* vert_source, const char* frag_source, 
+    //                  const char *vert_defines = " ", const char *frag_defines = " "){
+    //    if(m_materials.find(name) == m_materials.end())
+    //        cerr<<"WARNING (CustomShader): no material with name "<<name<<"\n";
+    //    else
+    //        if(!m_materials[name]->CustomShader(vert_source, frag_source, vert_defines, frag_defines))
+    //            throw ERR;
+    //}
 
     ///@brief Set uniform variable in material shader (see TMaterial::SetUniform() )
     template<class UNIFORM>
@@ -589,9 +591,9 @@ public:
     //prepare screen quad
     void AddScreenQuad();
     //create single data texture
-    void CreateDataTexture(const char* name, int resX, int resY, GLint tex_format, GLenum tex_type, GLenum tex_target = GL_TEXTURE_2D, bool mipmaps = false);
+    //void CreateDataTexture(const char* name, int resX, int resY, GLint tex_format, GLenum tex_type, GLenum tex_target = GL_TEXTURE_2D, bool mipmaps = false);
     //prepare texture to render into for HDR rendering
-    void CreateHDRRenderTarget(int resX = -1, int resY = -1, GLint tex_format = GL_RGBA16F, GLenum tex_type = GL_FLOAT, bool normal_buffer = false);
+    //void CreateHDRRenderTarget(int resX = -1, int resY = -1, GLint tex_format = GL_RGBA16F, GLenum tex_type = GL_FLOAT, bool normal_buffer = false);
     //resize render target textures
     void ResizeHDRRenderTarget(int resX, int resY, GLint tex_format = GL_RGBA16F, GLenum tex_type = GL_FLOAT);
     //check framebuffer status

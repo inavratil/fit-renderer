@@ -89,64 +89,6 @@ void TMaterial::_Init( const char* name, int id, glm::vec3 amb, glm::vec3 diff, 
         m_receive_shadows = false;
     else
         m_receive_shadows = true;
-    m_is_alpha = false;
-}
-/**
-****************************************************************************************************
-@brief Finds and returns next free texture name in list (important to synchronize generated texture names
-to them stored in TMaterial::textures field)
-@param texname suffix, texture type (like Base, Bump, Env...) 
-@return new texture name
-***************************************************************************************************/
-string TMaterial::NextTexture(string texname)
-{
-    int i = 1;
-    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
-    {
-        ///find first empty texture, add index to m_it_textures's name and return this name
-        if(texname == m_it_textures->first || m_it_textures->first.empty() )
-        {
-            string rep;
-            rep = num2str(char('A' + i));
-            texname.replace(texname.length()-1, rep.size(), rep.c_str());
-            i++;
-        }
-    }
-    return texname;
-}
-
-
-GLuint TMaterial::AddTexture( TexturePtr _tex )
-{
-	//-- 1. generate new texture name (material name + texture mode (base, env, bump...) using TMaterial::NextTexture()
-    string texname;
-	switch(_tex->GetType())
-    {
-        //base map
-    case BASE: texname = NextTexture(m_name + "_Base_A"); break;
-        //alpha map
-    case ALPHA: texname = NextTexture(m_name + "_Alpha_A"); m_is_alpha = true; break;
-        //environment map
-    case ENV: texname = NextTexture(m_name + "_Env_A"); break;
-        //bump map
-    case BUMP: texname = NextTexture(m_name + "_Bump_A"); break;
-        //parallax map
-    case PARALLAX: texname = NextTexture(m_name + "_Parallax_A"); break;   
-        //displacement map
-    case DISPLACE: texname = NextTexture(m_name + "_Displace_A"); break; 
-        //cube map
-    case CUBEMAP: texname = NextTexture(m_name + "_Cube_A"); break; 
-        //environment cube map
-    case CUBEMAP_ENV: texname = m_name + "_CubeEnv_A"; break;//NextTexture(m_name + "CubeEnvA"); break; 
-        //render textures
-    case RENDER_TEXTURE: 
-    case RENDER_TEXTURE_MULTISAMPLE: 
-        texname = _tex->GetName(); 
-        break; 
-	}
-
-	m_textures[texname] = _tex;
-	return _tex->GetID();
 }
 
 /**
@@ -175,7 +117,7 @@ GLint TMaterial::AddTexture(const char *file, GLint textype, GLint texmode, GLfl
         //base map
     case BASE: texname = NextTexture(m_name + "BaseA"); break;
         //alpha map
-    case ALPHA: texname = NextTexture(m_name + "AlphaA"); m_is_alpha = true; break;
+    case ALPHA: texname = NextTexture(m_name + "AlphaA"); m_has_alpha_channel = true; break;
         //environment map
     case ENV: texname = NextTexture(m_name + "EnvA"); break;
         //bump map
@@ -263,11 +205,6 @@ GLint TMaterial::AddTextureData(const char *texname, GLint textype, const void *
     return m_textures[texname]->Load(texname, textype, texdata, tex_size, tex_format, data_type, texmode, intensity, tileX, tileY, mipmap, aniso);
 }
 
-void TMaterial::RemoveTexture( const char *_texName )
-{	
-	m_textures.erase(_texName);
-}
-
 /**
 ****************************************************************************************************
 @brief Add shadow map
@@ -339,33 +276,16 @@ void TMaterial::RemoveShadows()
 ****************************************************************************************************
 @brief Render material. If hasn't been baked, bake him first(TMaterial::BakeMaterial())
 ***************************************************************************************************/
-void TMaterial::RenderMaterial()
+int TMaterial::RenderMaterial()
 {
-#ifdef VERBOSE
-    cout<<"Rendering "<<m_name;
-#endif
-    ///enable shader
-    glUseProgram(m_program);
-
-    ///activate textures attached to material (Texture::ActivateTexture() )
-    int i=0;
-    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
-    {
-        if(!m_it_textures->second->Empty())
-        {
-            m_it_textures->second->ActivateTexture(i);
-            i++;
-        }
-    }
+	int i = Material::RenderMaterial();
 
 	for( m_if = m_features.begin(); m_if != m_features.end(); ++m_if )
 	{
 		(*m_if)->ActivateTextures( m_program, i );
 	}
 
-#ifdef VERBOSE
-    cout<<"...done\n";
-#endif
+	return i;
 }
 
 

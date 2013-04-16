@@ -230,8 +230,6 @@
     <None Include="data\shaders\warping\drawDepthWithWarping.frag" />
     <None Include="data\shaders\warping\drawDepthWithWarping.vert" />
     <None Include="data\shaders\warping\grid.frag" />
-    <None Include="data\shaders\warping\move_grid.frag" />
-    <None Include="data\shaders\warping\move_grid.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

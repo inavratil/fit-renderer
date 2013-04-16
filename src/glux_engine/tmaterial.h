@@ -48,7 +48,7 @@ private:
     GLfloat m_shininess, m_transparency, m_reflection;
 
     //other variables
-    bool m_baked, m_custom_shader, m_receive_shadows, m_useMRT, m_is_alpha;
+    bool m_baked, m_custom_shader, m_receive_shadows, m_useMRT;
     int m_lightModel;     ///lightModel - also indicates whether algorithm works in screen space
 
 	vector<ShaderFeature*>::iterator	m_if;
@@ -89,8 +89,8 @@ public:
 	void SetShininess( float _shin ){ m_shininess = _shin; }
 
 	//finds next free texture in the list
-    string NextTexture(string textype);		//FIXME: do rodicovske tridy
-	GLuint AddTexture( TexturePtr _tex );	//FIXME: do rodicovske tridy
+    //string NextTexture(string textype);		//FIXME: do rodicovske tridy
+	//GLuint AddTexture( TexturePtr _tex );	//FIXME: do rodicovske tridy
 
     //texture from file
     GLint AddTexture(const char *file, GLint textype, GLint texmode,
@@ -135,13 +135,10 @@ public:
     }
 
     //dynamically generate material shader
-    bool BakeMaterial(int light_count, int dpshadow_method = DPSM, bool use_pcf = true);
+    virtual bool BakeMaterial(int light_count, int dpshadow_method = DPSM, bool use_pcf = true);
+
     //render material
-    void RenderMaterial();
-    //is material working in screen space?
-    bool IsScreenSpace(){  
-        return (m_lightModel == SCREEN_SPACE); 
-    }
+    virtual int RenderMaterial();
 
     ///@brief toggle receiving shadows
     void ReceiveShadow(bool flag){ 
@@ -156,15 +153,6 @@ public:
     ///Is shader custom?
     bool IsCustom(){  
         return m_custom_shader;  
-    }
-
-    ///Has shader material alpha channel?
-    bool IsAlpha(){  
-        return m_is_alpha; 
-    }
-    ///Has material valid shader?
-    bool IsShaderOK(){
-        return (m_program > 0);
     }
 
     ///Get first alpha texture ID

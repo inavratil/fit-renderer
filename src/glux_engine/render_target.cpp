@@ -133,6 +133,7 @@ bool TScene::CheckFBO()
 @param tex_target Texture target. Can be GL_TEXTURE_2D or GL_TEXTURE_2D_MULTISAMPLE
 @param tex_type internal data format (can be GL_UNSIGNED_BYTE or GL_FLOAT)
 ***************************************************************************************************/
+/*
 void TScene::CreateDataTexture(const char* name, int resX, int resY, GLint tex_format, GLenum tex_type, GLenum tex_target, bool mipmaps)
 {
     //create texture
@@ -161,6 +162,7 @@ void TScene::CreateDataTexture(const char* name, int resX, int resY, GLint tex_f
     //add created textures into cache
     m_tex_cache[name] = texid;
 }
+*/
 
 /**
 ****************************************************************************************************
@@ -171,6 +173,7 @@ void TScene::CreateDataTexture(const char* name, int resX, int resY, GLint tex_f
 @param tex_type internal data format (can be GL_UNSIGNED_BYTE or GL_FLOAT)
 @param normal_buffer should we create another render target for normal and depth buffer?
 ***************************************************************************************************/
+/*
 void TScene::CreateHDRRenderTarget(int resX, int resY, GLint tex_format, GLenum tex_type, bool normal_buffer)
 {
     //if no resolution given, use current scene resolution
@@ -189,14 +192,18 @@ void TScene::CreateHDRRenderTarget(int resX, int resY, GLint tex_format, GLenum 
     m_RT_resY = resY;
 
     //create texture - for original image
-    CreateDataTexture("render_texture", resX, resY, tex_format, tex_type, GL_TEXTURE_2D);
+	m_texture_cache->Create2DManual( "render_texture", resX, resY, tex_format, tex_type, GL_NEAREST, false );
+    //CreateDataTexture("render_texture", resX, resY, tex_format, tex_type, GL_TEXTURE_2D);
     //create texture - for bloom effect
-    CreateDataTexture("bloom_texture", resX, resY, tex_format, tex_type, GL_TEXTURE_2D);
+	m_texture_cache->Create2DManual( "bloom_texture", resX, resY, tex_format, tex_type, GL_NEAREST, false );
+    //CreateDataTexture("bloom_texture", resX, resY, tex_format, tex_type, GL_TEXTURE_2D);
     //create texture - for blur
-    CreateDataTexture("blur_texture", resX, resY, tex_format, tex_type, GL_TEXTURE_2D);
+	m_texture_cache->Create2DManual( "blur_texture", resX, resY, tex_format, tex_type, GL_NEAREST, false );
+    //CreateDataTexture("blur_texture", resX, resY, tex_format, tex_type, GL_TEXTURE_2D);
     //create texture - for store normal values
     if(m_useNormalBuffer)
-        CreateDataTexture("normal_texture", resX, resY, tex_format, tex_type, GL_TEXTURE_2D);
+		m_texture_cache->Create2DManual( "normal_texture", resX, resY, tex_format, tex_type, GL_NEAREST, false );
+        //CreateDataTexture("normal_texture", resX, resY, tex_format, tex_type, GL_TEXTURE_2D);
 
     //create renderbuffers
     glGenRenderbuffers(1, &m_r_buffer_depth);
@@ -301,6 +308,7 @@ void TScene::CreateHDRRenderTarget(int resX, int resY, GLint tex_format, GLenum 
     CustomShader("mat_blur_vert","data/shaders/quad.vert","data/shaders/blur.frag", " ", "#define VERTICAL\n");
     SetUniform("mat_blur_vert", "texsize", glm::ivec2(resX, resY));       //send texture size info
 }
+*/
 
 /**
 ****************************************************************************************************
@@ -316,22 +324,22 @@ void TScene::ResizeHDRRenderTarget(int resX, int resY, GLint tex_format, GLenum 
     if(m_f_buffer == NULL) return;
 
     //resize texture - for original image
-    glBindTexture(GL_TEXTURE_2D, m_tex_cache["render_texture"]);
+    glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get( "render_texture" ));
     glTexImage2D(GL_TEXTURE_2D, 0, tex_format, resX, resY, 0, GL_RGBA, tex_type, NULL);
 
     //resize texture - for store normal values
     if(m_useNormalBuffer)
     {
-        glBindTexture(GL_TEXTURE_2D, m_tex_cache["normal_texture"]);
+        glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get( "normal_texture" ));
         glTexImage2D(GL_TEXTURE_2D, 0, tex_format, resX, resY, 0, GL_RGBA, tex_type, NULL);
     }
 
     //resize texture - for bloom effect
-    glBindTexture(GL_TEXTURE_2D, m_tex_cache["bloom_texture"]);
+    glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get( "bloom_texture" ));
     glTexImage2D(GL_TEXTURE_2D, 0, tex_format, resX, resY, 0, GL_RGBA, tex_type, NULL);
 
     //resize texture - for blur
-    glBindTexture(GL_TEXTURE_2D, m_tex_cache["blur_texture"]);
+    glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get( "blur_texture" ));
     glTexImage2D(GL_TEXTURE_2D, 0, tex_format, resX, resY, 0, GL_RGBA, tex_type, NULL);
 
     //resize renderbuffer storage 

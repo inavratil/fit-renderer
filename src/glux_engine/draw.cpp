@@ -135,7 +135,7 @@ void TScene::Redraw(bool delete_buffer)
         //attach framebuffer to render to
         glBindFramebuffer(GL_FRAMEBUFFER, m_f_buffer);
         //attach render texture
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["render_texture"], 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture_cache->Get( "render_texture" ), 0);
 
         ///use multisampled FBO if required
         if(m_msamples > 1)
@@ -204,7 +204,7 @@ void TScene::Redraw(bool delete_buffer)
 
         //attach bloom texture
         glBindFramebuffer(GL_FRAMEBUFFER, m_f_buffer);
-        glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["bloom_texture"], 0);  
+        glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture_cache->Get( "bloom_texture" ), 0);  
  
         //downsample bloom texture by setting new viewport
         glViewport(0,0,m_RT_resX/2,m_RT_resY/2);
@@ -213,7 +213,7 @@ void TScene::Redraw(bool delete_buffer)
         //horizontal blur pass
         RenderPass("mat_blur_horiz");
         //vertical blur pass
-        glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["blur_texture"], 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture_cache->Get( "blur_texture" ), 0);
         RenderPass("mat_blur_vert");
 
         //go back to regular framebuffer
@@ -302,11 +302,11 @@ void TScene::Redraw(bool delete_buffer)
     {
 		GLuint previewTexs[] =
 	{	
-			m_texture_cache->Get("tex_output"),
-			m_tex_cache["MTEX_ping"],
-			m_tex_cache["MTEX_pong"],
-			m_tex_cache["Stencil_color"],
-			m_texture_cache->Get("aliaserr_texture")
+			m_texture_cache->Get( "tex_output" ),
+			m_texture_cache->Get( "MTEX_ping" ),
+			m_texture_cache->Get( "MTEX_pong" ),
+			m_texture_cache->Get( "tex_stencil_color" ),
+			m_texture_cache->Get( "aliaserr_texture" )
 		};
 		
 		//show alias error
@@ -341,7 +341,7 @@ void TScene::DrawScene(int drawmode)
         if(!m_im->second->IsScreenSpace()) //don't render shaders working in screen space!
         {
             ///select drawing mode
-            float transparent = m_im->second->GetTransparency();
+            float transparent = static_cast< TMaterial*>(m_im->second)->GetTransparency();
             if(drawmode == DRAW_OPAQUE && transparent > 0.0)
                 continue;
             else if(drawmode == DRAW_TRANSPARENT && transparent == 0.0)
@@ -384,14 +384,16 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
     //draw objects in mode according to their material
     for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
     {
-        if(!m_im->second->IsScreenSpace() && m_im->second->GetTransparency() == 0.0)
+		if( m_im->second->IsScreenSpace() ) continue;
+
+        if(static_cast< TMaterial*>(m_im->second)->GetTransparency() == 0.0)
         {
             //if there is alpha channel texture, attach it to depth shader
-            if(m_im->second->IsAlpha())
-            {
-                m_materials[shadow_mat]->SetUniform("alpha_test", 1);                
-                glBindTexture(GL_TEXTURE_2D, m_im->second->GetAlphaTexID());                
-            }                
+            //if(m_im->second->IsAlpha())
+            //{
+            //    m_materials[shadow_mat]->SetUniform("alpha_test", 1);                
+            //    glBindTexture(GL_TEXTURE_2D, m_im->second->GetAlphaTexID());                
+            //}                
 
             ///get material ID and render all objects attached to this material
             int matID = m_im->second->GetID();

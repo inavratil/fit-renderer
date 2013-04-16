@@ -2,11 +2,11 @@
 
 //-----------------------------------------------------------------------------
 
-ScreenSpaceMaterial::ScreenSpaceMaterial( const char* _name, const char* _vs, const char* _fs ) :
+ScreenSpaceMaterial::ScreenSpaceMaterial( const char* _name, const char* _vs, const char* _fs, const char* _vs_defines, const char* _fs_defines ) :
 	Material( _name )
 {
-	    TShader vert( _vs, "" );
-        TShader frag( _fs, "" );
+	    TShader vert( _vs, _vs_defines );
+        TShader frag( _fs, _fs_defines );
         CustomShader(&vert, NULL, NULL, NULL, &frag);
 }
 

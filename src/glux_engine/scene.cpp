@@ -136,9 +136,9 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
 
 	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
 
-	TMaterialPtr mat = new TMaterial( "mat_progress_bar" );
-	mat->AddTexture( m_texture_cache->CreateFromImage( "data/load.png" ) );
-	mat->CustomShader( "data/shaders/quad.vert", "data/shaders/progress_bar.frag", "", "" );
+	ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_progress_bar", "data/shaders/quad.vert", "data/shaders/progress_bar.frag" );
+	mat->AddTexturePtr( m_texture_cache->CreateFromImage( "data/load.png" ) );
+	//mat->CustomShader( , "", "" );
 	AddMaterial( mat );
 	
     return true;
@@ -199,28 +199,36 @@ bool TScene::PostInit()
 
             //add shadow map to all materials (except those who don't receive shadows)
             for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
-                if(m_im->second->GetSceneID() == m_sceneID && !m_im->second->IsScreenSpace())
+			{
+				if( m_im->second->IsScreenSpace() ) continue;
+                if(m_im->second->GetSceneID() == m_sceneID )
 				{
-                    m_im->second->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
-					m_im->second->AddFeature(m_shadow_technique->GetShaderFeature());
+                    static_cast<TMaterial*>(m_im->second)->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
+					static_cast<TMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
 				}
+			}
 
-            CreateDataTexture("select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_TEXTURE_2D);
+			m_texture_cache->Create2DManual( "select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
+            //CreateDataTexture("select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_TEXTURE_2D);
             //create render target for depth calculations
             glGenFramebuffers(1, &m_f_buffer_select);
             glBindFramebuffer(GL_FRAMEBUFFER, m_f_buffer_select);
             //attach texture to the frame buffer
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex_cache["select_texture"], 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture_cache->Get( "select_texture" ), 0);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             //add shader for selecting depth values (IPSM only)
             if((*m_il)->GetType() == OMNI)
             {
-                if(!m_useNormalBuffer)  //normal buffer must be enabled before we can use IPSM
-                    CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT, true);
-                AddMaterial("mat_depth_select",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-                AddTexture("mat_depth_select", "normal_texture", RENDER_TEXTURE);
-                CustomShader("mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag");
-                SetUniform("mat_depth_select","near_far",glm::vec2(m_near_p, m_far_p));
+                //if(!m_useNormalBuffer)  //normal buffer must be enabled before we can use IPSM
+                //    CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT, true);
+
+				//ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag" );
+				//mat->AddTexturePtr( m_texture_cache->GetPtr( "normal_texture" ) );
+				//AddMaterial( mat );	
+                //AddMaterial("mat_depth_select",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+                //AddTexture("mat_depth_select", "normal_texture", RENDER_TEXTURE);
+                //CustomShader("mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag");
+                //SetUniform("mat_depth_select","near_far",glm::vec2(m_near_p, m_far_p));
 
                 //allocate z-selection buffer
                 m_select_buffer = new float[Z_SELECT_SIZE*Z_SELECT_SIZE];
@@ -253,8 +261,8 @@ bool TScene::PostInit()
         if(m_im->second->GetSceneID() == m_sceneID)
         {
             //set MRT if we use rendering to normal buffer
-            if(m_useNormalBuffer)
-                m_im->second->UseMRT(true);
+            //if(m_useNormalBuffer)
+            //   m_im->second->UseMRT(true);
             //bake material
             m_im->second->BakeMaterial(m_lights.size(), m_dpshadow_method, m_use_pcf);
             LoadScreen();
@@ -315,10 +323,10 @@ void TScene::Destroy(bool delete_cache)
     if(delete_cache)
     {
         //delete textures from cache
-        for(m_it = m_tex_cache.begin(); m_it != m_tex_cache.end(); ++m_it)
-            glDeleteTextures(1, &m_it->second);
-        
-        m_tex_cache.clear();
+        //for(m_it = m_tex_cache.begin(); m_it != m_tex_cache.end(); ++m_it)
+        //    glDeleteTextures(1, &m_it->second);
+        //
+        //m_tex_cache.clear();
         m_obj_cache.clear();
     }
 
@@ -355,6 +363,7 @@ instead of reloading from file
 @param mipmap should we generate mipmaps?
 @param aniso should we use anisotropic filtering?
 ***************************************************************************************************/
+/*
 void TScene::AddTexture(const char *name, const char *file, GLint textype, GLint texmode,
                         GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso)
 {
@@ -381,7 +390,7 @@ void TScene::AddTexture(const char *name, const char *file, GLint textype, GLint
         m_tex_cache[file] = texID;
     //LoadScreen();	//update loading screen
 }
-
+*/
 
 /**
 ****************************************************************************************************
@@ -396,6 +405,7 @@ instead of reloading from file
 @param tileY count of vertical tiles
 @param aniso should we use anisotropic filtering?
 ***************************************************************************************************/
+/*
 void TScene::AddTexture(const char *name, const char **files, GLint textype, GLint texmode,
                         GLfloat intensity, GLfloat tileX, GLfloat tileY, bool aniso)
 {
@@ -422,6 +432,7 @@ void TScene::AddTexture(const char *name, const char **files, GLint textype, GLi
     m_tex_cache[files[0]] = texID;
     //LoadScreen();	//update loading screen
 }
+*/
 
 /**
 ****************************************************************************************************
@@ -440,6 +451,7 @@ void TScene::AddTexture(const char *name, const char **files, GLint textype, GLi
 @param mipmap sholud we generate mipmaps for texture?
 @param aniso should we use anisotropic filtering?
 ***************************************************************************************************/
+/*
 void TScene::AddTextureData(const char *name, const char *tex_name, const void *data, glm::vec2 tex_size, GLenum tex_format, GLenum data_type, 
         GLint textype, GLint texmode, GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso)
 {
@@ -458,7 +470,8 @@ void TScene::AddTextureData(const char *name, const char *tex_name, const void *
         m_tex_cache[tex_name] = texID;
     //LoadScreen();	//update loading screen
 }
-
+*/
+/*
 void TScene::RemoveTexture( const char *name, const char *_texName )
 {
 	//material existence control
@@ -470,7 +483,7 @@ void TScene::RemoveTexture( const char *name, const char *_texName )
 
 	m_materials[name]->RemoveTexture(_texName);
 }
-
+*/
 /**
 ****************************************************************************************************
 @brief Bind material(identified by mat_name) to object(identified by obj_name)

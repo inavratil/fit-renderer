@@ -33,6 +33,7 @@ protected:
     int		m_id;
     int		m_sceneID;	//-- scene ID - when drawing more scenes than 1
 	bool	m_is_screenspace;
+	bool	m_has_alpha_channel;
 	
 	//-- associative array of input textures
 	map<string,Texture*>			m_textures;		//-- textures list    
@@ -54,6 +55,17 @@ public:
 	Material( const char* _name, int _id );
 	virtual ~Material(void);
 
+	string NextTexture( string _texname );
+	GLuint AddTexturePtr( TexturePtr _tex );
+	void RemoveTexture( const char *_texName );
+
+	string LoadShader( const char* _filename );
+
+	
+    //dynamically generate material shader
+	virtual bool BakeMaterial(int light_count, int dpshadow_method = DPSM, bool use_pcf = true){  return true; }
+	virtual int RenderMaterial();
+
 //-----------------------------------------------------------------------------
 	//-- Set/Get material name
 	void SetName( const char* _name ){ m_name = _name; }
@@ -65,10 +77,22 @@ public:
     int GetSceneID(){ return m_sceneID; }
     void SetSceneID(int _id){ m_sceneID = _id; }
 
-	string LoadShader( const char* _filename );
+
 	//-- Is shader using tessellation stage?
     bool HasTessellationShader(){  
         return m_has_tessellation_shader;  
+    }
+	//-- Has shader material alpha channel?
+    bool IsAlpha(){  
+        return m_has_alpha_channel; 
+    }
+	//-- is material working in screen space?
+    bool IsScreenSpace(){  
+        return m_is_screenspace; 
+    }
+    ///Has material valid shader?
+    bool IsShaderOK(){
+        return (m_program > 0);
     }
 
 //-----------------------------------------------------------------------------

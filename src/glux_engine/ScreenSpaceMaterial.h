@@ -15,7 +15,7 @@ protected:
 //-- Public methods 
 
 public:
-	ScreenSpaceMaterial( const char* _name, const char* _vs, const char* _fs );
+	ScreenSpaceMaterial( const char* _name, const char* _vs, const char* _fs, const char* _vs_defines = "", const char* _fs_defines = "" );
 	virtual ~ScreenSpaceMaterial(void);
 
 	bool CustomShader(TShader *vertex, TShader *tess_control, TShader *tess_eval, TShader *geometry, TShader *fragment);

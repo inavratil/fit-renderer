@@ -112,6 +112,11 @@ GLuint TextureCache::Create2DArrayManual(
 
 TexturePtr TextureCache::CreateFromImage( const char* _filename )
 {
+	if( m_texture_cache.find(_filename) != m_texture_cache.end() )
+	{
+		return GetPtr( _filename );
+	}
+
 	//FIXME: tohle nejak nastavit z venku
 	bool mipmap = true;
 	bool aniso = true;

@@ -10,9 +10,12 @@ bool TScene::InitDebug()
 
 	{
 		//-- shader showing shadow map alias error
-		AddMaterial("mat_aliasError");
-		AddTexture("mat_aliasError", "data/tex/error_color.tga", RENDER_TEXTURE);
-		CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
+		ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag" );
+		mat->AddTexturePtr( m_texture_cache->CreateFromImage( "data/tex/error_color.tga" ) );
+		AddMaterial( mat );
+		//AddMaterial("mat_aliasError");
+		//AddTexture("mat_aliasError", "data/tex/error_color.tga", RENDER_TEXTURE);
+		//CustomShader("mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag");
 		//-- texture
 		GLuint tex_aliaserr = m_texture_cache->Create2DManual("aliaserr_texture",
 			128.0, 128.0,	//-- width and height
@@ -43,7 +46,7 @@ void TScene::RenderDebug()
 
 	//then other with depth-only shader
 	glActiveTexture( GL_TEXTURE1 );
-	glBindTexture( GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"] );
+	glBindTexture( GL_TEXTURE_2D,m_texture_cache->Get( "MTEX_2Dfunc_values" ) );
 	SetUniform("mat_aliasError", "MTEX_2Dfunc_values", 1 );
 	
 	DrawGeometry( "mat_aliasError", m_viewMatrix );

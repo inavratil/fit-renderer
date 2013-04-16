@@ -90,13 +90,13 @@ bool InitScene(int resx, int resy)
             //glass
             //FIXME: nastavit v LoadScene: s->SetTransparency("sklo",0.7f);
 
-            s->AddTexture("pletivo", "data/tex/alpha/fence.tga",ALPHA);
-            s->AddTexture("body",cubemap, CUBEMAP_ENV, ADD, 0.4f);
-            s->AddTexture("sklo",cubemap, CUBEMAP_ENV, ADD, 0.4f);
-            s->AddTexture("zem",cubemap, CUBEMAP_ENV, ADD, 0.2f);
-            s->AddTexture("chrom",cubemap, CUBEMAP_ENV, ADD, 0.2f);
-            s->AddTexture("zrcatko",cubemap, CUBEMAP_ENV, ADD, 0.2f);
-            s->AddTexture("cihle","data/tex/depth/bricks.tga",PARALLAX,MODULATE,0.0001f);
+            //s->AddTexture("pletivo", "data/tex/alpha/fence.tga",ALPHA);
+            //s->AddTexture("body",cubemap, CUBEMAP_ENV, ADD, 0.4f);
+            //s->AddTexture("sklo",cubemap, CUBEMAP_ENV, ADD, 0.4f);
+            //s->AddTexture("zem",cubemap, CUBEMAP_ENV, ADD, 0.2f);
+            //s->AddTexture("chrom",cubemap, CUBEMAP_ENV, ADD, 0.2f);
+            //s->AddTexture("zrcatko",cubemap, CUBEMAP_ENV, ADD, 0.2f);
+            //s->AddTexture("cihle","data/tex/depth/bricks.tga",PARALLAX,MODULATE,0.0001f);
         }
         //scene 2 - cathedral
         else if(scene == 2)
@@ -109,11 +109,11 @@ bool InitScene(int resx, int resy)
 
 			s->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
 
-            s->LoadScene("data/obj/scenes/sibenik.3ds");
-            s->MoveLight(0, glm::vec3(-120, 350, 0));
+            //s->LoadScene("data/obj/scenes/sibenik.3ds");
+            //s->MoveLight(0, glm::vec3(-120, 350, 0));
 
-			//s->LoadScene("data/obj/scenes/testing_tess_all.3ds");
-			//s->MoveLight(0, glm::vec3(123,98,-43) );
+			s->LoadScene("data/obj/scenes/testing_tess_all.3ds");
+			s->MoveLight(0, glm::vec3(123,98,-43) );
         }
         //scene 3 - bad scene
         else if(scene == 3)
@@ -166,10 +166,10 @@ bool InitScene(int resx, int resy)
             s->AddMaterial("mat_ground",silver,silver);
 
             //add textures
-            s->AddTexture("mat_bark","data/tex/bark4.tga");
-            s->AddTexture("mat_bark","data/tex/normal/bark4_nm.tga",BUMP,MODULATE, 1.0);
-            s->AddTexture("mat_leaf","data/tex/alpha/leafs4.tga",ALPHA);
-            s->AddTexture("mat_ground","data/tex/grass.tga",BASE, MODULATE, 1.0, 50.0, 100.0);
+            //s->AddTexture("mat_bark","data/tex/bark4.tga");
+            //s->AddTexture("mat_bark","data/tex/normal/bark4_nm.tga",BUMP,MODULATE, 1.0);
+            //s->AddTexture("mat_leaf","data/tex/alpha/leafs4.tga",ALPHA);
+            //s->AddTexture("mat_ground","data/tex/grass.tga",BASE, MODULATE, 1.0, 50.0, 100.0);
 
             //set materials
             s->SetMaterial("ground","mat_ground");
@@ -293,33 +293,43 @@ bool InitScene(int resx, int resy)
 
 		//---------------------------------------------------------------------
         
-        s->AddMaterial("show_depth");
-        s->CustomShader("show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag");
-        s->AddMaterial("show_depth_omni");
-        s->CustomShader("show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag");
+		{
+			s->AddMaterial( new ScreenSpaceMaterial( "show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag" ) );
+
+        //s->AddMaterial("show_depth");
+        //s->CustomShader("show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag");
+			s->AddMaterial( new ScreenSpaceMaterial( "show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag" ) );
+        //s->AddMaterial("show_depth_omni");
+        //s->CustomShader("show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag");
         //s->AddMaterial("show_aliasError");
         //s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
+		}
         
 		//draw quad
-        s->AddMaterial("mat_quad",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        s->CustomShader("mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag");
-		s->AddMaterial("mat_quad_lod",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        s->CustomShader("mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag");
-		s->AddMaterial("mat_quad_array",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        s->CustomShader("mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag");
+		s->AddMaterial( new ScreenSpaceMaterial( "mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag" ) );
+        //s->AddMaterial("mat_quad",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+        //s->CustomShader("mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag");
+		s->AddMaterial( new ScreenSpaceMaterial( "mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag" ) );
+		//s->AddMaterial("mat_quad_lod",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+        //s->CustomShader("mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag");
+		s->AddMaterial( new ScreenSpaceMaterial( "mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag" ) );
+		//s->AddMaterial("mat_quad_array",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+        //s->CustomShader("mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag");
         
 	  	
 		//add shadow shader when shadows are enabled (will be sending depth values only)
-		s->AddMaterial("_mat_default_shadow");
-		s->CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
+		s->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag" ) );
+		//s->AddMaterial("_mat_default_shadow");
+		//s->CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
 
 		string defines;
 		if(dpshadow_method == CUT)
 			defines = "#define PARABOLA_CUT\n";
 
 		//and also for omnidirectional lights with dual-paraboloid
-		s->AddMaterial("_mat_default_shadow_omni");
-		s->CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag");
+		s->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag" ) );
+		//s->AddMaterial("_mat_default_shadow_omni");
+		//s->CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag");
 
 		//optionally, add tessellation for paraboloid projection
 		/*
