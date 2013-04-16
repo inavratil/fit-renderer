@@ -119,6 +119,7 @@ VBO TObject::Create(aiMesh *mesh)
     delete [] normals;
     delete [] texcoords;
 
+	 cout<<"Done(vertices: "<<m_vbo.indices*3<<", faces: "<<m_vbo.indices<<")\n";
     //return VBO structure
     return m_vbo;
 }

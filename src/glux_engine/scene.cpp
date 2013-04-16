@@ -383,6 +383,9 @@ void TScene::AddObject(const char *name, const char* file)
     ///add new object
     TObject *o = new TObject();
     m_objects[name] = o;
+	UpdateLoadList( 1 );
+
+	cout<<"Adding object "<<name<< " ... ";
 
     ///find out, if object hasn't been loaded yet
     m_iob = m_obj_cache.find(file);

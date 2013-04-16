@@ -61,7 +61,6 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
                 if(m_name[j] < 0 || (!isalpha(m_name[j]) && !isdigit(m_name[j])) || m_name[j] > 128)
 					m_name.replace(j--,1,"");
             }
-            cout<<"Adding material "<<m_name<<endl;
 
 			//get material properties
 			aiColor3D ambient,diffuse,specular;
@@ -157,7 +156,8 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 	//update load list
 	UpdateLoadList(scene->mNumMeshes);
 
-	cout<<"Adding "<<scene->mNumMeshes<<" objects, ";
+	cout<<"\nLoading scene ( "<<scene->mNumMeshes<<" objects ):"<<endl;
+	cout<<"-------------------------------------------------------------------------------"<<endl;
 
 	//Load meshes
 	aiMesh * mesh;
@@ -186,6 +186,8 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 		TObject *o = new TObject();
 		m_objects[oname] = o;
 
+		cout<<"Adding object "<<oname<< " ... ";
+
 		m_obj_cache[oname] = m_objects[oname]->Create(mesh);
 
 		//assign material
@@ -199,5 +201,5 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 		LoadScreen();
 	}
 
-	cout<<polygons<<" polygons.\nScene loaded.\n\n";
+	cout<<"Scene loaded: " <<polygons<<" polygons.\n\n";
 }

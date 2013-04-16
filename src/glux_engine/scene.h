@@ -106,7 +106,7 @@ protected:
     GLint m_RT_resX, m_RT_resY;				
 
     ///number of items to be loaded
-    int m_load_list, m_load_actual;
+    float m_load_list, m_load_actual;
 
     ///subscene ID - used when we need to hide some parts of the scene
     int m_sceneID;
@@ -180,7 +180,11 @@ public:
     }
     ///@brief update load list (when loading scene)
     void UpdateLoadList(int count){  
-        m_load_list += count; m_load_actual += count; 
+		float tmp = 1.0;
+		if( m_load_actual > 0.0)
+			tmp = m_load_list/m_load_actual;
+		m_load_actual += count; 
+        m_load_list = m_load_actual * tmp;
     }
 
     //load whole scene from 3DS file
@@ -393,7 +397,7 @@ public:
 		_mat->SetID( m_materials.size() );
 		m_materials[_mat->GetName()] = _mat;
 		UpdateLoadList( 1 );
-		//LoadScreen(); //update loading screen
+		cout<<"Adding material "<<_mat->GetName()<<endl;
 	}
     ///@brief Add new material(see TMaterial()) to list
     void AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
@@ -402,8 +406,8 @@ public:
             m->SetSceneID(m_sceneID);
 			m->SetID( m_materials.size() );
 			m_materials[name] = m;
-            //LoadScreen(); //update loading screen
 			UpdateLoadList( 1 );
+			cout<<"Adding material "<<name<<endl;
     }
 
     //bind material to object

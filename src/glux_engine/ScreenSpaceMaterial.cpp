@@ -41,8 +41,12 @@ geometry and tesselation shaders optional
 bool ScreenSpaceMaterial::BakeMaterial( int , int , bool  )
 {
 	if( m_baked ) return true;
+
+	cout<<"Baking material "<<m_name<<endl;
+
 	if( !BuildProgram() ) return false;
 	if( !CheckShaderStatus() ) return false;
+
 
     //-- Get uniform variables for textures (using Texture::GetUniforms() )
     int i=0;
@@ -57,7 +61,7 @@ bool ScreenSpaceMaterial::BakeMaterial( int , int , bool  )
     }
 	
     m_baked = true;
-    //m_custom_shader = true;
+
     return true;
 }
 

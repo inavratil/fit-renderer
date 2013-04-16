@@ -113,11 +113,6 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     cout<<"Baking material "<<m_name<<endl;
 
     string tmp = m_name;        //temporary string for comparison
-	
-	//shader version. If OpenGL4 is supported, use 400, else 330
-	string version = "330";
-    if(GLEW_ARB_gpu_shader5)
-        version = "400";
 
     ////////////////////////////////////////////////////////////////////////////////
 	//--
