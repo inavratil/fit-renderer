@@ -128,8 +128,6 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
 		(*ii)->SetShadowTexID( m_texture_cache->Get( "tex_shadow" ) );
 
-
-
 		//-----------------------------------------------------------------------------
 		//blur
 		{

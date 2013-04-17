@@ -49,6 +49,7 @@ TScene::TScene()
 	//FIXME
 	m_texPreview_id = 0;
 	m_shadow_technique = NULL;
+	m_shader_features.clear();
 	//FIXME: do tridy Application
 	m_passes.clear();
 	m_texture_cache = new TextureCache();
@@ -183,6 +184,7 @@ bool TScene::PostInit()
 
 	//-------------------------------------------------------------------------
     //do we have shadows from lights?
+
     int i;
     for(i = 0, m_il = m_lights.begin(); m_il != m_lights.end(); ++m_il, i++)
     {
@@ -349,6 +351,9 @@ void TScene::Destroy(bool delete_cache)
         delete *m_il;
 	m_lights.clear();
 	//FIXME
+	for(m_it_sf = m_shader_features.begin(); m_it_sf != m_shader_features.end(); m_it_sf++)
+		delete *m_it_sf;
+	m_shader_features.clear();    
 	for(m_it_pass = m_passes.begin(); m_it_pass != m_passes.end(); m_it_pass++)
 		delete m_it_pass->second;
 	m_passes.clear();    

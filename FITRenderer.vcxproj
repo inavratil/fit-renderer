@@ -120,6 +120,7 @@
     <ClCompile Include="src\glux_engine\ScreenGrid.cpp" />
     <ClCompile Include="src\glux_engine\Material.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.cpp" />
+    <ClCompile Include="src\glux_engine\shaderGen\SFDPShadowMap.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="src\glux_engine\ScreenGrid.h" />
     <ClInclude Include="src\glux_engine\Material.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFBilinearWarpedShadow.h" />
+    <ClInclude Include="src\glux_engine\shaderGen\SFDPShadowMap.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFPolynomialWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\shaderGen\ShaderFeature.h" />

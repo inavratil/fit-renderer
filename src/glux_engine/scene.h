@@ -121,6 +121,9 @@ protected:
 	int m_texPreview_id;
 	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
 
+	vector<ShaderFeature*>				m_shader_features;
+	vector<ShaderFeature*>::iterator	m_it_sf;
+
 	//FIXME: Tohle by melo prijit do tridy Application
 protected:
 	//-- associative array of render passes

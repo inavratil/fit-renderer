@@ -32,7 +32,10 @@ class ShaderFeature
 public:
 	enum SF_VariableTypes { VS_UNIFORM, FS_UNIFORM, INOUT };
 	enum SF_ShaderType { FS, VS };
-	
+
+//-----------------------------------------------------------------------------
+// -- Member variables
+
 protected:
 	map<string,Variable>::iterator m_iv;
 	map<string,Variable>	m_variables;
@@ -44,13 +47,21 @@ protected:
 	map<string,FeatureTexure>::iterator m_it;
 	map<string,FeatureTexure>			m_textures;
 
+//-----------------------------------------------------------------------------
+//-- Public methods 
 
 public:
 	ShaderFeature();
 	~ShaderFeature();
 
+//-----------------------------------------------------------------------------
+//-- Virtual Methods	
 	virtual void Init() = 0;
-
+	virtual string GetVars( int _shaderType );
+	virtual string GetModifiers( int _shaderType );
+	virtual string GetFunc( int _shaderType );
+	
+//-----------------------------------------------------------------------------
 public:
 
 	void AddVariable( string _name, string _type, int _varType );
@@ -61,9 +72,6 @@ public:
 	void ActivateTextures( GLuint _shader, int& _unitId );
 	void DeactivateTextures( GLuint _shader, int& _unitId );
 
-	virtual string GetVars( int _shaderType );
-	virtual string GetModifiers( int _shaderType );
-	virtual string GetFunc( int _shaderType );
 };
 
 #endif
