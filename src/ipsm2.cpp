@@ -13,7 +13,7 @@
 //-- Defines
 
 //#define DEBUG_DRAW 
-//#define GRADIENT_METHOD
+#define GRADIENT_METHOD
 //#define ITERATION_ENABLED
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,30 +122,12 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			AppendPass("pass_compute_aliasError", pass_compute_aliasError );
 		}
 //-----------------------------------------------------------------------------
-		//blur
-
+		
 		//FIXME: Tohle by melo prijit do Init metody dane shadow techniky
 		m_shadow_technique->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", m_texture_cache->Get("MTEX_2Dfunc_values"), 1.0, ShaderFeature::FS );
-        
-		//create renderbuffers
-		glGenRenderbuffers(1, &r_buffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, r_buffer);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,sh_res, sh_res);
-
-		glGenFramebuffers(1, &fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    
-		//attach texture to the frame buffer
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, r_buffer);
-		m_fbos["ipsm"] = fbo;
-
 
 		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
 		(*ii)->SetShadowTexID( m_texture_cache->Get( "tex_shadow" ) );
-	
-		//glGenRenderbuffers(1, &r_buffer);
-        //glBindRenderbuffer(GL_RENDERBUFFER, r_buffer);
-        //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,sh_res, sh_res);
 
 		glGenFramebuffers(1, &fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -164,33 +146,54 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		// aliasing error
+		//-----------------------------------------------------------------------------
 		//blur
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasblur_horiz","data/shaders/quad.vert","data/shaders/warping/aliasblur.frag", " ","#define HORIZONTAL\n" );
 			mat->AddTexture( m_texture_cache->GetPtr( "tex_output" ), "bloom_texture" );
 			AddMaterial( mat );
+
+			//-- pass
+			SimplePassPtr pass_horiz_blur = new SimplePass( sh_res/8, sh_res/8 );
+			pass_horiz_blur->AttachOutputTexture( 0, m_texture_cache->Get( "MTEX_ping" ) );
+			pass_horiz_blur->DisableDepthBuffer();
+			AppendPass("pass_horiz_blur", pass_horiz_blur );
 		}
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasblur_vert","data/shaders/quad.vert","data/shaders/warping/aliasblur.frag", " ", "#define VERTICAL\n" );
 			mat->AddTexture( m_texture_cache->GetPtr( "MTEX_ping" ), "bloom_texture" );
 			AddMaterial( mat );
+			//-- pass
+			SimplePassPtr pass_vert_blur = new SimplePass( sh_res/8, sh_res/8 );
+			pass_vert_blur->AttachOutputTexture( 0, m_texture_cache->Get( "MTEX_pong" ) );
+			pass_vert_blur->DisableDepthBuffer();
+			AppendPass("pass_vert_blur", pass_vert_blur );
 		}
-
+		//-----------------------------------------------------------------------------
 		//alias gradient
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasgradient","data/shaders/quad.vert","data/shaders/warping/aliasgradient.frag" );
 			mat->AddTexture( m_texture_cache->GetPtr( "MTEX_pong" ), "tex_blurred_error" );
 			AddMaterial( mat );	
+			//-- pass
+			SimplePassPtr pass_gradient = new SimplePass( sh_res/8, sh_res/8 );
+			pass_gradient->AttachOutputTexture( 0, m_texture_cache->Get( "MTEX_ping" ) );
+			pass_gradient->DisableDepthBuffer();
+			AppendPass("pass_gradient", pass_gradient );
 		}
-
-		//2D polynomial coefficients
+		//-----------------------------------------------------------------------------
+		//2D func values
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_get_2Dfunc_values","data/shaders/quad.vert","data/shaders/warping/get2DfuncValues.frag" );
 			mat->AddTexture( m_texture_cache->GetPtr( "MTEX_ping" ), "gradient_map" );
 			AddMaterial( mat );
+			//-- pass
+			SimplePassPtr pass_func_values = new SimplePass( m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
+			pass_func_values->AttachOutputTexture( 0, m_texture_cache->Get( "MTEX_2Dfunc_values" ) );
+			pass_func_values->DisableDepthBuffer();
+			AppendPass("pass_func_values", pass_func_values );
 		}
-
+		//-----------------------------------------------------------------------------
 		//draw depth with warping
 		{
 			ScreenSpaceMaterial* mat = 
@@ -202,31 +205,31 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			mat->AddTexture( m_texture_cache->GetPtr("MTEX_2Dfunc_values"), "funcTex" );
 			AddMaterial( mat );
 		}
-
+		//-----------------------------------------------------------------------------
 		//-- blit pass
 		BlitPass *bp = new BlitPass( 128, 128 );
 		bp->AttachReadTexture( m_texture_cache->Get( "tex_output" ) );
 		bp->AttachDrawTexture( m_texture_cache->Get( "aliaserr_mipmap" ) );
 		AppendPass("pass_blit_0", bp );
-
+		//-----------------------------------------------------------------------------
 		//-- mipmap pass
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag" );
 			mat->AddTexture( m_texture_cache->GetPtr("aliaserr_mipmap"), "mat_aliasError" );
 			AddMaterial( mat );
 		}
-
 		//-- pass
 		SimplePass *mp = new SimplePass( 128, 128 );
 		mp->AttachOutputTexture(0, m_texture_cache->Get("aliaserr_mipmap") ); 
 		mp->DisableDepthBuffer();
 		AppendPass("pass_alias_mipmap", mp);
-		
+		//-----------------------------------------------------------------------------
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag" ); 
 			mat->AddTexture( m_texture_cache->GetPtr("MTEX_warped_depth_color"), "show_depth_dpShadowA" );
 			AddMaterial( mat );
 		}
+		//-----------------------------------------------------------------------------
 		{
 			//-- shader showing shadow map alias error
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag" );
@@ -403,27 +406,31 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		float sigma = 2.7;
 
-		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);		
-			
+		m_passes["pass_horiz_blur"]->Activate();
+
 		//GetMaterial( "mat_aliasblur_horiz" )->AddTexture( m_texture_cache->GetPtr( "tex_output" ), "bloom_texture" );
 		SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));
 		SetUniform("mat_aliasblur_horiz", "kernel_size", 9.0);
 		SetUniform("mat_aliasblur_horiz", "two_sigma_sq", TWOSIGMA2(sigma));
 		SetUniform("mat_aliasblur_horiz", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
+
+		RenderPass("mat_aliasblur_horiz");
+
+		m_passes["pass_horiz_blur"]->Deactivate();
+
+		//-----------------------------------------------------------------------------
+
+		m_passes["pass_vert_blur"]->Activate();
+
 		//GetMaterial( "mat_aliasblur_vert" )->AddTexture( m_texture_cache->GetPtr( "MTEX_ping" ), "bloom_texture" );
 		SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(sh_res/8, sh_res/8));
 		SetUniform("mat_aliasblur_vert", "kernel_size", 9.0);
 		SetUniform("mat_aliasblur_vert", "two_sigma_sq",TWOSIGMA2(sigma));
 		SetUniform("mat_aliasblur_vert", "frac_sqrt_two_sigma_sq", FRAC_TWOPISIGMA2(sigma));
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_texture_cache->Get( "MTEX_ping" ), 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		RenderPass("mat_aliasblur_horiz");
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_texture_cache->Get( "MTEX_pong" ), 0);
-		glClear(GL_COLOR_BUFFER_BIT);
 		RenderPass("mat_aliasblur_vert");
+
+		m_passes["pass_vert_blur"]->Deactivate();
 
 		//GetMaterial( "mat_aliasblur_horiz" )->DeleteTexture( "bloom_texture" );
 		//GetMaterial( "mat_aliasblur_vert" )->DeleteTexture( "bloom_texture" );
@@ -431,28 +438,32 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 ///////////////////////////////////////////////////////////////////////////////
 //-- 4. Compute gradient and store the result per-pixel into 128x128 texture
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_texture_cache->Get( "MTEX_ping" ), 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
 		glm::vec2 limit = m_shadow_technique->GetGrid()->GetOffset() / 128.0f;
 		limit /= POLY_BIAS;
+
+		m_passes["pass_gradient"]->Activate();
 
 		//FIXME: limit pocitat nejak inteligentne bez bulharske konstanty
 		//SetUniform("mat_aliasgradient", "limit", glm::vec2(100.0f));
 		SetUniform("mat_aliasgradient", "limit", limit);
 		RenderPass("mat_aliasgradient");
 
+		m_passes["pass_gradient"]->Deactivate();
+
 		///////////////////////////////////////////////////////////////////////////////
 		//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
 		glm::vec4 func_range = m_shadow_technique->GetGrid()->GetRangeAsOriginStep();
 
-		glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_texture_cache->Get( "MTEX_2Dfunc_values" ), 0);
-
 		glm::vec4 clear_color;
 		glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
 		glClearColor( 0, 0, 0, 0 );
-		glClear(GL_COLOR_BUFFER_BIT);
+
+		m_passes["pass_func_values"]->Activate();
+
+		//glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
+		//glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_texture_cache->Get( "MTEX_2Dfunc_values" ), 0);
+		//glClear(GL_COLOR_BUFFER_BIT);
+
 		glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
 
 		if( m_shadow_technique->IsEnabled() )
@@ -481,6 +492,8 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 #endif
 
 		}
+
+		m_passes["pass_func_values"]->Deactivate();
 
 		if ( (string) m_shadow_technique->GetName() ==  "Spline" )
 			glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
@@ -518,8 +531,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		m_shadow_technique->PreRender();
 
 		///////////////////////////////////////////////////////////////////////////////
-
-		glBindFramebuffer( GL_FRAMEBUFFER, 0);
 	
 #ifdef ITERATION_ENABLED
 		RenderDebug();
