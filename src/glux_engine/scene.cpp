@@ -137,7 +137,7 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
 	SceneManager::Instance()->setVBO("progress_bar", tmp_vbo);
 
 	ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_progress_bar", "data/shaders/quad.vert", "data/shaders/progress_bar.frag" );
-	mat->AddTexture( m_texture_cache->CreateFromImage( "data/load.png" ) );
+	mat->AddTexture( m_texture_cache->CreateFromImage( "data/load.png" ), "tex" );
 	AddMaterial( mat );
 	
     return true;
@@ -277,6 +277,14 @@ bool TScene::PostInit()
 	    
     cout<<"Post Init OK\n";
     
+	typedef void (*NOVYTYP) (GLuint,GLuint,GLsizei,GLsizei*,GLint*,GLenum*,GLchar*);
+	typedef GLint (*NOVYTYP2) (GLuint,const GLchar*);
+	
+	void (*GetActive[2])(GLuint,GLuint,GLsizei,GLsizei*,GLint*,GLenum*,GLchar*)={
+        (NOVYTYP)glGetActiveAttrib,(NOVYTYP)glGetActiveUniform};
+    GLint(*GetLocation[2])(GLuint,const GLchar*)={
+        (NOVYTYP2)glGetAttribLocation,(NOVYTYP2)glGetUniformLocation}; 
+
 	GLenum Active[2]={ GL_ACTIVE_ATTRIBUTES,GL_ACTIVE_UNIFORMS };
 	GLenum MaxLenght[2]={ GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,GL_ACTIVE_UNIFORM_MAX_LENGTH };
 

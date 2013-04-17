@@ -444,41 +444,6 @@ bool Texture::LoadImage(const char* filename)
 
 /**
 ****************************************************************************************************
-@brief Activates texture map for use by shader
-@param tex_unit multitexture unit used for texture application
-@param set_uniforms shall we also set uniform locations to shader?
-****************************************************************************************************/
-void Texture::ActivateTexture(GLint tex_unit, bool set_uniforms)
-{
-	///1. set uniform values in shader (tiles, texture unit, texture matrix and intensity)
-	if(set_uniforms)
-	{
-		if(m_tileXLoc > 0 && m_tileYLoc > 0)
-		{
-			glUniform1f(m_tileXLoc, m_tileX);
-			glUniform1f(m_tileYLoc, m_tileY);
-		}
-		glUniform1f(m_intensityLoc, m_intensity);
-	}
-	//texture location must be updated regularly
-	if(m_texLoc >= 0)
-		glUniform1i(m_texLoc, tex_unit);
-
-	///2. activate and bind texture
-	glActiveTexture(GL_TEXTURE0 + tex_unit);
-	//Various texture targets
-	if(m_textype == CUBEMAP || m_textype == CUBEMAP_ENV)        //for cube map
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_texID);
-	else if(m_textype == SHADOW_OMNI)                         //for texture array
-		glBindTexture(GL_TEXTURE_2D_ARRAY, m_texID);
-	else if(m_textype == RENDER_TEXTURE_MULTISAMPLE)          //for multisampled texture
-		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_texID);
-	else                                                    //for regular 2D texture
-		glBindTexture(GL_TEXTURE_2D, m_texID);
-}
-
-/**
-****************************************************************************************************
 @brief Gets uniform variables froms shader
 @param shader handle to shader to bound with texture
 ****************************************************************************************************/

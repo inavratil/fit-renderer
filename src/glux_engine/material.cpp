@@ -73,33 +73,37 @@ string Material::NextTexture( string _texname )
 
 //-----------------------------------------------------------------------------
 
-GLuint Material::AddTexture( TexturePtr _tex )
+GLuint Material::AddTexture( TexturePtr _tex, const char* _texname )
 {
 	//-- 1. generate new texture name (material name + texture mode (base, env, bump...) using TMaterial::NextTexture()
-    string texname;
-	switch(_tex->GetType())
-    {
-        //base map
-    case BASE: texname = NextTexture(m_name + "_Base_A"); break;
-        //alpha map
-    case ALPHA: texname = NextTexture(m_name + "_Alpha_A"); m_has_alpha_channel = true; break;
-        //environment map
-    case ENV: texname = NextTexture(m_name + "_Env_A"); break;
-        //bump map
-    case BUMP: texname = NextTexture(m_name + "_Bump_A"); break;
-        //parallax map
-    case PARALLAX: texname = NextTexture(m_name + "_Parallax_A"); break;   
-        //displacement map
-    case DISPLACE: texname = NextTexture(m_name + "_Displace_A"); break; 
-        //cube map
-    case CUBEMAP: texname = NextTexture(m_name + "_Cube_A"); break; 
-        //environment cube map
-    case CUBEMAP_ENV: texname = m_name + "_CubeEnv_A"; break;//NextTexture(m_name + "CubeEnvA"); break; 
-        //render textures
-    case RENDER_TEXTURE: 
-    case RENDER_TEXTURE_MULTISAMPLE: 
-        texname = _tex->GetName(); 
-        break; 
+    string texname = _texname;
+	
+	if( texname.empty() )
+	{
+		switch(_tex->GetType())
+		{
+			//base map
+		case BASE: texname = NextTexture(m_name + "_Base_A"); break;
+			//alpha map
+		case ALPHA: texname = NextTexture(m_name + "_Alpha_A"); m_has_alpha_channel = true; break;
+			//environment map
+		case ENV: texname = NextTexture(m_name + "_Env_A"); break;
+			//bump map
+		case BUMP: texname = NextTexture(m_name + "_Bump_A"); break;
+			//parallax map
+		case PARALLAX: texname = NextTexture(m_name + "_Parallax_A"); break;   
+			//displacement map
+		case DISPLACE: texname = NextTexture(m_name + "_Displace_A"); break; 
+			//cube map
+		case CUBEMAP: texname = NextTexture(m_name + "_Cube_A"); break; 
+			//environment cube map
+		case CUBEMAP_ENV: texname = m_name + "_CubeEnv_A"; break;//NextTexture(m_name + "CubeEnvA"); break; 
+			//render textures
+		case RENDER_TEXTURE: 
+		case RENDER_TEXTURE_MULTISAMPLE: 
+			texname = _tex->GetName(); 
+			break; 
+		}
 	}
 
 	m_textures[texname] = _tex;
@@ -156,35 +160,25 @@ int Material::RenderMaterial()
     glUseProgram(m_program);
 
     ///activate textures attached to material (Texture::ActivateTexture() )
-    int i=0;
-    for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
-    {
-        if(!m_it_textures->second->Empty())
+	int tex_unit = 0;
+	for( m_it_texture_locations = m_texture_locations.begin();
+		 m_it_texture_locations != m_texture_locations.end();
+		 m_it_texture_locations++ )
+	{
+		GLint location = m_it_texture_locations->second;
+		if(location >= 0)
 		{
-
-			//m_it_textures->second->ActivateTexture(i);
-			///1. set uniform values in shader (tiles, texture unit, texture matrix and intensity)
-			GLint loc = glGetUniformLocation(m_program, m_it_textures->first.c_str() );
-			glProgramUniform1i(m_program, loc, i);
-
 			///2. activate and bind texture
-			glActiveTexture(GL_TEXTURE0 + i);
-			//Various texture targets
-			GLint type = m_it_textures->second->GetType();
-			GLuint id = m_it_textures->second->GetID();
-			if(type == CUBEMAP || type == CUBEMAP_ENV)        //for cube map
-				glBindTexture(GL_TEXTURE_CUBE_MAP, id);
-			else if(type == SHADOW_OMNI)                         //for texture array
-				glBindTexture(GL_TEXTURE_2D_ARRAY, id);
-			else if(type == RENDER_TEXTURE_MULTISAMPLE)          //for multisampled texture
-				glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, id);
-			else                                                    //for regular 2D texture
-				glBindTexture(GL_TEXTURE_2D, id);
-			i++;
-        }
-    }
+			glActiveTexture(GL_TEXTURE0 + tex_unit);
+			//texture location must be updated regularly
+			glUniform1i(location, tex_unit++);
 
-	return i;
+			m_textures[m_it_texture_locations->first]->Bind(); 
+		}
+	}
+
+
+	return tex_unit;
 }
 
 //-----------------------------------------------------------------------------
@@ -341,4 +335,72 @@ bool Material::CheckShaderStatus()
 	glUseProgram( 0 );
 
 	return !compile_err;
+}
+
+//-----------------------------------------------------------------------------
+
+/**
+****************************************************************************************************
+@brief Activates texture map for use by shader
+@param tex_unit multitexture unit used for texture application
+@param set_uniforms shall we also set uniform locations to shader?
+****************************************************************************************************/
+void Material::ActivateTextures( bool _set_uniforms )
+{
+	///1. set uniform values in shader (tiles, texture unit, texture matrix and intensity)
+	//if(set_uniforms)
+	//{
+	//	if(m_tileXLoc > 0 && m_tileYLoc > 0)
+	//	{
+	//		glUniform1f(m_tileXLoc, m_tileX);
+	//		glUniform1f(m_tileYLoc, m_tileY);
+	//	}
+	//	glUniform1f(m_intensityLoc, m_intensity);
+	//}
+
+	int tex_unit = 0;
+	for( m_it_texture_locations = m_texture_locations.begin();
+		 m_it_texture_locations != m_texture_locations.end();
+		 m_it_texture_locations++ )
+	{
+		GLint location = m_it_texture_locations->second;
+		if(location >= 0)
+		{
+			///2. activate and bind texture
+			glActiveTexture(GL_TEXTURE0 + tex_unit);
+			//texture location must be updated regularly
+			glUniform1i(location, tex_unit++);
+
+			m_textures[m_it_texture_locations->first]->Bind(); 
+		}
+	}
+
+	////Various texture targets
+	//if(m_textype == CUBEMAP || m_textype == CUBEMAP_ENV)        //for cube map
+	//	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texID);
+	//else if(m_textype == SHADOW_OMNI)                         //for texture array
+	//	glBindTexture(GL_TEXTURE_2D_ARRAY, m_texID);
+	//else if(m_textype == RENDER_TEXTURE_MULTISAMPLE)          //for multisampled texture
+	//	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_texID);
+	//else                                                    //for regular 2D texture
+	//	glBindTexture(GL_TEXTURE_2D, m_texID);
+}
+
+//-----------------------------------------------------------------------------
+
+void Material::DectivateTextures()
+{
+	int tex_unit = 0;
+	for( m_it_texture_locations = m_texture_locations.begin();
+		 m_it_texture_locations != m_texture_locations.end();
+		 m_it_texture_locations++ )
+	{
+		GLint location = m_it_texture_locations->second;
+		if(location >= 0)
+		{
+			///2. activate and bind texture
+			glActiveTexture(GL_TEXTURE0 + tex_unit);
+			m_textures[m_it_texture_locations->first]->Unbind(); 
+		}
+	}
 }

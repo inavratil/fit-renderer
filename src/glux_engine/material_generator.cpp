@@ -679,12 +679,8 @@ bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
     {
         if(!m_it_textures->second->Empty())
         {
-
-
-			///2. get uniforms location
-			GLint m_texLoc = glGetUniformLocation(m_program, m_it_textures->first.c_str());
-
-            m_it_textures->second->ActivateTexture(i,true);
+			//-- get locations of texture uniforms
+			m_texture_locations[m_it_textures->first] = glGetUniformLocation(m_program, m_it_textures->first.c_str());
             i++;
         }
     }

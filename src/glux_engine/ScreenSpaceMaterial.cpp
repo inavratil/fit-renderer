@@ -49,17 +49,27 @@ bool ScreenSpaceMaterial::BakeMaterial( int , int , bool  )
 
 
     //-- Get uniform variables for textures (using Texture::GetUniforms() )
-    int i=0;
+    //int i=0;
+    //for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
+    //{
+    //    if(!m_it_textures->second->Empty())
+    //    {
+    //        m_it_textures->second->GetUniforms(m_program);
+    //        m_it_textures->second->ActivateTexture(i,true);
+    //        i++;
+    //    }
+    //}
+	//
+	int i=0;
     for(m_it_textures = m_textures.begin(); m_it_textures != m_textures.end(); ++m_it_textures)
     {
         if(!m_it_textures->second->Empty())
         {
-            m_it_textures->second->GetUniforms(m_program);
-            m_it_textures->second->ActivateTexture(i,true);
+			//-- get locations of texture uniforms
+			m_texture_locations[m_it_textures->first] = glGetUniformLocation(m_program, m_it_textures->first.c_str());
             i++;
         }
     }
-	
     m_baked = true;
 
     return true;

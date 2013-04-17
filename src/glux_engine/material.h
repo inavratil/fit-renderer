@@ -40,11 +40,12 @@ protected:
 	//-- associative array of input textures
 	map<string,Texture*>			m_textures;		//-- textures list    
     map<string,Texture*>::iterator	m_it_textures;	//-- texture iterator
+	map<string,GLint>				m_texture_locations;
+	map<string,GLint>::iterator		m_it_texture_locations;
 
 	//-- shader
 	bool	m_has_tessellation_shader;
-	//FIXME: not used	string m_source;          //custom shader source
-	//FIXME: not used	map<const char*,GLint> m_shader_locations;
+	
     //FIXME: not used	GLint m_sh_loc;
     GLint	m_f_shader, m_tc_shader, m_te_shader, m_g_shader, m_v_shader, m_program;
 	string	m_f_source, m_tc_source, m_te_source, m_g_source, m_v_source;
@@ -59,7 +60,7 @@ public:
 	virtual ~Material(void);
 
 	string NextTexture( string _texname );
-	GLuint AddTexture( TexturePtr _tex );
+	GLuint AddTexture( TexturePtr _tex, const char* _texname = "" );
 	void DeleteTexture( const char *_texName );
 
 	string LoadShader( const char* _filename );
@@ -67,6 +68,8 @@ public:
 	GLuint BuildProgram();
 	bool CheckShaderStatus();
 
+	void ActivateTextures( bool set_uniforms = false );
+	void DectivateTextures();
 	
     //dynamically generate material shader
 	virtual bool BakeMaterial(int light_count, int dpshadow_method = DPSM, bool use_pcf = true){  return true; }

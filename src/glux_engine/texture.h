@@ -99,8 +99,6 @@ public:
         return (m_texID == 0); 
     } 
 
-    //activate texture for use by shader
-    void ActivateTexture(GLint tex_unit, bool set_uniforms = false);
     //get uniform variables for texture
     void GetUniforms(GLuint shader);
  
