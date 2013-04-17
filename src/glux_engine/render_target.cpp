@@ -59,6 +59,7 @@ void TScene::RenderPass(const char* material)
     m_materials[material]->RenderMaterial();
     glBindVertexArray(m_screen_quad.vao);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	m_materials[material]->DectivateTextures();
 }
 
 

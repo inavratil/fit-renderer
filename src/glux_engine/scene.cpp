@@ -288,7 +288,7 @@ bool TScene::PostInit()
 	GLenum Active[2]={ GL_ACTIVE_ATTRIBUTES,GL_ACTIVE_UNIFORMS };
 	GLenum MaxLenght[2]={ GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,GL_ACTIVE_UNIFORM_MAX_LENGTH };
 
-	GLuint PROG = 64;
+	GLuint PROG = 43;
 	{//loop over set of types {attribute,uniform}
         GLint Num;//number of active parameter
         glGetProgramiv(PROG,GL_ACTIVE_UNIFORMS,&Num);//number

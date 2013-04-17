@@ -471,6 +471,8 @@ void TScene::LoadScreen(bool swap)
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	m_materials["mat_progress_bar"]->DectivateTextures();
     
     if(swap)
      SDL_GL_SwapBuffers();
