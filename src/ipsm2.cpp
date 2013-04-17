@@ -13,7 +13,7 @@
 //-- Defines
 
 //#define DEBUG_DRAW 
-//#define GRADIENT_METHOD
+#define GRADIENT_METHOD
 //#define ITERATION_ENABLED
 
 ///////////////////////////////////////////////////////////////////////////////

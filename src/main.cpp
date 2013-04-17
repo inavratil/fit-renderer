@@ -292,42 +292,22 @@ bool InitScene(int resx, int resy)
         //s->SetUniform("mat_bloom_hdr_ssao","bias",1.5);
 
 		//---------------------------------------------------------------------
-        
-		{
-			s->AddMaterial( new ScreenSpaceMaterial( "show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag" ) );
 
-        //s->AddMaterial("show_depth");
-        //s->CustomShader("show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag");
-
-        //s->AddMaterial("show_aliasError");
-        //s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
-		}
+		s->AddMaterial( new ScreenSpaceMaterial( "show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag" ) );
         
 		//draw quad
 		s->AddMaterial( new ScreenSpaceMaterial( "mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag" ) );
-        //s->AddMaterial("mat_quad",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        //s->CustomShader("mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag");
 		s->AddMaterial( new ScreenSpaceMaterial( "mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag" ) );
-		//s->AddMaterial("mat_quad_lod",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        //s->CustomShader("mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag");
-		s->AddMaterial( new ScreenSpaceMaterial( "mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag" ) );
-		//s->AddMaterial("mat_quad_array",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-        //s->CustomShader("mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag");
-        
+		s->AddMaterial( new ScreenSpaceMaterial( "mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag" ) );        
 	  	
 		//add shadow shader when shadows are enabled (will be sending depth values only)
 		s->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag" ) );
-		//s->AddMaterial("_mat_default_shadow");
-		//s->CustomShader("_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag");
-
 		string defines;
 		if(dpshadow_method == CUT)
 			defines = "#define PARABOLA_CUT\n";
 
 		//and also for omnidirectional lights with dual-paraboloid
 		s->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag" ) );
-		//s->AddMaterial("_mat_default_shadow_omni");
-		//s->CustomShader("_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag");
 
 		//optionally, add tessellation for paraboloid projection
 		/*

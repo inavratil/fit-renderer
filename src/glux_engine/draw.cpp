@@ -420,7 +420,8 @@ void TScene::DrawGeometry(const char* _shader, glm::mat4& _mvMatrix )
 {
     //then other with depth-only shader
 	m_materials[_shader]->RenderMaterial();
-
+	//glActiveTexture(GL_TEXTURE0);
+    //m_materials[shadow_mat]->SetUniform("alpha_tex", 0);
 	for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
 	{
 		if(m_io->second->IsShadowCaster() && m_io->second->GetSceneID() == m_sceneID )
