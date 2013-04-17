@@ -344,7 +344,7 @@ void TObject::CreateInstance(const TObject &ref)
 /**
 ****************************************************************************************************
 @brief Draws object by calling it's display list. Before this object is transformed and rotated to
-it's current position. Then attached material is rendered(TMaterial::RenderMaterial())
+it's current position. Then attached material is rendered(GeometryMaterial::RenderMaterial())
 There are specific types of settings, when object is not rendered (e.g. when rendering into shadow map
 is active and object don't cast shadows)
 @param tessellate draw object with HW tessellation enabled?

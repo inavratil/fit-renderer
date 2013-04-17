@@ -52,7 +52,6 @@ TScene::TScene()
 	//FIXME: do tridy Application
 	m_passes.clear();
 	m_texture_cache = new TextureCache();
-	m_material_manager = new MaterialManager();
 	
 }
 
@@ -79,7 +78,6 @@ TScene::~TScene()
 	//FIXME
 	delete m_shadow_technique;
 	delete m_texture_cache;
-	delete m_material_manager;
 }
 
 /**
@@ -148,7 +146,7 @@ bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloa
 ****************************************************************************************************
 @brief Scene second initialization. The purpose of this initialization is to assign default material
 to objects without material and create shadow maps(TScene::CreateShadowMap()) for lights with shadows
-enabled, and to add this shadow map(TMaterial::AddShadowMap()) to all materials
+enabled, and to add this shadow map(GeometryMaterial::AddShadowMap()) to all materials
 @return success/fail of initialization
 ****************************************************************************************************/
 bool TScene::PostInit()
@@ -202,9 +200,9 @@ bool TScene::PostInit()
 				if( m_im->second->IsScreenSpace() ) continue;
                 if(m_im->second->GetSceneID() == m_sceneID )
 				{
-                    //static_cast<TMaterial*>(m_im->second)->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
+                    //static_cast<GeometryMaterial*>(m_im->second)->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
 	
-					static_cast<TMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
+					static_cast<GeometryMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
 				}
 			}
 
@@ -455,7 +453,7 @@ void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 sp
     //-- name
     string m_name = "default_light_" + num2str(m_lights.size());
 	//-- material
-	TMaterial* mat = new TMaterial( m_name.c_str() );
+	GeometryMaterial* mat = new GeometryMaterial( m_name.c_str() );
 	mat->SetColor( 2.0f*diff, 2.0f*diff, 2.0f*diff );
 	mat->SetShininess( 0.0 );
 	mat->ReceiveShadow( false );

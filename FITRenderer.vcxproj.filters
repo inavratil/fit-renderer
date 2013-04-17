@@ -97,26 +97,20 @@
     <ClCompile Include="src\glux_engine\BlitPass.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\GeometryMaterial.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\SimplePass.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\Pass.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\resources\MaterialManager.cpp">
-      <Filter>Source files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\tmaterial.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\Material.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\ScreenSpaceMaterial.cpp">
       <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\GeometryMaterial.cpp">
+      <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -216,26 +210,20 @@
     <ClInclude Include="src\glux_engine\BlitPass.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\GeometryMaterial.h">
-      <Filter>Header files\SDK</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\SimplePass.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\Pass.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\resources\MaterialManager.h">
-      <Filter>Header files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\tmaterial.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\Material.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\ScreenSpaceMaterial.h">
       <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\GeometryMaterial.h">
+      <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

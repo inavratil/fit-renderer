@@ -71,7 +71,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			m->Get(AI_MATKEY_COLOR_SPECULAR, specular);
 			m->Get(AI_MATKEY_SHININESS, shininess);
 
-			TMaterial* mat = new TMaterial( m_name.c_str() );
+			GeometryMaterial* mat = new GeometryMaterial( m_name.c_str() );
 			mat->SetColor( 
 				glm::vec3(ambient.r, ambient.g, ambient.b), 
 				glm::vec3(diffuse.r, diffuse.g, diffuse.b), 

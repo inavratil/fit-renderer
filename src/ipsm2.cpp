@@ -128,11 +128,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
 		(*ii)->SetShadowTexID( m_texture_cache->Get( "tex_shadow" ) );
 
-		//-- pass
-		SimplePassPtr pass_warped_depth = new SimplePass( sh_res, sh_res );
-		pass_warped_depth->AttachOutputTexture( 0, m_texture_cache->GetPtr("MTEX_warped_depth_color") );
-		pass_warped_depth->AttachOutputTexture( 0, m_texture_cache->GetPtr( "tex_shadow" ), true );
-		AppendPass("pass_warped_depth", pass_warped_depth );	
+
 
 		//-----------------------------------------------------------------------------
 		//blur
@@ -192,6 +188,11 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 				);
 			mat->AddTexture( m_texture_cache->GetPtr("MTEX_2Dfunc_values"), "funcTex" );
 			AddMaterial( mat );
+			//-- pass
+			SimplePassPtr pass_warped_depth = new SimplePass( sh_res, sh_res );
+			pass_warped_depth->AttachOutputTexture( 0, m_texture_cache->GetPtr("MTEX_warped_depth_color") );
+			pass_warped_depth->AttachOutputTexture( 0, m_texture_cache->GetPtr( "tex_shadow" ), true );
+			AppendPass("pass_warped_depth", pass_warped_depth );	
 		}
 		//-----------------------------------------------------------------------------
 		//-- blit pass

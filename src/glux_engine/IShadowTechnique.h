@@ -3,7 +3,7 @@
 
 #include "light.h"
 #include "ScreenGrid.h"
-#include "tmaterial.h"
+#include "GeometryMaterial.h"
 #include "shaderGen/ShaderFeature.h"
 
 class ScreenGrid;

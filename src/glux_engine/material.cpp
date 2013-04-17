@@ -50,7 +50,7 @@ void Material::_Init( const char* _name, int _id )
 /**
 ****************************************************************************************************
 @brief Finds and returns next free texture name in list (important to synchronize generated texture names
-to them stored in TMaterial::textures field)
+to them stored in GeometryMaterial::textures field)
 @param texname suffix, texture type (like Base, Bump, Env...) 
 @return new texture name
 ***************************************************************************************************/
@@ -75,7 +75,7 @@ string Material::NextTexture( string _texname )
 
 GLuint Material::AddTexture( TexturePtr _tex, const char* _texname )
 {
-	//-- 1. generate new texture name (material name + texture mode (base, env, bump...) using TMaterial::NextTexture()
+	//-- 1. generate new texture name (material name + texture mode (base, env, bump...) using GeometryMaterial::NextTexture()
     string texname = _texname;
 	
 	if( texname.empty() )

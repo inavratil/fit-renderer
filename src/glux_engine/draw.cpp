@@ -341,7 +341,7 @@ void TScene::DrawScene(int drawmode)
         if(!m_im->second->IsScreenSpace()) //don't render shaders working in screen space!
         {
             ///select drawing mode
-            float transparent = static_cast< TMaterial*>(m_im->second)->GetTransparency();
+            float transparent = static_cast< GeometryMaterial*>(m_im->second)->GetTransparency();
             if(drawmode == DRAW_OPAQUE && transparent > 0.0)
                 continue;
             else if(drawmode == DRAW_TRANSPARENT && transparent == 0.0)
@@ -386,7 +386,7 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
     {
 		if( m_im->second->IsScreenSpace() ) continue;
 
-        if(static_cast< TMaterial*>(m_im->second)->GetTransparency() == 0.0)
+        if(static_cast< GeometryMaterial*>(m_im->second)->GetTransparency() == 0.0)
         {
             //if there is alpha channel texture, attach it to depth shader
             //if(m_im->second->IsAlpha())

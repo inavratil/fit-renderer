@@ -9,7 +9,7 @@
 #define _SCENE_H_
 
 #include "globals.h"
-#include "tmaterial.h"
+#include "GeometryMaterial.h"
 #include "light.h"
 #include "camera.h"
 #include "shadow.h"
@@ -20,7 +20,6 @@
 
 #include "resources/SceneManager.h"
 #include "resources/TextureCache.h"
-#include "resources/MaterialManager.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
@@ -129,8 +128,6 @@ protected:
 	map<string, PassPtr>::iterator		m_it_pass;
 	//-- Texture Cache
 	TextureCachePtr						m_texture_cache;
-	//-- Material Manager
-	MaterialManagerPtr					m_material_manager;
 
 public:
 	void AppendPass( string _name, PassPtr _pass )
@@ -394,10 +391,10 @@ public:
 		UpdateLoadList( 1 );
 		cout<<"Adding material "<<_mat->GetName()<<endl;
 	}
-    ///@brief Add new material(see TMaterial()) to list
+    ///@brief Add new material(see GeometryMaterial()) to list
     void AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
         GLfloat shin = 64.0, GLfloat reflect = 0.0, GLfloat transp = 0.0, GLint lm = PHONG){
-            TMaterial *m = new TMaterial(name, -1, amb, diff, spec, shin, reflect, transp, lm);
+            GeometryMaterial *m = new GeometryMaterial(name, -1, amb, diff, spec, shin, reflect, transp, lm);
             m->SetSceneID(m_sceneID);
 			m->SetID( m_materials.size() );
 			m_materials[name] = m;
@@ -408,7 +405,7 @@ public:
     //bind material to object
     void SetMaterial(const char* obj_name, const char *mat_name);
 
-    ///@brief Set uniform variable in material shader (see TMaterial::SetUniform() )
+    ///@brief Set uniform variable in material shader (see GeometryMaterial::SetUniform() )
     template<class UNIFORM>
     void SetUniform(const char* m_name, const char* v_name, UNIFORM value){ 
         if(m_materials.find(m_name) == m_materials.end())

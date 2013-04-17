@@ -2,7 +2,7 @@
 @file material_generator.cpp
 @brief dynamic shader creation
 ***************************************************************************************************/
-#include "tmaterial.h"
+#include "GeometryMaterial.h"
 #include "utils.hpp"
 
 #include "shaderGen/shader_generator.h"
@@ -32,7 +32,7 @@ string LoadFunc(char* func, char* type)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//************************* TMaterial methods ********************************//
+//************************* GeometryMaterial methods ********************************//
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -104,7 +104,7 @@ string computeTexel(Texture *t, string name)
 @param parabola_cut should we use paraboloid cutting in DPSM?
 @return success/fail of shader generation
 ***************************************************************************************************/
-bool TMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
+bool GeometryMaterial::BakeMaterial(int light_count, int dpshadow_method, bool use_pcf)
 {
     //dont't bake linked custom shader
     if(m_baked)
