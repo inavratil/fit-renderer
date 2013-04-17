@@ -202,13 +202,13 @@ bool TScene::PostInit()
 				if( m_im->second->IsScreenSpace() ) continue;
                 if(m_im->second->GetSceneID() == m_sceneID )
 				{
-                    static_cast<TMaterial*>(m_im->second)->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
+                    //static_cast<TMaterial*>(m_im->second)->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
+	
 					static_cast<TMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
 				}
 			}
 
 			m_texture_cache->Create2DManual( "select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-            //CreateDataTexture("select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_TEXTURE_2D);
             //create render target for depth calculations
             glGenFramebuffers(1, &m_f_buffer_select);
             glBindFramebuffer(GL_FRAMEBUFFER, m_f_buffer_select);

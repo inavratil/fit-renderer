@@ -377,8 +377,8 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
 {
     //then other with depth-only shader
     m_materials[shadow_mat]->RenderMaterial();
-    glActiveTexture(GL_TEXTURE0);
-    m_materials[shadow_mat]->SetUniform("alpha_tex", 0);
+    //glActiveTexture(GL_TEXTURE0);
+    //m_materials[shadow_mat]->SetUniform("alpha_tex", 0);
 	bool tess = m_materials[shadow_mat]->HasTessellationShader();
 
     //draw objects in mode according to their material
@@ -432,6 +432,8 @@ void TScene::DrawGeometry(const char* _shader, glm::mat4& _mvMatrix )
 			m_io->second->Draw(m_materials[_shader]->HasTessellationShader());
 		}
 	}
+
+	m_materials[_shader]->DectivateTextures();
 
 }
 

@@ -59,10 +59,24 @@ void ShaderFeature::ActivateTextures( GLuint _shader, int& _unitId )
 	
 	for( m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it )
 	{
-		glUniform1i(glGetUniformLocation(_shader, m_it->first.c_str()), _unitId);
+		GLint location = glGetUniformLocation(_shader, m_it->first.c_str());
+		glUniform1i(location, _unitId);
 
 		glActiveTexture(GL_TEXTURE0 + _unitId);
 		glBindTexture(GL_TEXTURE_2D, m_it->second.id);
+
+		_unitId++;
+	}
+	
+}
+
+void ShaderFeature::DeactivateTextures( GLuint _shader, int& _unitId )
+{
+	
+	for( m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it )
+	{
+		glActiveTexture(GL_TEXTURE0 + _unitId);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		_unitId++;
 	}

@@ -61,7 +61,6 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		{
 		//-- shader
 		AddMaterial( new ScreenSpaceMaterial( "mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag" ) );
-		//AddMaterial("mat_camAndLightCoords_afterDP");
 #ifdef ITERATION_ENABLED
         CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag", m_shadow_technique->GetDefines(), "");
 #else
@@ -235,7 +234,18 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		mp->DisableDepthBuffer();
 		AppendPass("pass_alias_mipmap", mp);
 		
-		
+		{
+			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag" ); 
+			mat->AddTexture( m_texture_cache->GetPtr("MTEX_warped_depth_color"), "show_depth_dpShadowA" );
+			AddMaterial( mat );
+		}
+		{
+			//-- shader showing shadow map alias error
+			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag" );
+			mat->AddTexture( m_texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "mat_aliasErrorBaseA" );
+			mat->AddTexture( m_texture_cache->GetPtr( "MTEX_2Dfunc_values" ), "MTEX_2Dfunc_values" );
+			AddMaterial( mat );
+		}
     }
     catch(int)
     {
@@ -565,65 +575,64 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 	for(int i=0; i<2; i++)
     {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_warped_depth"]);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_texture_cache->Get("MTEX_warped_depth_color"), 0, i);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *l->GetShadowTexID(), 0, i);	    
-	//glDrawBuffers(1, mrt);
+		GLuint light_id = *(l->GetShadowTexID());
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_warped_depth"]);
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_texture_cache->Get("MTEX_warped_depth_color"), 0, i);
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, light_id, 0, i);	    
+		glDrawBuffers(1, mrt);
 
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//-- Shared uniforms
-	SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-	SetUniform("mat_depth_with_warping", "range", m_shadow_technique->GetGridRange());
-	SetUniform("mat_depth_with_warping", "grid_res", (float) m_shadow_technique->GetResolution() );
-	
-	//-- Polynomial uniforms
-	SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
-	SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
+		//-- Shared uniforms
+		SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+		SetUniform("mat_depth_with_warping", "range", m_shadow_technique->GetGridRange());
+		SetUniform("mat_depth_with_warping", "grid_res", (float) m_shadow_technique->GetResolution() );
 
-	//-- Bilinear uniforms
-	//SetUniform("mat_depth_with_warping", "funcTex", 1 );
-	
+		//-- Polynomial uniforms
+		SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
+		SetUniform("mat_depth_with_warping", "coeffsY", coeffsY );
 
-	    glCullFace(GL_FRONT);
-        //glColorMask(0, 0, 0, 0);      //disable colorbuffer write
+		//-- Bilinear uniforms
+		//SetUniform("mat_depth_with_warping", "funcTex", 1 );
+
+
+		glCullFace(GL_FRONT);
+		//glColorMask(0, 0, 0, 0);      //disable colorbuffer write
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport( 0, 0, sh_res, sh_res );
-	glEnable(GL_CLIP_PLANE0);
+		glViewport( 0, 0, sh_res, sh_res );
+		glEnable(GL_CLIP_PLANE0);
 
-	if(m_wireframe)
-		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+		if(m_wireframe)
+			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
-	float z_direction = 1.0;
-	if(i == 1)
-		z_direction = -1.0;  
-	lightViewMatrix[i] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+		float z_direction = 1.0;
+		if(i == 1)
+			z_direction = -1.0;  
+		lightViewMatrix[i] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
-	glm::mat4 Mp = glm::mat4( 1.0 );
-	Mp = glm::rotate( Mp, z_direction*m_parab_angle.x, glm::vec3(1, 0, 0));
-	Mp = glm::rotate( Mp, m_parab_angle.y, glm::vec3(0, 1, 0));
+		glm::mat4 Mp = glm::mat4( 1.0 );
+		Mp = glm::rotate( Mp, z_direction*m_parab_angle.x, glm::vec3(1, 0, 0));
+		Mp = glm::rotate( Mp, m_parab_angle.y, glm::vec3(0, 1, 0));
 
-	lightViewMatrix[i] = Mp * lightViewMatrix[i];
+		lightViewMatrix[i] = Mp * lightViewMatrix[i];
 
-	if(m_dpshadow_tess)
-	{
-		SetUniform("_mat_shadow_warp_tess", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-		SetUniform("_mat_shadow_warp_tess", "coeffsX", coeffsX );
-		SetUniform("_mat_shadow_warp_tess", "coeffsY", coeffsY );
+		if(m_dpshadow_tess)
+		{
+			SetUniform("_mat_shadow_warp_tess", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+			SetUniform("_mat_shadow_warp_tess", "coeffsX", coeffsX );
+			SetUniform("_mat_shadow_warp_tess", "coeffsY", coeffsY );
 
-		DrawSceneDepth("_mat_shadow_warp_tess", lightViewMatrix[i]);
-	}
-	else
-	{
-		//glActiveTexture( GL_TEXTURE1 );
-		//glBindTexture( GL_TEXTURE_2D,m_texture_cache->Get( "MTEX_2Dfunc_values" ) );
-		DrawSceneDepth("mat_depth_with_warping", lightViewMatrix[i]);
-		//glBindTexture( GL_TEXTURE_2D, 0 );
-	}
-	if(!m_wireframe)
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+			DrawSceneDepth("_mat_shadow_warp_tess", lightViewMatrix[i]);
+		}
+		else
+		{
+			DrawGeometry("mat_depth_with_warping", lightViewMatrix[i]);
+		}
+		if(!m_wireframe)
+			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
+		glBindFramebuffer( GL_FRAMEBUFFER, 0);
 	}
 
 	 //Finish, restore values
@@ -631,7 +640,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
     glCullFace(GL_BACK);
     glColorMask(1, 1, 1, 1);
 
-	glBindFramebuffer( GL_FRAMEBUFFER, 0);
 
 #ifdef ITERATION_ENABLED
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);		

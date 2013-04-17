@@ -4,15 +4,10 @@
 //-- Vola se na konci funkce scene->PostInit()
 bool TScene::InitDebug()
 {
-	GLuint buffer, fbo, tex;
 	///////////////////////////////////////////////////////////////////////////////
 	//-- Render Alias error
 
 	{
-		//-- shader showing shadow map alias error
-		ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag" );
-		mat->AddTexture( m_texture_cache->CreateFromImage( "data/tex/error_color.tga" ) );
-		AddMaterial( mat );
 		//-- texture
 		GLuint tex_aliaserr = m_texture_cache->Create2DManual("aliaserr_texture",
 			128.0, 128.0,	//-- width and height
@@ -40,18 +35,8 @@ void TScene::RenderDebug()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 	m_passes["pass_eyespace_aliaserror"]->Activate();
-
-	//then other with depth-only shader
-	glActiveTexture( GL_TEXTURE1 );
-	glBindTexture( GL_TEXTURE_2D,m_texture_cache->Get( "MTEX_2Dfunc_values" ) );
-	SetUniform("mat_aliasError", "MTEX_2Dfunc_values", 1 );
 	
 	DrawGeometry( "mat_aliasError", m_viewMatrix );
-
-	glActiveTexture( GL_TEXTURE1 );
-	glBindTexture( GL_TEXTURE_2D, 0 );
-	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture( GL_TEXTURE_2D, 0 );
 
 	m_passes["pass_eyespace_aliaserror"]->Deactivate();
     

@@ -109,11 +109,11 @@ bool InitScene(int resx, int resy)
 
 			s->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
 
-            s->LoadScene("data/obj/scenes/sibenik.3ds");
-            s->MoveLight(0, glm::vec3(-120, 350, 0));
+            //s->LoadScene("data/obj/scenes/sibenik.3ds");
+            //s->MoveLight(0, glm::vec3(-120, 350, 0));
 
-			//s->LoadScene("data/obj/scenes/testing_tess_all.3ds");
-			//s->MoveLight(0, glm::vec3(123,98,-43) );
+			s->LoadScene("data/obj/scenes/testing_tess_all.3ds");
+			s->MoveLight(0, glm::vec3(123,98,-43) );
         }
         //scene 3 - bad scene
         else if(scene == 3)
@@ -298,9 +298,7 @@ bool InitScene(int resx, int resy)
 
         //s->AddMaterial("show_depth");
         //s->CustomShader("show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag");
-			s->AddMaterial( new ScreenSpaceMaterial( "show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag" ) );
-        //s->AddMaterial("show_depth_omni");
-        //s->CustomShader("show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag");
+
         //s->AddMaterial("show_aliasError");
         //s->CustomShader("show_aliasError", "data/shaders/showDepth.vert", "data/shaders/show_aliasError.frag");
 		}

@@ -44,6 +44,7 @@ void ScreenGrid::Draw()
 	glBindVertexArray(SceneManager::Instance()->getVBO(VBO_ARRAY, "polynomials_grid"));
 	glDrawArrays( GL_LINES, 0, m_iNumLines );
 	glBindVertexArray( 0 );
+	m_pMat->DectivateTextures();
 }
 
 void ScreenGrid::InitVertexData()

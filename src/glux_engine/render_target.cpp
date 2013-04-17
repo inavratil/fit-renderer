@@ -89,6 +89,8 @@ void TScene::RenderSmallQuad(const char* material, float offset_x, float offset_
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);  //bind attributes to index
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	m_materials[material]->DectivateTextures();
 }
 
 /**

@@ -8,6 +8,6 @@ void main()
 {
 	gl_FragDepth = position.z;
 	
-	frag_Color = vec4( res );
-	//frag_Color.a = 1.0;
+	frag_Color = vec4( 5.0*position.z );
+	frag_Color.a = 1.0;
 }
