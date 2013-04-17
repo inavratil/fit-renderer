@@ -203,6 +203,8 @@ bool TScene::PostInit()
                 if(m_im->second->GetSceneID() == m_sceneID )
 				{
                     //static_cast<GeometryMaterial*>(m_im->second)->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
+					string tex_shadow_name = m_im->first + "_texShadowOMNI_A";
+					m_im->second->AddTexture( m_texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
 	
 					static_cast<GeometryMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
 				}

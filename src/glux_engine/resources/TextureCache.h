@@ -26,7 +26,7 @@ public:
 	TextureCache(void);
 	virtual ~TextureCache(void);
 
-	GLuint Create2DManual( 
+	TexturePtr Create2DManual( 
 		const char* _name, 
 		int _resX, int _resY,
 		GLint _internalFormat,
@@ -34,7 +34,7 @@ public:
 		GLenum _filter,
 		bool _mipmaps
 		);
-	GLuint Create2DArrayManual( 
+	TexturePtr Create2DArrayManual( 
 		const char* _name, 
 		int _resX, int _resY,
 		int _numLayers,

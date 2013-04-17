@@ -63,7 +63,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//FIXME: precision??? nestaci 16F ?
 		m_texture_cache->Create2DManual( "MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
 		m_texture_cache->Create2DManual( "MTEX_2Dfunc_values_ping", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
-		m_texture_cache->Create2DArrayManual("tex_shadow",
+		
+		TexturePtr tex_shadow = m_texture_cache->Create2DArrayManual("tex_shadow",
 			sh_res, sh_res,			//-- width and height
 			2,						//-- number of layers
 			GL_DEPTH_COMPONENT,		//-- internal format
@@ -71,6 +72,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			GL_NEAREST,				//-- filtering
 			false					//-- mipmap generation
 			);
+		tex_shadow->SetType( SHADOW_OMNI );
+		tex_shadow->SetIntensity( (*ii)->ShadowIntensity() );
 		m_texture_cache->Create2DArrayManual("MTEX_warped_depth_color",
 			sh_res, sh_res,	//-- width and height
 			2,				//-- number of layers

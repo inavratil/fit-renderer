@@ -95,8 +95,6 @@ public:
     //GLint AddTextureData(const char *texname, GLint textype, const void *texdata, glm::vec2 tex_size, GLenum tex_format, GLenum data_type, 
     //                    GLint texmode, GLfloat intensity, GLfloat tileX, GLfloat tileY, bool mipmap, bool aniso);
 
-    //add shadow map
-    void AddTextureFromCache(int type, GLuint id, GLfloat intensity);
     //remove all shadow maps
     void RemoveShadows();
 

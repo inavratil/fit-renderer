@@ -148,55 +148,6 @@ GLint GeometryMaterial::AddTextureData(const char *texname, GLint textype, const
 
 /**
 ****************************************************************************************************
-@brief Add shadow map
-@param type shadow type (spot or omni)
-@param map pointer to texture data
-@param intensity shadow intensity (0 - transparent, 1 - opaque)
-***************************************************************************************************/
-void GeometryMaterial::AddTextureFromCache(int type, GLuint id, GLfloat intensity)
-{
-	//FIXME: need to check if texutre with id exists in the cache
-
-    //don't add shadow map for materials whose don't want to receive shadows!
-	if(!m_receive_shadows) 
-        return;
-
-	//create texture
-    Texture *tex = new Texture();
-    tex->SetID(id);
-
-    ///1. generate new shadow texture name using GeometryMaterial::NextTexture()
-    string texname;
-	switch(type)
-	{
-	case SPOT: 
-		texname = NextTexture(m_name + "_texShadow_A"); 
-		tex->SetType(SHADOW);
-		break;
-	case OMNI: 
-		texname = NextTexture(m_name + "_texShadowOMNI_A"); 
-		tex->SetType(SHADOW_OMNI);
-		break;
-	case CUSTOM:
-		texname = NextTexture(m_name + "_texCustom_A"); 
-		tex->SetType(CUSTOM);
-		break;
-	}
-	
-    tex->SetName(texname);      
-
-    ///@todo 2: if material is transparent, modify intensity of shadow
-    if(m_transparency > 0.0) 
-        intensity = m_transparency;
-
-    tex->SetIntensity(intensity);
-    //add into list
-    m_textures[texname] = tex;
-}
-
-
-/**
-****************************************************************************************************
 @brief Remove all shadow maps
 ***************************************************************************************************/
 void GeometryMaterial::RemoveShadows()

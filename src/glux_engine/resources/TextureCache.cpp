@@ -23,7 +23,7 @@ TextureCache::~TextureCache(void)
 
 //-----------------------------------------------------------------------------
 
-GLuint TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLint _internalFormat, GLenum _dataType, GLenum _filter, bool _mipmaps )
+TexturePtr TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLint _internalFormat, GLenum _dataType, GLenum _filter, bool _mipmaps )
 {
 	TexturePtr tex = new Texture( TEX_2D );
 
@@ -57,12 +57,12 @@ GLuint TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLi
 	tex->SetName( _name );
 	tex->SetType( RENDER_TEXTURE );
 
-	return tex->GetID();
+	return tex;
 }
 
 //-----------------------------------------------------------------------------
 	
-GLuint TextureCache::Create2DArrayManual( 
+TexturePtr TextureCache::Create2DArrayManual( 
 	const char* _name, 
 	int _resX, int _resY,
 	int _numLayers,
@@ -105,7 +105,7 @@ GLuint TextureCache::Create2DArrayManual(
 	tex->SetName( _name );
 	tex->SetType( RENDER_TEXTURE );
 
-	return tex->GetID();
+	return tex;
 }
 
 //-----------------------------------------------------------------------------
