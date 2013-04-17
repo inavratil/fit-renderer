@@ -113,15 +113,19 @@ void FBO::Unbind( GLenum _target )
 
 //-----------------------------------------------------------------------------
 
-void FBO::AttachColorTexture( GLuint _tex, int _attachment )
+void FBO::AttachColorTexture( TexturePtr _tex, int _attachment )
 {
+	GLuint tex_id = _tex->GetID();
+	GLenum tex_target = _tex->GetTarget(); 
+
 	Bind();
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+_attachment, _tex, 0);
+	if( tex_target == TEX_2D )
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+_attachment, tex_id, 0);
 	Unbind();
 
 	m_includedBuffers |= GL_COLOR_BUFFER_BIT;
 	//-- assign the texture to the list
-	m_color_attachments[_attachment] = _tex;
+	m_color_attachments[_attachment] = tex_id;
 }
 
 //-----------------------------------------------------------------------------

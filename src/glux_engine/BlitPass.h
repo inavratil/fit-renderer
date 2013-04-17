@@ -56,8 +56,8 @@ public:
 	void SetDstBounds( glm::ivec4 _bounds ){ m_dst_bounds = _bounds; };
 	glm::ivec4 GetDstBounds(){ return m_dst_bounds; };
 
-	void AttachReadTexture( GLuint _tex );
-	void AttachDrawTexture( GLuint _tex );
+	void AttachReadTexture( TexturePtr _tex );
+	void AttachDrawTexture( TexturePtr _tex );
 
 	void UpdateBounds();
 //-----------------------------------------------------------------------------

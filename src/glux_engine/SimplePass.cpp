@@ -14,11 +14,10 @@ SimplePass::SimplePass( unsigned _width, unsigned _height  ) :
 
 SimplePass::~SimplePass(void)
 {
-	//-- delete texture's names
-	for(int i=0; i<m_output_textures.size(); ++i)
-		glDeleteTextures( 1, &m_output_textures[i].id );
 	//-- delete FBO
-	delete m_fbo;
+	if( m_fbo )
+		delete m_fbo;
+	m_fbo = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -71,7 +70,7 @@ bool SimplePass::Validate()
 	for(int i=0; i<m_output_textures.size(); ++i)
 	{
 		PassTexture t = m_output_textures[i];
-		m_fbo->AttachColorTexture( t.id, t.pos );
+		m_fbo->AttachColorTexture( t.tex, t.pos );
 	}
 
 	if(!m_fbo->CheckStatus())
@@ -86,7 +85,7 @@ bool SimplePass::Validate()
 
 //-----------------------------------------------------------------------------
 
-void SimplePass::AttachOutputTexture( unsigned _pos, GLuint _tex )
+void SimplePass::AttachOutputTexture( unsigned _pos, TexturePtr _tex )
 {
 	assert( m_output_textures.size() < m_max_attachments  );
 	assert( _pos < m_max_attachments  );

@@ -2,6 +2,7 @@
 #define _FBO_H_
 
 #include "globals.h"
+#include "texture.h"
 
 #define FBO_READ GL_READ_FRAMEBUFFER
 #define FBO_DRAW GL_DRAW_FRAMEBUFFER
@@ -51,7 +52,7 @@ public:
 	GLuint Bind( GLenum _target = FBO_BOTH );
 	void Unbind( GLenum _target = FBO_BOTH );
 
-	void AttachColorTexture( GLuint _tex, int _attachment = 0 );
+	void AttachColorTexture( TexturePtr _tex, int _attachment = 0 );
 	void AttachDepthTexture( GLuint _tex );
 	void AttachDepthBuffer( unsigned _mode = FBO_DEPTH_ONLY );
 	bool CheckStatus(); 

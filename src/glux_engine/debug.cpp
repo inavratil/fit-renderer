@@ -9,7 +9,7 @@ bool TScene::InitDebug()
 
 	{
 		//-- texture
-		GLuint tex_aliaserr = m_texture_cache->Create2DManual("aliaserr_texture",
+		m_texture_cache->Create2DManual("aliaserr_texture",
 			128.0, 128.0,	//-- width and height
 			GL_RGBA16F,		//-- internal format
 			GL_FLOAT,		//-- type of the date
@@ -18,7 +18,7 @@ bool TScene::InitDebug()
 			);
 		//-- pass
 		SimplePass* pass_eyespace_aliaserror = new SimplePass( 128, 128 );
-		pass_eyespace_aliaserror->AttachOutputTexture( 0, tex_aliaserr );
+		pass_eyespace_aliaserror->AttachOutputTexture( 0, m_texture_cache->GetPtr( "aliaserr_texture" ) );
 		AppendPass( "pass_eyespace_aliaserror", pass_eyespace_aliaserror );
 	}
 

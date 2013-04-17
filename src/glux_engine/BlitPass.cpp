@@ -92,21 +92,21 @@ bool BlitPass::Validate()
 
 //-----------------------------------------------------------------------------
 
-void BlitPass::AttachReadTexture( GLuint _tex )
+void BlitPass::AttachReadTexture( TexturePtr _tex )
 {
-	m_tex_read = _tex;
+	m_tex_read = _tex->GetID();
 	//-- attach texture
-	m_fbo_read->AttachColorTexture( m_tex_read );
+	m_fbo_read->AttachColorTexture( _tex );
 	UpdateBounds();
 }
 
 //-----------------------------------------------------------------------------
 
-void BlitPass::AttachDrawTexture( GLuint _tex )
+void BlitPass::AttachDrawTexture( TexturePtr _tex )
 {
-	m_tex_draw = _tex;
+	m_tex_draw = _tex->GetID();
 	//-- attach texture
-	m_fbo_draw->AttachColorTexture( m_tex_draw );
+	m_fbo_draw->AttachColorTexture( _tex );
 	UpdateBounds();
 }
 

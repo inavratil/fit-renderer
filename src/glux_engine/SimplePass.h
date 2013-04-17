@@ -3,16 +3,17 @@
 
 #include "globals.h"
 #include "Pass.h"
+#include "texture.h"
 
 
 struct PassTexture
 {
 	unsigned	pos;
-	GLuint		id;
-	PassTexture( unsigned _pos, GLuint _id )
+	TexturePtr	tex;
+	PassTexture( unsigned _pos, TexturePtr _tex )
 	{
 		pos = _pos;
-		id = _id;
+		tex = _tex;
 	}
 };
 
@@ -49,7 +50,7 @@ public:
 
 //-----------------------------------------------------------------------------
 
-	void AttachOutputTexture( unsigned _pos, GLuint _tex );
+	void AttachOutputTexture( unsigned _pos, TexturePtr _tex );
 	void EnableDepthBuffer(){ m_depthbuffer_used = true; }
 	void DisableDepthBuffer(){ m_depthbuffer_used = false; }
 
@@ -58,7 +59,7 @@ public:
 	string GetShader(){ return m_shader; }
 
 	//-- Get output texture id
-	GLuint GetTexture( unsigned _pos ){ return m_output_textures[_pos].id; }
+	//GLuint GetTexture( unsigned _pos ){ return m_output_textures[_pos].id; }
 
 //-----------------------------------------------------------------------------
 private:

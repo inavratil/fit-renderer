@@ -42,7 +42,6 @@ void ModifyGrid(glm::vec4 *precomputed_diffs);
 bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 {
     int sh_res = (*ii)->ShadowSize();
-	GLuint texid, fbo, r_buffer, buffer;
 
 	//-- Polynomial shadow technique
 	//this->SetShadowTechnique( new PolynomialWarpedShadow() );
@@ -102,8 +101,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 #endif
 			//-- pass
 			SimplePassPtr pass_coords = new SimplePass( sh_res/8, sh_res/8 );
-			pass_coords->AttachOutputTexture( 0, m_texture_cache->Get( "tex_camAndLightCoords" ) );
-			pass_coords->AttachOutputTexture( 1, m_texture_cache->Get( "tex_stencil_color" ) );
+			pass_coords->AttachOutputTexture( 0, m_texture_cache->GetPtr( "tex_camAndLightCoords" ) );
+			pass_coords->AttachOutputTexture( 1, m_texture_cache->GetPtr( "tex_stencil_color" ) );
 			AppendPass("pass_coords", pass_coords );
 		}
 
@@ -117,7 +116,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			AddMaterial( mat );
 			//-- pass
 			SimplePassPtr pass_compute_aliasError = new SimplePass( sh_res/8, sh_res/8 );
-			pass_compute_aliasError->AttachOutputTexture( 0, m_texture_cache->Get( "tex_output" ) );
+			pass_compute_aliasError->AttachOutputTexture( 0, m_texture_cache->GetPtr( "tex_output" ) );
 			pass_compute_aliasError->DisableDepthBuffer();
 			AppendPass("pass_compute_aliasError", pass_compute_aliasError );
 		}
@@ -129,6 +128,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
 		(*ii)->SetShadowTexID( m_texture_cache->Get( "tex_shadow" ) );
 
+		GLuint fbo;
 		glGenFramebuffers(1, &fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_texture_cache->Get("MTEX_warped_depth_color"), 0, 0);	    
@@ -155,7 +155,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 
 			//-- pass
 			SimplePassPtr pass_horiz_blur = new SimplePass( sh_res/8, sh_res/8 );
-			pass_horiz_blur->AttachOutputTexture( 0, m_texture_cache->Get( "MTEX_ping" ) );
+			pass_horiz_blur->AttachOutputTexture( 0, m_texture_cache->GetPtr( "MTEX_ping" ) );
 			pass_horiz_blur->DisableDepthBuffer();
 			AppendPass("pass_horiz_blur", pass_horiz_blur );
 		}
@@ -165,7 +165,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			AddMaterial( mat );
 			//-- pass
 			SimplePassPtr pass_vert_blur = new SimplePass( sh_res/8, sh_res/8 );
-			pass_vert_blur->AttachOutputTexture( 0, m_texture_cache->Get( "MTEX_pong" ) );
+			pass_vert_blur->AttachOutputTexture( 0, m_texture_cache->GetPtr( "MTEX_pong" ) );
 			pass_vert_blur->DisableDepthBuffer();
 			AppendPass("pass_vert_blur", pass_vert_blur );
 		}
@@ -177,7 +177,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			AddMaterial( mat );	
 			//-- pass
 			SimplePassPtr pass_gradient = new SimplePass( sh_res/8, sh_res/8 );
-			pass_gradient->AttachOutputTexture( 0, m_texture_cache->Get( "MTEX_ping" ) );
+			pass_gradient->AttachOutputTexture( 0, m_texture_cache->GetPtr( "MTEX_ping" ) );
 			pass_gradient->DisableDepthBuffer();
 			AppendPass("pass_gradient", pass_gradient );
 		}
@@ -189,7 +189,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			AddMaterial( mat );
 			//-- pass
 			SimplePassPtr pass_func_values = new SimplePass( m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
-			pass_func_values->AttachOutputTexture( 0, m_texture_cache->Get( "MTEX_2Dfunc_values" ) );
+			pass_func_values->AttachOutputTexture( 0, m_texture_cache->GetPtr( "MTEX_2Dfunc_values" ) );
 			pass_func_values->DisableDepthBuffer();
 			AppendPass("pass_func_values", pass_func_values );
 		}
@@ -208,8 +208,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//-----------------------------------------------------------------------------
 		//-- blit pass
 		BlitPass *bp = new BlitPass( 128, 128 );
-		bp->AttachReadTexture( m_texture_cache->Get( "tex_output" ) );
-		bp->AttachDrawTexture( m_texture_cache->Get( "aliaserr_mipmap" ) );
+		bp->AttachReadTexture( m_texture_cache->GetPtr( "tex_output" ) );
+		bp->AttachDrawTexture( m_texture_cache->GetPtr( "aliaserr_mipmap" ) );
 		AppendPass("pass_blit_0", bp );
 		//-----------------------------------------------------------------------------
 		//-- mipmap pass
@@ -220,7 +220,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		}
 		//-- pass
 		SimplePass *mp = new SimplePass( 128, 128 );
-		mp->AttachOutputTexture(0, m_texture_cache->Get("aliaserr_mipmap") ); 
+		mp->AttachOutputTexture(0, m_texture_cache->GetPtr("aliaserr_mipmap") ); 
 		mp->DisableDepthBuffer();
 		AppendPass("pass_alias_mipmap", mp);
 		//-----------------------------------------------------------------------------
