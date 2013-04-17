@@ -70,7 +70,10 @@ bool SimplePass::Validate()
 	for(int i=0; i<m_output_textures.size(); ++i)
 	{
 		PassTexture t = m_output_textures[i];
-		m_fbo->AttachColorTexture( t.tex, t.pos );
+		if( t.is_depth )
+			m_fbo->AttachDepthTexture( t.tex );
+		else
+			m_fbo->AttachColorTexture( t.tex, t.pos );
 	}
 
 	if(!m_fbo->CheckStatus())
@@ -85,13 +88,13 @@ bool SimplePass::Validate()
 
 //-----------------------------------------------------------------------------
 
-void SimplePass::AttachOutputTexture( unsigned _pos, TexturePtr _tex )
+void SimplePass::AttachOutputTexture( unsigned _pos, TexturePtr _tex, bool _is_depth )
 {
 	assert( m_output_textures.size() < m_max_attachments  );
 	assert( _pos < m_max_attachments  );
 	assert( _tex != 0 );
 
-	m_output_textures.push_back( PassTexture( _pos, _tex ) );
+	m_output_textures.push_back( PassTexture( _pos, _tex, _is_depth ) );
 }
 
 //-----------------------------------------------------------------------------

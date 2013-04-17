@@ -28,8 +28,9 @@ protected:
 	glm::ivec4		m_viewport;
 	glm::ivec4		m_last_viewport;
 
-	map<int, GLuint>			m_color_attachments;
-	map<int, GLuint>::iterator	m_it_ca;
+	TexturePtr						m_depth_attachment;
+	map<int, TexturePtr>			m_color_attachments;
+	map<int, TexturePtr>::iterator	m_it_ca;
 	
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -53,7 +54,9 @@ public:
 	void Unbind( GLenum _target = FBO_BOTH );
 
 	void AttachColorTexture( TexturePtr _tex, int _attachment = 0 );
-	void AttachDepthTexture( GLuint _tex );
+	void UpdateColorLayer( int _index );
+	void AttachDepthTexture( TexturePtr _tex );
+	void UpdateDepthLayer( int _index );
 	void AttachDepthBuffer( unsigned _mode = FBO_DEPTH_ONLY );
 	bool CheckStatus(); 
 

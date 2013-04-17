@@ -10,10 +10,12 @@ struct PassTexture
 {
 	unsigned	pos;
 	TexturePtr	tex;
-	PassTexture( unsigned _pos, TexturePtr _tex )
+	bool		is_depth;
+	PassTexture( unsigned _pos, TexturePtr _tex, bool _is_depth = false )
 	{
 		pos = _pos;
 		tex = _tex;
+		is_depth = _is_depth;
 	}
 };
 
@@ -50,7 +52,7 @@ public:
 
 //-----------------------------------------------------------------------------
 
-	void AttachOutputTexture( unsigned _pos, TexturePtr _tex );
+	void AttachOutputTexture( unsigned _pos, TexturePtr _tex, bool _is_depth = false );
 	void EnableDepthBuffer(){ m_depthbuffer_used = true; }
 	void DisableDepthBuffer(){ m_depthbuffer_used = false; }
 
@@ -60,6 +62,9 @@ public:
 
 	//-- Get output texture id
 	//GLuint GetTexture( unsigned _pos ){ return m_output_textures[_pos].id; }
+
+	//-- Get FBO
+	FBOPtr GetFBO(){ return m_fbo; }
 
 //-----------------------------------------------------------------------------
 private:

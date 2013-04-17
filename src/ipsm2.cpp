@@ -13,7 +13,7 @@
 //-- Defines
 
 //#define DEBUG_DRAW 
-#define GRADIENT_METHOD
+//#define GRADIENT_METHOD
 //#define ITERATION_ENABLED
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -128,23 +128,11 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
 		(*ii)->SetShadowTexID( m_texture_cache->Get( "tex_shadow" ) );
 
-		GLuint fbo;
-		glGenFramebuffers(1, &fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_texture_cache->Get("MTEX_warped_depth_color"), 0, 0);	    
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *(*ii)->GetShadowTexID(), 0, 0);	    
-		//glDrawBuffer(GL_NONE); 
-        //glReadBuffer(GL_NONE);
-		m_fbos["fbo_warped_depth"] = fbo;
-
-		//check FBO creation
-        if(!CheckFBO())
-        {
-            ShowMessage("ERROR: FBO creation for depth map failed!",false);
-            return false;
-        }
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//-- pass
+		SimplePassPtr pass_warped_depth = new SimplePass( sh_res, sh_res );
+		pass_warped_depth->AttachOutputTexture( 0, m_texture_cache->GetPtr("MTEX_warped_depth_color") );
+		pass_warped_depth->AttachOutputTexture( 0, m_texture_cache->GetPtr( "tex_shadow" ), true );
+		AppendPass("pass_warped_depth", pass_warped_depth );	
 
 		//-----------------------------------------------------------------------------
 		//blur
@@ -460,10 +448,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		m_passes["pass_func_values"]->Activate();
 
-		//glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
-		//glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_texture_cache->Get( "MTEX_2Dfunc_values" ), 0);
-		//glClear(GL_COLOR_BUFFER_BIT);
-
 		glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
 
 		if( m_shadow_technique->IsEnabled() )
@@ -558,17 +542,23 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 #ifdef ITERATION_ENABLED
 		cout << endl;
 #endif
+		glViewport( 0, 0, sh_res, sh_res );
+		//glColorMask(0, 0, 0, 0);      //disable colorbuffer write
+		glCullFace(GL_FRONT);
+		glEnable(GL_CLIP_PLANE0);
 
+		if(m_wireframe)
+			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+
+		m_passes["pass_warped_depth"]->Activate();
+		
 
 	for(int i=0; i<2; i++)
     {
-		GLuint light_id = *(l->GetShadowTexID());
-		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["fbo_warped_depth"]);
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  m_texture_cache->Get("MTEX_warped_depth_color"), 0, i);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, light_id, 0, i);	    
-		glDrawBuffers(1, mrt);
-
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  m_texture_cache->Get("tex_shadow"), 0, i);	    
+		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//-- Shared uniforms
 		SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
@@ -581,17 +571,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		//-- Bilinear uniforms
 		//SetUniform("mat_depth_with_warping", "funcTex", 1 );
-
-
-		glCullFace(GL_FRONT);
-		//glColorMask(0, 0, 0, 0);      //disable colorbuffer write
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glViewport( 0, 0, sh_res, sh_res );
-		glEnable(GL_CLIP_PLANE0);
-
-		if(m_wireframe)
-			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 		float z_direction = 1.0;
 		if(i == 1)
@@ -616,11 +595,11 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		{
 			DrawGeometry("mat_depth_with_warping", lightViewMatrix[i]);
 		}
-		if(!m_wireframe)
-			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-
-		glBindFramebuffer( GL_FRAMEBUFFER, 0);
 	}
+	m_passes["pass_warped_depth"]->Deactivate();
+
+	if(!m_wireframe)
+			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
 	 //Finish, restore values
     glDisable( GL_CLIP_PLANE0 );

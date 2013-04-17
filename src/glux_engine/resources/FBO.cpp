@@ -33,6 +33,9 @@ void FBO::Init()
 
 	//-- clear attachment list
 	m_color_attachments.clear();
+
+	//-- init pointer to depth texture
+	m_depth_attachment = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -121,22 +124,68 @@ void FBO::AttachColorTexture( TexturePtr _tex, int _attachment )
 	Bind();
 	if( tex_target == TEX_2D )
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+_attachment, tex_id, 0);
+	else if( tex_target == TEX_2D_ARRAY )
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+_attachment, tex_id, 0, 0);
 	Unbind();
 
 	m_includedBuffers |= GL_COLOR_BUFFER_BIT;
 	//-- assign the texture to the list
-	m_color_attachments[_attachment] = tex_id;
+	m_color_attachments[_attachment] = _tex;
 }
 
 //-----------------------------------------------------------------------------
 
-void FBO::AttachDepthTexture( GLuint _tex )
+void FBO::UpdateColorLayer( int _index )
 {
 	Bind();
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _tex, 0);
+	for( m_it_ca = m_color_attachments.begin(); 
+		m_it_ca != m_color_attachments.end();
+		m_it_ca++
+		)
+	{
+		if( m_it_ca->second->GetTarget() == TEX_2D_ARRAY )
+			glFramebufferTextureLayer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+m_it_ca->first, m_it_ca->second->GetID(), 0, _index  );
+	}
+	Unbind();
+}
+
+//-----------------------------------------------------------------------------
+
+void FBO::UpdateDepthLayer( int _index )
+{
+	Bind();
+	if( m_depth_attachment )
+		if( m_depth_attachment->GetTarget() == TEX_2D_ARRAY )
+			glFramebufferTextureLayer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_depth_attachment->GetID(), 0, _index  );
+	Unbind();
+}
+
+//-----------------------------------------------------------------------------
+
+void FBO::AttachDepthTexture( TexturePtr _tex )
+{
+	if( m_depthbuffer )
+	{
+		Bind();
+		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT ,GL_RENDERBUFFER, 0 );
+		Unbind();
+		glDeleteRenderbuffers( 1, &m_depthbuffer );
+		m_depthbuffer = 0;
+	}
+
+	GLuint tex_id = _tex->GetID();
+	GLenum tex_target = _tex->GetTarget(); 
+
+	Bind();
+	if( tex_target == TEX_2D )
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tex_id, 0);
+	else if( tex_target == TEX_2D_ARRAY )
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tex_id, 0, 0);
 	Unbind();
 
 	m_includedBuffers |= GL_DEPTH_BUFFER_BIT;
+
+	m_depth_attachment = _tex;
 }
 
 //-----------------------------------------------------------------------------
@@ -144,9 +193,9 @@ void FBO::AttachDepthTexture( GLuint _tex )
 void FBO::AttachDepthBuffer( unsigned _mode )
 {
 	//-- check if depth buffer is attached
-	if( m_depthbuffer )
+	if( m_depthbuffer || m_depth_attachment )
 	{
-		cerr << "WARNING (FBO): Depth buffer already attached." << endl; 
+		cerr << "WARNING (FBO): Depth buffer or texture already attached." << endl; 
 		return;
 	}
 

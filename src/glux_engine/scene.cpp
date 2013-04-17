@@ -355,15 +355,8 @@ void TScene::Destroy(bool delete_cache)
 		delete m_it_pass->second;
 	m_passes.clear();    
     
-    m_fbos.clear();
-
     if(delete_cache)
     {
-        //delete textures from cache
-        //for(m_it = m_tex_cache.begin(); m_it != m_tex_cache.end(); ++m_it)
-        //    glDeleteTextures(1, &m_it->second);
-        //
-        //m_tex_cache.clear();
         m_obj_cache.clear();
     }
 

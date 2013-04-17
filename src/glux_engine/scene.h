@@ -48,11 +48,6 @@ protected:
     ///iterator for lights container
     vector<TLight*>::iterator m_il, m_il2;
     
-	///associative array with all FBOs
-    map<string,GLuint> m_fbos;
-    ///iterator for fbos container
-    map<string,GLuint>::iterator m_ifbo;
-    
     int m_shadow_textures;    //count of shader textures
 
     ///3DS objects cache - purpose is the same as texture cache
