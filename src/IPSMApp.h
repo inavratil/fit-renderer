@@ -19,6 +19,7 @@ public:
 	IPSMApp(void);
 	virtual ~IPSMApp(void);
 
+	virtual void CreateContent();
 //-----------------------------------------------------------------------------
 //-- Private methods
 

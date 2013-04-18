@@ -559,27 +559,10 @@ int main(int argc, char **argv)
     for(int i=1; i<argc; i++)
     {
         param = argv[i];
-        ////////////////////////////////////////////////
-        //fullscreen/windowed mode
-        if(param == "-w" || param == "-f")
-        {
-            if(param == "-w")
-                fullscreen = false;
-            else if(param == "-f")
-                fullscreen = true;
-            //display resolution
-            if(i+2 < argc)
-            {
-                resx = atoi(argv[i+1]);
-                resy = atoi(argv[i+2]);
-                i += 2;
-            }
-            else
-                WrongParams();
-        }
+
         ///////////////////////////////////////////////
         //antialiasing
-        else if(param == "-aa")
+        if(param == "-aa")
         {
             if(i+1 < argc)
             {
@@ -645,35 +628,20 @@ int main(int argc, char **argv)
             WrongParams();
     }
 
-/*
-#ifndef _LINUX_
-    //doesn't work/exist on a testing linux system. Exists in SDL 1.3
-    //turn off vsync
-    SDL_GL_SetSwapInterval(0);
-#endif
-*/
-
-    //init GLEW
-    if(glewInit() != GLEW_OK)
-    {
-        ShowMessage("GLEW initialization failed!\n");
-        SDL_Quit();
-        return 1;
-    }
-
     //init scene
     if(!InitScene(resx,resy)) exit(1);
 
+    //init AntTweakBar
+    InitTweakBar();
+
     //Main loop
     SDLKey key = SDLK_UNKNOWN;
-    bool keypress = false;
     SDL_Event event;
+
+	bool keypress = false;    
     int time_now, time_nextMS, time_nextS, last_keypress = 0;
     time_now = time_nextMS = time_nextS = SDL_GetTicks();
 
-
-    //init AntTweakBar
-    InitTweakBar();
 
 
     while(true)

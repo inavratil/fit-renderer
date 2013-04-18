@@ -13,10 +13,9 @@ unsigned fps;
 TScene *s;          
 string msg;
 bool wire = false;                    
-int msaa = 1;
+int msaa = 1; //FIXME: smazat
 float anim = 0.0;
-bool fullscreen = false;
-int resx = 1024, resy = 640;
+int resx = 1024, resy = 1024; //FIXME: smazat
 int mem_use = 0;
 bool draw_ui = true;
 

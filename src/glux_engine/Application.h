@@ -15,6 +15,13 @@ class Application
 protected:
 	ScenePtr		m_scene;
 
+	//-- settings
+	string	m_title;
+	int		m_window_width;
+	int		m_window_height;
+	bool	m_is_fullscreen;
+	bool	m_is_msaa_enabled;
+
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
@@ -23,9 +30,12 @@ public:
 	virtual ~Application(void);
 
 	int Run();
-
-	void InitSDL();
+	
+	void InitGLWindow();
 	void ShowConfigDialog();
+	void MainLoop();
+
+	virtual void CreateContent() = 0;	// <== This must be filled with programmer
 
 //-----------------------------------------------------------------------------
 //-- Private methods
