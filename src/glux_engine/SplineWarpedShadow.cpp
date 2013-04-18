@@ -46,6 +46,10 @@ void SplineWarpedShadow::PreRender()
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, m_pFuncValues);
 	glBindTexture(GL_TEXTURE_2D, 0 ); 
 
+	for( int i=0; i<res*res*2; ++i )
+		cout << m_pFuncValues[i] << ", ";
+	cout << endl;
+
 	this->GenerateGrid();
 
 	delete [] m_pFuncValues;

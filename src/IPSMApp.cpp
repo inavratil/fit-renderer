@@ -2,7 +2,9 @@
 
 //-----------------------------------------------------------------------------
 
-IPSMApp::IPSMApp(void)
+IPSMApp::IPSMApp(void) :
+	drawSM( true ),
+	cut_angle( 0 )
 {
 }
 
@@ -14,14 +16,17 @@ IPSMApp::~IPSMApp(void)
 
 //-----------------------------------------------------------------------------
 
-void IPSMApp::CreateContent()
-{
-}
+//void IPSMApp::CreateContent( ScenePtr s )
+//{
+//
+//}
 
 //-----------------------------------------------------------------------------
 
 void IPSMApp::InitGUI()
 {
+	Application::InitGUI();
+
 	if( !m_gui ) return;
 
 #if 0
@@ -75,6 +80,69 @@ void IPSMApp::InitGUI()
     //bar settings
     TwDefine("TweakBar refresh=0.1 size='256 512' ");
 #endif
+}
+
+//-----------------------------------------------------------------------------
+
+void IPSMApp::MouseMoved(SDL_Event event)
+{	
+	int status = event.button.button;
+/*
+    if(move_parab)
+    {
+        if(status == SDL_BUTTON_LEFT)
+        {
+            if( SDL_GetModState() & KMOD_LCTRL )
+                parab_rot.y += 0;
+            else
+                parab_rot.y += event.motion.xrel;
+
+            if( SDL_GetModState() & KMOD_LSHIFT )
+                parab_rot.x += 0;
+            else
+                parab_rot.x += event.motion.yrel; 
+            m_scene->RotateParaboloid(parab_rot);
+
+        }
+    }
+	else
+*/
+		Application::MouseMoved( event );
+
+}
+
+//-----------------------------------------------------------------------------
+
+void IPSMApp::KeyPressed(SDLKey key)
+{
+	Application::KeyPressed( key );
+
+    switch(key)
+    {     
+    case SDLK_7:
+        cut_angle.y -= 20.0;
+        m_scene->DPSetCutAngle(cut_angle);
+        break;
+    case SDLK_8:
+        cut_angle.y += 20.0;
+        m_scene->DPSetCutAngle(cut_angle);
+        break;
+    case SDLK_9:
+        cut_angle.x -= 15.0;
+        m_scene->DPSetCutAngle(cut_angle);
+        break;
+    case SDLK_0:
+        cut_angle.x += 15.0;
+        m_scene->DPSetCutAngle(cut_angle);
+        break;
+	case SDLK_t:
+		drawSM = !drawSM;
+		m_scene->DPDrawSM(drawSM);
+        break;
+
+    default:
+        break;
+    }
 }
 
 //-----------------------------------------------------------------------------

@@ -22,12 +22,6 @@ bool draw_ui = true;
 int scene = 1;
 int ex = -1;
 
-//camera rotation and position
-glm::vec3 rot, pos; 
-int cam_type = FPS;
-
-
-
 //SHADOW CONTROLS
 
 #define USE_DP
@@ -41,12 +35,12 @@ bool parabola_cut = false;
 bool dpshadow_tess = false;
 bool use_pcf = false;
 int dpshadow_method = WARP_DPSM;
-glm::vec2 cut_angle( 0.0, 0.0 );
+
 float dp_frontFOV = 0.0, dp_farPoint = 0.0;
 int ipsm_texPrev = OUTPUT;
 
 bool draw_error = false;
-bool drawSM = true;
+
 bool do_warp = true;
 
 Experiment exper;
@@ -62,6 +56,7 @@ float normal_threshold = 1.0;
 float depth_threshold = 15.0;
 
 
+#if 0
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // TWEAK BAR
@@ -84,6 +79,7 @@ void TW_CALL twResetParab(void *clientData){
     cut_angle = glm::vec2( 0.0 );
     s->DPSetCutAngle(cut_angle);
 }
+
 
 /**
 ******************************************************************************
@@ -180,3 +176,4 @@ void UpdateTweakBar()
 	s->SetWarping(do_warp);
 }
 
+#endif

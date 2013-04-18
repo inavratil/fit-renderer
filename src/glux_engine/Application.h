@@ -8,7 +8,7 @@
 
 class Application
 { 
-
+	
 //-----------------------------------------------------------------------------
 // -- Member variables
 
@@ -26,6 +26,7 @@ protected:
 	int		m_fps;
 	int		m_memory_usage;
 
+	static const int g_cam_type = FPS;
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
@@ -36,17 +37,20 @@ public:
 	int Run();
 	
 	void InitGLWindow();
+	void InitScene();
 	void ShowConfigDialog();
 	void MainLoop();
 
-	virtual void CreateContent() = 0;	// <== This must be filled with programmer
+	virtual void CreateContent( ScenePtr s ) = 0;	// <== This must be filled with programmer
 	virtual void InitGUI();
+	
+	virtual void MouseClicked(SDL_Event event);
+	virtual void MouseMoved(SDL_Event event);
+	virtual void KeyPressed(SDLKey key);
 
 	void RenderScene();
 
-	void MouseClicked(SDL_Event event);
-	void MouseMoved(SDL_Event event);
-	void KeyPressed(SDLKey key);
+	
 
 //-----------------------------------------------------------------------------
 //-- Private methods

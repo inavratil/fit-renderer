@@ -15,33 +15,6 @@ Application::Application(void) :
 	m_memory_usage( 0 ),
 	m_title( "Window" )
 {
-	//FIXME: tohle ma byt v Run!
-	try
-	{
-		//initialize SDL video
-		//SDL_putenv("SDL_VIDEO_WINDOW=center");
-		if(SDL_Init(SDL_INIT_VIDEO) < 0) throw ERR;;
-		ShowConfigDialog();
-		InitGLWindow();
-
-		/*
-		m_scene = new TScene();
-		if(!m_scene->PreInit( 
-			m_window_width, m_window_height, 
-			0.1f, 10000.0f, 45.0f,				// <== FIXME: Tohle musi prijit do kamery (nebo nekam)
-			m_is_msaa_enabled, false, false
-			)
-			) throw ERR;
-		*/
-
-		//InitGUI();
-	}
-	catch( int )
-	{
-		_Destroy();
-		//return 1;
-	}
-
 }
 
 //-----------------------------------------------------------------------------
@@ -54,6 +27,26 @@ Application::~Application(void)
 
 int Application::Run()
 {
+	try
+	{
+		//initialize SDL video
+		//SDL_putenv("SDL_VIDEO_WINDOW=center");
+		if(SDL_Init(SDL_INIT_VIDEO) < 0) throw ERR;;
+		ShowConfigDialog();
+		InitGLWindow();
+				
+		InitScene();
+		
+		InitGUI();
+
+		MainLoop();
+	}
+	catch( int )
+	{
+		_Destroy();
+		return 1;
+	}
+
 	_Destroy();
 
 	return 0;
@@ -153,6 +146,23 @@ void Application::InitGUI()
 
 //-----------------------------------------------------------------------------
 
+void Application::InitScene()
+{
+	m_scene = new TScene();
+	if(!m_scene->PreInit( 
+		m_window_width, m_window_height, 
+		0.1f, 10000.0f, 45.0f,				// <== FIXME: Tohle musi prijit do kamery (nebo nekam)
+		m_is_msaa_enabled, false, false
+		)
+		) throw ERR;
+
+	CreateContent( m_scene );
+
+	if( !m_scene->PostInit() ) throw ERR;
+}
+
+//-----------------------------------------------------------------------------
+
 void Application::ShowConfigDialog()
 {
 	ConfigDialog* dialog = new ConfigDialog();
@@ -176,7 +186,7 @@ void Application::MainLoop()
 	bool keypress = false;    
 
 	float anim = 0.0;
-	int cycle;
+	int cycle = 0;
     int time_now, time_nextMS, time_nextS, last_keypress = 0;
     time_now = time_nextMS = time_nextS = SDL_GetTicks();
 
@@ -218,7 +228,9 @@ void Application::MainLoop()
                 {
                     keypress = true;
                     last_keypress = time_now;
-                    key = event.key.keysym.sym;		//store pressed key
+					key = event.key.keysym.sym;		//store pressed key
+					if( key == SDLK_ESCAPE )
+						break;
                 }
                 else if(event.type == SDL_KEYUP)
                     keypress = false;
@@ -239,23 +251,6 @@ void Application::MainLoop()
         //call keyboard handle when key pressed
         if(keypress && (time_now - last_keypress > 150 || last_keypress == time_now) ) 
             KeyPressed(key);
-
-
-		//meminfo
-		if(GLEW_ATI_meminfo)
-		{
-			int meminfo[4];
-			glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, meminfo);
-			m_memory_usage = 1024 - meminfo[0]/1024;
-		}
-		else if( GLEW_NVX_gpu_memory_info )
-		{
-			int meminfo[4];
-			glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &meminfo[0]);
-			glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX , &meminfo[1]);
-			glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX , &meminfo[2]);
-			m_memory_usage = (meminfo[0] - meminfo[1])/1024;
-		}
     }
 }
 
@@ -263,24 +258,144 @@ void Application::MainLoop()
 
 void Application::RenderScene()
 {
+	m_scene->Redraw();
+	
+	//meminfo
+	if(GLEW_ATI_meminfo)
+	{
+		int meminfo[4];
+		glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, meminfo);
+		m_memory_usage = 1024 - meminfo[0]/1024;
+	}
+	else if( GLEW_NVX_gpu_memory_info )
+	{
+		int meminfo[4];
+		glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &meminfo[0]);
+		glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX , &meminfo[1]);
+		glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX , &meminfo[2]);
+		m_memory_usage = (meminfo[0] - meminfo[1])/1024;
+	}
 }
 
 //-----------------------------------------------------------------------------
 
+/**
+****************************************************************************************************
+@brief Handles mouse clicks
+@param button pressed mouse button
+@param state pouse button state
+@param x X-coordinate of click
+@param y Y-coordinate of click
+****************************************************************************************************/
 void Application::MouseClicked(SDL_Event event)
 {
+	int status = event.button.button;
+
+	//hide cursor at moving
+	if(status == SDL_BUTTON_LEFT)
+		SDL_ShowCursor(SDL_DISABLE);
+	else
+		SDL_ShowCursor(SDL_ENABLE);
 }
 
 //-----------------------------------------------------------------------------
 
+/**
+****************************************************************************************************
+@brief Handles mouse motion
+@param event of the mouse
+****************************************************************************************************/
 void Application::MouseMoved(SDL_Event event)
 {
+	int status = event.button.button;
+
+	glm::vec3 rot = m_scene->GetCameraRot();
+    glm::vec3 pos = m_scene->GetCameraPos();
+
+	//camera movement
+	if(g_cam_type == FPS && status == SDL_BUTTON_LEFT)  //FPS camera
+	{
+		rot.x += event.motion.yrel;     //set the xrot to xrot with the addition of the difference in the y position
+		rot.y += event.motion.xrel;     //set the xrot to yrot with the addition of the difference in the x position
+	}
+	else    //orbiting camera
+	{
+		int x = event.motion.xrel;
+		int y = event.motion.yrel;
+		if(status == SDL_BUTTON_LEFT)   //rotate
+		{
+			m_scene->RotateCamera(float(y), A_X);
+			m_scene->RotateCamera(float(x), A_Y);
+		}
+		else if(status == 4)  //zoom.  proc nefuguje??SDL_BUTTON_RIGHT
+			m_scene->MoveCamera(0.0f, 0.0f, float(x));
+		else if(status == SDL_BUTTON_MIDDLE)  //position
+			m_scene->MoveCamera( float(x), -float(y), 0.0f);
+	}
+
+	//camera object rotation
+	//s->RotateObjAbs("camera", rot.x, A_X);
+	//s->RotateObjAbs("camera", -rot.y, A_Y);
+	m_scene->RotateCameraAbs(rot.x, A_X);
+	m_scene->RotateCameraAbs(rot.y, A_Y);
 }
 
 //-----------------------------------------------------------------------------
 
 void Application::KeyPressed(SDLKey key)
 {
+	const float INC = 5.0;
+	glm::vec3 lpos1 = m_scene->GetLightPos(0);
+
+    //camera rotation and position
+    glm::vec3 rot = m_scene->GetCameraRot();
+    glm::vec3 pos = m_scene->GetCameraPos();
+	switch(key)
+    {  
+	        //WSAD camera movement
+    case SDLK_s:
+        pos.x += INC*glm::sin( glm::radians( rot.y ) );
+        pos.z -= INC*glm::cos( glm::radians( rot.y ) );
+        pos.y -= INC*glm::sin( glm::radians( rot.x ) );
+        break;
+    case SDLK_w: 
+        pos.x -= INC*glm::sin( glm::radians( rot.y ) );
+        pos.z += INC*glm::cos( glm::radians( rot.y ) );
+        pos.y += INC*glm::sin( glm::radians( rot.x ) );
+        break;
+    case SDLK_d:
+        pos.x -= INC*glm::cos( glm::radians( rot.y ) );
+        pos.z -= INC*glm::sin( glm::radians( rot.y ) );
+        break;		 
+    case SDLK_a:
+        pos.x += INC*glm::cos( glm::radians( rot.y ) );
+        pos.z += INC*glm::sin( glm::radians( rot.y ) );
+        break;		 
+
+        //main light movement
+    case SDLK_i: lpos1.z -= INC; m_scene->MoveLight(0,lpos1); break;
+    case SDLK_k: lpos1.z += INC; m_scene->MoveLight(0,lpos1); break;
+    case SDLK_j: lpos1.x -= INC; m_scene->MoveLight(0,lpos1); break;
+    case SDLK_l: lpos1.x += INC; m_scene->MoveLight(0,lpos1); break;
+    case SDLK_u: lpos1.y += INC; m_scene->MoveLight(0,lpos1); break;
+    case SDLK_o: lpos1.y -= INC; m_scene->MoveLight(0,lpos1); break;
+	
+    default:
+        break;
+    }
+
+	//update FPS camera
+    if(g_cam_type == FPS)
+    {
+        m_scene->MoveCameraAbs(pos.x, pos.y, pos.z);
+        m_scene->RotateCameraAbs(rot.x, A_X);
+        m_scene->RotateCameraAbs(rot.y, A_Y);
+    }
+	//cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
+    //s->PrintCamera();
+
+    //camera object position
+    //s->MoveObjAbs("camera", pos.x, pos.y, pos.z);
 }
 
 //-----------------------------------------------------------------------------

@@ -4,15 +4,13 @@
 
 //*****************************************************************************
 //Initialize OpenGL settings for scene
-bool InitScene(int resx, int resy)
+void IPSMApp::CreateContent( ScenePtr s )
 { 
-    s = new TScene();
-    if(!s->PreInit(resx, resy, 0.1f, 10000.0f,45.0f, msaa, false, false)) 
-        return false;
+	//camera rotation and position
+	glm::vec3 rot, pos; 
 
 	//-------------------------------------------------------------------------
 
-    try {
         const char *cubemap[] = {   "data/tex/cubemaps/posx.tga", "data/tex/cubemaps/negx.tga",
             "data/tex/cubemaps/posy.tga", "data/tex/cubemaps/negy.tga",
             "data/tex/cubemaps/posz.tga", "data/tex/cubemaps/negz.tga" };
@@ -252,7 +250,7 @@ bool InitScene(int resx, int resy)
             //s->RotateObj("camera", rot.x, A_X);
             //s->RotateObj("camera", rot.y, A_Y);
 			//update FPS camera
-			if(cam_type == FPS)
+			if(g_cam_type == FPS)
 			{
 				s->MoveCameraAbs(pos.x, pos.y, pos.z);
 				s->RotateCameraAbs(rot.x, A_X);
@@ -275,7 +273,7 @@ bool InitScene(int resx, int resy)
 #else
         s->SetShadow(0, SHADOW_RES, SPOT, 0.3f);
 #endif
-		s->SetCamType(cam_type);
+		s->SetCamType(g_cam_type);
 
 
         
@@ -337,16 +335,8 @@ bool InitScene(int resx, int resy)
 			s->CustomShader("_mat_shadow_warp_tess", &warp_vert, &warp_tcon, &warp_teval, NULL, &warp_frag);
 		}
 		*/
-    }
-    catch(int)
-    {
-        cerr<<"Initialization failed.";
-        return false;
-    }
 
 	//-------------------------------------------------------------------------
-    
-    return s->PostInit();
 }
 
 //*****************************************************************************
@@ -361,164 +351,6 @@ void Redraw()
     //update info
     dp_frontFOV = s->DPGetFOV();
     dp_farPoint = s->DPGetFarPoint();
-}
-
-//*****************************************************************************
-//Keyboard input
-const float INC = 5.0;
-void KeyInput(SDLKey key)
-{
-    glm::vec3 lpos1 = s->GetLightPos(0);
-
-    //camera rotation and position
-    glm::vec2 rotrad;
-    rot = s->GetCameraRot();
-    pos = s->GetCameraPos();
-
-    switch(key)
-    {     
-    case SDLK_7:
-        cut_angle.y -= 20.0;
-        s->DPSetCutAngle(cut_angle);
-        break;
-    case SDLK_8:
-        cut_angle.y += 20.0;
-        s->DPSetCutAngle(cut_angle);
-        break;
-    case SDLK_9:
-        cut_angle.x -= 15.0;
-        s->DPSetCutAngle(cut_angle);
-        break;
-    case SDLK_0:
-        cut_angle.x += 15.0;
-        s->DPSetCutAngle(cut_angle);
-        break;
-        //WSAD camera movement
-    case SDLK_s:
-        pos.x += INC*glm::sin( glm::radians( rot.y ) );
-        pos.z -= INC*glm::cos( glm::radians( rot.y ) );
-        pos.y -= INC*glm::sin( glm::radians( rot.x ) );
-        break;
-    case SDLK_w: 
-        pos.x -= INC*glm::sin( glm::radians( rot.y ) );
-        pos.z += INC*glm::cos( glm::radians( rot.y ) );
-        pos.y += INC*glm::sin( glm::radians( rot.x ) );
-        break;
-    case SDLK_d:
-        pos.x -= INC*glm::cos( glm::radians( rot.y ) );
-        pos.z -= INC*glm::sin( glm::radians( rot.y ) );
-        break;		 
-    case SDLK_a:
-        pos.x += INC*glm::cos( glm::radians( rot.y ) );
-        pos.z += INC*glm::sin( glm::radians( rot.y ) );
-        break;		 
-
-        //main light movement
-    case SDLK_i: lpos1.z -= INC; s->MoveLight(0,lpos1); break;
-    case SDLK_k: lpos1.z += INC; s->MoveLight(0,lpos1); break;
-    case SDLK_j: lpos1.x -= INC; s->MoveLight(0,lpos1); break;
-    case SDLK_l: lpos1.x += INC; s->MoveLight(0,lpos1); break;
-    case SDLK_u: lpos1.y += INC; s->MoveLight(0,lpos1); break;
-    case SDLK_o: lpos1.y -= INC; s->MoveLight(0,lpos1); break;
-
-	case SDLK_t:
-		drawSM = !drawSM;
-		s->DPDrawSM(drawSM);
-        break;
-
-    default:
-        break;
-    }
-
-	//update FPS camera
-    if(cam_type == FPS)
-    {
-        s->MoveCameraAbs(pos.x, pos.y, pos.z);
-        s->RotateCameraAbs(rot.x, A_X);
-        s->RotateCameraAbs(rot.y, A_Y);
-    }
-	//cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
-    //s->PrintCamera();
-
-    //camera object position
-    //s->MoveObjAbs("camera", pos.x, pos.y, pos.z);
-}
-
-/**
-****************************************************************************************************
-@brief Handles mouse clicks
-@param button pressed mouse button
-@param state pouse button state
-@param x X-coordinate of click
-@param y Y-coordinate of click
-****************************************************************************************************/
-void MouseClick(SDL_Event event)
-{ 
-    int status = event.button.button;
-
-    //hide cursor at moving
-    if(status == SDL_BUTTON_LEFT)
-        SDL_ShowCursor(SDL_DISABLE);
-    else
-        SDL_ShowCursor(SDL_ENABLE);
-}
-
-/**
-****************************************************************************************************
-@brief Handles mouse motion
-@param event of the mouse
-****************************************************************************************************/
-void MouseMotion(SDL_Event event)
-{
-	int status = event.button.button;
-
-    if(move_parab)
-    {
-        if(status == SDL_BUTTON_LEFT)
-        {
-            if( SDL_GetModState() & KMOD_LCTRL )
-                parab_rot.y += 0;
-            else
-                parab_rot.y += event.motion.xrel;
-
-            if( SDL_GetModState() & KMOD_LSHIFT )
-                parab_rot.x += 0;
-            else
-                parab_rot.x += event.motion.yrel; 
-            s->RotateParaboloid(parab_rot);
-
-        }
-    }
-    //camera movement
-    else
-    {
-        //camera movement
-        if(cam_type == FPS && status == SDL_BUTTON_LEFT)  //FPS camera
-        {
-            rot.x += event.motion.yrel;     //set the xrot to xrot with the addition of the difference in the y position
-            rot.y += event.motion.xrel;     //set the xrot to yrot with the addition of the difference in the x position
-        }
-        else    //orbiting camera
-        {
-            int x = event.motion.xrel;
-            int y = event.motion.yrel;
-            if(status == SDL_BUTTON_LEFT)   //rotate
-            {
-                s->RotateCamera(float(y), A_X);
-                s->RotateCamera(float(x), A_Y);
-            }
-            else if(status == 4)  //zoom.  proc nefuguje??SDL_BUTTON_RIGHT
-                s->MoveCamera(0.0f, 0.0f, float(x));
-            else if(status == SDL_BUTTON_MIDDLE)  //position
-                s->MoveCamera( float(x), -float(y), 0.0f);
-        }
-
-        //camera object rotation
-        //s->RotateObjAbs("camera", rot.x, A_X);
-        //s->RotateObjAbs("camera", -rot.y, A_Y);
-		s->RotateCameraAbs(rot.x, A_X);
-        s->RotateCameraAbs(rot.y, A_Y);
-    }
 }
 
 /**
@@ -619,6 +451,7 @@ int main(int argc, char **argv)
             WrongParams();
     }
 
+	/*
     //init scene
     if(!InitScene(resx,resy)) exit(1);
 
@@ -681,7 +514,7 @@ int main(int argc, char **argv)
                 else if(event.type == SDL_MOUSEMOTION)
                 {
                     MouseMotion(event);
-                    MouseClick(event);
+                    app.MouseClicked(event);
                 }
             }
             else    //update values bound with tweak bar
@@ -698,7 +531,7 @@ int main(int argc, char **argv)
 
     //delete scene
     delete s;
-
+	*/
 
 	return app.Run();
 }
