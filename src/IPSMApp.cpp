@@ -73,6 +73,7 @@ void IPSMApp::InitGUI()
     //show shadow maps
     TwAddVarRW( m_gui, "drawSM", TW_TYPE_BOOLCPP, &drawSM, 
                " label='Show shadow maps' group='Shadows' ");
+
 	//do warping
     TwAddVarRW( m_gui, "do_warp", TW_TYPE_BOOLCPP, &do_warp, 
                " label='Enable warping' group='Shadows' key=v ");
@@ -80,6 +81,7 @@ void IPSMApp::InitGUI()
     //bar settings
     TwDefine("TweakBar refresh=0.1 size='256 512' ");
 #endif
+
 }
 
 //-----------------------------------------------------------------------------

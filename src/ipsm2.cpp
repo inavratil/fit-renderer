@@ -256,7 +256,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
 	//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightProjMatrix));
 	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
+	
 	glm::mat4 Mp = glm::mat4( 1.0 );
 	Mp = glm::rotate( Mp, -1.0f*m_parab_angle.x, glm::vec3(1, 0, 0));
 	Mp = glm::rotate( Mp, m_parab_angle.y, glm::vec3(0, 1, 0));
@@ -355,12 +355,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glm::vec4 clear_color;
 		glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
 		glClearColor( 1, 1, 1, 1 );
+		glColorMask( 0, 0, 0, 0 );
 
 		m_passes["pass_alias_mipmap"]->Activate();
-
-		//glActiveTexture( GL_TEXTURE0 );
-		//glBindTexture( GL_TEXTURE_2D,  m_texture_cache->Get("aliaserr_mipmap" ) );
-
+				glColorMask( 1, 1, 1, 1 );
 		for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
 		{
 			glViewport(0, 0, j, j);
@@ -371,10 +369,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			SetUniform("mat_aliasMipmap", "mip_level", i-1);
 			RenderPass("mat_aliasMipmap");				
 		}
-
-		//glBindTexture( GL_TEXTURE_2D, 0 );
-
+	
 		m_passes["pass_alias_mipmap"]->Deactivate();
+
 
 		glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
 

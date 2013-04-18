@@ -41,8 +41,9 @@ void BlitPass::_Init( unsigned _width, unsigned _height )
 void BlitPass::Activate()
 {	
 	//-- bind read and draw FBO
-	m_fbo_read->Bind( FBO_READ );
 	m_fbo_draw->Bind( FBO_DRAW );
+	m_fbo_read->Bind( FBO_READ );
+
 }
 
 //-----------------------------------------------------------------------------

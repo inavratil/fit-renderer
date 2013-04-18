@@ -32,13 +32,12 @@ void IPSMApp::CreateContent( ScenePtr s )
             }
         }
 
-
+		/*
         // axes
         s->AddMaterial("mat_red",red,red,red,0.0,0.0,0.0,NONE);
         s->AddMaterial("mat_green",green,green,green,0.0,0.0,0.0,NONE);
         s->AddMaterial("mat_blue",blue,blue,blue,0.0,0.0,0.0,NONE);
-
-        /*
+        
         // X
         s->AddObject("axisX",CUBE,1.0,1.0);
         s->MoveObj("axisX", 600.0, 0.0, 0.0 );
@@ -250,6 +249,7 @@ void IPSMApp::CreateContent( ScenePtr s )
             //s->RotateObj("camera", rot.x, A_X);
             //s->RotateObj("camera", rot.y, A_Y);
 			//update FPS camera
+			s->SetCamType(g_cam_type);
 			if(g_cam_type == FPS)
 			{
 				s->MoveCameraAbs(pos.x, pos.y, pos.z);
@@ -273,7 +273,7 @@ void IPSMApp::CreateContent( ScenePtr s )
 #else
         s->SetShadow(0, SHADOW_RES, SPOT, 0.3f);
 #endif
-		s->SetCamType(g_cam_type);
+		
 
 
         

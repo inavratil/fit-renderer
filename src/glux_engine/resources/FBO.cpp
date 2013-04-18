@@ -83,7 +83,8 @@ GLuint FBO::Bind( GLenum _target )
 	glViewport( m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w );
 
 	//-- clear attached buffers
-	glClear( m_includedBuffers );
+	if( _target != FBO_READ ) // kdyz se z nej cte, tak ho prece nevymazu
+		glClear( m_includedBuffers );
 
 	return m_lastFBO;
 	
