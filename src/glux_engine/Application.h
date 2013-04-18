@@ -14,6 +14,7 @@ class Application
 
 protected:
 	ScenePtr		m_scene;
+	TwBar*			m_gui;
 
 	//-- settings
 	string	m_title;
@@ -21,6 +22,9 @@ protected:
 	int		m_window_height;
 	bool	m_is_fullscreen;
 	bool	m_is_msaa_enabled;
+	bool	m_is_gui_enabled;
+	int		m_fps;
+	int		m_memory_usage;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -36,6 +40,13 @@ public:
 	void MainLoop();
 
 	virtual void CreateContent() = 0;	// <== This must be filled with programmer
+	virtual void InitGUI();
+
+	void RenderScene();
+
+	void MouseClicked(SDL_Event event);
+	void MouseMoved(SDL_Event event);
+	void KeyPressed(SDLKey key);
 
 //-----------------------------------------------------------------------------
 //-- Private methods

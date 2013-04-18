@@ -251,7 +251,14 @@ bool InitScene(int resx, int resy)
             //s->MoveObj("camera", pos.x, pos.y, pos.z);
             //s->RotateObj("camera", rot.x, A_X);
             //s->RotateObj("camera", rot.y, A_Y);
-        }
+			//update FPS camera
+			if(cam_type == FPS)
+			{
+				s->MoveCameraAbs(pos.x, pos.y, pos.z);
+				s->RotateCameraAbs(rot.x, A_X);
+				s->RotateCameraAbs(rot.y, A_Y);
+			}
+		}
 
 		//---------------------------------------------------------------------
 
@@ -346,13 +353,7 @@ bool InitScene(int resx, int resy)
 //Main drawing function
 void Redraw()
 {
-    //update FPS camera
-    if(cam_type == FPS)
-    {
-        s->MoveCameraAbs(pos.x, pos.y, pos.z);
-        s->RotateCameraAbs(rot.x, A_X);
-        s->RotateCameraAbs(rot.y, A_Y);
-    }
+	//Application::RenderScene();
 
     s->Redraw();
     cycle++;                          //increment draw counter 
@@ -360,14 +361,6 @@ void Redraw()
     //update info
     dp_frontFOV = s->DPGetFOV();
     dp_farPoint = s->DPGetFarPoint();
-
-    //meminfo (ATI only)
-    if(GLEW_ATI_meminfo)
-    {
-        static int meminfo[4];
-        glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, meminfo);
-        mem_use = 1024 - meminfo[0]/1024;
-    }
 }
 
 //*****************************************************************************
@@ -400,32 +393,25 @@ void KeyInput(SDLKey key)
         cut_angle.x += 15.0;
         s->DPSetCutAngle(cut_angle);
         break;
-
         //WSAD camera movement
     case SDLK_s:
-        rotrad.y = (rot.y / 180 * PI);
-        rotrad.x = (rot.x / 180 * PI);
-        pos.x += INC*float(sin(rotrad.y));
-        pos.z -= INC*float(cos(rotrad.y));
-        pos.y -= INC*float(sin(rotrad.x));
+        pos.x += INC*glm::sin( glm::radians( rot.y ) );
+        pos.z -= INC*glm::cos( glm::radians( rot.y ) );
+        pos.y -= INC*glm::sin( glm::radians( rot.x ) );
         break;
     case SDLK_w: 
-        rotrad.y = (rot.y / 180 * PI);
-        rotrad.x = (rot.x / 180 * PI);
-        pos.x -= INC*float(sin(rotrad.y));
-        pos.z += INC*float(cos(rotrad.y));
-        pos.y += INC*float(sin(rotrad.x));
+        pos.x -= INC*glm::sin( glm::radians( rot.y ) );
+        pos.z += INC*glm::cos( glm::radians( rot.y ) );
+        pos.y += INC*glm::sin( glm::radians( rot.x ) );
         break;
     case SDLK_d:
-        rotrad.y = (rot.y / 180 * PI);
-        pos.x -= INC*float(cos(rotrad.y));
-        pos.z -= INC*float(sin(rotrad.y));
-        break;
+        pos.x -= INC*glm::cos( glm::radians( rot.y ) );
+        pos.z -= INC*glm::sin( glm::radians( rot.y ) );
+        break;		 
     case SDLK_a:
-        rotrad.y = (rot.y / 180 * PI);
-        pos.x += INC*float(cos(rotrad.y));
-        pos.z += INC*float(sin(rotrad.y));
-        break;
+        pos.x += INC*glm::cos( glm::radians( rot.y ) );
+        pos.z += INC*glm::sin( glm::radians( rot.y ) );
+        break;		 
 
         //main light movement
     case SDLK_i: lpos1.z -= INC; s->MoveLight(0,lpos1); break;
@@ -439,14 +425,17 @@ void KeyInput(SDLKey key)
 		drawSM = !drawSM;
 		s->DPDrawSM(drawSM);
         break;
-    case SDLK_ESCAPE:        //ESCAPE - quit
-        delete s;
-        SDL_Quit();
-        exit(0);
-        break;
 
     default:
         break;
+    }
+
+	//update FPS camera
+    if(cam_type == FPS)
+    {
+        s->MoveCameraAbs(pos.x, pos.y, pos.z);
+        s->RotateCameraAbs(rot.x, A_X);
+        s->RotateCameraAbs(rot.y, A_Y);
     }
 	//cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
     //s->PrintCamera();
@@ -527,6 +516,8 @@ void MouseMotion(SDL_Event event)
         //camera object rotation
         //s->RotateObjAbs("camera", rot.x, A_X);
         //s->RotateObjAbs("camera", -rot.y, A_Y);
+		s->RotateCameraAbs(rot.x, A_X);
+        s->RotateCameraAbs(rot.y, A_Y);
     }
 }
 
@@ -637,17 +628,16 @@ int main(int argc, char **argv)
     //Main loop
     SDLKey key = SDLK_UNKNOWN;
     SDL_Event event;
-
 	bool keypress = false;    
+
+	float anim = 0.0;
     int time_now, time_nextMS, time_nextS, last_keypress = 0;
     time_now = time_nextMS = time_nextS = SDL_GetTicks();
-
-
 
     while(true)
     {
         //measure time
-        time_now = SDL_GetTicks();
+		time_now = SDL_GetTicks();
 
         if(time_now >= time_nextMS) //increment animation after 10ms
         {
@@ -682,6 +672,8 @@ int main(int argc, char **argv)
                     keypress = true;
                     last_keypress = time_now;
                     key = event.key.keysym.sym;		//store pressed key
+                    if( key == SDLK_ESCAPE )
+						break;
                 }
                 else if(event.type == SDL_KEYUP)
                     keypress = false;
@@ -704,7 +696,7 @@ int main(int argc, char **argv)
             KeyInput(key);
     }
 
-    //deinitialize SDL and scene
+    //delete scene
     delete s;
 
 

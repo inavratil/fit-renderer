@@ -19,7 +19,8 @@ public:
 	IPSMApp(void);
 	virtual ~IPSMApp(void);
 
-	virtual void CreateContent();
+	virtual void CreateContent();	// <== Must be defined
+	virtual void InitGUI();
 //-----------------------------------------------------------------------------
 //-- Private methods
 

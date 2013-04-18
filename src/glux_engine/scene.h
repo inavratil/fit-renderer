@@ -191,9 +191,8 @@ public:
     }
 
     ///Toggle wireframe rendering
-    void Wireframe(bool flag){  
-        m_wireframe = flag; 
-    }
+    void Wireframe( bool flag ){ m_wireframe = flag;}
+	bool IsWireframe(){ return m_wireframe; }
 
     /////////////////////////////////////////// CAMERA ////////////////////////////////////////
 

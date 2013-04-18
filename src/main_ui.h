@@ -14,7 +14,6 @@ TScene *s;
 string msg;
 bool wire = false;                    
 int msaa = 1; //FIXME: smazat
-float anim = 0.0;
 int resx = 1024, resy = 1024; //FIXME: smazat
 int mem_use = 0;
 bool draw_ui = true;
