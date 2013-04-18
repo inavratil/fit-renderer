@@ -115,6 +115,9 @@
     <ClCompile Include="src\glux_engine\shaderGen\SFDPShadowMap.cpp">
       <Filter>Source files\Shader Generation</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\ConfigDialog.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -230,6 +233,9 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\shaderGen\SFDPShadowMap.h">
       <Filter>Header files\Shader Generation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\ConfigDialog.h">
+      <Filter>Header files\SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

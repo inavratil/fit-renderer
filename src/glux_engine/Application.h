@@ -4,6 +4,8 @@
 #include "globals.h"
 #include "scene.h"
 
+
+
 class Application
 { 
 
@@ -21,6 +23,9 @@ public:
 	virtual ~Application(void);
 
 	int Run();
+
+	void InitSDL();
+	void ShowConfigDialog();
 
 //-----------------------------------------------------------------------------
 //-- Private methods

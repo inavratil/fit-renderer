@@ -645,35 +645,6 @@ int main(int argc, char **argv)
             WrongParams();
     }
 
-    //initialize SDL video
-    //SDL_putenv("SDL_VIDEO_WINDOW=center");
-    if(SDL_Init(SDL_INIT_VIDEO) < 0) 
-        exit(1);
-
-    //enable double buffering with a 24bit Z buffer.
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-    //enable multisampling
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, msaa);
-
-    SDL_WM_SetCaption("FITRenderer v0.5", 0);
-
-    //set video mode
-    int mode = SDL_OPENGL;
-    if(fullscreen)
-        mode |= SDL_FULLSCREEN;
-
-    if(SDL_SetVideoMode(resx, resy, 32, mode) == NULL)
-    {
-        ShowMessage("Display mode not supported!\n");
-        SDL_Quit();
-        return 1;
-    }
 /*
 #ifndef _LINUX_
     //doesn't work/exist on a testing linux system. Exists in SDL 1.3
@@ -692,8 +663,6 @@ int main(int argc, char **argv)
 
     //init scene
     if(!InitScene(resx,resy)) exit(1);
-
-    SDL_WarpMouse((Uint16)resx/2, (Uint16)resy/2);
 
     //Main loop
     SDLKey key = SDLK_UNKNOWN;

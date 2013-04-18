@@ -13,7 +13,7 @@
 //-- Defines
 
 //#define DEBUG_DRAW 
-#define GRADIENT_METHOD
+//#define GRADIENT_METHOD
 //#define ITERATION_ENABLED
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -552,7 +552,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 	m_passes["pass_warped_depth"]->Activate();
-
 
 	for(int i=0; i<2; i++)
 	{
