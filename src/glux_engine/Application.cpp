@@ -11,6 +11,7 @@ Application::Application(void) :
 	m_is_fullscreen( false ),
 	m_is_msaa_enabled( false ),
 	m_is_gui_enabled( true ),
+	m_is_wireframe_enabled( false ),
 	m_fps( 0 ),
 	m_memory_usage( 0 ),
 	m_title( "Window" )
@@ -31,12 +32,11 @@ int Application::Run()
 	{
 		//initialize SDL video
 		//SDL_putenv("SDL_VIDEO_WINDOW=center");
-		if(SDL_Init(SDL_INIT_VIDEO) < 0) throw ERR;;
+		if(SDL_Init(SDL_INIT_VIDEO) < 0) throw ERR;
+
 		ShowConfigDialog();
-		InitGLWindow();
-				
-		InitScene();
-		
+		InitGLWindow();		
+		InitScene();		
 		InitGUI();
 
 		MainLoop();
@@ -124,6 +124,9 @@ void Application::InitGUI()
 	TwWindowSize( m_window_width, m_window_height );
     m_gui = TwNewBar("Configuration");
 
+	//bar settings
+    TwDefine("Configuration refresh=0.1 ");
+
     //scene information
     TwAddVarRO( m_gui, "fps", TW_TYPE_INT32, &m_fps, 
                " label='FPS'");
@@ -138,10 +141,10 @@ void Application::InitGUI()
                " label='Width' group='Scene' ");
     TwAddVarRO( m_gui, "resy", TW_TYPE_INT32, &m_window_height, 
                " label='Height' group='Scene' ");
-	TwAddVarRO( m_gui, "msaa", TW_TYPE_INT32, &m_is_msaa_enabled, 
+	TwAddVarRO( m_gui, "msaa", TW_TYPE_BOOLCPP, &m_is_msaa_enabled, 
                " label='Antialiasing' group='Scene' ");
-
-    TwAddSeparator( m_gui, NULL, "group='Scene'");
+	TwAddVarRW( m_gui, "wire", TW_TYPE_BOOLCPP, &m_is_wireframe_enabled, 
+               " label='Wireframe' group='Scene' key=x");
 }
 
 //-----------------------------------------------------------------------------
@@ -159,6 +162,9 @@ void Application::InitScene()
 	CreateContent( m_scene );
 
 	if( !m_scene->PostInit() ) throw ERR;
+
+	//-- update state of the scene according to application parameters
+	UpdateScene();
 }
 
 //-----------------------------------------------------------------------------
@@ -244,13 +250,13 @@ void Application::MainLoop()
             else    //update values bound with tweak bar
             {
                 //if(event.type != SDL_MOUSEMOTION)
-                    //UpdateTweakBar();
+                UpdateScene();
             }
         }
 
         //call keyboard handle when key pressed
         if(keypress && (time_now - last_keypress > 150 || last_keypress == time_now) ) 
-            KeyPressed(key);
+            KeyPressed( key );
     }
 }
 
@@ -275,6 +281,13 @@ void Application::RenderScene()
 		glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX , &meminfo[2]);
 		m_memory_usage = (meminfo[0] - meminfo[1])/1024;
 	}
+}
+
+//-----------------------------------------------------------------------------
+
+void Application::UpdateScene()
+{
+	m_scene	->	Wireframe	( m_is_wireframe_enabled );
 }
 
 //-----------------------------------------------------------------------------
@@ -342,7 +355,7 @@ void Application::MouseMoved(SDL_Event event)
 
 //-----------------------------------------------------------------------------
 
-void Application::KeyPressed(SDLKey key)
+void Application::KeyPressed( SDLKey _key )
 {
 	const float INC = 5.0;
 	glm::vec3 lpos1 = m_scene->GetLightPos(0);
@@ -350,7 +363,7 @@ void Application::KeyPressed(SDLKey key)
     //camera rotation and position
     glm::vec3 rot = m_scene->GetCameraRot();
     glm::vec3 pos = m_scene->GetCameraPos();
-	switch(key)
+	switch(_key)
     {  
 	        //WSAD camera movement
     case SDLK_s:

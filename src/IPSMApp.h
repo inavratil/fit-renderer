@@ -4,6 +4,8 @@
 #include "globals.h"
 #include "glux_engine/Application.h"
 
+enum IPSMTextures { OUTPUT, PING, PONG, MASK, CAM_ERR };
+
 class IPSMApp : public Application
 { 
 
@@ -11,8 +13,12 @@ class IPSMApp : public Application
 // -- Member variables
 
 protected:
-	glm::vec2 cut_angle;
-	bool drawSM;
+	//-- parameters
+	glm::vec2		m_param_cut_angle;
+	bool			m_param_is_drawSM_enabled;
+	bool			m_param_is_warping_enabled;
+	bool			m_param_is_draw_error_enabled;
+	int				m_param_preview_texture_id;
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
@@ -20,10 +26,13 @@ public:
 	IPSMApp(void);
 	virtual ~IPSMApp(void);
 
-	virtual void CreateContent( ScenePtr s );	// <== Must be defined
 	virtual void InitGUI();
+	virtual void CreateContent( ScenePtr s );	// <== Must be defined
+	virtual void UpdateScene();
+
+	
 	virtual void MouseMoved(SDL_Event event);
-	virtual void KeyPressed(SDLKey key);
+	virtual void KeyPressed( SDLKey _key );
 
 //-----------------------------------------------------------------------------
 //-- Private methods

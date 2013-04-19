@@ -4,8 +4,6 @@
 #include "globals.h"
 #include "scene.h"
 
-
-
 class Application
 { 
 	
@@ -23,6 +21,7 @@ protected:
 	bool	m_is_fullscreen;
 	bool	m_is_msaa_enabled;
 	bool	m_is_gui_enabled;
+	bool	m_is_wireframe_enabled;
 	int		m_fps;
 	int		m_memory_usage;
 
@@ -41,8 +40,9 @@ public:
 	void ShowConfigDialog();
 	void MainLoop();
 
-	virtual void CreateContent( ScenePtr s ) = 0;	// <== This must be filled with programmer
 	virtual void InitGUI();
+	virtual void CreateContent( ScenePtr s ) = 0;	// <== This must be filled with programmer
+	virtual void UpdateScene();
 	
 	virtual void MouseClicked(SDL_Event event);
 	virtual void MouseMoved(SDL_Event event);
@@ -50,15 +50,11 @@ public:
 
 	void RenderScene();
 
-	
-
 //-----------------------------------------------------------------------------
 //-- Private methods
 
 private: 
 	void _Destroy();
-
-
 };
 
 #endif

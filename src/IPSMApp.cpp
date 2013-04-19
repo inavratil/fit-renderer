@@ -3,8 +3,11 @@
 //-----------------------------------------------------------------------------
 
 IPSMApp::IPSMApp(void) :
-	drawSM( true ),
-	cut_angle( 0 )
+	m_param_is_drawSM_enabled( true ),
+	m_param_cut_angle( 0 ),
+	m_param_is_warping_enabled( true ),
+	m_param_is_draw_error_enabled( false ),
+	m_param_preview_texture_id( OUTPUT )
 {
 }
 
@@ -23,15 +26,39 @@ IPSMApp::~IPSMApp(void)
 
 //-----------------------------------------------------------------------------
 
+void IPSMApp::UpdateScene()
+{
+	Application::UpdateScene();
+
+	m_scene	->	DPDrawSM			( m_param_is_drawSM_enabled );
+	m_scene	->	SetWarping			( m_param_is_warping_enabled );
+	m_scene	->	DPDrawAliasError	( m_param_is_draw_error_enabled );
+	m_scene	->	SetTexturePreviewId	( m_param_preview_texture_id );
+}
+
+//-----------------------------------------------------------------------------
+
 void IPSMApp::InitGUI()
 {
 	Application::InitGUI();
 
 	if( !m_gui ) return;
 
+	//do warping
+	TwAddVarRW( m_gui, "do_warp", TW_TYPE_BOOLCPP, &m_param_is_warping_enabled, 
+               " label='Enable warping' group='IPSM' key=v ");
+	//show shadow maps
+	TwAddVarRW( m_gui, "drawSM", TW_TYPE_BOOLCPP, &m_param_is_drawSM_enabled, 
+               " label='Show shadow maps' group='IPSM' key=t ");
+	//draw aliasing error
+    TwAddVarRW( m_gui, "draw_error", TW_TYPE_BOOLCPP, &m_param_is_draw_error_enabled, 
+               " label='Show alias error' group='IPSM' key=f ");
+	//IPSM textures
+	TwEnumVal ipsm_tex[5] = { {OUTPUT, "Ouput"}, {PING, "Ping"}, {PONG, "Pong"}, {MASK, "Mask"}, {CAM_ERR, "Camera error"} };
+	TwType ipsm_texs = TwDefineEnum("ipsm_texs", ipsm_tex, 5);
+    TwAddVarRW( m_gui, "ipsm_tex", ipsm_texs, &m_param_preview_texture_id, "label='Texture' group='IPSM'");
 #if 0
-    TwAddVarRW( m_gui, "wire", TW_TYPE_BOOL32, &wire, 
-               " label='Wireframe' group='Scene' key=x");
+
     //camera
     TwEnumVal e_cam_type[] = { {FPS, "FPS"}, {ORBIT, "Orbit"}};
     TwType e_cam_types = TwDefineEnum("cam_types", e_cam_type, 2);
@@ -48,10 +75,7 @@ void IPSMApp::InitGUI()
     TwEnumVal sh_mode[3] = { {DPSM, "DPSM"}, {IPSM, "IPSM"}, {CUT, "CUT"} };
     TwType sh_modes = TwDefineEnum("sh_modes", sh_mode, 3);
     TwAddVarRO( m_gui, "sh_mode", sh_modes, &dpshadow_method, "label='Mode' group='Shadows'");
-	//IPSM textures
-	TwEnumVal ipsm_tex[5] = { {OUTPUT, "Ouput"}, {PING, "Ping"}, {PONG, "Pong"}, {MASK, "Mask"}, {CAM_ERR, "Camera error"} };
-	TwType ipsm_texs = TwDefineEnum("ipsm_texs", ipsm_tex, 5);
-    TwAddVarRW( m_gui, "ipsm_tex", ipsm_texs, &ipsm_texPrev, "label='Texture' group='Shadows'");
+
     //parabola cut
     TwAddVarRO( m_gui, "parabola_cut", TW_TYPE_BOOLCPP, &parabola_cut, 
                " label='Parabola cut' group='Shadows' ");
@@ -67,19 +91,7 @@ void IPSMApp::InitGUI()
                " label='Moving paraboloid' group='Shadows' key=q");
     //reset paraboloid
     TwAddButton(m_gui, "reset_parab", twResetParab, NULL, "label='Reset paraboloid' key=r"); 
-    //draw aliasing error
-    TwAddVarRW( m_gui, "draw_error", TW_TYPE_BOOLCPP, &draw_error, 
-               " label='Show alias error' group='Shadows' key=f ");
-    //show shadow maps
-    TwAddVarRW( m_gui, "drawSM", TW_TYPE_BOOLCPP, &drawSM, 
-               " label='Show shadow maps' group='Shadows' ");
 
-	//do warping
-    TwAddVarRW( m_gui, "do_warp", TW_TYPE_BOOLCPP, &do_warp, 
-               " label='Enable warping' group='Shadows' key=v ");
-
-    //bar settings
-    TwDefine("TweakBar refresh=0.1 size='256 512' ");
 #endif
 
 }
@@ -115,32 +127,37 @@ void IPSMApp::MouseMoved(SDL_Event event)
 
 //-----------------------------------------------------------------------------
 
-void IPSMApp::KeyPressed(SDLKey key)
+void IPSMApp::KeyPressed( SDLKey _key )
 {
-	Application::KeyPressed( key );
+	Application::KeyPressed( _key );
 
-    switch(key)
-    {     
+    switch(_key)
+    {
+	//-------------------------------------------
+	//FIXME: Presunout do Cut shadow technique
+	/*
     case SDLK_7:
-        cut_angle.y -= 20.0;
-        m_scene->DPSetCutAngle(cut_angle);
+        m_param_cut_angle.y -= 20.0;
+        m_scene->DPSetCutAngle(m_param_cut_angle);
         break;
     case SDLK_8:
-        cut_angle.y += 20.0;
-        m_scene->DPSetCutAngle(cut_angle);
+        m_param_cut_angle.y += 20.0;
+        m_scene->DPSetCutAngle(m_param_cut_angle);
         break;
     case SDLK_9:
-        cut_angle.x -= 15.0;
-        m_scene->DPSetCutAngle(cut_angle);
+        m_param_cut_angle.x -= 15.0;
+        m_scene->DPSetCutAngle(m_param_cut_angle);
         break;
     case SDLK_0:
-        cut_angle.x += 15.0;
-        m_scene->DPSetCutAngle(cut_angle);
+        m_param_cut_angle.x += 15.0;
+        m_scene->DPSetCutAngle(m_param_cut_angle);
         break;
-	case SDLK_t:
-		drawSM = !drawSM;
-		m_scene->DPDrawSM(drawSM);
-        break;
+	*/
+	//-------------------------------------------
+	//case SDLK_t:
+	//	m_param_is_drawSM_enabled = !m_param_is_drawSM_enabled;
+	//	m_scene->DPDrawSM( m_param_is_drawSM_enabled );
+    //    break;
 
     default:
         break;

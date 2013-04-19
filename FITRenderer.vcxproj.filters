@@ -109,13 +109,13 @@
     <ClCompile Include="src\glux_engine\ScreenSpaceMaterial.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\GeometryMaterial.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\shaderGen\SFDPShadowMap.cpp">
       <Filter>Source files\Shader Generation</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\ConfigDialog.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\GeometryMaterial.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
   </ItemGroup>
@@ -228,13 +228,13 @@
     <ClInclude Include="src\glux_engine\ScreenSpaceMaterial.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\GeometryMaterial.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\shaderGen\SFDPShadowMap.h">
       <Filter>Header files\Shader Generation</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\ConfigDialog.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\GeometryMaterial.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
   </ItemGroup>

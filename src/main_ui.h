@@ -37,16 +37,9 @@ bool use_pcf = false;
 int dpshadow_method = WARP_DPSM;
 
 float dp_frontFOV = 0.0, dp_farPoint = 0.0;
-int ipsm_texPrev = OUTPUT;
-
-bool draw_error = false;
-
-bool do_warp = true;
 
 Experiment exper;
 bool isExperiment = false;
-
-bool show_smaps = true;
 
 int SHADOW_RES = 1024;
 
@@ -88,30 +81,6 @@ void TW_CALL twResetParab(void *clientData){
 TwBar *ui;
 void InitTweakBar()
 {
-    TwInit(TW_OPENGL, NULL);    
-    TwWindowSize(resx, resy);
-    ui = TwNewBar("TweakBar");
-
-    //scene information
-    TwAddVarRO(ui, "fps", TW_TYPE_INT32, &fps, 
-               " label='FPS'");
-    /* TODO: bug in AntTweakBar?
-    string gfx = (const char*)glGetString(GL_RENDERER);
-    TwAddVarRO(ui, "gfx", TW_TYPE_STDSTRING, &gfx, 
-               " label='GFX' group='Scene' ");
-    */
-    TwAddVarRO(ui, "mem_use", TW_TYPE_INT32, &mem_use, 
-               " label='Memory (MB)' group='Scene' ");
-    TwAddVarRO(ui, "resx", TW_TYPE_INT32, &resx, 
-               " label='Width' group='Scene' ");
-    TwAddVarRO(ui, "resy", TW_TYPE_INT32, &resy, 
-               " label='Height' group='Scene' ");
-    TwAddVarRO(ui, "msaa", TW_TYPE_INT32, &msaa, 
-               " label='Antialiasing' group='Scene' ");
-
-    TwAddSeparator(ui, NULL, "group='Scene'");
-    TwAddVarRW(ui, "wire", TW_TYPE_BOOL32, &wire, 
-               " label='Wireframe' group='Scene' key=x");
 
     //camera
     TwEnumVal e_cam_type[] = { {FPS, "FPS"}, {ORBIT, "Orbit"}};
@@ -120,46 +89,6 @@ void InitTweakBar()
     //camera save/load
     TwAddButton(ui, "cam_save", twSaveCamera, NULL, "label='Save' group='Camera' key=F5"); 
     TwAddButton(ui, "cam_load", twLoadCamera, NULL, "label='Load' group='Camera' key=F9"); 
-
-
-    //shadow settings   
-    TwAddVarRO(ui, "sh_res", TW_TYPE_INT32, &SHADOW_RES, 
-               " label='Resolution' group='Shadows' ");
-    //enum all shadow types
-    TwEnumVal sh_mode[3] = { {DPSM, "DPSM"}, {IPSM, "IPSM"}, {CUT, "CUT"} };
-    TwType sh_modes = TwDefineEnum("sh_modes", sh_mode, 3);
-    TwAddVarRO(ui, "sh_mode", sh_modes, &dpshadow_method, "label='Mode' group='Shadows'");
-	//IPSM textures
-	TwEnumVal ipsm_tex[5] = { {OUTPUT, "Ouput"}, {PING, "Ping"}, {PONG, "Pong"}, {MASK, "Mask"}, {CAM_ERR, "Camera error"} };
-	TwType ipsm_texs = TwDefineEnum("ipsm_texs", ipsm_tex, 5);
-    TwAddVarRW(ui, "ipsm_tex", ipsm_texs, &ipsm_texPrev, "label='Texture' group='Shadows'");
-    //parabola cut
-    TwAddVarRO(ui, "parabola_cut", TW_TYPE_BOOLCPP, &parabola_cut, 
-               " label='Parabola cut' group='Shadows' ");
-    //near/far point
-    TwAddVarRO(ui, "frontFOV", TW_TYPE_FLOAT, &dp_frontFOV, 
-               " label='Front FOV' group='Shadows' precision=1");
-    TwAddVarRO(ui, "far_point", TW_TYPE_FLOAT, &dp_farPoint, 
-               " label='Far point' group='Shadows' precision=1");
-
-    //toggle paraboloid rotation
-    TwAddSeparator(ui, NULL, "group='Shadows'");
-    TwAddVarRW(ui, "move_parab", TW_TYPE_BOOLCPP, &move_parab, 
-               " label='Moving paraboloid' group='Shadows' key=q");
-    //reset paraboloid
-    TwAddButton(ui, "reset_parab", twResetParab, NULL, "label='Reset paraboloid' key=r"); 
-    //draw aliasing error
-    TwAddVarRW(ui, "draw_error", TW_TYPE_BOOLCPP, &draw_error, 
-               " label='Show alias error' group='Shadows' key=f ");
-    //show shadow maps
-    TwAddVarRW(ui, "drawSM", TW_TYPE_BOOLCPP, &drawSM, 
-               " label='Show shadow maps' group='Shadows' ");
-	//do warping
-    TwAddVarRW(ui, "do_warp", TW_TYPE_BOOLCPP, &do_warp, 
-               " label='Enable warping' group='Shadows' key=v ");
-
-    //bar settings
-    TwDefine("TweakBar refresh=0.1 size='256 512' ");
 }
 
 /**
@@ -168,12 +97,8 @@ void InitTweakBar()
 ******************************************************************************/
 void UpdateTweakBar()
 {
-    s->Wireframe(wire);
     s->SetCamType(cam_type);
-    s->DPDrawAliasError(draw_error);
-    s->DPDrawSM(drawSM);
-	s->SetTexturePreviewId(ipsm_texPrev);
-	s->SetWarping(do_warp);
+	
 }
 
 #endif

@@ -241,7 +241,7 @@ void IPSMApp::CreateContent( ScenePtr s )
             s->MoveLight( 0, exper.light_pos );
             pos = exper.cam_pos;
             rot = exper.cam_rot;
-            cut_angle = glm::vec2( exper.cut_params.x, exper.cut_params.y );
+            m_param_cut_angle = glm::vec2( exper.cut_params.x, exper.cut_params.y );
             parab_rot.x = exper.cut_params.z;
             parab_rot.y = exper.cut_params.w;
 
@@ -264,19 +264,14 @@ void IPSMApp::CreateContent( ScenePtr s )
         //dual-paraboloid shadow parameters        
         s->SetShadow(0, SHADOW_RES, OMNI, 0.3f, true);
         s->DPSetPCF(use_pcf);
-        s->DPSetCutAngle( cut_angle );
+        //s->DPSetCutAngle( m_param_cut_angle );
         s->DPShadowMethod( dpshadow_method );         
         s->DPSetTessellation(dpshadow_tess);
-        s->DPDrawSM(drawSM);
-        s->DPDrawAliasError(draw_error);
         s->RotateParaboloid(parab_rot);
 #else
         s->SetShadow(0, SHADOW_RES, SPOT, 0.3f);
 #endif
-		
 
-
-        
 		//---------------------------------------------------------------------
 
         //toggle effects (HDR & SSAO)
