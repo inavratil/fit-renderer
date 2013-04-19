@@ -12,6 +12,7 @@ class Application
 
 protected:
 	ScenePtr		m_scene;
+	TCamera*		m_camera;
 	TwBar*			m_gui;
 
 	//-- settings
@@ -19,7 +20,7 @@ protected:
 	int		m_window_width;
 	int		m_window_height;
 	bool	m_is_fullscreen;
-	bool	m_is_msaa_enabled;
+	int		m_is_msaa;
 	bool	m_is_gui_enabled;
 	bool	m_is_wireframe_enabled;
 	int		m_fps;

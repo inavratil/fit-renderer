@@ -249,7 +249,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//set light projection and light view matrix
 	glm::mat4 lightProjMatrix = glm::perspective(90.0f, 1.0f, 1.0f, 1000.0f);
 	glm::mat4 lightViewMatrix[2];
-	lightViewMatrix[1] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(-m_far_p, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+	lightViewMatrix[1] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(-m_cam->GetFarPlane(), 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 	//glm::mat4 lightViewMatrix = glm::lookAt(l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
 	//glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
@@ -572,7 +572,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		float z_direction = 1.0;
 		if(i == 1)
 			z_direction = -1.0;  
-		lightViewMatrix[i] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
+		lightViewMatrix[i] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3( m_cam->GetFarPlane()*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
 		glm::mat4 Mp = glm::mat4( 1.0 );
 		Mp = glm::rotate( Mp, z_direction*m_parab_angle.x, glm::vec3(1, 0, 0));

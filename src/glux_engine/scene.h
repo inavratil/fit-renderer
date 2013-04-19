@@ -64,19 +64,13 @@ protected:
     ///Display list for font
     GLuint m_font2D;
 
-    //scene parameters
-
     ///screen resolution
     GLint m_resx, m_resy;
-    ///clipping planes
-    GLfloat m_near_p, m_far_p;
-    ///field of view
-    GLfloat m_fovy;
 
     ///scene camera
     TCamera *m_cam;
     ///do we use custom camera?
-    bool m_custom_cam;
+    bool m_custom_cam; //FIXME: nepotrebuju
     ///number of multisaples in antialiasing
     GLint m_msamples;
 
@@ -153,8 +147,7 @@ public:
     ~TScene();
 
     //scene initialization
-    bool PreInit(GLint resx, GLint resy, GLfloat near, GLfloat far, GLfloat fovy, 
-                 GLint msamples, bool cust_cam = false, bool load_font = true);
+    bool PreInit(GLint resx, GLint resy, GLint msamples = 1, bool load_font = false);
     bool PostInit();
     //resize window
     void Resize(GLint resx, GLint resy);
@@ -194,8 +187,14 @@ public:
     void Wireframe( bool flag ){ m_wireframe = flag;}
 	bool IsWireframe(){ return m_wireframe; }
 
-    /////////////////////////////////////////// CAMERA ////////////////////////////////////////
+/////////////////////////////////////////// CAMERA ////////////////////////////////////////
 
+	TCamera* CreateCamera()
+	{ 
+		if( !m_cam )
+			m_cam = new TCamera(); 
+		return m_cam; 
+	}
     ///@brief Update new camera position and modelview matrix(for lights) in uniform buffer
     void UpdateCameraUniform(){
         glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_lights);
@@ -234,6 +233,7 @@ public:
         UpdateCameraUniform();
     }
 
+	//FIXME: nepotrebuju
     ///@brief Switch between custom and scene camera
     void SwitchCamera(){ 
         m_custom_cam = !m_custom_cam; 
@@ -271,7 +271,7 @@ public:
     }
 
 
-    /////////////////////////////////////////// LIGHTS ////////////////////////////////////////
+/////////////////////////////////////////// LIGHTS ////////////////////////////////////////
 
     void AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 lpos, GLfloat radius = 1000.0);
 

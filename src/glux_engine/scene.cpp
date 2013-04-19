@@ -26,7 +26,7 @@ TScene::TScene()
     m_font2D_bkg = 0;
     m_lights.clear();
     m_sceneID = 0;
-    m_cam = new TCamera();
+	m_cam = NULL;
     m_custom_cam = false;
     m_msamples = 1;
 
@@ -50,7 +50,7 @@ TScene::TScene()
 	m_texPreview_id = 0;
 	m_shadow_technique = NULL;
 	m_shader_features.clear();
-	//FIXME: do tridy Application
+	//FIXME: do tridy Application??
 	m_passes.clear();
 	m_texture_cache = new TextureCache();
 	
@@ -96,15 +96,10 @@ clipping planes and perspective correction.
 @param load_font shall we load font?
 @return success/fail of initialization
 ****************************************************************************************************/
-bool TScene::PreInit(GLint resx, GLint resy, GLfloat _near, GLfloat _far, GLfloat fovy, 
-                     int msamples, bool cust_cam, bool load_font)
+bool TScene::PreInit(GLint resx, GLint resy, int msamples, bool load_font)
 {
     m_resx = resx;
     m_resy = resy;
-    m_near_p = _near;
-    m_far_p = _far;
-    m_fovy = fovy;
-    m_custom_cam = cust_cam;
     m_msamples = msamples;
     if(msamples < 1) msamples = 1;              //don't accept 0 for multisample count
 
@@ -329,7 +324,7 @@ void TScene::Resize(GLint resx, GLint resy)
     m_resx = resx;
     m_resy = resy;
     glViewport(0,0,resx,resy);        //new viewport settings
-    m_projMatrix = glm::perspective(m_fovy,(GLfloat)resx/resy,m_near_p,m_far_p);
+	m_projMatrix = glm::perspective(m_cam->GetFOVy(),(GLfloat)resx/resy,m_cam->GetNearPlane(),m_cam->GetFarPlane());
 }
 
 

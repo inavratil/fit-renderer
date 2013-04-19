@@ -11,7 +11,10 @@
 ****************************************************************************************************
 @brief Initialize camera, sets all vectors to identity
 ***************************************************************************************************/
-TCamera::TCamera()
+TCamera::TCamera() :
+	m_near_plane( 0 ),
+	m_far_plane( 0 ),
+	m_fovy( 0 )
 {
     m_pos = glm::vec3(0.0);
     m_rot = glm::vec3(0.0);

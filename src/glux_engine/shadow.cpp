@@ -132,8 +132,8 @@ void TScene::RenderShadowMapOmni(TLight *l)
     glm::vec3 l_pos_eye =  glm::vec3(m_viewMatrix * glm::vec4(l_pos, 1.0));
     //size of near/far plane of view frustum
     //m_max_depth = 2*m_avg_depth;
-    float far_hsize = m_max_depth * glm::tan(glm::radians(m_fovy/2.0f));
-    float near_hsize = m_min_depth * glm::tan(glm::radians(m_fovy/2.0f));
+	float far_hsize = m_max_depth * glm::tan(glm::radians(m_cam->GetFOVy()/2.0f));
+    float near_hsize = m_min_depth * glm::tan(glm::radians(m_cam->GetFOVy()/2.0f));
     
     glm::vec3 cam_nearfar[2*F_POINTS];          //near/far points
     glm::vec3 nearfar_light[2*F_POINTS];        //vectors from near/far into light position in eye space
@@ -259,7 +259,7 @@ void TScene::RenderShadowMapOmni(TLight *l)
             //look point at original DPSM
             lightViewMatrix[i] = glm::lookAt(
                 l->GetPos(), 
-                l_pos + glm::vec3(m_far_p*z_direction, 0.0f, 0.0f),                   
+                l_pos + glm::vec3(m_cam->GetFarPlane()*z_direction, 0.0f, 0.0f),                   
                 glm::vec3(0.0f, 1.0f, 0.0f) );
             FOV = m_dp_FOV;
 

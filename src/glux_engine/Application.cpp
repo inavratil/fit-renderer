@@ -5,11 +5,12 @@
 
 Application::Application(void) :
 	m_scene( 0 ),
+	m_camera( 0 ),
 	m_gui( 0 ),
 	m_window_width( 0 ),
 	m_window_height( 0 ),
 	m_is_fullscreen( false ),
-	m_is_msaa_enabled( false ),
+	m_is_msaa( 1 ),
 	m_is_gui_enabled( true ),
 	m_is_wireframe_enabled( false ),
 	m_fps( 0 ),
@@ -80,10 +81,10 @@ void Application::InitGLWindow()
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     //enable multisampling
-	if( m_is_msaa_enabled )
+	if( m_is_msaa > 1)
 	{
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_is_msaa_enabled);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_is_msaa);
 	}
 
 	SDL_WM_SetCaption( m_title.c_str(), 0);
@@ -141,7 +142,7 @@ void Application::InitGUI()
                " label='Width' group='Scene' ");
     TwAddVarRO( m_gui, "resy", TW_TYPE_INT32, &m_window_height, 
                " label='Height' group='Scene' ");
-	TwAddVarRO( m_gui, "msaa", TW_TYPE_BOOLCPP, &m_is_msaa_enabled, 
+	TwAddVarRO( m_gui, "msaa", TW_TYPE_INT32, &m_is_msaa, 
                " label='Antialiasing' group='Scene' ");
 	TwAddVarRW( m_gui, "wire", TW_TYPE_BOOLCPP, &m_is_wireframe_enabled, 
                " label='Wireframe' group='Scene' key=x");
@@ -152,12 +153,14 @@ void Application::InitGUI()
 void Application::InitScene()
 {
 	m_scene = new TScene();
-	if(!m_scene->PreInit( 
-		m_window_width, m_window_height, 
-		0.1f, 10000.0f, 45.0f,				// <== FIXME: Tohle musi prijit do kamery (nebo nekam)
-		m_is_msaa_enabled, false, false
-		)
-		) throw ERR;
+
+	m_camera = m_scene->CreateCamera();
+	m_camera->SetFOVy( 45.0f );
+	m_camera->SetNearPlane( 0.1f );
+	m_camera->SetFarPlane( 1000.0f );
+
+	if( !m_scene->PreInit( m_window_width, m_window_height )	) throw ERR;
+
 
 	CreateContent( m_scene );
 
@@ -177,7 +180,7 @@ void Application::ShowConfigDialog()
 	m_window_width = dialog->GetInteger( "Window width" );
 	m_window_height = dialog->GetInteger( "Window height" );
 	m_is_fullscreen = dialog->GetBoolean( "Full screen" );
-	m_is_msaa_enabled = dialog->GetBoolean( "" );
+	m_is_msaa = dialog->GetInteger( "MSAA" );
 	m_title = dialog->GetString( "Title" );
 	delete dialog;
 }
@@ -250,6 +253,7 @@ void Application::MainLoop()
             else    //update values bound with tweak bar
             {
                 //if(event.type != SDL_MOUSEMOTION)
+				//FIXME: odtud se to bude muset presunout vys pred RenderScene, aby to mohlo reagovat i na jine klavesy nez z tweakbaru
                 UpdateScene();
             }
         }
