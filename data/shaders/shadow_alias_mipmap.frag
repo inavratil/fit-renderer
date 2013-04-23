@@ -15,10 +15,10 @@ void main()
 {
 	vec4 out_color = vec4( 0.0 );
 	// vyraz "-vec2(offset)", protoze souradnice z levelu i+1 cte z pixel o souradnicich (1,1) v levelu i - brano v ramci 2x2 pixelu 
-	float errorVal00 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(0,0) ).a, 2.0);
-	float errorVal10 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(1,0) ).a, 2.0);
-	float errorVal01 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(0,1) ).a, 2.0);
-	float errorVal11 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(1,1) ).a, 2.0);
+	float errorVal00 = textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(0,0) ).a;
+	float errorVal10 = textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(1,0) ).a;
+	float errorVal01 = textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(0,1) ).a;
+	float errorVal11 = textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(1,1) ).a;
 	
 	float maxWidth = max(errorVal00 + errorVal10, errorVal01 + errorVal11 );
 	float maxHeight = max(errorVal00 + errorVal01, errorVal10 + errorVal11 );

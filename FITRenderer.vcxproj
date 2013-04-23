@@ -223,6 +223,7 @@
     <None Include="data\shaders\warping\camAndLightCoords_afterDP.vert" />
     <None Include="data\shaders\warping\computeAliasError.frag" />
     <None Include="data\shaders\warping\computeAliasError.vert" />
+    <None Include="data\shaders\warping\copy_squared_error.frag" />
     <None Include="data\shaders\warping\dbg_polynomials_grid.frag" />
     <None Include="data\shaders\warping\dbg_polynomials_grid.vert" />
     <None Include="data\shaders\warping\dbg_stencil_test.frag" />

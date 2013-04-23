@@ -199,10 +199,22 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		}
 		//-----------------------------------------------------------------------------
 		//-- blit pass
-		BlitPass *bp = new BlitPass( 128, 128 );
-		bp->AttachReadTexture( m_texture_cache->GetPtr( "tex_output" ) );
-		bp->AttachDrawTexture( m_texture_cache->GetPtr( "aliaserr_mipmap" ) );
-		AppendPass("pass_blit_0", bp );
+		//BlitPass *bp = new BlitPass( 128, 128 );
+		//bp->AttachReadTexture( m_texture_cache->GetPtr( "tex_output" ) );
+		//bp->AttachDrawTexture( m_texture_cache->GetPtr( "aliaserr_mipmap" ) );
+		//AppendPass("pass_blit_0", bp );
+		//-- copy squared error
+		{
+			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_copy_squared_error", "data/shaders/quad.vert", "data/shaders/warping/copy_squared_error.frag" );
+			mat->AddTexture( m_texture_cache->GetPtr("tex_output"), "tex_alias_error" );
+			AddMaterial( mat );
+
+			//-- pass
+			SimplePass *mp = new SimplePass( 128, 128 );
+			mp->AttachOutputTexture(0, m_texture_cache->GetPtr("aliaserr_mipmap") ); 
+			mp->DisableDepthBuffer();
+			AppendPass("pass_copy_squared_error", mp);
+		}
 		//-----------------------------------------------------------------------------
 		//-- mipmap pass
 		{
@@ -350,7 +362,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	{
 		//-----------------------------------------------------------------------------
 
-		m_passes["pass_blit_0"]->Process();
+		//m_passes["pass_blit_0"]->Process();
+		m_passes["pass_copy_squared_error"]->Activate();
+		RenderPass("mat_copy_squared_error");		
+		m_passes["pass_copy_squared_error"]->Deactivate();
 
 		//-----------------------------------------------------------------------------
 
