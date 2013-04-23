@@ -24,7 +24,7 @@ public:
 
 	void Setup();
 	void Display();
-	void Load();
+	void Load( const string& _filename );
 
 	int GetInteger( string _name )
 	{ 
@@ -42,6 +42,8 @@ public:
 		return m_settings[_name];
 	}
 };
+
+typedef ConfigDialog* ConfigDialogPtr;
 
 
 #include <cctype>

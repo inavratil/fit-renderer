@@ -3,6 +3,7 @@
 
 #include "globals.h"
 #include "scene.h"
+#include "ConfigDialog.h"
 
 class Application
 { 

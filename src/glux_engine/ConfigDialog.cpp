@@ -5,7 +5,7 @@
 ConfigDialog::ConfigDialog(void) :
 	m_quit( 0 )
 {
-	Load();
+	Load( "config.cfg" );
 	Setup();
 }
 
@@ -60,9 +60,9 @@ void ConfigDialog::Display()
 
 //-----------------------------------------------------------------------------
 
-void ConfigDialog::Load()
+void ConfigDialog::Load( const string& _filename )
 {
-	ifstream cfg_file("config.cfg");
+	ifstream cfg_file( _filename );
 	if (cfg_file.is_open())
 	{
 		string line;
