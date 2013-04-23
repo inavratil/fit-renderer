@@ -106,6 +106,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			SimplePassPtr pass_coords = new SimplePass( sh_res/8, sh_res/8 );
 			pass_coords->AttachOutputTexture( 0, m_texture_cache->GetPtr( "tex_camAndLightCoords" ) );
 			pass_coords->AttachOutputTexture( 1, m_texture_cache->GetPtr( "tex_stencil_color" ) );
+			pass_coords->SetShader( mat );
 			AppendPass("pass_coords", pass_coords );
 		}
 
@@ -287,15 +288,15 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//glEnable( GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
-	m_passes["pass_coords"]->Activate();	
+	m_passes["pass_coords"]->Activate();
+	MaterialPtr mat_coords = m_passes["pass_coords"]->GetShader();
+	mat_coords->SetUniform("cam_mv", m_viewMatrix );
+	mat_coords->SetUniform("cam_proj", m_projMatrix );
+	mat_coords->SetUniform("lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
+	mat_coords->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+	mat_coords->SetUniform("grid_res", (float) m_shadow_technique->GetResolution() );
 
-	SetUniform("mat_camAndLightCoords_afterDP", "cam_mv", m_viewMatrix );
-	SetUniform("mat_camAndLightCoords_afterDP", "cam_proj", m_projMatrix );
-	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
-	SetUniform("mat_camAndLightCoords_afterDP", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-	SetUniform("mat_camAndLightCoords_afterDP", "grid_res", (float) m_shadow_technique->GetResolution() );
-
-	DrawGeometry("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
+	DrawGeometry(mat_coords->GetName().c_str(), lightViewMatrix[1]);
 
 	m_passes["pass_coords"]->Deactivate();
 
@@ -342,7 +343,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//		textureOffset se pousouva v rozliseni textury, takze kdyz je rozliseni 1024, posune se o pixel v tomto rozliseni
 	//		pri rendrovani do 128x128 je mi toto chovani ale na prd ?????
 	m_passes["pass_compute_aliasError"]->Render();
-	//RenderPass("mat_compute_aliasError");
 	m_passes["pass_compute_aliasError"]->Deactivate();	
 
 #ifndef GRADIENT_METHOD
