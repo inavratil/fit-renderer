@@ -134,6 +134,10 @@ bool TScene::PreInit(GLint resx, GLint resy, int msamples, bool load_font)
 	mat->AddTexture( m_texture_cache->CreateFromImage( "data/load.png" ), "tex" );
 	AddMaterial( mat );
 	
+	
+    //add screen quad for render targets
+    AddScreenQuad();
+
     return true;
 }
 
@@ -268,9 +272,6 @@ bool TScene::PostInit()
     }
 
 	//-------------------------------------------------------------------------
-
-    //add screen quad for render targets
-    AddScreenQuad();
 	    
     cout<<"Post Init OK\n";
     

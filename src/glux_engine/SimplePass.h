@@ -27,7 +27,6 @@ class SimplePass : public Pass
 
 protected:
 	//FIXME: tohle by mely byt pointer na Shader a ne string
-	string					m_shader;
 	vector<PassTexture>		m_output_textures;
 	FBOPtr					m_fbo;
 
@@ -44,7 +43,6 @@ public:
 	
 //-----------------------------------------------------------------------------
 	//-- Virtual Methods
-	virtual void Render();
 	virtual void Activate();
 	virtual void Deactivate();
 
@@ -55,10 +53,6 @@ public:
 	void AttachOutputTexture( unsigned _pos, TexturePtr _tex, bool _is_depth = false );
 	void EnableDepthBuffer(){ m_depthbuffer_used = true; }
 	void DisableDepthBuffer(){ m_depthbuffer_used = false; }
-
-	//-- Set/Get shader
-	void SetShader( string _name ){ m_shader = _name; }
-	string GetShader(){ return m_shader; }
 
 	//-- Get output texture id
 	//GLuint GetTexture( unsigned _pos ){ return m_output_textures[_pos].id; }

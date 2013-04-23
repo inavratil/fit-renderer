@@ -121,6 +121,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			SimplePassPtr pass_compute_aliasError = new SimplePass( sh_res/8, sh_res/8 );
 			pass_compute_aliasError->AttachOutputTexture( 0, m_texture_cache->GetPtr( "tex_output" ) );
 			pass_compute_aliasError->DisableDepthBuffer();
+			pass_compute_aliasError->SetShader( mat );
 			AppendPass("pass_compute_aliasError", pass_compute_aliasError );
 		}
 		//-----------------------------------------------------------------------------
@@ -262,13 +263,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 	lightViewMatrix[1] = Mp * lightViewMatrix[1];
 
-	SetUniform("mat_camAndLightCoords_afterDP", "cam_mv", m_viewMatrix );
-	SetUniform("mat_camAndLightCoords_afterDP", "cam_proj", m_projMatrix );
-	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
-	SetUniform("mat_camAndLightCoords_afterDP", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-	SetUniform("mat_camAndLightCoords_afterDP", "grid_res", (float) m_shadow_technique->GetResolution() );
-	SetUniform("mat_camAndLightCoords_afterDP", "funcTex", 0 );
-
 	glm::mat4 coeffsX = glm::mat4( 0.0 );
 	glm::mat4 coeffsY = glm::mat4( 0.0 );
 	glm::vec4 mask_range = glm::vec4( 128.0, 0.0, 128.0, 0.0 );
@@ -286,8 +280,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 	//-----------------------------------------------------------------------------
 
-	m_passes["pass_coords"]->Activate();
-
 	//if(m_wireframe)
 	//    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	glEnable( GL_CLIP_PLANE0 );
@@ -295,7 +287,17 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//glEnable( GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
+	m_passes["pass_coords"]->Activate();	
+
+	SetUniform("mat_camAndLightCoords_afterDP", "cam_mv", m_viewMatrix );
+	SetUniform("mat_camAndLightCoords_afterDP", "cam_proj", m_projMatrix );
+	SetUniform("mat_camAndLightCoords_afterDP", "lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
+	SetUniform("mat_camAndLightCoords_afterDP", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+	SetUniform("mat_camAndLightCoords_afterDP", "grid_res", (float) m_shadow_technique->GetResolution() );
+
 	DrawGeometry("mat_camAndLightCoords_afterDP", lightViewMatrix[1]);
+
+	m_passes["pass_coords"]->Deactivate();
 
 	//if(!m_wireframe)
 	//	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -303,7 +305,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	glCullFace(GL_BACK);
 	glDisable( GL_CULL_FACE);
 
-	m_passes["pass_coords"]->Deactivate();
+	
 
 	//-----------------------------------------------------------------------------
 
@@ -339,7 +341,8 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//FIXME: opravdu mohu pouzit tex_coords v plnem rozliseni, pri mensim rozliseni se bude brat jenom kazda n-ta hodnota
 	//		textureOffset se pousouva v rozliseni textury, takze kdyz je rozliseni 1024, posune se o pixel v tomto rozliseni
 	//		pri rendrovani do 128x128 je mi toto chovani ale na prd ?????
-	RenderPass("mat_compute_aliasError");
+	m_passes["pass_compute_aliasError"]->Render();
+	//RenderPass("mat_compute_aliasError");
 	m_passes["pass_compute_aliasError"]->Deactivate();	
 
 #ifndef GRADIENT_METHOD

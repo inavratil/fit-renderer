@@ -3,7 +3,6 @@
 //-----------------------------------------------------------------------------
 
 SimplePass::SimplePass( unsigned _width, unsigned _height  ) :
-	m_shader(""),
 	m_activated( false ),
 	m_depthbuffer_used( true )
 {
@@ -31,19 +30,13 @@ void SimplePass::_Init( unsigned _width, unsigned _height )
 	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &m_max_attachments );
 }
 
+//-----------------------------------------------------------------------------
+
 void SimplePass::Activate()
 {
 	m_fbo->Bind();
 
 	m_activated = true;
-}
-
-//-----------------------------------------------------------------------------
-
-void SimplePass::Render()
-{
-	if( !m_activated ) return;
-	
 }
 
 //-----------------------------------------------------------------------------

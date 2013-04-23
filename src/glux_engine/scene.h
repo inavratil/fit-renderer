@@ -135,7 +135,10 @@ public:
 			return;
 		}
 		if( _pass->Validate() )
+		{
+			_pass->SetQuad( m_screen_quad.vao );
 			m_passes[_name] = _pass;
+		}
 	}
 	//-----------------------------------------------------------------------------
 	
