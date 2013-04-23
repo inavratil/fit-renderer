@@ -19,7 +19,7 @@ TCamera::TCamera() :
     m_pos = glm::vec3(0.0);
     m_rot = glm::vec3(0.0);
     m_look = glm::vec3(0.0);
-    m_type = ORBIT;
+    m_type = FPS;
 }
 
 /**
