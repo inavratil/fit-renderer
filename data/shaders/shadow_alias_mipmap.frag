@@ -13,8 +13,9 @@ out vec4 out_FragColor;
 
 void main()
 {
+	vec4 out_color = vec4( 0.0 );
 	// vyraz "-vec2(offset)", protoze souradnice z levelu i+1 cte z pixel o souradnicich (1,1) v levelu i - brano v ramci 2x2 pixelu 
-	float errorVal00 = pow( textureLod( mat_aliasError, fragTexCoord-vec2(offset), mip_level ).a, 2.0);
+	float errorVal00 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(0,0) ).a, 2.0);
 	float errorVal10 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(1,0) ).a, 2.0);
 	float errorVal01 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(0,1) ).a, 2.0);
 	float errorVal11 = pow( textureLodOffset( mat_aliasError, fragTexCoord-vec2(offset), mip_level, ivec2(1,1) ).a, 2.0);
@@ -23,6 +24,10 @@ void main()
 	float maxHeight = max(errorVal00 + errorVal01, errorVal10 + errorVal11 );
 
 	float maxVal = max(maxWidth, maxHeight);
-	out_FragColor = vec4( sqrt(errorVal00 + errorVal10 + errorVal01 + errorVal11) );
+
+	//zde musim ukladat vzdy do aplha kanalu. Z toho se pak cte o uroven niz
+	out_color.r = sqrt(errorVal00 + errorVal10 + errorVal01 + errorVal11);
+	out_color.a = errorVal00 + errorVal10 + errorVal01 + errorVal11;
+	out_FragColor = out_color;
 	//out_FragColor = vec4( maxVal );
 }

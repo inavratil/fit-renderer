@@ -7,8 +7,8 @@ void ModifyGrid(glm::vec4 *precomputed_diffs)
 	float *data = new float[res*res];
 
 	glBindTexture( GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ));
-	glGetTexImage(GL_TEXTURE_2D, 3, GL_ALPHA, GL_FLOAT, data);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glGetTexImage( GL_TEXTURE_2D, 3, GL_ALPHA, GL_FLOAT, data);
+	glBindTexture( GL_TEXTURE_2D, 0);
 
 	for(int i=0; i<res*res; ++i )
 		if( data[i] == 0.0 ) 
