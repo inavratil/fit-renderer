@@ -66,6 +66,7 @@ void ConfigDialog::Load( const string& _filename )
 	if (cfg_file.is_open())
 	{
 		string line;
+		string section( "Default" );
 		while ( cfg_file.good() )
 		{
 			getline ( cfg_file, line);
@@ -75,6 +76,7 @@ void ConfigDialog::Load( const string& _filename )
 			{
 				if ( line.at(0) == '[' && line.at(line.length()-1) == ']' )
 				{
+					section = line.substr( 1, line.length()-2 );
 				}
 				else
 				{
@@ -85,6 +87,8 @@ void ConfigDialog::Load( const string& _filename )
 					string value  = line.substr(nonsep_pos);
 
 					m_settings[trim(name)] = trim(value);
+					//ConfigOption option( trim(name), trim(value) );
+					//m_settings[section] = option;
 				}
 			}
 		}

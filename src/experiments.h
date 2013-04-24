@@ -12,6 +12,9 @@ struct Experiment {
     glm::vec3 cam_rot;
 };
 
+typedef map<string,Experiment> ExperimentMap;
+
+
 const Experiment experiments[EXP_COUNT] = 
 {
     {

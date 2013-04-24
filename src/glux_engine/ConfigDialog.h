@@ -3,6 +3,17 @@
 
 #include "globals.h"
 
+struct ConfigOption
+{
+	string	name;
+	string	value;
+	ConfigOption( string _name, string _value )
+	{
+		name = _name;
+		value = _value;
+	}
+};
+
 class ConfigDialog
 { 
 

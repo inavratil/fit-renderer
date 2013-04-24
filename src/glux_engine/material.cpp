@@ -137,7 +137,8 @@ string Material::LoadShader( const char* _filename )
         string msg = "Cannot open shader ";
         msg += _filename;
         ShowMessage(msg.c_str(), false);
-        return "null";
+		throw ERR;
+        //return "null";
     }
     string data;
     char ch;

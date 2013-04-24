@@ -213,6 +213,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			SimplePass *mp = new SimplePass( 128, 128 );
 			mp->AttachOutputTexture(0, m_texture_cache->GetPtr("aliaserr_mipmap") ); 
 			mp->DisableDepthBuffer();
+			mp->SetShader( mat );
 			AppendPass("pass_copy_squared_error", mp);
 		}
 		//-----------------------------------------------------------------------------
@@ -350,10 +351,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//-- 2. Compute alias error based on the coordinates data computed in step 1
 	//--	Input: tex_camAndLightCoords (error texture)
 
-	m_passes["pass_compute_aliasError"]->Activate();
 	//FIXME: opravdu mohu pouzit tex_coords v plnem rozliseni, pri mensim rozliseni se bude brat jenom kazda n-ta hodnota
 	//		textureOffset se pousouva v rozliseni textury, takze kdyz je rozliseni 1024, posune se o pixel v tomto rozliseni
 	//		pri rendrovani do 128x128 je mi toto chovani ale na prd ?????
+	m_passes["pass_compute_aliasError"]->Activate();
 	m_passes["pass_compute_aliasError"]->Render();
 	m_passes["pass_compute_aliasError"]->Deactivate();	
 
@@ -364,7 +365,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		//m_passes["pass_blit_0"]->Process();
 		m_passes["pass_copy_squared_error"]->Activate();
-		RenderPass("mat_copy_squared_error");		
+		m_passes["pass_copy_squared_error"]->Render(); //RenderPass("mat_copy_squared_error");		
 		m_passes["pass_copy_squared_error"]->Deactivate();
 
 		//-----------------------------------------------------------------------------
@@ -372,10 +373,11 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glm::vec4 clear_color;
 		glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
 		glClearColor( 1, 1, 1, 1 );
-		glColorMask( 0, 0, 0, 0 );
+		glColorMask( 0, 0, 0, 0 );	//-- nutno vypnout, aby se neclearovalo FBO
 
 		m_passes["pass_alias_mipmap"]->Activate();
-				glColorMask( 1, 1, 1, 1 );
+		glColorMask( 1, 1, 1, 1 );	//-- znovu zapnout
+
 		for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
 		{
 			glViewport(0, 0, j, j);
