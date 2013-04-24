@@ -23,6 +23,7 @@ Application::Application(void) :
 
 Application::~Application(void)
 {
+	_Destroy();
 }
 
 //-----------------------------------------------------------------------------
@@ -44,11 +45,8 @@ int Application::Run()
 	}
 	catch( int )
 	{
-		_Destroy();
 		return 1;
 	}
-
-	_Destroy();
 
 	return 0;
 }
@@ -160,7 +158,6 @@ void Application::InitScene()
 	m_camera->SetFarPlane( 1000.0f );
 
 	if( !m_scene->PreInit( m_window_width, m_window_height )	) throw ERR;
-
 
 	CreateContent();
 
@@ -275,6 +272,22 @@ void Application::MainLoop()
         //call keyboard handle when key pressed
         if(keypress && (time_now - last_keypress > 150 || last_keypress == time_now) ) 
             KeyPressed( key );
+
+		//meminfo
+		if(GLEW_ATI_meminfo)
+		{
+			int meminfo[4];
+			glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, meminfo);
+			m_memory_usage = 1024 - meminfo[0]/1024;
+		}
+		else if( GLEW_NVX_gpu_memory_info )
+		{
+			int meminfo[4];
+			glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &meminfo[0]);
+			glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX , &meminfo[1]);
+			glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX , &meminfo[2]);
+			m_memory_usage = (meminfo[0] - meminfo[1])/1024;
+		}
     }
 }
 
@@ -283,22 +296,6 @@ void Application::MainLoop()
 void Application::RenderScene()
 {
 	m_scene->Redraw();
-	
-	//meminfo
-	if(GLEW_ATI_meminfo)
-	{
-		int meminfo[4];
-		glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, meminfo);
-		m_memory_usage = 1024 - meminfo[0]/1024;
-	}
-	else if( GLEW_NVX_gpu_memory_info )
-	{
-		int meminfo[4];
-		glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &meminfo[0]);
-		glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX , &meminfo[1]);
-		glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX , &meminfo[2]);
-		m_memory_usage = (meminfo[0] - meminfo[1])/1024;
-	}
 }
 
 //-----------------------------------------------------------------------------

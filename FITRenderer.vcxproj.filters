@@ -144,9 +144,6 @@
     <ClInclude Include="src\glux_engine\texture.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main_ui.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\compute.h">
       <Filter>Header files</Filter>
     </ClInclude>

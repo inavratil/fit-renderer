@@ -174,7 +174,6 @@
     <ClInclude Include="src\glux_engine\StringUtil.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
     <ClInclude Include="src\IPSMApp.h" />
-    <ClInclude Include="src\main_ui.h" />
     <ClInclude Include="src\precomputed_diffs.h" />
   </ItemGroup>
   <ItemGroup>

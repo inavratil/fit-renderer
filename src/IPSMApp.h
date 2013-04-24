@@ -20,7 +20,6 @@ protected:
 	bool			m_param_is_draw_error_enabled;
 	int				m_param_preview_texture_id;
 
-	int				m_scene_id;
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
@@ -31,7 +30,7 @@ public:
 	int SetupExperiments( const string& _filename );
 
 	virtual void InitGUI();
-	virtual void CreateContent();	// <== Must be defined
+	virtual void CreateContent();	// <== Must be redefined
 	virtual void UpdateScene();
 
 	

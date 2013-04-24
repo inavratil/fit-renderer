@@ -15,8 +15,7 @@ IPSMApp::IPSMApp(void) :
 	m_param_cut_angle( 0 ),
 	m_param_is_warping_enabled( true ),
 	m_param_is_draw_error_enabled( false ),
-	m_param_preview_texture_id( OUTPUT ),
-	m_scene_id( 1 ) //FIXME: opravdu 1?
+	m_param_preview_texture_id( OUTPUT )
 {
 }
 
@@ -243,6 +242,7 @@ void IPSMApp::CreateContent()
 
 	//-------------------------------------------------------------------------
 }
+
 //-----------------------------------------------------------------------------
 
 int IPSMApp::SetupExperiments( const string& _filename )
@@ -280,6 +280,8 @@ int IPSMApp::SetupExperiments( const string& _filename )
 
 	return scene;
 }
+
+//-----------------------------------------------------------------------------
 
 void IPSMApp::UpdateScene()
 {
