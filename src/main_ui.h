@@ -5,10 +5,6 @@
 
 using namespace std;
 
-//SHADOW CONTROLS
-
-#define USE_DP
-
 //multires settings
 int mip_level = 0;
 float normal_threshold = 1.0;
