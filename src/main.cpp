@@ -334,20 +334,6 @@ void IPSMApp::CreateContent( ScenePtr s )
 	//-------------------------------------------------------------------------
 }
 
-//*****************************************************************************
-//Main drawing function
-void Redraw()
-{
-	//Application::RenderScene();
-
-    s->Redraw();
-    cycle++;                          //increment draw counter 
-
-    //update info
-    dp_frontFOV = s->DPGetFOV();
-    dp_farPoint = s->DPGetFarPoint();
-}
-
 /**
 ****************************************************************************************************
 @brief Print program usage if wrong parameters have been used. Then exits program
@@ -377,22 +363,9 @@ int main(int argc, char **argv)
     for(int i=1; i<argc; i++)
     {
         param = argv[i];
-
-        ///////////////////////////////////////////////
-        //antialiasing
-        if(param == "-aa")
-        {
-            if(i+1 < argc)
-            {
-                msaa = atoi(argv[i+1]);
-                i++;
-            }
-            else
-                WrongParams();
-        }
         ///////////////////////////////////////////////
         //scene selection
-        else if(param == "-scene")
+        if(param == "-scene")
         {
             if(i+1 < argc)
             {

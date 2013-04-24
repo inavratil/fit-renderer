@@ -157,6 +157,19 @@ template <class T> inline string num2str(const T& t, int precision = -1)
 	return ss.str();
 }
 
+namespace StringUtil
+{
+	inline int parseInt(const string& val, int defaultValue = 0)
+	{
+		stringstream str(val);
+		int ret = defaultValue;
+		if( !(str >> ret) )
+			return defaultValue;
+
+		return ret;
+	}
+}
+
 /**
 ****************************************************************************************************
 @brief Print content of GLM matrix

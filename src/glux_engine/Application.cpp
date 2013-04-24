@@ -175,13 +175,23 @@ void Application::InitScene()
 void Application::ShowConfigDialog()
 {
 	ConfigDialog* dialog = new ConfigDialog();
+	dialog->Load( "config.cfg" );
+
 	//dialog->Display();
 
-	m_window_width = dialog->GetInteger( "Window width" );
-	m_window_height = dialog->GetInteger( "Window height" );
-	m_is_fullscreen = dialog->GetBoolean( "Full screen" );
-	m_is_msaa = dialog->GetInteger( "MSAA" );
-	m_title = dialog->GetString( "Title" );
+	string section( "System" );
+	string option;
+	if( (option = dialog->GetSetting( "Window width", section )).empty() ) throw ERR;
+	m_window_width = StringUtil::parseInt( option );
+	if( (option = dialog->GetSetting( "Window height", section )).empty() ) throw ERR;
+	m_window_height = StringUtil::parseInt( option );
+	if( (option = dialog->GetSetting( "Full screen", section )).empty() ) throw ERR;
+	m_is_fullscreen = (option == "Yes" || option == "yes" );
+	if( (option = dialog->GetSetting( "MSAA", section )).empty() ) throw ERR;
+	m_is_msaa =StringUtil::parseInt( option );
+	if( (option = dialog->GetSetting( "Title", section )).empty() ) throw ERR;
+	m_title = option;
+
 	delete dialog;
 }
 

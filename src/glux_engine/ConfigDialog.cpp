@@ -5,8 +5,6 @@
 ConfigDialog::ConfigDialog(void) :
 	m_quit( 0 )
 {
-	Load( "config.cfg" );
-	Setup();
 }
 
 //-----------------------------------------------------------------------------
@@ -35,6 +33,8 @@ void ConfigDialog::Setup()
 
 void ConfigDialog::Display()
 {	
+	Setup();
+
 	SDL_Event event;
 	int handled;
 
@@ -66,29 +66,43 @@ void ConfigDialog::Load( const string& _filename )
 	if (cfg_file.is_open())
 	{
 		string line;
-		string section( "Default" );
+		string section;
+		//-- insert empty section, for safety reasons
+		Options* options = new Options();
+		m_settings[section] = options;
+
 		while ( cfg_file.good() )
 		{
 			getline ( cfg_file, line);
 			
-			//-- ignore comments
+			//-- inspired by Ogre::OgreConfigFile::load(...)
+			//-- ignore comments and whitespaces
 			if (line.length() > 0 && line.at(0) != '#' )
 			{
 				if ( line.at(0) == '[' && line.at(line.length()-1) == ']' )
 				{
 					section = line.substr( 1, line.length()-2 );
+					m_it_setings = m_settings.find( section );
+					if( m_it_setings == m_settings.end() )
+					{
+						options = new Options();
+						m_settings[section] = options;
+					}
+					else
+						options = m_it_setings->second;
 				}
 				else
 				{
 					string::size_type sep_pos = line.find_first_of("=");
-					string name = line.substr(0, sep_pos );
+					if( sep_pos != string::npos )
+					{
+						string name = line.substr(0, sep_pos );
 
-					string::size_type nonsep_pos = line.find_first_not_of("=", sep_pos);
-					string value  = line.substr(nonsep_pos);
+						string::size_type nonsep_pos = line.find_first_not_of("=", sep_pos);
+						string value  = line.substr(nonsep_pos);
 
-					m_settings[trim(name)] = trim(value);
-					//ConfigOption option( trim(name), trim(value) );
-					//m_settings[section] = option;
+						options->insert( Options::value_type( trim(name), trim(value) ) );
+					}
 				}
 			}
 		}

@@ -3,16 +3,8 @@
 
 #include "globals.h"
 
-struct ConfigOption
-{
-	string	name;
-	string	value;
-	ConfigOption( string _name, string _value )
-	{
-		name = _name;
-		value = _value;
-	}
-};
+typedef	map<string,string> Options;
+typedef map<string,Options*> SettingsMap;	
 
 class ConfigDialog
 { 
@@ -24,7 +16,9 @@ protected:
 	TwBar*	m_bar;
 	int		m_quit;
 
-	map<string,string>	m_settings;
+	Options::iterator			m_it_options;	
+	SettingsMap					m_settings;
+	SettingsMap::iterator		m_it_setings;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -37,21 +31,45 @@ public:
 	void Display();
 	void Load( const string& _filename );
 
-	int GetInteger( string _name )
-	{ 
-		stringstream s(m_settings[_name]);
-		int num;
-		s >> num;
-		return num;
+	//int GetInteger( string _name )
+	//{ 
+	//	stringstream s(m_settings[_name]);
+	//	int num;
+	//	s >> num;
+	//	return num;
+	//}
+	//bool GetBoolean( string _name )
+	//{ 
+	//	return ( m_settings[_name]=="Yes" ||  m_settings[_name]=="yes" );
+	//}
+	//string GetString( string _name )
+	//{ 
+	//	return m_settings[_name];
+	//}
+	
+	//-- prevzato z OGRE Ogre::ConfigFile::getSetting(...)
+	string GetSetting(const string& key, const string& section = "", const string& defaultValue = "") const
+    {
+        
+        SettingsMap::const_iterator c_it_setings = m_settings.find(section);
+        if (c_it_setings == m_settings.end())
+        {
+            return defaultValue;
+        }
+        else
+        {
+            Options::const_iterator i = c_it_setings->second->find(key);
+            if (i == c_it_setings->second->end())
+            {
+                return defaultValue;
+            }
+            else
+            {
+                return i->second;
+            }
+		}
 	}
-	bool GetBoolean( string _name )
-	{ 
-		return ( m_settings[_name]=="Yes" ||  m_settings[_name]=="yes" );
-	}
-	string GetString( string _name )
-	{ 
-		return m_settings[_name];
-	}
+       
 };
 
 typedef ConfigDialog* ConfigDialogPtr;

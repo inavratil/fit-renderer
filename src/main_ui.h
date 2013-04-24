@@ -13,8 +13,6 @@ unsigned fps;
 TScene *s;          
 string msg;
 bool wire = false;                    
-int msaa = 1; //FIXME: smazat
-int resx = 1024, resy = 1024; //FIXME: smazat
 int mem_use = 0;
 bool draw_ui = true;
 
@@ -35,8 +33,6 @@ bool parabola_cut = false;
 bool dpshadow_tess = false;
 bool use_pcf = false;
 int dpshadow_method = WARP_DPSM;
-
-float dp_frontFOV = 0.0, dp_farPoint = 0.0;
 
 Experiment exper;
 bool isExperiment = false;
