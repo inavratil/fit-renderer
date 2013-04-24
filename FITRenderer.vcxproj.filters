@@ -118,6 +118,9 @@
     <ClCompile Include="src\glux_engine\GeometryMaterial.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\StringUtil.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -236,6 +239,9 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\GeometryMaterial.h">
       <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\StringUtil.h">
+      <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -404,6 +410,8 @@
     <None Include="data\shaders\warping\copy_squared_error.frag">
       <Filter>Shaders\warp</Filter>
     </None>
+    <None Include="config.cfg" />
+    <None Include="experiments.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header files">

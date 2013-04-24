@@ -3,7 +3,8 @@
 //-----------------------------------------------------------------------------
 
 ConfigDialog::ConfigDialog(void) :
-	m_quit( 0 )
+	m_quit( 0 ),
+	m_is_initialized( false )
 {
 }
 
@@ -18,6 +19,8 @@ ConfigDialog::~ConfigDialog(void)
 
 void ConfigDialog::Setup()
 {
+	if( m_is_initialized ) return;
+
 	TwInit( TW_OPENGL, NULL );
 	TwWindowSize( 1024, 1024 );
 

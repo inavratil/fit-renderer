@@ -14,6 +14,7 @@ class ConfigDialog
 
 protected:
 	TwBar*	m_bar;
+	bool	m_is_initialized;
 	int		m_quit;
 
 	Options::iterator			m_it_options;	

@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "scene.h"
 #include "ConfigDialog.h"
+#include "StringUtil.h"
 
 class Application
 { 
@@ -26,6 +27,7 @@ protected:
 	bool	m_is_wireframe_enabled;
 	int		m_fps;
 	int		m_memory_usage;
+	string	m_experiment_name;
 
 	static const int g_cam_type = FPS;
 //-----------------------------------------------------------------------------
@@ -43,7 +45,7 @@ public:
 	void MainLoop();
 
 	virtual void InitGUI();
-	virtual void CreateContent( ScenePtr s ) = 0;	// <== This must be filled with programmer
+	virtual void CreateContent() = 0;	// <== This must be filled with programmer
 	virtual void UpdateScene();
 	
 	virtual void MouseClicked(SDL_Event event);

@@ -7,7 +7,8 @@ IPSMApp::IPSMApp(void) :
 	m_param_cut_angle( 0 ),
 	m_param_is_warping_enabled( true ),
 	m_param_is_draw_error_enabled( false ),
-	m_param_preview_texture_id( OUTPUT )
+	m_param_preview_texture_id( OUTPUT ),
+	m_scene_id( 1 ) //FIXME: opravdu 1?
 {
 }
 
@@ -25,6 +26,42 @@ IPSMApp::~IPSMApp(void)
 //}
 
 //-----------------------------------------------------------------------------
+
+int IPSMApp::SetupExperiments( const string& _filename )
+{
+	int scene = 1;
+	if( !m_experiment_name.empty() )
+	{
+		ConfigDialogPtr dialog = new ConfigDialog();
+		dialog->Load( _filename );
+
+		string section = m_experiment_name;
+		string option;
+
+		option = dialog->GetSetting( "Scene", section );
+		scene = StringUtil::ParseInt( option );
+
+		option = dialog->GetSetting( "Light position", section );
+		glm::vec3 light_pos = StringUtil::ParseVector3( option );
+		option = dialog->GetSetting( "Camera position", section );
+		glm::vec3 cam_pos = StringUtil::ParseVector3( option );
+		option = dialog->GetSetting( "Camera orientation", section );
+		glm::vec3 cam_rot = StringUtil::ParseVector3( option );
+
+		delete dialog;
+
+		m_scene->MoveLight( 0, light_pos );
+		//m_param_cut_angle = glm::vec2( exper.cut_params.x, exper.cut_params.y );
+		//parab_rot.x = exper.cut_params.z;
+		//parab_rot.y = exper.cut_params.w;
+
+		m_scene->MoveCameraAbs(cam_pos.x, cam_pos.y, cam_pos.z);
+		m_scene->RotateCameraAbs(cam_rot.x, A_X);
+		m_scene->RotateCameraAbs(cam_rot.y, A_Y);
+	}
+
+	return scene;
+}
 
 void IPSMApp::UpdateScene()
 {

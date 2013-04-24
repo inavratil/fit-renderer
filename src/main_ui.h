@@ -5,39 +5,9 @@
 
 using namespace std;
 
-//FPS
-unsigned cycle = 0;                     //drawn cycles in one second 
-unsigned fps;
-
-//scene settings
-TScene *s;          
-string msg;
-bool wire = false;                    
-int mem_use = 0;
-bool draw_ui = true;
-
-//scenes
-int scene = 1;
-int ex = -1;
-
 //SHADOW CONTROLS
 
 #define USE_DP
-
-//paraboloid rotation
-bool move_parab = false;
-glm::vec3 parab_rot(0.0, 0.0, 0.0);
-
-//paraboloid shadow map settings
-bool parabola_cut = false;
-bool dpshadow_tess = false;
-bool use_pcf = false;
-int dpshadow_method = WARP_DPSM;
-
-Experiment exper;
-bool isExperiment = false;
-
-int SHADOW_RES = 1024;
 
 //multires settings
 int mip_level = 0;

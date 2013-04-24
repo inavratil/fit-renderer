@@ -1,6 +1,5 @@
 #include "Application.h"
 
-
 //-----------------------------------------------------------------------------
 
 Application::Application(void) :
@@ -15,7 +14,8 @@ Application::Application(void) :
 	m_is_wireframe_enabled( false ),
 	m_fps( 0 ),
 	m_memory_usage( 0 ),
-	m_title( "Window" )
+	m_title( "Window" ),
+	m_experiment_name( "" )
 {
 }
 
@@ -162,7 +162,7 @@ void Application::InitScene()
 	if( !m_scene->PreInit( m_window_width, m_window_height )	) throw ERR;
 
 
-	CreateContent( m_scene );
+	CreateContent();
 
 	if( !m_scene->PostInit() ) throw ERR;
 
@@ -181,16 +181,20 @@ void Application::ShowConfigDialog()
 
 	string section( "System" );
 	string option;
+	//-- Mandatory properties
 	if( (option = dialog->GetSetting( "Window width", section )).empty() ) throw ERR;
-	m_window_width = StringUtil::parseInt( option );
+	m_window_width = StringUtil::ParseInt( option );
 	if( (option = dialog->GetSetting( "Window height", section )).empty() ) throw ERR;
-	m_window_height = StringUtil::parseInt( option );
-	if( (option = dialog->GetSetting( "Full screen", section )).empty() ) throw ERR;
+	m_window_height = StringUtil::ParseInt( option );
+
+	//-- Auxiliary properties
+	option = dialog->GetSetting( "Full screen", section, "No" );
 	m_is_fullscreen = (option == "Yes" || option == "yes" );
-	if( (option = dialog->GetSetting( "MSAA", section )).empty() ) throw ERR;
-	m_is_msaa =StringUtil::parseInt( option );
-	if( (option = dialog->GetSetting( "Title", section )).empty() ) throw ERR;
-	m_title = option;
+	option = dialog->GetSetting( "MSAA", section, "1" );
+	m_is_msaa = StringUtil::ParseInt( option );
+	
+	m_title = dialog->GetSetting( "Title", section );
+	m_experiment_name = dialog->GetSetting( "Experiment", section );
 
 	delete dialog;
 }

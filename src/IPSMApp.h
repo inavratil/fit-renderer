@@ -19,6 +19,8 @@ protected:
 	bool			m_param_is_warping_enabled;
 	bool			m_param_is_draw_error_enabled;
 	int				m_param_preview_texture_id;
+
+	int				m_scene_id;
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
@@ -26,8 +28,10 @@ public:
 	IPSMApp(void);
 	virtual ~IPSMApp(void);
 
+	int SetupExperiments( const string& _filename );
+
 	virtual void InitGUI();
-	virtual void CreateContent( ScenePtr s );	// <== Must be defined
+	virtual void CreateContent();	// <== Must be defined
 	virtual void UpdateScene();
 
 	

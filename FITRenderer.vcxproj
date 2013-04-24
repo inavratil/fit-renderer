@@ -129,6 +129,7 @@
     <ClCompile Include="src\glux_engine\SimplePass.cpp" />
     <ClCompile Include="src\glux_engine\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\SplineWarpedShadow.cpp" />
+    <ClCompile Include="src\glux_engine\StringUtil.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
     <ClCompile Include="src\IPSMApp.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -170,12 +171,14 @@
     <ClInclude Include="src\glux_engine\SimplePass.h" />
     <ClInclude Include="src\glux_engine\Singleton.h" />
     <ClInclude Include="src\glux_engine\SplineWarpedShadow.h" />
+    <ClInclude Include="src\glux_engine\StringUtil.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
     <ClInclude Include="src\IPSMApp.h" />
     <ClInclude Include="src\main_ui.h" />
     <ClInclude Include="src\precomputed_diffs.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="config.cfg" />
     <None Include="data\shaders\bloom_ssao.frag" />
     <None Include="data\shaders\blur.frag" />
     <None Include="data\shaders\func\blur.frag" />
@@ -231,6 +234,7 @@
     <None Include="data\shaders\warping\drawDepthWithWarping.frag" />
     <None Include="data\shaders\warping\drawDepthWithWarping.vert" />
     <None Include="data\shaders\warping\grid.frag" />
+    <None Include="experiments.cfg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
