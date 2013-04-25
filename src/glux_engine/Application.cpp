@@ -341,7 +341,7 @@ void Application::MouseMoved(SDL_Event event)
     glm::vec3 pos = m_scene->GetCameraPos();
 
 	//camera movement
-	if(g_cam_type == FPS && status == SDL_BUTTON_LEFT)  //FPS camera
+	if(m_camera->GetType() == FPS && status == SDL_BUTTON_LEFT)  //FPS camera
 	{
 		rot.x += event.motion.yrel;     //set the xrot to xrot with the addition of the difference in the y position
 		rot.y += event.motion.xrel;     //set the xrot to yrot with the addition of the difference in the x position
@@ -413,7 +413,7 @@ void Application::KeyPressed( SDLKey _key )
     }
 
 	//update FPS camera
-    if(g_cam_type == FPS)
+	if(m_camera->GetType() == FPS)
     {
         m_scene->MoveCameraAbs(pos.x, pos.y, pos.z);
         m_scene->RotateCameraAbs(rot.x, A_X);

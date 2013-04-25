@@ -23,7 +23,7 @@ void BilinearWarpedShadow::_Init()
 	m_pShaderFeature = new SFBilinearWarpedShadow();
 }
 
-bool BilinearWarpedShadow::Initialize(TLight* _light)
+bool BilinearWarpedShadow::Initialize()
 {
 	return true;
 }

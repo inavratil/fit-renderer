@@ -41,7 +41,7 @@ TScene::TScene()
     m_select_buffer = 0;
 
     m_use_pcf = true;
-    m_dpshadow_method = DPSM;
+    m_dpshadow_method = WARP_DPSM;
     m_draw_aliasError = false;
     m_parab_angle = glm::vec3(0.0, 0.0, 0.0);
     m_cut_angle = glm::vec2(0.0);
@@ -201,7 +201,6 @@ bool TScene::PostInit()
 				if( m_im->second->IsScreenSpace() ) continue;
                 if(m_im->second->GetSceneID() == m_sceneID )
 				{
-                    //static_cast<GeometryMaterial*>(m_im->second)->AddTextureFromCache((*m_il)->GetType(), *(*m_il)->GetShadowTexID(), (*m_il)->ShadowIntensity() );
 					string tex_shadow_name = m_im->first + "_texShadowOMNI_A";
 					m_im->second->AddTexture( m_texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
 	
@@ -409,7 +408,7 @@ instead of reloading from file
 @param name object name
 @param file 3DS file with data
 ***************************************************************************************************/
-void TScene::AddObject(const char *name, const char* file)
+TObject* TScene::AddObject(const char *name, const char* file)
 {
     ///add new object
     TObject *o = new TObject();
@@ -438,6 +437,8 @@ void TScene::AddObject(const char *name, const char* file)
     LoadScreen();	//update loading screen
     //set sceneID
     m_objects[name]->SetSceneID(m_sceneID);
+
+	return o;
 }
 
 
@@ -462,9 +463,9 @@ void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 sp
 	mat->ReceiveShadow( false );
 	AddMaterial( mat );
 	//-- object for light
-    AddObject(m_name.c_str(), "data/obj/light.3ds");
-    SetMaterial(m_name.c_str(), m_name.c_str());
-    ObjCastShadow(m_name.c_str(), false);
+    TObject* obj = AddObject(m_name.c_str(), "data/obj/light.3ds");
+	obj->SetMaterial( mat->GetID() );
+	obj->CastShadow( false );
 
     //create new and push into list
     TLight *l = new TLight(_lights, amb, diff, spec, lpos, radius);

@@ -37,6 +37,14 @@ void IPSMApp::CreateContent()
 
 	m_scene->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
 
+	/*
+	ShadowTechnique* shadow_technique = m_scene->CreateShadowTechnique( new SplineWarpedShadow() );
+	shadow_technique->Set*( <whatever> );
+
+	light->SetShadowTechnique( shadow_technique );
+
+	*/
+
 	int scene = SetupExperiments( "experiments.cfg" );
 	//skybox
 	//s->AddMaterial("mat_sky",white,white,white,0.0,0.0,0.0,NONE);

@@ -121,6 +121,9 @@
     <ClCompile Include="src\glux_engine\StringUtil.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\RenderListener.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -238,6 +241,9 @@
       <Filter>Header files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\StringUtil.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\RenderListener.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -313,11 +313,12 @@ public:
     /////////////////////////////////////////// OBJECTS ////////////////////////////////////////
 
     ///@brief Add new object (see TObject() into list. Index is object name
-    void AddObject(const char *name, int primitive, GLfloat size = 0.0, GLfloat height = 0.0, GLint sliceX = 1, GLint sliceY = 1){
+    TObject* AddObject(const char *name, int primitive, GLfloat size = 0.0, GLfloat height = 0.0, GLint sliceX = 1, GLint sliceY = 1){
         TObject *o = new TObject(name, primitive, size, height, sliceX, sliceY);
         m_objects[name] = o;
         LoadScreen(); //update loading screen
         m_objects[name]->SetSceneID(m_sceneID);
+		return o;
     }
     ///@brief add new object as instance from existing object
     void AddObjectInstance(const char *ref_name, const char *inst_name){
@@ -329,7 +330,7 @@ public:
         }
     }
     //add new object from external file
-    void AddObject(const char *name, const char* file);
+    TObject* AddObject(const char *name, const char* file);
 
     ///@brief Move object identified by name to new position(relative) (see TObject::Move() )
     void MoveObj(const char* name, GLfloat wx, GLfloat wy, GLfloat wz){ 
@@ -453,15 +454,6 @@ public:
             m_shadow_textures++;
         }
     }
-
-	//FIXME: NAVRH: presunout asi jinam, napr. do SceneManagera. Lepsi by byl zapis obj->DoCastShadow( flag )
-    ///@brief Enable/disable shadow casting by selected object (by name) (see TObject::CastShadow() )
-    void ObjCastShadow(const char *obj_name, bool flag){ 
-        if(m_objects.find(obj_name) == m_objects.end()) 
-            cerr<<"WARNING (cast shadow): no object with name"<<obj_name<<"!\n"; 
-        else 
-            m_objects[obj_name]->CastShadow(flag); 
-    } 
 
     ///@brief Change shadow paraboloid rotation
     void RotateParaboloid(glm::vec3 angle){

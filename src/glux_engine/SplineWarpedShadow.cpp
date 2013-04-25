@@ -30,7 +30,7 @@ void SplineWarpedShadow::_Init()
 		);
 }
 
-bool SplineWarpedShadow::Initialize(TLight* _light)
+bool SplineWarpedShadow::Initialize()
 {
 	return true;
 }

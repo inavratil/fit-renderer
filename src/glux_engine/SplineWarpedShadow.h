@@ -25,7 +25,7 @@ public:
 	SplineWarpedShadow();
 	~SplineWarpedShadow(void);
 
-	virtual bool Initialize(TLight* _light);
+	virtual bool Initialize();
 	virtual void PreRender();
 	virtual void PostRender();
 

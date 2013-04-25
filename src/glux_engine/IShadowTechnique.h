@@ -5,10 +5,11 @@
 #include "ScreenGrid.h"
 #include "GeometryMaterial.h"
 #include "shaderGen/ShaderFeature.h"
+#include "RenderListener.h"
 
 class ScreenGrid;
 
-class IShadowTechnique
+class IShadowTechnique : public RenderListener
 {
 protected:
 	
@@ -29,9 +30,9 @@ public:
 
 	//-- Virtual methods
 
-	virtual bool Initialize(TLight* _light) = 0;
-	virtual void PreRender() = 0;
-	virtual void PostRender() = 0;
+	//virtual bool Initialize() = 0;
+	//virtual void PreRender() = 0;
+	//virtual void PostRender() = 0;
 
 	virtual glm::vec2 ComputeDiff( glm::vec2 _P ) = 0;
 

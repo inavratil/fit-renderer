@@ -31,7 +31,7 @@ void PolynomialWarpedShadow::_Init( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 	m_pShaderFeature = new SFPolynomialWarpedShadow();
 }
 
-bool PolynomialWarpedShadow::Initialize(TLight* _light)
+bool PolynomialWarpedShadow::Initialize()
 {
 	return true;
 }

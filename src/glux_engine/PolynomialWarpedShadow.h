@@ -16,7 +16,7 @@ public:
 	~PolynomialWarpedShadow(void);
 
 	//-- Virtual methods from parent class
-	virtual bool Initialize(TLight* _light);
+	virtual bool Initialize();
 	virtual void PreRender();
 	virtual void PostRender();
 
