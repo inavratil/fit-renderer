@@ -270,12 +270,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	//glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);
 	//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightProjMatrix));
 	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	
-	glm::mat4 Mp = glm::mat4( 1.0 );
-	Mp = glm::rotate( Mp, -1.0f*m_parab_angle.x, glm::vec3(1, 0, 0));
-	Mp = glm::rotate( Mp, m_parab_angle.y, glm::vec3(0, 1, 0));
-
-	lightViewMatrix[1] = Mp * lightViewMatrix[1];
 
 	glm::mat4 coeffsX = glm::mat4( 0.0 );
 	glm::mat4 coeffsY = glm::mat4( 0.0 );
@@ -373,8 +367,8 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		glm::vec4 clear_color;
 		glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
 		glClearColor( 1, 1, 1, 1 );
-		glColorMask( 0, 0, 0, 0 );	//-- nutno vypnout, aby se neclearovalo FBO
 
+		glColorMask( 0, 0, 0, 0 );	//-- nutno vypnout, aby se neclearovalo FBO
 		m_passes["pass_alias_mipmap"]->Activate();
 		glColorMask( 1, 1, 1, 1 );	//-- znovu zapnout
 
@@ -594,11 +588,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			z_direction = -1.0;  
 		lightViewMatrix[i] = glm::lookAt(l->GetPos(), l->GetPos() + glm::vec3( m_cam->GetFarPlane()*z_direction, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) );
 
-		glm::mat4 Mp = glm::mat4( 1.0 );
-		Mp = glm::rotate( Mp, z_direction*m_parab_angle.x, glm::vec3(1, 0, 0));
-		Mp = glm::rotate( Mp, m_parab_angle.y, glm::vec3(0, 1, 0));
-
-		lightViewMatrix[i] = Mp * lightViewMatrix[i];
 
 		if(m_dpshadow_tess)
 		{
