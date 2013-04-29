@@ -36,7 +36,7 @@ void TScene::RenderDebug()
 
 	m_passes["pass_eyespace_aliaserror"]->Activate();
 	
-	DrawGeometry( "mat_aliasError", m_viewMatrix );
+	DrawGeometry( "mat_perspective_error", m_viewMatrix );
 
 	m_passes["pass_eyespace_aliaserror"]->Deactivate();
     

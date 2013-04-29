@@ -243,6 +243,13 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			mat->AddTexture( m_texture_cache->GetPtr( "MTEX_2Dfunc_values" ), "MTEX_2Dfunc_values" );
 			AddMaterial( mat );
 		}
+		{
+			//-- shader showing perspective alias error
+			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_perspective_error", "data/shaders/shadow_alias_error.vert", "data/shaders/perspective_alias_error.frag" );
+			mat->AddTexture( m_texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "tex_error_color" );
+			mat->AddTexture( m_texture_cache->GetPtr( "MTEX_2Dfunc_values" ), "tex_2Dfunc_values" );
+			AddMaterial( mat );
+		}
 	}
 	catch(int)
 	{
@@ -666,4 +673,10 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	SetUniform("mat_aliasError", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 	SetUniform("mat_aliasError", "grid_res", (float) m_shadow_technique->GetResolution());
 	SetUniform("mat_aliasError", "range", m_shadow_technique->GetGridRange());
+	//-- set debug shaders
+	SetUniform("mat_perspective_error", "lightModelView[0]", lightViewMatrix[0]);
+	SetUniform("mat_perspective_error", "lightModelView[1]", lightViewMatrix[1]);
+	SetUniform("mat_perspective_error", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
+	SetUniform("mat_perspective_error", "grid_res", (float) m_shadow_technique->GetResolution());
+	SetUniform("mat_perspective_error", "range", m_shadow_technique->GetGridRange());
 }

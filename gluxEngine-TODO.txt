@@ -1,0 +1,41 @@
+TODO:
+-----
+- antialiasing nejak nejde
+
+Urychleni:
+- skusit occlusion query
+- skusit direct state access
+- je neefektivne nahravat shader funkcie ze suboru, dobre bude ich encapsulovat do stringu a hlavickoveho suboru
+- nebude lepsi do shaderu nahravat MVP matrix aby sa to furt nemuselo nasobit?
+- velke parametre (matice, vektory) davat odkazem - ZADNE URYCHLENI
+
+Animacia:
+- pridat aliasy funkciam Move(x, y, z) aby sa dali pouzit aj vektorovo - Move(vec3 v)
+
+Svetla/stiny:
+- parametre jak rozmazani stinu a jeho farba by mali byt uniformne
+- lepsi shadow mapping (CSM)
+- farba stinu
+- nejdu stiny spolu s dynamic cubemappingem
+- stiny sa premitaju aj "dozadu"
+- stiny u priehladnych objektov
+
+Materialy:
+- lepsi priehladnost
+- geometry shader + environment mapping robia blbosti
+
+Textury:
+- ak sa pouzije cache, tak nejdu menit vlastnosti dalsi textury (napr. aniso filtrovani) - sampler objekty?
+- custom nazev pre texturu pre vyssi prehladnost v custom shaderoch
+- lepsi kompresia textur (DXT5?)
+
+Shadery
+- lepsi SSAO
+- lepsi MSAA pri renderi do textury
+- lepsi HDR - automaticke prispusobovani jasu sceny (vid DX9 SDK)
+
+
+PREVOD DO GL3:
+--------------
+- text (font.cpp)
+- dynamic cube mapping

@@ -415,6 +415,9 @@
     </None>
     <None Include="config.cfg" />
     <None Include="experiments.cfg" />
+    <None Include="data\shaders\perspective_alias_error.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header files">
