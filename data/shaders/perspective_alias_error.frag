@@ -12,7 +12,7 @@ out vec4 out_fragColor;
 #define POLY_OFFSET 100.0
 
 const float SM_RES = 128.0;
-const float TWO_TAN_TH = 0.828427;
+const float TWO_TAN_TH = 0.828427; // FOV = 45'
 ////////////////////////////////////////////////////////////////////////////////
 //-- Bilinear warping - fragment shader   
 
@@ -166,7 +166,7 @@ void main(void)
 
     vec4 color_result = vec4( 0.0 );
 	
-	float wi = (TWO_TAN_TH/SCREEN_X)*( -vertexEyeSpace.z/0.1f );
+	float wi = (TWO_TAN_TH/SCREEN_X)*( -vertexEyeSpace.z ); //-- minus, protoze osa Z smeruje za kameru
 	color_result = vec4( wi );
 #if 0
     vec3 curr_texCoords;
