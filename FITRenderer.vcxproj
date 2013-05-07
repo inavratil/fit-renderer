@@ -192,6 +192,7 @@
     <None Include="data\shaders\func\warp_bilinear.frag" />
     <None Include="data\shaders\func\warp_spline.frag" />
     <None Include="data\shaders\perspective_alias_error.frag" />
+    <None Include="data\shaders\perspective_alias_error.vert" />
     <None Include="data\shaders\progress_bar.frag" />
     <None Include="data\shaders\quad.frag" />
     <None Include="data\shaders\quad.vert" />

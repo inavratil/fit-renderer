@@ -77,8 +77,8 @@ void IPSMApp::CreateContent()
 	//scene 2 - cathedral
 	else if(scene == 2)
 	{
-		//m_scene->LoadScene("data/obj/scenes/sibenik.3ds");
-		m_scene->LoadScene("data/obj/scenes/testing_tess_all.3ds");
+		m_scene->LoadScene("data/obj/scenes/sibenik.3ds");
+		//m_scene->LoadScene("data/obj/scenes/testing_tess_all.3ds");
 	}
 	//scene 3 - bad scene
 	else if(scene == 3)

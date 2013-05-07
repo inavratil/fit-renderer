@@ -6,6 +6,9 @@ uniform vec3 near_far_bias; // near and far plane for cm-cams
 uniform vec4 range;
 uniform mat4 in_ModelViewMatrix;
 
+uniform vec4 camera_space_light_position;	//-- position of light in camera space
+
+in  vec3 camera_space_position;
 in  vec4 o_vertex;
 out vec4 out_fragColor;
 
@@ -13,105 +16,20 @@ out vec4 out_fragColor;
 
 const float SM_RES = 128.0;
 const float TWO_TAN_TH = 0.828427; // FOV = 45'
-////////////////////////////////////////////////////////////////////////////////
-//-- Bilinear warping - fragment shader   
-
-uniform float grid_res;
 
 #define POLY_OFFSET 100.0
 
 const float SCREEN_X = 128.0;
 const float SCREEN_Y = 128.0;
 
-const mat4 Mcr = 0.5 * mat4(
-		 0.0f,	2.0f,	0.0f,	0.0f,
-		-1.0f,	0.0f,	1.0f,	0.0f,
-		 2.0f, -5.0f,	4.0f,  -1.0f,
-		-1.0f,	3.0f,	-3.0f,  1.0f
-		);
-
-vec4 GetPoints( in vec2 grid_pos, in int _x, in int comp )
-{
-	vec4 output;
-
-	output.x = textureOffset( tex_2Dfunc_values, grid_pos, ivec2(_x,0) )[comp];
-	output.y = textureOffset( tex_2Dfunc_values, grid_pos, ivec2(_x,1) )[comp];
-	output.z = textureOffset( tex_2Dfunc_values, grid_pos, ivec2(_x,2) )[comp];
-	output.w = textureOffset( tex_2Dfunc_values, grid_pos, ivec2(_x,3) )[comp];
-
-	return output;
-}
-
-vec2 computeDiff( vec4 _position )
-{
-	//------------------------------------------------------------------------------------
-	//-- Initialization
-
-	vec2 delta = vec2( 0.0 );
-	vec2 p = _position.xy;		//-- zde je p v intervalu [-1..1]
-	p = p*0.5 + 0.5;			//-- prevod p na interval [0..1]
-
-	//------------------------------------------------------------------------------------
-	//-- Spline warping
-
-	//FIXME: grid_res je mrizka i s rozsirenim na kraji, ale ja potrebuji tu skutecnou - 1
-	p = p * (grid_res -2.0-1); // prevod z [0..1] do [0..res-1]
-
-	//-- vypocet souradnice bunky, ve ktere se bod "p" nachazi
-	vec2 grid_coords = floor( p.xy );
-	
-	mat4 P;
-	vec4 Tx, Ty;
-	vec4 Q;
-
-	//-- prevod do intervalu [0..1]
-	float x = fract(p.x);
-	float y = fract(p.y);
-
-	Tx = vec4( 1.0, x, pow(x, 2.0f), pow(x,3.0f) );
-	Ty = vec4( 1.0, y, pow(y, 2.0f), pow(y, 3.0f) );
-
-	//-- diff X
-	//FIXME: Nefunguje!?!? vec4 t = textureGather( funcTex, vec2(0,0));
-	
-	P = mat4(
-		GetPoints( grid_coords/grid_res + 0.5/grid_res, 0, 0 ),
-		GetPoints( grid_coords/grid_res + 0.5/grid_res, 1, 0 ),
-		GetPoints( grid_coords/grid_res + 0.5/grid_res, 2, 0 ),
-		GetPoints( grid_coords/grid_res + 0.5/grid_res, 3, 0 )
-		);
-	
-	Q = P * Mcr * Tx;
-	delta.x = dot(Q * Mcr, Ty) * near_far_bias.z;
-
-	//-- diff Y
-
-	P = mat4(
-		GetPoints( grid_coords/grid_res + 0.5/grid_res, 0, 1 ),
-		GetPoints( grid_coords/grid_res + 0.5/grid_res, 1, 1 ),
-		GetPoints( grid_coords/grid_res + 0.5/grid_res, 2, 1 ),
-		GetPoints( grid_coords/grid_res + 0.5/grid_res, 3, 1 )
-		);
-	
-	Q = P * Mcr * Tx;
-	delta.y = dot(Q * Mcr, Ty) * near_far_bias.z;	
-
-	//-- dx a dy se vztahuji k intervalu [0..1]. My to vsak pricitam k souradnicim, ktery je v intervalu [-1..1], tedy 2x vetsim.
-	delta.x *= 2.0;
-	delta.y *= 2.0;
-
-	//------------------------------------------------------------------------------------
-
-	return delta;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-vec3 DPCoordsFront()
+vec3 DPCoords( vec4 _position )
 {
     vec4 texCoords;
 
-    texCoords = lightModelView[0] * o_vertex;
+    texCoords = lightModelView[0] * _position;
 
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
@@ -126,70 +44,106 @@ vec3 DPCoordsFront()
     texCoords.z = (Length - near_far_bias.x)/(near_far_bias.y + POLY_OFFSET - near_far_bias.x);
     texCoords.w = 1.0;
 
-	vec2 d = computeDiff( texCoords );
-	texCoords.xy += d;
-
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
 
-vec3 DPCoordsBack()
+//-----------------------------------------------------------------------------
+
+vec4 GetRotationQuat( vec3 _from, vec3 _to )
 {
-    vec4 texCoords;
-    texCoords = lightModelView[1] * o_vertex;
+    vec4 q;
 
-    //texCoords.xyz /= texCoords.w;
-    float Length = length( texCoords.xyz );
+    vec3 v0 = normalize( _from );
+    vec3 v1 = normalize( _to );
 
-    texCoords.z *= -1.0;
-    texCoords.xyz = normalize( texCoords.xyz );
+    float d = dot( v0, v1 );
+    float s = 1.0 / sqrt( (1.0+d)*2.0 );
+    vec3 c = cross( v0, v1 );
 
-    texCoords.z += 1.0;
-    texCoords.x /= texCoords.z;
-    texCoords.y /= texCoords.z;
+    q.x = c.x * s;
+    q.y = c.y * s;
+    q.z = c.z * s;
+    q.w = s * 0.5f;
 
-    texCoords.z = (Length - near_far_bias.x)/(near_far_bias.y + POLY_OFFSET - near_far_bias.x);
-    texCoords.w = 1.0;
-
-	vec2 d = computeDiff( texCoords );
-	texCoords.xy += d;
-
-    return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
+    return normalize( q );
 }
+
+mat4 QuatToMatrix( vec4 q )
+{
+    mat4 Result = mat4( 1.0 );
+    Result[0][0] = 1 - 2 * q.y * q.y - 2 * q.z * q.z;
+    Result[0][1] = 2 * q.x * q.y + 2 * q.w * q.z;
+    Result[0][2] = 2 * q.x * q.z - 2 * q.w * q.y;
+
+    Result[1][0] = 2 * q.x * q.y - 2 * q.w * q.z;
+    Result[1][1] = 1 - 2 * q.x * q.x - 2 * q.z * q.z;
+    Result[1][2] = 2 * q.y * q.z + 2 * q.w * q.x;
+
+    Result[2][0] = 2 * q.x * q.z + 2 * q.w * q.y;
+    Result[2][1] = 2 * q.y * q.z - 2 * q.w * q.x;
+    Result[2][2] = 1 - 2 * q.x * q.x - 2 * q.y * q.y;
+    return Result;
+}
+
+
+//-----------------------------------------------------------------------------
+
 void main(void)
 {
-    vec3 front_coords = DPCoordsFront();
-    vec3 back_coords = DPCoordsBack();
+    
 
-	vec4 vertexEyeSpace = in_ModelViewMatrix * o_vertex;
+	vec4 vertexEyeSpace = in_ModelViewMatrix * o_vertex;	//-- in vec3 camera_space_position;
     vec4 vertexLightSpace = lightModelView[0] * o_vertex;
     float split_plane = -vertexLightSpace.z;
 
     vec4 color_result = vec4( 0.0 );
+//-----------------------------------------------------------------------------	
+
+	const vec3 AXIS_Z = vec3( 0, 0, 1 );
+	float wi = (TWO_TAN_TH/SCREEN_X)*( -camera_space_position.z ); //-- minus, protoze osa Z smeruje za kameru
+
+	vec3 light_direction	= normalize( camera_space_light_position.xyz - camera_space_position.xyz ); //-- compute directional vector to the light
+	vec3 camera_direction	= normalize( -camera_space_position.xyz ); //-- compute directional vector to the camera
+	vec3 point_normal		= normalize( camera_direction + light_direction );
+
+	vec2 points[4] = vec2[] (
+		vec2( -wi/2, -wi/2 ),
+		vec2(  wi/2, -wi/2 ),
+		vec2(  wi/2,  wi/2 ),
+		vec2( -wi/2,  wi/2 )
+	);
+
+	mat4 quad_rotation_matrix = QuatToMatrix( GetRotationQuat( AXIS_Z, point_normal ) );
+	vec4 rotated_points[4] = vec4[] (
+		quad_rotation_matrix * vec4( points[0], 0.0, 1.0 ),
+		quad_rotation_matrix * vec4( points[1], 0.0, 1.0 ),
+		quad_rotation_matrix * vec4( points[2], 0.0, 1.0 ),
+		quad_rotation_matrix * vec4( points[3], 0.0, 1.0 )
+	);
+
 	
-	float wi = (TWO_TAN_TH/SCREEN_X)*( -vertexEyeSpace.z ); //-- minus, protoze osa Z smeruje za kameru
-	color_result = vec4( wi );
-#if 0
-    vec3 curr_texCoords;
-    if(split_plane >= 0.0)
-        curr_texCoords = front_coords;
-    else
-        curr_texCoords = back_coords;
-    
-	vec4 zoomed_range = range / 128.0;					//-- prevod do [0..1]
-	//curr_texCoords.xy = (curr_texCoords.xy - zoomed_range.xz) / (zoomed_range.yw - zoomed_range.xz);
-	//-- aliasing error
+	vec2 a = DPCoords( o_vertex + rotated_points[0] ).xy;
+	vec2 b = DPCoords( o_vertex + rotated_points[1] ).xy;
+	vec2 c = DPCoords( o_vertex + rotated_points[2] ).xy;
+	vec2 d = DPCoords( o_vertex + rotated_points[3] ).xy;
 
-    vec2 ds, dt;
-    {
-        ds = dFdx(curr_texCoords.xy) * SM_RES;
-        dt = dFdy(curr_texCoords.xy) * SM_RES;
-    }
+	vec3 ac = vec3( c.xy-a.xy, 0.0 );
+    vec3 bd = vec3( d.xy-b.xy, 0.0 );
+    ac.x *= SM_RES;
+    ac.y *= SM_RES;
+    bd.x *= SM_RES;
+    bd.y *= SM_RES;
+	//vypocet obsah ctyruhelniku - quadrilateral
+    float K = 0.5 * abs( cross(ac, bd).z ); // zde by melo byt length misto abs, ale jelikoz z-ove 0, tak vysledek je pouze hodnota v z-ove ose
+    //float K = max( length(ac+bd), length(ac-bd) );
 
-    mat2 ma = mat2( ds, dt );
-    float ma_error = 1.0/determinant( ma );
-    float md_error = 1.0/max( length(ds+dt), length(ds-dt) );
+	color_result = vec4( K );	//FIXME: debug output
+	color_result.a = 1.0;
 
-    float res_error = clamp(md_error, 1.0/11.0, 11.0);
+//-----------------------------------------------------------------------------
+#if 1
+
+    float res_error = clamp(1/K, 1.0/11.0, 11.0);
 
     if( res_error < 1.0 )
 
@@ -197,8 +151,7 @@ void main(void)
     else
         res_error = (res_error - 1.0) / (11.0 - 1.0) * (1.0 - 0.5) + 0.5; //-- from [1/11..11] to [0..1]
 
-    vec3 c = texture( tex_error_color, vec2(res_error,0.0) ).xyz;
-    color_result = vec4( c, 1.0 );
+    color_result = vec4( texture( tex_error_color, vec2(res_error,0.0) ).xyz, 1.0 );
 
     //-- grid   
 #if 0
