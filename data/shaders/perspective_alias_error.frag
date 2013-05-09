@@ -109,7 +109,7 @@ void main(void)
 //-----------------------------------------------------------------------------	
 
 	const vec3 AXIS_Z = vec3( 0, 0, 1 );
-	float wi = (TWO_TAN_TH/SCREEN_X)*( -camera_space_position.z ); //-- minus, protoze osa Z smeruje za kameru
+	float wi = (TWO_TAN_TH/SCREEN_X)*( length(camera_space_position.xyz) ); //-- minus, protoze osa Z smeruje za kameru
 
 	//Dual-Paraboloid:
 	//vec3 light_direction	= normalize( camera_space_light_position.xyz - camera_space_position.xyz ); //-- compute directional vector to the light
@@ -118,19 +118,12 @@ void main(void)
 	vec3 camera_direction	= normalize( -camera_space_position.xyz ); //-- compute directional vector to the camera
 	vec3 point_normal		= normalize( camera_direction + light_direction );
 
-	vec2 points[4] = vec2[] (
-		vec2( -wi/2, -wi/2 ),
-		vec2(  wi/2, -wi/2 ),
-		vec2(  wi/2,  wi/2 ),
-		vec2( -wi/2,  wi/2 )
-	);
-
 	mat4 quad_rotation_matrix = QuatToMatrix( GetRotationQuat( AXIS_Z, point_normal ) );
 	vec4 rotated_points[4] = vec4[] (
-		quad_rotation_matrix * vec4( points[0], 0.0, 1.0 ),
-		quad_rotation_matrix * vec4( points[1], 0.0, 1.0 ),
-		quad_rotation_matrix * vec4( points[2], 0.0, 1.0 ),
-		quad_rotation_matrix * vec4( points[3], 0.0, 1.0 )
+		quad_rotation_matrix * vec4( -wi/2, -wi/2, 0.0, 1.0 ),
+		quad_rotation_matrix * vec4(  wi/2, -wi/2, 0.0, 1.0 ),
+		quad_rotation_matrix * vec4(  wi/2,  wi/2, 0.0, 1.0 ),
+		quad_rotation_matrix * vec4( -wi/2,  wi/2, 0.0, 1.0 )
 	);
 
 	
@@ -188,5 +181,5 @@ void main(void)
 
 #endif
     out_fragColor = color_result;
-    out_fragColor.a = 1.0;// md_error;
+    out_fragColor.a = camera_space_position.x;// md_error;
 }

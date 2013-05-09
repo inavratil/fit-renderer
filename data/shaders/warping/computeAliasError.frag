@@ -39,7 +39,7 @@ void main()
 		out_FragColor = vec4( 0.0, 1.0, 1.0, 0.0 );
 	else
 	{
-    //-----
+//-----------------------------------------------------------------------------
 
     vec3 ac = vec3( c.xy-a.xy, 0.0 );
     vec3 bd = vec3( d.xy-b.xy, 0.0 );
@@ -75,9 +75,11 @@ void main()
     //dp_K = dp_K*cover;
 
 //------------------------------------------------------------------------------
+	
     //float error = K/dp_K;
 	//float error = determinant( mat2(ds, dt) );
-	float error = max( length(ds+dt), length(ds-dt) );
+	//float error = max( length(ds+dt), length(ds-dt) );
+	float error = 1.0/a.x;
 
     float res_error = clamp(error, 1.0/11.0, 11.0);
 
@@ -106,7 +108,7 @@ void main()
 		//if( new_res > 10.0)
 		//	out_FragColor = vec4( 0.0, 1.0, 1.0, new_res );
 		//else
-			out_FragColor = vec4( color, new_res );
+			out_FragColor = vec4( color, a.y );
 	}
 
 	//out_FragColor = vec4(fragTexCoord.xy*128.0, 0.0, 1.0);
