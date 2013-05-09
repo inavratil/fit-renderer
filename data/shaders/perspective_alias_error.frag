@@ -1,10 +1,11 @@
 uniform sampler2D tex_error_color;
 uniform sampler2D tex_2Dfunc_values;
 
-uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
+uniform mat4 lightModelView; //model view matrices for front and back side of paraboloid
 uniform vec3 near_far_bias; // near and far plane for cm-cams
 uniform vec4 range;
 uniform mat4 in_ModelViewMatrix;
+uniform mat4 matrix_ortho;
 
 uniform vec4 camera_space_light_position;	//-- position of light in camera space
 
@@ -29,7 +30,7 @@ vec3 DPCoords( vec4 _position )
 {
     vec4 texCoords;
 
-    texCoords = lightModelView[0] * _position;
+    texCoords = lightModelView * _position;
 
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
@@ -45,6 +46,14 @@ vec3 DPCoords( vec4 _position )
     texCoords.w = 1.0;
 
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
+}
+
+vec3 OrthoCoords( vec4 _position )
+{
+	vec4 coords;
+	coords = matrix_ortho * lightModelView * _position;
+
+	return vec3( 0.5*coords.xy + 0.5, coords.z);
 }
 
 //-----------------------------------------------------------------------------
@@ -93,7 +102,7 @@ void main(void)
     
 
 	vec4 vertexEyeSpace = in_ModelViewMatrix * o_vertex;	//-- in vec3 camera_space_position;
-    vec4 vertexLightSpace = lightModelView[0] * o_vertex;
+    vec4 vertexLightSpace = lightModelView * o_vertex;
     float split_plane = -vertexLightSpace.z;
 
     vec4 color_result = vec4( 0.0 );
@@ -102,7 +111,10 @@ void main(void)
 	const vec3 AXIS_Z = vec3( 0, 0, 1 );
 	float wi = (TWO_TAN_TH/SCREEN_X)*( -camera_space_position.z ); //-- minus, protoze osa Z smeruje za kameru
 
-	vec3 light_direction	= normalize( camera_space_light_position.xyz - camera_space_position.xyz ); //-- compute directional vector to the light
+	//Dual-Paraboloid:
+	//vec3 light_direction	= normalize( camera_space_light_position.xyz - camera_space_position.xyz ); //-- compute directional vector to the light
+	//Ortho:
+	vec3 light_direction	= normalize( vec3(0,1,1) ); //-- compute directional vector to the light
 	vec3 camera_direction	= normalize( -camera_space_position.xyz ); //-- compute directional vector to the camera
 	vec3 point_normal		= normalize( camera_direction + light_direction );
 
@@ -122,17 +134,25 @@ void main(void)
 	);
 
 	
+	//-- point light - Dual-Paraboloid mapping
+	/*
 	vec2 a = DPCoords( o_vertex + rotated_points[0] ).xy;
 	vec2 b = DPCoords( o_vertex + rotated_points[1] ).xy;
 	vec2 c = DPCoords( o_vertex + rotated_points[2] ).xy;
 	vec2 d = DPCoords( o_vertex + rotated_points[3] ).xy;
+	*/
+
+	vec2 a = OrthoCoords( o_vertex + rotated_points[0] ).xy;
+	vec2 b = OrthoCoords( o_vertex + rotated_points[1] ).xy;
+	vec2 c = OrthoCoords( o_vertex + rotated_points[2] ).xy;
+	vec2 d = OrthoCoords( o_vertex + rotated_points[3] ).xy;
 
 	vec3 ac = vec3( c.xy-a.xy, 0.0 );
     vec3 bd = vec3( d.xy-b.xy, 0.0 );
-    ac.x *= SM_RES;
-    ac.y *= SM_RES;
-    bd.x *= SM_RES;
-    bd.y *= SM_RES;
+    ac.x *= 128.0; //SM_RES;
+    ac.y *= 128.0; //SM_RES;
+    bd.x *= 128.0; //SM_RES;
+    bd.y *= 128.0; //SM_RES;
 	//vypocet obsah ctyruhelniku - quadrilateral
     float K = 0.5 * abs( cross(ac, bd).z ); // zde by melo byt length misto abs, ale jelikoz z-ove 0, tak vysledek je pouze hodnota v z-ove ose
     //float K = max( length(ac+bd), length(ac-bd) );
@@ -143,7 +163,7 @@ void main(void)
 //-----------------------------------------------------------------------------
 #if 1
 
-    float res_error = clamp(1/K, 1.0/11.0, 11.0);
+    float res_error = clamp(1/K, 1.0/11.0, 11.0); //-- 1 je velikost plochy pixelu v shadow mape, K je obsah spoctaneho prumetu virtualniho quadu do prostoru shadow mapy
 
     if( res_error < 1.0 )
 

@@ -674,8 +674,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	SetUniform("mat_aliasError", "grid_res", (float) m_shadow_technique->GetResolution());
 	SetUniform("mat_aliasError", "range", m_shadow_technique->GetGridRange());
 	//-- set debug shaders
-	SetUniform("mat_perspective_error", "lightModelView[0]", lightViewMatrix[0]);
-	SetUniform("mat_perspective_error", "lightModelView[1]", lightViewMatrix[1]);
+	SetUniform("mat_perspective_error", "lightModelView", glm::lookAt( l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) ));
+	//SetUniform("mat_perspective_error", "lightModelView", lightViewMatrix[1]);
 	SetUniform("mat_perspective_error", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 	SetUniform("mat_perspective_error", "camera_space_light_position", m_viewMatrix * glm::vec4( l->GetPos(), 1.0 ));
+	SetUniform("mat_perspective_error", "matrix_ortho", glm::ortho(-512.f, 512.f, -512.f, 512.f, 0.1f, 10000.0f) );
 }

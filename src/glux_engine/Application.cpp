@@ -155,7 +155,7 @@ void Application::InitScene()
 	m_camera = m_scene->CreateCamera();
 	m_camera->SetFOVy( 45.0f );
 	m_camera->SetNearPlane( 0.1f );
-	m_camera->SetFarPlane( 1000.0f );
+	m_camera->SetFarPlane( 10000.0f );
 
 	if( !m_scene->PreInit( m_window_width, m_window_height )	) throw ERR;
 
