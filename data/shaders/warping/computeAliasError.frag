@@ -79,7 +79,7 @@ void main()
     //float error = K/dp_K;
 	//float error = determinant( mat2(ds, dt) );
 	//float error = max( length(ds+dt), length(ds-dt) );
-	float error = 1.0/a.x;
+	float error = a.x;
 
     float res_error = clamp(error, 1.0/11.0, 11.0);
 

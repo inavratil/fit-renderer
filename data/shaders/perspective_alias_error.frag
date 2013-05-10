@@ -112,9 +112,9 @@ void main(void)
 	float wi = (TWO_TAN_TH/SCREEN_X)*( length(camera_space_position.xyz) ); //-- minus, protoze osa Z smeruje za kameru
 
 	//Dual-Paraboloid:
-	//vec3 light_direction	= normalize( camera_space_light_position.xyz - camera_space_position.xyz ); //-- compute directional vector to the light
+	vec3 light_direction	= normalize( camera_space_light_position.xyz - camera_space_position.xyz ); //-- compute directional vector to the light
 	//Ortho:
-	vec3 light_direction	= normalize( vec3(0,1,1) ); //-- compute directional vector to the light
+	//vec3 light_direction	= normalize( vec3(0,1,1) ); //-- compute directional vector to the light
 	vec3 camera_direction	= normalize( -camera_space_position.xyz ); //-- compute directional vector to the camera
 	vec3 point_normal		= normalize( camera_direction + light_direction );
 
@@ -128,18 +128,18 @@ void main(void)
 
 	
 	//-- point light - Dual-Paraboloid mapping
-	/*
+	
 	vec2 a = DPCoords( o_vertex + rotated_points[0] ).xy;
 	vec2 b = DPCoords( o_vertex + rotated_points[1] ).xy;
 	vec2 c = DPCoords( o_vertex + rotated_points[2] ).xy;
 	vec2 d = DPCoords( o_vertex + rotated_points[3] ).xy;
-	*/
-
+	
+	/*
 	vec2 a = OrthoCoords( o_vertex + rotated_points[0] ).xy;
 	vec2 b = OrthoCoords( o_vertex + rotated_points[1] ).xy;
 	vec2 c = OrthoCoords( o_vertex + rotated_points[2] ).xy;
 	vec2 d = OrthoCoords( o_vertex + rotated_points[3] ).xy;
-
+	*/
 	vec3 ac = vec3( c.xy-a.xy, 0.0 );
     vec3 bd = vec3( d.xy-b.xy, 0.0 );
     ac.x *= 128.0; //SM_RES;
@@ -150,11 +150,7 @@ void main(void)
     float K = 0.5 * abs( cross(ac, bd).z ); // zde by melo byt length misto abs, ale jelikoz z-ove 0, tak vysledek je pouze hodnota v z-ove ose
     //float K = max( length(ac+bd), length(ac-bd) );
 
-	color_result = vec4( K );	//FIXME: debug output
-	color_result.a = 1.0;
-
 //-----------------------------------------------------------------------------
-#if 1
 
     float res_error = clamp(1/K, 1.0/11.0, 11.0); //-- 1 je velikost plochy pixelu v shadow mape, K je obsah spoctaneho prumetu virtualniho quadu do prostoru shadow mapy
 
@@ -164,7 +160,10 @@ void main(void)
     else
         res_error = (res_error - 1.0) / (11.0 - 1.0) * (1.0 - 0.5) + 0.5; //-- from [1/11..11] to [0..1]
 
-    color_result = vec4( texture( tex_error_color, vec2(res_error,0.0) ).xyz, 1.0 );
+    color_result = vec4( texture( tex_error_color, vec2(res_error,0.0) ).xyz, 1/K );
+
+	//if( split_plane < 0 ) //-- back side
+	//	color_result.rgb = vec3( 0 );
 
     //-- grid   
 #if 0
@@ -179,7 +178,6 @@ void main(void)
 #endif
     //-- End
 
-#endif
     out_fragColor = color_result;
-    out_fragColor.a = camera_space_position.x;// md_error;
+    //out_fragColor.a = 1/K;// md_error;
 }

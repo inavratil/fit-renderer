@@ -9,7 +9,10 @@ layout( location = 1 ) out vec4 out_fragMask;
 uniform mat4 cam_mv, cam_proj;
 uniform mat4 lightMatrix;
 uniform mat4 matrix_ortho;
-uniform mat4 in_ModelViewMatrix;
+uniform vec3 near_far_bias; // near and far plane for cm-cams
+uniform vec4 camera_space_light_position;
+
+#define POLY_OFFSET 100.0
 
 bool IsInsideFrustum( vec2 _screenPos )
 {
@@ -54,6 +57,28 @@ mat4 QuatToMatrix( vec4 q )
     return Result;
 }
 
+vec3 DPCoords( vec4 _position )
+{
+    vec4 texCoords;
+
+    texCoords = lightMatrix * _position;
+
+    //texCoords.xyz /= texCoords.w;
+    float Length = length( texCoords.xyz );
+
+    texCoords.z *= -1.0;
+    texCoords.xyz = normalize( texCoords.xyz );
+
+    texCoords.z += 1.0;
+    texCoords.x /= texCoords.z;
+    texCoords.y /= texCoords.z;
+
+    texCoords.z = (Length - near_far_bias.x)/(near_far_bias.y + POLY_OFFSET - near_far_bias.x);
+    texCoords.w = 1.0;
+
+    return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
+}
+
 vec3 OrthoCoords( vec4 _position )
 {
 	vec4 coords;
@@ -84,9 +109,9 @@ void main()
 	float wi = (TWO_TAN_TH/128.0)*( length(cam_eye.xyz) ); //-- v a.x je ulozena vzdalenost od kamery
 
 	//Dual-Paraboloid:
-	//vec3 light_direction	= normalize( camera_space_light_position.xyz - camera_space_position.xyz ); //-- compute directional vector to the light
+	vec3 light_direction	= normalize( camera_space_light_position.xyz - cam_eye.xyz ); //-- compute directional vector to the light
 	//Ortho:
-	vec3 light_direction	= normalize( vec3(0,1,1) ); //-- compute directional vector to the light
+	//vec3 light_direction	= normalize( vec3(0,1,1) ); //-- compute directional vector to the light
 	vec3 camera_direction	= normalize( -cam_eye.xyz ); //-- compute directional vector to the camera
 	vec3 point_normal		= normalize( camera_direction + light_direction );
 
@@ -98,18 +123,17 @@ void main()
 		quad_rotation_matrix * vec4( -wi/2,  wi/2, 0.0, 1.0 )
 	);
 	//-- point light - Dual-Paraboloid mapping
-	/*
 	vec2 a = DPCoords( o_vertex + rotated_points[0] ).xy;
 	vec2 b = DPCoords( o_vertex + rotated_points[1] ).xy;
 	vec2 c = DPCoords( o_vertex + rotated_points[2] ).xy;
 	vec2 d = DPCoords( o_vertex + rotated_points[3] ).xy;
-	*/
-
+	
+	/*
 	vec2 a = OrthoCoords( o_vertex + rotated_points[0] ).xy;
 	vec2 b = OrthoCoords( o_vertex + rotated_points[1] ).xy;
 	vec2 c = OrthoCoords( o_vertex + rotated_points[2] ).xy;
 	vec2 d = OrthoCoords( o_vertex + rotated_points[3] ).xy;
-
+	*/
 	vec3 ac = vec3( c.xy-a.xy, 0.0 );
     vec3 bd = vec3( d.xy-b.xy, 0.0 );
     ac.x *= 128.0; //SM_RES;
