@@ -57,7 +57,7 @@ mat4 QuatToMatrix( vec4 q )
     return Result;
 }
 
-vec3 DPCoords( vec4 _position )
+vec3 DPCoords( vec4 _position, int _i )
 {
     vec4 texCoords;
 
@@ -79,7 +79,7 @@ vec3 DPCoords( vec4 _position )
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
 
-vec3 OrthoCoords( vec4 _position )
+vec3 OrthoCoords( vec4 _position, int _i )
 {
 	vec4 coords;
 	coords = matrix_ortho * lightMatrix * _position;
@@ -103,6 +103,9 @@ void main()
 	if(w < 0.0 || !IsInsideFrustum(cam_coords.xy) )
 		discard;
 
+	vec4 vertexLightSpace = lightMatrix * o_vertex;
+    int front_side = int(vertexLightSpace.z < 0.0 );
+
 //-----------------------------------------------------------------------------
 	const float TWO_TAN_TH = 0.828427; // FOV = 45'
 	const vec3 AXIS_Z = vec3( 0, 0, 1 );
@@ -123,16 +126,16 @@ void main()
 		quad_rotation_matrix * vec4( -wi/2,  wi/2, 0.0, 1.0 )
 	);
 	//-- point light - Dual-Paraboloid mapping
-	vec2 a = DPCoords( o_vertex + rotated_points[0] ).xy;
-	vec2 b = DPCoords( o_vertex + rotated_points[1] ).xy;
-	vec2 c = DPCoords( o_vertex + rotated_points[2] ).xy;
-	vec2 d = DPCoords( o_vertex + rotated_points[3] ).xy;
+	vec2 a = DPCoords( o_vertex + rotated_points[0], front_side ).xy;
+	vec2 b = DPCoords( o_vertex + rotated_points[1], front_side ).xy;
+	vec2 c = DPCoords( o_vertex + rotated_points[2], front_side ).xy;
+	vec2 d = DPCoords( o_vertex + rotated_points[3], front_side ).xy;
 	
 	/*
-	vec2 a = OrthoCoords( o_vertex + rotated_points[0] ).xy;
-	vec2 b = OrthoCoords( o_vertex + rotated_points[1] ).xy;
-	vec2 c = OrthoCoords( o_vertex + rotated_points[2] ).xy;
-	vec2 d = OrthoCoords( o_vertex + rotated_points[3] ).xy;
+	vec2 a = OrthoCoords( o_vertex + rotated_points[0], front_side ).xy;
+	vec2 b = OrthoCoords( o_vertex + rotated_points[1], front_side ).xy;
+	vec2 c = OrthoCoords( o_vertex + rotated_points[2], front_side ).xy;
+	vec2 d = OrthoCoords( o_vertex + rotated_points[3], front_side ).xy;
 	*/
 	vec3 ac = vec3( c.xy-a.xy, 0.0 );
     vec3 bd = vec3( d.xy-b.xy, 0.0 );

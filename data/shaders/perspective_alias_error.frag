@@ -102,8 +102,8 @@ void main(void)
     
 
 	vec4 vertexEyeSpace = in_ModelViewMatrix * o_vertex;	//-- in vec3 camera_space_position;
-    vec4 vertexLightSpace = lightModelView[0] * o_vertex;
-    int front_side = int(vertexLightSpace.z > 0.0 );
+    vec4 vertexLightSpace = lightModelView[1] * o_vertex;
+    int front_side = int(vertexLightSpace.z < 0.0 );
 
     vec4 color_result = vec4( 0.0 );
 //-----------------------------------------------------------------------------	
