@@ -1,7 +1,7 @@
 uniform sampler2D tex_error_color;
 uniform sampler2D tex_2Dfunc_values;
 
-uniform mat4 lightModelView; //model view matrices for front and back side of paraboloid
+uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid
 uniform vec3 near_far_bias; // near and far plane for cm-cams
 uniform vec4 range;
 uniform mat4 in_ModelViewMatrix;
@@ -26,11 +26,11 @@ const float SCREEN_Y = 128.0;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-vec3 DPCoords( vec4 _position )
+vec3 DPCoords( vec4 _position, int _i )
 {
     vec4 texCoords;
 
-    texCoords = lightModelView * _position;
+    texCoords = lightModelView[_i] * _position;
 
     //texCoords.xyz /= texCoords.w;
     float Length = length( texCoords.xyz );
@@ -48,10 +48,10 @@ vec3 DPCoords( vec4 _position )
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
 
-vec3 OrthoCoords( vec4 _position )
+vec3 OrthoCoords( vec4 _position, int _i )
 {
 	vec4 coords;
-	coords = matrix_ortho * lightModelView * _position;
+	coords = matrix_ortho * lightModelView[_i] * _position;
 
 	return vec3( 0.5*coords.xy + 0.5, coords.z);
 }
@@ -102,8 +102,8 @@ void main(void)
     
 
 	vec4 vertexEyeSpace = in_ModelViewMatrix * o_vertex;	//-- in vec3 camera_space_position;
-    vec4 vertexLightSpace = lightModelView * o_vertex;
-    float split_plane = -vertexLightSpace.z;
+    vec4 vertexLightSpace = lightModelView[0] * o_vertex;
+    int front_side = int(vertexLightSpace.z > 0.0 );
 
     vec4 color_result = vec4( 0.0 );
 //-----------------------------------------------------------------------------	
@@ -129,16 +129,16 @@ void main(void)
 	
 	//-- point light - Dual-Paraboloid mapping
 	
-	vec2 a = DPCoords( o_vertex + rotated_points[0] ).xy;
-	vec2 b = DPCoords( o_vertex + rotated_points[1] ).xy;
-	vec2 c = DPCoords( o_vertex + rotated_points[2] ).xy;
-	vec2 d = DPCoords( o_vertex + rotated_points[3] ).xy;
+	vec2 a = DPCoords( o_vertex + rotated_points[0], front_side ).xy;
+	vec2 b = DPCoords( o_vertex + rotated_points[1], front_side ).xy;
+	vec2 c = DPCoords( o_vertex + rotated_points[2], front_side ).xy;
+	vec2 d = DPCoords( o_vertex + rotated_points[3], front_side ).xy;
 	
 	/*
-	vec2 a = OrthoCoords( o_vertex + rotated_points[0] ).xy;
-	vec2 b = OrthoCoords( o_vertex + rotated_points[1] ).xy;
-	vec2 c = OrthoCoords( o_vertex + rotated_points[2] ).xy;
-	vec2 d = OrthoCoords( o_vertex + rotated_points[3] ).xy;
+	vec2 a = OrthoCoords( o_vertex + rotated_points[0], front_side ).xy;
+	vec2 b = OrthoCoords( o_vertex + rotated_points[1], front_side ).xy;
+	vec2 c = OrthoCoords( o_vertex + rotated_points[2], front_side ).xy;
+	vec2 d = OrthoCoords( o_vertex + rotated_points[3], front_side ).xy;
 	*/
 	vec3 ac = vec3( c.xy-a.xy, 0.0 );
     vec3 bd = vec3( d.xy-b.xy, 0.0 );
@@ -160,7 +160,7 @@ void main(void)
     else
         res_error = (res_error - 1.0) / (11.0 - 1.0) * (1.0 - 0.5) + 0.5; //-- from [1/11..11] to [0..1]
 
-    color_result = vec4( texture( tex_error_color, vec2(res_error,0.0) ).xyz, 1/K );
+    color_result = vec4( texture( tex_error_color, vec2(res_error,0.0) ).xyz, front_side );
 
 	//if( split_plane < 0 ) //-- back side
 	//	color_result.rgb = vec3( 0 );
