@@ -306,14 +306,12 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	MaterialPtr mat_coords = m_passes["pass_coords"]->GetShader();
 	mat_coords->SetUniform("cam_mv", m_viewMatrix );
 	mat_coords->SetUniform("cam_proj", m_projMatrix );
-	mat_coords->SetUniform("lightMatrix", lightViewMatrix[1]); // FIXME: Bacha, je tady divna matice
 	mat_coords->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 	mat_coords->SetUniform("grid_res", (float) m_shadow_technique->GetResolution() );
 	mat_coords->SetUniform("matrix_ortho", glm::ortho(-512.f, 512.f, -512.f, 512.f, 0.1f, 10000.0f) );
 	mat_coords->SetUniform("camera_space_light_position", m_viewMatrix * glm::vec4( l->GetPos(), 1.0 )); 
 
-	//DrawGeometry(mat_coords->GetName().c_str(), lightViewMatrix[1]);
-	DrawGeometry(mat_coords->GetName().c_str(), glm::lookAt( l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) ));
+	DrawGeometry(mat_coords->GetName().c_str(), lightViewMatrix[1]);
 
 	m_passes["pass_coords"]->Deactivate();
 

@@ -103,7 +103,8 @@ void main(void)
 
 	vec4 vertexEyeSpace = in_ModelViewMatrix * o_vertex;	//-- in vec3 camera_space_position;
     vec4 vertexLightSpace = lightModelView[1] * o_vertex;
-    int front_side = int(vertexLightSpace.z < 0.0 );
+    int front_side = 0;
+	if(vertexLightSpace.z < 0.0 ) front_side = 1;
 
     vec4 color_result = vec4( 0.0 );
 //-----------------------------------------------------------------------------	
@@ -129,10 +130,10 @@ void main(void)
 	
 	//-- point light - Dual-Paraboloid mapping
 	
-	vec2 a = DPCoords( o_vertex + rotated_points[0], front_side ).xy;
-	vec2 b = DPCoords( o_vertex + rotated_points[1], front_side ).xy;
-	vec2 c = DPCoords( o_vertex + rotated_points[2], front_side ).xy;
-	vec2 d = DPCoords( o_vertex + rotated_points[3], front_side ).xy;
+	vec2 a = DPCoords( o_vertex + rotated_points[0], 1 ).xy;
+	vec2 b = DPCoords( o_vertex + rotated_points[1], 1 ).xy;
+	vec2 c = DPCoords( o_vertex + rotated_points[2], 1 ).xy;
+	vec2 d = DPCoords( o_vertex + rotated_points[3], 1 ).xy;
 	
 	/*
 	vec2 a = OrthoCoords( o_vertex + rotated_points[0], front_side ).xy;
@@ -152,7 +153,7 @@ void main(void)
 
 //-----------------------------------------------------------------------------
 
-    float res_error = clamp(1/K, 1.0/11.0, 11.0); //-- 1 je velikost plochy pixelu v shadow mape, K je obsah spoctaneho prumetu virtualniho quadu do prostoru shadow mapy
+    float res_error = clamp(0.25/K, 1.0/11.0, 11.0); //-- 1 je velikost plochy pixelu v shadow mape, K je obsah spoctaneho prumetu virtualniho quadu do prostoru shadow mapy
 
     if( res_error < 1.0 )
 
