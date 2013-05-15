@@ -66,6 +66,9 @@ vec4 GetRotationQuat( vec3 _from, vec3 _to )
     vec3 v1 = normalize( _to );
 
     float d = dot( v0, v1 );
+	if (d >= 1.0f)
+        return vec4( 0, 0, 0, 1 );
+   
     float s = 1.0 / sqrt( (1.0+d)*2.0 );
     vec3 c = cross( v0, v1 );
 
@@ -74,7 +77,7 @@ vec4 GetRotationQuat( vec3 _from, vec3 _to )
     q.z = c.z * s;
     q.w = s * 0.5f;
 
-    return normalize( q );
+    return normalize(q);
 }
 
 mat4 QuatToMatrix( vec4 q )
@@ -130,10 +133,10 @@ void main(void)
 	
 	//-- point light - Dual-Paraboloid mapping
 	
-	vec2 a = DPCoords( o_vertex + rotated_points[0], 1 ).xy;
-	vec2 b = DPCoords( o_vertex + rotated_points[1], 1 ).xy;
-	vec2 c = DPCoords( o_vertex + rotated_points[2], 1 ).xy;
-	vec2 d = DPCoords( o_vertex + rotated_points[3], 1 ).xy;
+	vec2 a = DPCoords( inverse(in_ModelViewMatrix) * vec4(vertexEyeSpace.xyz + rotated_points[0].xyz, 1.0), front_side ).xy;
+	vec2 b = DPCoords( inverse(in_ModelViewMatrix) * vec4(vertexEyeSpace.xyz + rotated_points[1].xyz, 1.0), front_side ).xy;
+	vec2 c = DPCoords( inverse(in_ModelViewMatrix) * vec4(vertexEyeSpace.xyz + rotated_points[2].xyz, 1.0), front_side ).xy;
+	vec2 d = DPCoords( inverse(in_ModelViewMatrix) * vec4(vertexEyeSpace.xyz + rotated_points[3].xyz, 1.0), front_side ).xy;
 	
 	/*
 	vec2 a = OrthoCoords( o_vertex + rotated_points[0], front_side ).xy;
@@ -162,9 +165,6 @@ void main(void)
         res_error = (res_error - 1.0) / (11.0 - 1.0) * (1.0 - 0.5) + 0.5; //-- from [1/11..11] to [0..1]
 
     color_result = vec4( texture( tex_error_color, vec2(res_error,0.0) ).xyz, front_side );
-
-	//if( split_plane < 0 ) //-- back side
-	//	color_result.rgb = vec3( 0 );
 
     //-- grid   
 #if 0

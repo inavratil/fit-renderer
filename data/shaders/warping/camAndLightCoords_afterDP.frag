@@ -124,10 +124,10 @@ void main()
 		quad_rotation_matrix * vec4( -wi/2,  wi/2, 0.0, 1.0 )
 	);
 	//-- point light - Dual-Paraboloid mapping
-	vec2 a = DPCoords( o_vertex + rotated_points[0] ).xy;
-	vec2 b = DPCoords( o_vertex + rotated_points[1] ).xy;
-	vec2 c = DPCoords( o_vertex + rotated_points[2] ).xy;
-	vec2 d = DPCoords( o_vertex + rotated_points[3] ).xy;
+	vec2 a = DPCoords( inverse(cam_mv) * vec4(cam_eye.xyz + rotated_points[0].xyz, 1.0) ).xy;
+	vec2 b = DPCoords( inverse(cam_mv) * vec4(cam_eye.xyz + rotated_points[1].xyz, 1.0) ).xy;
+	vec2 c = DPCoords( inverse(cam_mv) * vec4(cam_eye.xyz + rotated_points[2].xyz, 1.0) ).xy;
+	vec2 d = DPCoords( inverse(cam_mv) * vec4(cam_eye.xyz + rotated_points[3].xyz, 1.0) ).xy;
 	
 	/*
 	vec2 a = OrthoCoords( o_vertex + rotated_points[0] ).xy;
