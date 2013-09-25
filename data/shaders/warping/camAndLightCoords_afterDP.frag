@@ -162,7 +162,7 @@ void main()
 
 	dp_coords.xy = 0.5*light_vertex.xy + 0.5;
 
-	out_fragColor = vec4( 0.25/K, cam_eye.x, dp_coords.xy );
+	out_fragColor = vec4( 1/K, cam_eye.x, dp_coords.xy );
     //out_fragColor = vec4( cam_coords.xy, dp_coords.xy );
 	out_fragMask = vec4( 1.0 );
 }

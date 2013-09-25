@@ -114,7 +114,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//-- output
 		{				
 			//-- shader
-			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_compute_aliasError", "data/shaders/warping/computeAliasError.vert", "data/shaders/warping/computeAliasError.frag" );
+			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_compute_aliasError", "data/shaders/warping/computeAliasError.vert"/*quad.vert*/, "data/shaders/warping/computeAliasError.frag" );
 			mat->AddTexture( m_texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "tex_error" );
 			mat->AddTexture( m_texture_cache->GetPtr( "tex_camAndLightCoords" ), "tex_coords" );
 			AddMaterial( mat );

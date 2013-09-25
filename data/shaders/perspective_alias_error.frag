@@ -156,7 +156,7 @@ void main(void)
 
 //-----------------------------------------------------------------------------
 
-    float res_error = clamp(0.25/K, 1.0/11.0, 11.0); //-- 1 je velikost plochy pixelu v shadow mape, K je obsah spoctaneho prumetu virtualniho quadu do prostoru shadow mapy
+    float res_error = clamp(1/K, 1.0/11.0, 11.0); //-- 1 je velikost plochy pixelu v shadow mape, K je obsah spoctaneho prumetu virtualniho quadu do prostoru shadow mapy
 
     if( res_error < 1.0 )
 
