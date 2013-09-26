@@ -3,15 +3,20 @@
 #include "shadow.h"
 #include "shaderGen/SFSplineWarpedShadow.h"
 
+//----------------------------------------------------------------------------
+
 SplineWarpedShadow::SplineWarpedShadow()
 {
 	_Init();
 }
 
+//----------------------------------------------------------------------------
 
 SplineWarpedShadow::~SplineWarpedShadow(void)
 {
 }
+
+//----------------------------------------------------------------------------
 
 void SplineWarpedShadow::_Init()
 {
@@ -30,10 +35,14 @@ void SplineWarpedShadow::_Init()
 		);
 }
 
+//----------------------------------------------------------------------------
+
 bool SplineWarpedShadow::Initialize()
 {
 	return true;
 }
+
+//----------------------------------------------------------------------------
 
 void SplineWarpedShadow::PreRender()
 {
@@ -52,9 +61,13 @@ void SplineWarpedShadow::PreRender()
 	m_pFuncValues = NULL;
 }
 
+//----------------------------------------------------------------------------
+
 void SplineWarpedShadow::PostRender()
 {
 }
+
+//----------------------------------------------------------------------------
 
 //-- _P je v intervalu [0..grid_res-1]
 glm::vec2 SplineWarpedShadow::ComputeDiff( glm::vec2 _P )
@@ -145,5 +158,5 @@ Splines4x4 SplineWarpedShadow::_GetSplinesValues( glm::vec2 _c )
 float SplineWarpedShadow::GetResolution()
 {
 	//-- potrebujeme o jedno vetsi rozliseni na kazde strane kvuli navic bodum pro spline
-	return (IShadowTechnique::GetResolution() + 2.0);
+	return (IShadowTechnique::GetControlPointsCount() + 2.0);
 }

@@ -30,7 +30,7 @@ bool BilinearWarpedShadow::Initialize()
 
 void BilinearWarpedShadow::PreRender()
 {
-	int res = (int)this->GetResolution();
+	int res = (int)this->GetControlPointsCount();
 	float* z_values = new float[res*res*2];
 	
 	memset(z_values, 0, res*res*2*sizeof(float));
@@ -99,7 +99,7 @@ glm::vec4 BilinearWarpedShadow::_GetFuncValuesFromCell( glm::vec2 _c, int _d )
 	if( m_pFuncValues == NULL ) 
 		return ret;
 
-	int res = (int)this->GetResolution();
+	int res = (int)this->GetControlPointsCount();
 	int i = (int)_c.x, j = (int)_c.y;
 
 	//-- jedna bunka

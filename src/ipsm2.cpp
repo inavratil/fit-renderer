@@ -9,6 +9,10 @@
 
 #include "precomputed_diffs.h"
 
+//-- Documentation
+// Celou knihovnu a proces generovani stinu se budu snazit popsat v dokumentaci ulozenou na web, link
+// https://docs.google.com/document/d/1TVNZwzaEpD_BRjS3NZEiqbOMya-NB1gBCh_aWeo1aE8/edit?usp=sharing
+
 ///////////////////////////////////////////////////////////////////////////////
 //-- Defines
 
@@ -19,7 +23,27 @@
 ///////////////////////////////////////////////////////////////////////////////
 //-- Global variables
 
-glm::vec4 g_precomputed_diffs[19*19];
+glm::vec4 g_precomputed_diffs[19*19] = {
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.028888f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.048402f, 0.000000f, 0.0f, 0.0f),glm::vec4(-0.063904f, 0.000000f, 0.0f, 0.0f),glm::vec4(-0.078886f, 0.000000f, 0.0f, 0.0f),glm::vec4(-0.097815f, 0.000000f, 0.0f, 0.0f),glm::vec4(-0.082486f, 0.000000f, 0.0f, 0.0f),glm::vec4(-0.046921f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.005918f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.069705f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.101666f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.118334f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.106020f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.067614f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.049829f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.030231f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.029003f, 0.0f, 0.0f),glm::vec4(-0.058580f, 0.034530f, 0.0f, 0.0f),glm::vec4(-0.104735f, 0.002877f, 0.0f, 0.0f),glm::vec4(-0.142158f, 0.002262f, 0.0f, 0.0f),glm::vec4(-0.173042f, 0.013164f, 0.0f, 0.0f),glm::vec4(-0.174411f, 0.051942f, 0.0f, 0.0f),glm::vec4(-0.139787f, 0.032654f, 0.0f, 0.0f),glm::vec4(-0.107832f, 0.012858f, 0.0f, 0.0f),glm::vec4(-0.027586f, -0.010593f, 0.0f, 0.0f),glm::vec4(0.077379f, -0.006159f, 0.0f, 0.0f),glm::vec4(0.140032f, 0.020413f, 0.0f, 0.0f),glm::vec4(0.173109f, 0.004384f, 0.0f, 0.0f),glm::vec4(0.173264f, 0.004389f, 0.0f, 0.0f),glm::vec4(0.141860f, -0.003836f, 0.0f, 0.0f),glm::vec4(0.107412f, -0.000663f, 0.0f, 0.0f),glm::vec4(0.058910f, 0.030417f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.027565f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.042082f, 0.0f, 0.0f),glm::vec4(-0.036019f, 0.061027f, 0.0f, 0.0f),glm::vec4(-0.067470f, 0.028692f, 0.0f, 0.0f),glm::vec4(-0.105344f, 0.003685f, 0.0f, 0.0f),glm::vec4(-0.124319f, 0.025867f, 0.0f, 0.0f),glm::vec4(-0.108490f, 0.090939f, 0.0f, 0.0f),glm::vec4(-0.097377f, 0.136257f, 0.0f, 0.0f),glm::vec4(-0.068718f, 0.041288f, 0.0f, 0.0f),glm::vec4(-0.036671f, -0.018074f, 0.0f, 0.0f),glm::vec4(0.001595f, 0.012393f, 0.0f, 0.0f),glm::vec4(0.043327f, 0.042576f, 0.0f, 0.0f),glm::vec4(0.060770f, 0.023857f, 0.0f, 0.0f),glm::vec4(0.076463f, 0.020806f, 0.0f, 0.0f),glm::vec4(0.089378f, 0.010530f, 0.0f, 0.0f),glm::vec4(0.083631f, 0.016292f, 0.0f, 0.0f),glm::vec4(0.044641f, 0.062740f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.045973f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.054202f, 0.0f, 0.0f),glm::vec4(-0.041637f, 0.079784f, 0.0f, 0.0f),glm::vec4(-0.080923f, 0.035429f, 0.0f, 0.0f),glm::vec4(-0.127620f, 0.019080f, 0.0f, 0.0f),glm::vec4(-0.163400f, 0.075582f, 0.0f, 0.0f),glm::vec4(-0.172763f, 0.195483f, 0.0f, 0.0f),glm::vec4(-0.149448f, 0.225304f, 0.0f, 0.0f),glm::vec4(-0.115958f, 0.122055f, 0.0f, 0.0f),glm::vec4(-0.082155f, 0.028516f, 0.0f, 0.0f),glm::vec4(-0.048163f, 0.075581f, 0.0f, 0.0f),glm::vec4(-0.018188f, 0.085846f, 0.0f, 0.0f),glm::vec4(0.006983f, 0.047888f, 0.0f, 0.0f),glm::vec4(0.052457f, 0.087789f, 0.0f, 0.0f),glm::vec4(0.064142f, 0.098144f, 0.0f, 0.0f),glm::vec4(0.036254f, 0.072539f, 0.0f, 0.0f),glm::vec4(0.004374f, 0.058519f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.045311f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.063030f, 0.0f, 0.0f),glm::vec4(-0.042221f, 0.095714f, 0.0f, 0.0f),glm::vec4(-0.084446f, 0.042625f, 0.0f, 0.0f),glm::vec4(-0.136976f, 0.023437f, 0.0f, 0.0f),glm::vec4(-0.157291f, 0.075295f, 0.0f, 0.0f),glm::vec4(-0.180084f, 0.219404f, 0.0f, 0.0f),glm::vec4(-0.175121f, 0.341281f, 0.0f, 0.0f),glm::vec4(-0.116505f, 0.239291f, 0.0f, 0.0f),glm::vec4(-0.091969f, 0.123394f, 0.0f, 0.0f),glm::vec4(-0.062912f, 0.184411f, 0.0f, 0.0f),glm::vec4(-0.037434f, 0.223782f, 0.0f, 0.0f),glm::vec4(-0.014691f, 0.181048f, 0.0f, 0.0f),glm::vec4(-0.027879f, 0.171919f, 0.0f, 0.0f),glm::vec4(0.008636f, 0.160091f, 0.0f, 0.0f),glm::vec4(-0.000410f, 0.214308f, 0.0f, 0.0f),glm::vec4(0.004182f, 0.166573f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.100149f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.068463f, 0.0f, 0.0f),glm::vec4(-0.034110f, 0.106581f, 0.0f, 0.0f),glm::vec4(-0.072892f, 0.051470f, 0.0f, 0.0f),glm::vec4(-0.121045f, 0.024277f, 0.0f, 0.0f),glm::vec4(-0.134622f, 0.074465f, 0.0f, 0.0f),glm::vec4(-0.147853f, 0.216203f, 0.0f, 0.0f),glm::vec4(-0.159008f, 0.361866f, 0.0f, 0.0f),glm::vec4(-0.142407f, 0.413976f, 0.0f, 0.0f),glm::vec4(-0.065978f, 0.238597f, 0.0f, 0.0f),glm::vec4(-0.007196f, 0.307134f, 0.0f, 0.0f),glm::vec4(0.030252f, 0.375178f, 0.0f, 0.0f),glm::vec4(-0.011214f, 0.372873f, 0.0f, 0.0f),glm::vec4(0.024856f, 0.320797f, 0.0f, 0.0f),glm::vec4(0.025701f, 0.299986f, 0.0f, 0.0f),glm::vec4(0.034700f, 0.300505f, 0.0f, 0.0f),glm::vec4(0.028170f, 0.187634f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.095986f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.069952f, 0.0f, 0.0f),glm::vec4(-0.011891f, 0.109556f, 0.0f, 0.0f),glm::vec4(-0.038789f, 0.072122f, 0.0f, 0.0f),glm::vec4(-0.067686f, 0.024485f, 0.0f, 0.0f),glm::vec4(-0.072737f, 0.072896f, 0.0f, 0.0f),glm::vec4(-0.077622f, 0.213659f, 0.0f, 0.0f),glm::vec4(-0.081342f, 0.369244f, 0.0f, 0.0f),glm::vec4(-0.066518f, 0.433262f, 0.0f, 0.0f),glm::vec4(-0.025020f, 0.441404f, 0.0f, 0.0f),glm::vec4(0.042779f, 0.459108f, 0.0f, 0.0f),glm::vec4(0.064811f, 0.411540f, 0.0f, 0.0f),glm::vec4(0.045546f, 0.454602f, 0.0f, 0.0f),glm::vec4(0.065874f, 0.384858f, 0.0f, 0.0f),glm::vec4(0.057769f, 0.257269f, 0.0f, 0.0f),glm::vec4(0.039562f, 0.285378f, 0.0f, 0.0f),glm::vec4(0.008067f, 0.185553f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.096006f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.047620f, 0.0f, 0.0f),glm::vec4(-0.010107f, 0.076718f, 0.0f, 0.0f),glm::vec4(-0.016470f, 0.052467f, 0.0f, 0.0f),glm::vec4(-0.021920f, 0.023901f, 0.0f, 0.0f),glm::vec4(-0.022216f, 0.069818f, 0.0f, 0.0f),glm::vec4(-0.022224f, 0.210076f, 0.0f, 0.0f),glm::vec4(-0.022051f, 0.362713f, 0.0f, 0.0f),glm::vec4(-0.021952f, 0.419272f, 0.0f, 0.0f),glm::vec4(-0.016217f, 0.394345f, 0.0f, 0.0f),glm::vec4(-0.011512f, 0.442571f, 0.0f, 0.0f),glm::vec4(-0.011292f, 0.397634f, 0.0f, 0.0f),glm::vec4(-0.002675f, 0.442515f, 0.0f, 0.0f),glm::vec4(-0.002736f, 0.376908f, 0.0f, 0.0f),glm::vec4(-0.002464f, 0.252967f, 0.0f, 0.0f),glm::vec4(-0.000593f, 0.272860f, 0.0f, 0.0f),glm::vec4(0.000451f, 0.178531f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.093293f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.031959f, 0.0f, 0.0f),glm::vec4(-0.028095f, 0.049759f, 0.0f, 0.0f),glm::vec4(-0.055400f, 0.044934f, 0.0f, 0.0f),glm::vec4(-0.065265f, 0.020211f, 0.0f, 0.0f),glm::vec4(-0.103421f, 0.053000f, 0.0f, 0.0f),glm::vec4(-0.104625f, 0.176198f, 0.0f, 0.0f),glm::vec4(-0.103329f, 0.309685f, 0.0f, 0.0f),glm::vec4(-0.076084f, 0.383707f, 0.0f, 0.0f),glm::vec4(-0.067843f, 0.362099f, 0.0f, 0.0f),glm::vec4(-0.040589f, 0.401504f, 0.0f, 0.0f),glm::vec4(-0.027635f, 0.360676f, 0.0f, 0.0f),glm::vec4(-0.005300f, 0.390884f, 0.0f, 0.0f),glm::vec4(0.017860f, 0.327624f, 0.0f, 0.0f),glm::vec4(0.018168f, 0.223285f, 0.0f, 0.0f),glm::vec4(0.009800f, 0.241123f, 0.0f, 0.0f),glm::vec4(0.001220f, 0.166471f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.088294f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.023039f, 0.0f, 0.0f),glm::vec4(-0.027679f, 0.035670f, 0.0f, 0.0f),glm::vec4(-0.053557f, 0.029812f, 0.0f, 0.0f),glm::vec4(-0.081854f, 0.011312f, 0.0f, 0.0f),glm::vec4(-0.109347f, 0.047287f, 0.0f, 0.0f),glm::vec4(-0.110505f, 0.162342f, 0.0f, 0.0f),glm::vec4(-0.109312f, 0.285109f, 0.0f, 0.0f),glm::vec4(-0.089219f, 0.335600f, 0.0f, 0.0f),glm::vec4(-0.071120f, 0.320263f, 0.0f, 0.0f),glm::vec4(-0.035595f, 0.346487f, 0.0f, 0.0f),glm::vec4(0.007180f, 0.316564f, 0.0f, 0.0f),glm::vec4(0.028238f, 0.341383f, 0.0f, 0.0f),glm::vec4(0.029945f, 0.309339f, 0.0f, 0.0f),glm::vec4(0.030258f, 0.212872f, 0.0f, 0.0f),glm::vec4(0.010290f, 0.208341f, 0.0f, 0.0f),glm::vec4(0.001361f, 0.152933f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.082495f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.017315f, 0.0f, 0.0f),glm::vec4(-0.033414f, 0.026739f, 0.0f, 0.0f),glm::vec4(-0.065823f, 0.019987f, 0.0f, 0.0f),glm::vec4(-0.093439f, 0.004940f, 0.0f, 0.0f),glm::vec4(-0.126559f, 0.042624f, 0.0f, 0.0f),glm::vec4(-0.146113f, 0.139714f, 0.0f, 0.0f),glm::vec4(-0.154827f, 0.240694f, 0.0f, 0.0f),glm::vec4(-0.119722f, 0.281610f, 0.0f, 0.0f),glm::vec4(-0.086490f, 0.272678f, 0.0f, 0.0f),glm::vec4(-0.047231f, 0.290647f, 0.0f, 0.0f),glm::vec4(-0.004188f, 0.269443f, 0.0f, 0.0f),glm::vec4(0.032876f, 0.284447f, 0.0f, 0.0f),glm::vec4(0.032063f, 0.288186f, 0.0f, 0.0f),glm::vec4(0.032369f, 0.200834f, 0.0f, 0.0f),glm::vec4(0.014197f, 0.173442f, 0.0f, 0.0f),glm::vec4(0.001630f, 0.135874f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.074746f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.020104f, 0.0f, 0.0f),glm::vec4(-0.042004f, 0.034493f, 0.0f, 0.0f),glm::vec4(-0.080946f, 0.011508f, 0.0f, 0.0f),glm::vec4(-0.112969f, 0.004439f, 0.0f, 0.0f),glm::vec4(-0.151753f, 0.041024f, 0.0f, 0.0f),glm::vec4(-0.158969f, 0.121474f, 0.0f, 0.0f),glm::vec4(-0.166095f, 0.202976f, 0.0f, 0.0f),glm::vec4(-0.117849f, 0.224748f, 0.0f, 0.0f),glm::vec4(-0.066083f, 0.222208f, 0.0f, 0.0f),glm::vec4(-0.027171f, 0.236508f, 0.0f, 0.0f),glm::vec4(0.016811f, 0.221110f, 0.0f, 0.0f),glm::vec4(0.046995f, 0.228540f, 0.0f, 0.0f),glm::vec4(0.057977f, 0.255259f, 0.0f, 0.0f),glm::vec4(0.054490f, 0.182938f, 0.0f, 0.0f),glm::vec4(0.029403f, 0.144732f, 0.0f, 0.0f),glm::vec4(0.001983f, 0.116302f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.065411f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.027535f, 0.0f, 0.0f),glm::vec4(-0.038573f, 0.048033f, 0.0f, 0.0f),glm::vec4(-0.076643f, 0.012994f, 0.0f, 0.0f),glm::vec4(-0.119305f, 0.007369f, 0.0f, 0.0f),glm::vec4(-0.152204f, 0.034370f, 0.0f, 0.0f),glm::vec4(-0.155681f, 0.101319f, 0.0f, 0.0f),glm::vec4(-0.156694f, 0.155113f, 0.0f, 0.0f),glm::vec4(-0.126635f, 0.170189f, 0.0f, 0.0f),glm::vec4(-0.079016f, 0.168400f, 0.0f, 0.0f),glm::vec4(-0.028276f, 0.182067f, 0.0f, 0.0f),glm::vec4(-0.000642f, 0.171306f, 0.0f, 0.0f),glm::vec4(0.019074f, 0.180570f, 0.0f, 0.0f),glm::vec4(0.050757f, 0.203503f, 0.0f, 0.0f),glm::vec4(0.056132f, 0.146077f, 0.0f, 0.0f),glm::vec4(0.045989f, 0.126622f, 0.0f, 0.0f),glm::vec4(0.022386f, 0.090507f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.044691f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.027119f, 0.0f, 0.0f),glm::vec4(-0.031016f, 0.046765f, 0.0f, 0.0f),glm::vec4(-0.062602f, 0.023320f, 0.0f, 0.0f),glm::vec4(-0.096902f, 0.005201f, 0.0f, 0.0f),glm::vec4(-0.122474f, 0.025893f, 0.0f, 0.0f),glm::vec4(-0.127553f, 0.077556f, 0.0f, 0.0f),glm::vec4(-0.124762f, 0.107380f, 0.0f, 0.0f),glm::vec4(-0.107961f, 0.119225f, 0.0f, 0.0f),glm::vec4(-0.082823f, 0.116085f, 0.0f, 0.0f),glm::vec4(-0.043278f, 0.130758f, 0.0f, 0.0f),glm::vec4(-0.023554f, 0.124440f, 0.0f, 0.0f),glm::vec4(-0.006225f, 0.134211f, 0.0f, 0.0f),glm::vec4(0.034108f, 0.154233f, 0.0f, 0.0f),glm::vec4(0.040513f, 0.110397f, 0.0f, 0.0f),glm::vec4(0.034563f, 0.098823f, 0.0f, 0.0f),glm::vec4(0.018008f, 0.068814f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.032694f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.016505f, 0.0f, 0.0f),glm::vec4(-0.020590f, 0.028443f, 0.0f, 0.0f),glm::vec4(-0.040829f, 0.012137f, 0.0f, 0.0f),glm::vec4(-0.056665f, 0.000907f, 0.0f, 0.0f),glm::vec4(-0.075594f, 0.017430f, 0.0f, 0.0f),glm::vec4(-0.081087f, 0.051812f, 0.0f, 0.0f),glm::vec4(-0.077542f, 0.065124f, 0.0f, 0.0f),glm::vec4(-0.069634f, 0.073179f, 0.0f, 0.0f),glm::vec4(-0.061451f, 0.069293f, 0.0f, 0.0f),glm::vec4(-0.048027f, 0.082745f, 0.0f, 0.0f),glm::vec4(-0.036622f, 0.079147f, 0.0f, 0.0f),glm::vec4(-0.022186f, 0.084007f, 0.0f, 0.0f),glm::vec4(0.016917f, 0.108541f, 0.0f, 0.0f),glm::vec4(0.024574f, 0.076880f, 0.0f, 0.0f),glm::vec4(0.025992f, 0.067269f, 0.0f, 0.0f),glm::vec4(0.018464f, 0.042821f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.018714f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.008664f, 0.0f, 0.0f),glm::vec4(-0.036418f, 0.015786f, 0.0f, 0.0f),glm::vec4(-0.073345f, 0.005236f, 0.0f, 0.0f),glm::vec4(-0.111742f, 0.000575f, 0.0f, 0.0f),glm::vec4(-0.141254f, 0.007669f, 0.0f, 0.0f),glm::vec4(-0.150218f, 0.021755f, 0.0f, 0.0f),glm::vec4(-0.146662f, 0.030814f, 0.0f, 0.0f),glm::vec4(-0.135058f, 0.035382f, 0.0f, 0.0f),glm::vec4(-0.118877f, 0.035204f, 0.0f, 0.0f),glm::vec4(-0.099690f, 0.040287f, 0.0f, 0.0f),glm::vec4(-0.076294f, 0.040442f, 0.0f, 0.0f),glm::vec4(-0.050335f, 0.041574f, 0.0f, 0.0f),glm::vec4(0.000735f, 0.051422f, 0.0f, 0.0f),glm::vec4(0.039392f, 0.035906f, 0.0f, 0.0f),glm::vec4(0.045440f, 0.034663f, 0.0f, 0.0f),glm::vec4(0.030646f, 0.021864f, 0.0f, 0.0f),glm::vec4(-0.000000f, 0.010066f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.018352f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.037096f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.061508f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.076385f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.080896f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.079110f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.073301f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.064964f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.055340f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.042989f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.029846f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.004283f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.021873f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.022328f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.015633f, -0.000000f, 0.0f, 0.0f),glm::vec4(-0.000000f, -0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),glm::vec4(0.000000f, 0.000000f, 0.0f, 0.0f),
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -50,7 +74,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 	//this->SetShadowTechnique( new BilinearWarpedShadow() );
 	//-- Spline shadow technique
 	this->SetShadowTechnique( new SplineWarpedShadow() );
-	m_shadow_technique->SetResolution( 17.0 );
+	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
+	m_shadow_technique->SetControlPointsCount( 17.0 );
 
 	//create data textures
 	try{
@@ -61,8 +86,8 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		m_texture_cache->Create2DManual( "MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
 		m_texture_cache->Create2DManual( "MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
 		//FIXME: precision??? nestaci 16F ?
-		m_texture_cache->Create2DManual( "MTEX_2Dfunc_values", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
-		m_texture_cache->Create2DManual( "MTEX_2Dfunc_values_ping", m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
+		m_texture_cache->Create2DManual( "MTEX_2Dfunc_values", m_shadow_technique->GetControlPointsCount(), m_shadow_technique->GetControlPointsCount(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
+		m_texture_cache->Create2DManual( "MTEX_2Dfunc_values_ping", m_shadow_technique->GetControlPointsCount(), m_shadow_technique->GetControlPointsCount(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
 		
 		TexturePtr tex_shadow = m_texture_cache->Create2DArrayManual("tex_shadow",
 			sh_res, sh_res,			//-- width and height
@@ -175,7 +200,7 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 			mat->AddTexture( m_texture_cache->GetPtr( "MTEX_ping" ), "gradient_map" );
 			AddMaterial( mat );
 			//-- pass
-			SimplePassPtr pass_func_values = new SimplePass( m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
+			SimplePassPtr pass_func_values = new SimplePass( m_shadow_technique->GetControlPointsCount(), m_shadow_technique->GetControlPointsCount() );
 			pass_func_values->AttachOutputTexture( 0, m_texture_cache->GetPtr( "MTEX_2Dfunc_values" ) );
 			pass_func_values->DisableDepthBuffer();
 			AppendPass("pass_func_values", pass_func_values );
@@ -307,7 +332,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	mat_coords->SetUniform("cam_mv", m_viewMatrix );
 	mat_coords->SetUniform("cam_proj", m_projMatrix );
 	mat_coords->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-	mat_coords->SetUniform("grid_res", (float) m_shadow_technique->GetResolution() );
+	mat_coords->SetUniform("grid_res", (float) m_shadow_technique->GetControlPointsCount() );
 	mat_coords->SetUniform("matrix_ortho", glm::ortho(-512.f, 512.f, -512.f, 512.f, 0.1f, 10000.0f) );
 	mat_coords->SetUniform("camera_space_light_position", m_viewMatrix * glm::vec4( l->GetPos(), 1.0 )); 
 
@@ -398,8 +423,8 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 		//-----------------------------------------------------------------------------
 
-		memset(g_precomputed_diffs, 0, 19*19*sizeof(glm::vec4));
-		ModifyGrid(g_precomputed_diffs);
+		//memset(g_precomputed_diffs, 0, 19*19*sizeof(glm::vec4));
+		//ModifyGrid(g_precomputed_diffs);
 
 		glViewport( 0, 0, 128.0, 128.0 ); //restore viewport
 	}
@@ -478,13 +503,13 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			func_range.x +=  func_range.y;
 			func_range.z +=  func_range.w;
 
-			glViewport( 0+2, 0+2, m_shadow_technique->GetGrid()->GetResolution()-2, m_shadow_technique->GetGrid()->GetResolution()-2 );
-			SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetGrid()->GetResolution() - 2.0 );
+			glViewport( 0+2, 0+2, m_shadow_technique->GetGrid()->GetControlPointsCount()-2, m_shadow_technique->GetGrid()->GetControlPointsCount()-2 );
+			SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetGrid()->GetControlPointsCount() - 2.0 );
 		}
 		else
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
-			SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetGrid()->GetResolution() );
+			SetUniform("mat_get_2Dfunc_values", "grid_res", (float) m_shadow_technique->GetGrid()->GetControlPointsCount() );
 		}
 
 #ifdef GRADIENT_METHOD
@@ -492,7 +517,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		RenderPass("mat_get_2Dfunc_values");
 #else
 		glBindTexture( GL_TEXTURE_2D, m_texture_cache->Get( "MTEX_2Dfunc_values" ) );
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution(), 0, GL_RGBA, GL_FLOAT, g_precomputed_diffs);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_shadow_technique->GetControlPointsCount(), m_shadow_technique->GetControlPointsCount(), 0, GL_RGBA, GL_FLOAT, g_precomputed_diffs);
 		glBindTexture( GL_TEXTURE_2D, 0 );
 #endif
 
@@ -501,7 +526,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	m_passes["pass_func_values"]->Deactivate();
 
 	if ( (string) m_shadow_technique->GetName() ==  "Spline" )
-		glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
+		glViewport( 0, 0, m_shadow_technique->GetControlPointsCount(), m_shadow_technique->GetControlPointsCount() );
 
 	//-- Simplified deformation model 
 	/*
@@ -582,7 +607,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 		//-- Shared uniforms
 		SetUniform("mat_depth_with_warping", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 		SetUniform("mat_depth_with_warping", "range", m_shadow_technique->GetGridRange());
-		SetUniform("mat_depth_with_warping", "grid_res", (float) m_shadow_technique->GetResolution() );
+		SetUniform("mat_depth_with_warping", "grid_res", (float) m_shadow_technique->GetControlPointsCount() );
 
 		//-- Polynomial uniforms
 		SetUniform("mat_depth_with_warping", "coeffsX", coeffsX );
@@ -664,7 +689,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 			m_im->second->SetUniform("coeffsX", coeffsX );
 			m_im->second->SetUniform("coeffsY", coeffsY );
 			m_im->second->SetUniform("range", m_shadow_technique->GetGridRange());
-			m_im->second->SetUniform("grid_res", (float) m_shadow_technique->GetResolution());
+			m_im->second->SetUniform("grid_res", (float) m_shadow_technique->GetControlPointsCount());
 		}
 	}
 
@@ -672,7 +697,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	SetUniform("mat_aliasError", "lightModelView[0]", lightViewMatrix[0]);
 	SetUniform("mat_aliasError", "lightModelView[1]", lightViewMatrix[1]);
 	SetUniform("mat_aliasError", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
-	SetUniform("mat_aliasError", "grid_res", (float) m_shadow_technique->GetResolution());
+	SetUniform("mat_aliasError", "grid_res", (float) m_shadow_technique->GetControlPointsCount());
 	SetUniform("mat_aliasError", "range", m_shadow_technique->GetGridRange());
 	//-- set debug shaders
 	//SetUniform("mat_perspective_error", "lightModelView", glm::lookAt( l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) ));

@@ -1,21 +1,27 @@
 #include "ScreenGrid.h"
 
+//----------------------------------------------------------------------------
 
 ScreenGrid::ScreenGrid( float _res )
 {
 	_Init( glm::vec4(0.0, _res, 0.0, _res), _res );
 }
 
+//----------------------------------------------------------------------------
+
 ScreenGrid::ScreenGrid( glm::vec4 _range, float _res )
 {
 	_Init( _range, _res );
 }
 
+//----------------------------------------------------------------------------
 
 ScreenGrid::~ScreenGrid(void)
 {
 	delete m_pMat;
 }
+
+//----------------------------------------------------------------------------
 
 void ScreenGrid::_Init( glm::vec4 _range, float _res )
 {
@@ -36,6 +42,8 @@ void ScreenGrid::_Init( glm::vec4 _range, float _res )
 ///////////////////////////////////////////////////////////////////////////////
 //-- Public methods
 
+//----------------------------------------------------------------------------
+
 void ScreenGrid::Draw()
 {
 	if(!m_pMat) return;
@@ -46,6 +54,8 @@ void ScreenGrid::Draw()
 	glBindVertexArray( 0 );
 	m_pMat->DectivateTextures();
 }
+
+//----------------------------------------------------------------------------
 
 void ScreenGrid::InitVertexData()
 {
@@ -69,6 +79,8 @@ void ScreenGrid::InitVertexData()
 
     glBindVertexArray(0);
 }
+
+//----------------------------------------------------------------------------
 
 void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
 {
@@ -220,3 +232,5 @@ void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
 		glBindBuffer(GL_ARRAY_BUFFER, SceneManager::Instance()->getVBO(VBO_BUFFER, "polynomials_grid", 1));
 		glBufferData(GL_ARRAY_BUFFER, m_iNumLines * 3 * sizeof(GLfloat), &colors[0], GL_DYNAMIC_DRAW);   //update color data
 }
+
+//----------------------------------------------------------------------------

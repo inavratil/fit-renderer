@@ -28,14 +28,14 @@ void IShadowTechnique::_Destroy()
 	delete m_pShaderFeature;
 }
 
-void IShadowTechnique::SetResolution( float _res )
+void IShadowTechnique::SetControlPointsCount( float _res )
 {
-	m_pScreenGrid->SetResolution( _res ); 
+	m_pScreenGrid->SetControlPointsCount( _res ); 
 }
 
-float IShadowTechnique::GetResolution()
+float IShadowTechnique::GetControlPointsCount()
 {
-	return m_pScreenGrid->GetResolution();
+	return m_pScreenGrid->GetControlPointsCount();
 }
 
 const char* IShadowTechnique::GetName()

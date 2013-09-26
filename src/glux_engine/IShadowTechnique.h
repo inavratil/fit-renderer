@@ -1,3 +1,11 @@
+/**
+Class IShadowTechnique
+======================
+
+Abstraktni trida pro MOJE stinovaci techniky verze 2. Tedy ty, ktere pracuji s mrizkou.
+
+
+*/
 #ifndef _ISHADOWTECHNIQUE_H_
 #define _ISHADOWTECHNIQUE_H_
 
@@ -28,6 +36,7 @@ public:
 	IShadowTechnique( GLuint _texid );
 	virtual ~IShadowTechnique(void);
 
+	//-----------------------------------------------------------------------------
 	//-- Virtual methods
 
 	//virtual bool Initialize() = 0;
@@ -36,9 +45,12 @@ public:
 
 	virtual glm::vec2 ComputeDiff( glm::vec2 _P ) = 0;
 
-	virtual void SetResolution( float _res );
-	virtual float GetResolution();
+	//-- Nastavi rozliseni mrizky
+	virtual void SetControlPointsCount( float _res );
+	//-- Vrati rozliseni mrizky
+	virtual float GetControlPointsCount();
 	
+	//-----------------------------------------------------------------------------
 	//-- Set/Get methods
 	
 	const char* GetName();
@@ -55,6 +67,7 @@ public:
 	void SetShaderFeature( ShaderFeature* _pFeature );
 	ShaderFeature* GetShaderFeature();
 
+	//-----------------------------------------------------------------------------
 	//-- Miscellaneous
 
 	void UpdateGridRange( glm::vec4 _range );

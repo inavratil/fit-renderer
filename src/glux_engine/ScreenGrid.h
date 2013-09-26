@@ -42,8 +42,8 @@ public:
 	inline glm::vec4 GetRangeAsOriginStep();
 	inline glm::vec2 GetOffset();
 
-	inline void SetResolution( int _res );
-	inline int GetResolution();
+	inline void SetControlPointsCount( int _res );
+	inline int GetControlPointsCount();
 
 	inline void ResetCounter();
 	inline void IncCounter();
@@ -101,14 +101,14 @@ inline glm::vec2 ScreenGrid::GetOffset()
 	return m_vOffset;
 }
 
-inline void ScreenGrid::SetResolution( int _res )
+inline void ScreenGrid::SetControlPointsCount( int _res )
 { 
 	m_iResolution = _res; 
 
 	UpdateRange( m_vRange );
 }
 
-inline int ScreenGrid::GetResolution()
+inline int ScreenGrid::GetControlPointsCount()
 { 
 	return m_iResolution; 
 }

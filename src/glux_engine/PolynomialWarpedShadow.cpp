@@ -26,7 +26,7 @@ void PolynomialWarpedShadow::_Init( glm::mat4 _coeffsX, glm::mat4 _coeffsY )
 	m_matCoeffsX = _coeffsX; 
 	m_matCoeffsY = _coeffsY;
 
-	m_pScreenGrid->SetResolution(4);
+	m_pScreenGrid->SetControlPointsCount(4);
 
 	m_pShaderFeature = new SFPolynomialWarpedShadow();
 }
@@ -38,7 +38,7 @@ bool PolynomialWarpedShadow::Initialize()
 
 void PolynomialWarpedShadow::PreRender()
 {
-	int res = (int)this->GetResolution();
+	int res = (int)this->GetControlPointsCount();
 	float* z_values = new float[res*res*2];
 	
 	memset(z_values, 0, res*res*2*sizeof(float));

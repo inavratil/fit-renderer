@@ -1,3 +1,11 @@
+/**
+Class RenderListener
+====================
+
+Abstraktni trida (rozhrani) pro dalsi tridy, ktere "umi" neco rendrovat.
+Resp. umi zpracovat anebo nastavit jednotlive rendrovaci "passy".
+
+*/
 #ifndef _RENDERLISTENER_H_
 #define _RENDERLISTENER_H_
 
