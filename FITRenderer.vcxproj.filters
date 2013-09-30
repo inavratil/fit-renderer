@@ -124,6 +124,9 @@
     <ClCompile Include="src\glux_engine\RenderListener.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\freelookcamera.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -244,6 +247,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\RenderListener.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\freelookcamera.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

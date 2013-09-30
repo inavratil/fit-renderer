@@ -99,6 +99,7 @@
     <ClCompile Include="src\glux_engine\BlitPass.cpp" />
     <ClCompile Include="src\glux_engine\camera.cpp" />
     <ClCompile Include="src\glux_engine\ConfigDialog.cpp" />
+    <ClCompile Include="src\glux_engine\freelookcamera.cpp" />
     <ClCompile Include="src\glux_engine\RenderListener.cpp" />
     <ClCompile Include="src\glux_engine\ScreenSpaceMaterial.cpp" />
     <ClCompile Include="src\glux_engine\debug.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="src\glux_engine\camera.h" />
     <ClInclude Include="src\glux_engine\compute.h" />
     <ClInclude Include="src\glux_engine\ConfigDialog.h" />
+    <ClInclude Include="src\glux_engine\freelookcamera.h" />
     <ClInclude Include="src\glux_engine\RenderListener.h" />
     <ClInclude Include="src\glux_engine\ScreenSpaceMaterial.h" />
     <ClInclude Include="src\glux_engine\engine.h" />
