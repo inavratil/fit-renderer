@@ -39,7 +39,7 @@ public:
 	//-- _P je v intervalu [0..res-1]
 	virtual glm::vec2 ComputeDiff( glm::vec2 _P );
 	//-- Virtualni metoda tridy IShadowTechnique
-	virtual float GetResolution();
+	virtual float GetControlPointsCount();
 
 //-----------------------------------------------------------------------------
 //-- Private methods

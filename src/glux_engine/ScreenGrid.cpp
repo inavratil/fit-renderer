@@ -90,7 +90,7 @@ void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
 		float nparts = 1.0; // kolik casti bude mezi dve body mrizky
 		float eps = 1.0/(float)nparts;
 		//FIXME: memcpy error - u Spline metody musi byt resolution-1
-		int res = m_iResolution - 1; // rozliseni mrizky
+		int res = m_iResolution;// - 1; // rozliseni mrizky
 		int K = 1; // kolik bunek bude mezi dvema ridicimi body
 		int overlap = 0; // o kolik ridicich bodu mimo rozliseni se podivat
 

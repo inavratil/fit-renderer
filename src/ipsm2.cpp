@@ -526,6 +526,7 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	m_passes["pass_func_values"]->Deactivate();
 
 	if ( (string) m_shadow_technique->GetName() ==  "Spline" )
+		//-- 0, 0, 19, 19
 		glViewport( 0, 0, m_shadow_technique->GetControlPointsCount(), m_shadow_technique->GetControlPointsCount() );
 
 	//-- Simplified deformation model 

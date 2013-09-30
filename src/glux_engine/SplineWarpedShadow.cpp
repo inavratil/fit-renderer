@@ -46,7 +46,8 @@ bool SplineWarpedShadow::Initialize()
 
 void SplineWarpedShadow::PreRender()
 {
-	int res = (int)this->GetResolution();
+	//-- vrati pocet ridicich bodu mrizky, 
+	int res = (int)this->GetControlPointsCount();
 	m_pFuncValues = new float[res*res*2];
 	
 	memset(m_pFuncValues, 0, res*res*2*sizeof(float));
@@ -134,7 +135,8 @@ Splines4x4 SplineWarpedShadow::_GetSplinesValues( glm::vec2 _c )
 		return ret;
 
 	//-- v tomto pridade se bere skutecne rozliseni, tj. rozliseni textury
-	int res = (int)this->GetResolution();
+	//CHYBA
+	int res = (int)this->GetControlPointsCount();
 	int x = (int)_c.x, y = (int)_c.y;
 	assert( _c.x<res && _c.y<res );
 
@@ -155,7 +157,7 @@ Splines4x4 SplineWarpedShadow::_GetSplinesValues( glm::vec2 _c )
 	return ret;
 }
 
-float SplineWarpedShadow::GetResolution()
+float SplineWarpedShadow::GetControlPointsCount()
 {
 	//-- potrebujeme o jedno vetsi rozliseni na kazde strane kvuli navic bodum pro spline
 	return (IShadowTechnique::GetControlPointsCount() + 2.0);
