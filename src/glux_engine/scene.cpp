@@ -27,7 +27,6 @@ TScene::TScene()
     m_lights.clear();
     m_sceneID = 0;
 	m_cam = NULL;
-    m_custom_cam = false;
     m_msamples = 1;
 
     //shadows

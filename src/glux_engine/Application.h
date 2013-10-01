@@ -52,7 +52,7 @@ public:
 	
 	virtual void MouseClicked(SDL_Event event);
 	virtual void MouseMoved(SDL_Event event);
-	virtual void KeyPressed(SDLKey key);
+	virtual void KeyInput( SDLKey _key, unsigned char _type );
 
 	void RenderScene();
 

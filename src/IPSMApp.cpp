@@ -394,7 +394,7 @@ void IPSMApp::MouseMoved(SDL_Event event)
 
 void IPSMApp::KeyPressed( SDLKey _key )
 {
-	Application::KeyPressed( _key );
+	Application::KeyInput( _key, SDL_KEYDOWN );
 
     switch(_key)
     {

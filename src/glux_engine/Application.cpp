@@ -228,6 +228,9 @@ void Application::MainLoop()
             cycle = 0;
         }
 
+		//TODO: ma/musi to opravdu byt tady??
+		m_scene->updateCamera();
+
         //call drawing functions
         RenderScene();
 		cycle++;
@@ -270,8 +273,8 @@ void Application::MainLoop()
         }
 
         //call keyboard handle when key pressed
-        if(keypress && (time_now - last_keypress > 150 || last_keypress == time_now) ) 
-            KeyPressed( key );
+        //if(keypress && (time_now - last_keypress > 150 || last_keypress == time_now) ) 
+            KeyInput( key, event.type );
 
 		//meminfo
 		if(GLEW_ATI_meminfo)
@@ -321,7 +324,10 @@ void Application::MouseClicked(SDL_Event event)
 
 	//hide cursor at moving
 	if(status == SDL_BUTTON_LEFT)
+	{
 		SDL_ShowCursor(SDL_DISABLE);
+		m_scene->adjustFreelookCamera(event.motion.yrel, event.motion.xrel);
+	}
 	else
 		SDL_ShowCursor(SDL_ENABLE);
 }
@@ -335,6 +341,7 @@ void Application::MouseClicked(SDL_Event event)
 ****************************************************************************************************/
 void Application::MouseMoved(SDL_Event event)
 {
+/*
 	int status = event.button.button;
 
 	glm::vec3 rot = m_scene->GetCameraRot();
@@ -366,11 +373,12 @@ void Application::MouseMoved(SDL_Event event)
 	//s->RotateObjAbs("camera", -rot.y, A_Y);
 	m_scene->RotateCameraAbs(rot.x, A_X);
 	m_scene->RotateCameraAbs(rot.y, A_Y);
+*/
 }
 
 //-----------------------------------------------------------------------------
 
-void Application::KeyPressed( SDLKey _key )
+void Application::KeyInput( SDLKey _key, unsigned char _type )
 {
 	const float INC = 5.0;
 	glm::vec3 lpos1 = m_scene->GetLightPos(0);
@@ -382,22 +390,38 @@ void Application::KeyPressed( SDLKey _key )
     {  
 	        //WSAD camera movement
     case SDLK_s:
-        pos.x += INC*glm::sin( glm::radians( rot.y ) );
-        pos.z -= INC*glm::cos( glm::radians( rot.y ) );
-        pos.y -= INC*glm::sin( glm::radians( rot.x ) );
+        //pos.x += INC*glm::sin( glm::radians( rot.y ) );
+        //pos.z -= INC*glm::cos( glm::radians( rot.y ) );
+        //pos.y -= INC*glm::sin( glm::radians( rot.x ) );
+		if(_type == SDL_KEYDOWN)
+			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_BACKWARD_DOWN);
+		else if(_type == SDL_KEYUP)									  
+			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_BACKWARD_UP);
         break;
     case SDLK_w: 
-        pos.x -= INC*glm::sin( glm::radians( rot.y ) );
-        pos.z += INC*glm::cos( glm::radians( rot.y ) );
-        pos.y += INC*glm::sin( glm::radians( rot.x ) );
+        //pos.x -= INC*glm::sin( glm::radians( rot.y ) );
+        //pos.z += INC*glm::cos( glm::radians( rot.y ) );
+        //pos.y += INC*glm::sin( glm::radians( rot.x ) );
+		if(_type == SDL_KEYDOWN)
+			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_FORWARD_DOWN);
+		else if(_type == SDL_KEYUP)
+			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_FORWARD_UP);
         break;
     case SDLK_d:
-        pos.x -= INC*glm::cos( glm::radians( rot.y ) );
-        pos.z -= INC*glm::sin( glm::radians( rot.y ) );
+        //pos.x -= INC*glm::cos( glm::radians( rot.y ) );
+        //pos.z -= INC*glm::sin( glm::radians( rot.y ) );
+		if(_type == SDL_KEYDOWN)
+			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_RIGHT_DOWN);
+		else if(_type == SDL_KEYUP)									  
+			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_RIGHT_UP);
         break;		 
     case SDLK_a:
-        pos.x += INC*glm::cos( glm::radians( rot.y ) );
-        pos.z += INC*glm::sin( glm::radians( rot.y ) );
+        //pos.x += INC*glm::cos( glm::radians( rot.y ) );
+        //pos.z += INC*glm::sin( glm::radians( rot.y ) );
+		if(_type == SDL_KEYDOWN)
+			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_LEFT_DOWN);
+		else if(_type == SDL_KEYUP)									  
+			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_LEFT_UP);
         break;		 
 
         //main light movement
@@ -413,12 +437,14 @@ void Application::KeyPressed( SDLKey _key )
     }
 
 	//update FPS camera
-	if(m_camera->GetType() == FPS)
-    {
-        m_scene->MoveCameraAbs(pos.x, pos.y, pos.z);
-        m_scene->RotateCameraAbs(rot.x, A_X);
-        m_scene->RotateCameraAbs(rot.y, A_Y);
-    }
+//	if(m_camera->GetType() == FPS)
+//    {
+//        m_scene->MoveCameraAbs(pos.x, pos.y, pos.z);
+//        m_scene->RotateCameraAbs(rot.x, A_X);
+//        m_scene->RotateCameraAbs(rot.y, A_Y);
+//    }
+	m_scene->updateCamera();
+
 	//cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
     //s->PrintCamera();
 
