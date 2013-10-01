@@ -371,7 +371,7 @@ void TScene::Destroy(bool delete_cache)
     }
 
     //reset camera
-    m_cam->Reset();
+    //m_cam->Reset();
     //delete buffers
     //GLuint to_delete[] = { m_screen_quad, m_progress_bar, m_uniform_matrices, m_uniform_lights };
     //glDeleteBuffers(4, to_delete);

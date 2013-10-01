@@ -280,10 +280,13 @@ int IPSMApp::SetupExperiments( const string& _filename )
 		//m_param_cut_angle = glm::vec2( exper.cut_params.x, exper.cut_params.y );
 		//parab_rot.x = exper.cut_params.z;
 		//parab_rot.y = exper.cut_params.w;
-
-		m_scene->MoveCameraAbs(cam_pos.x, cam_pos.y, cam_pos.z);
-		m_scene->RotateCameraAbs(cam_rot.x, A_X);
-		m_scene->RotateCameraAbs(cam_rot.y, A_Y);
+		
+		m_scene->SetFreelookCamera( glm::vec3(cam_pos.x, cam_pos.y, cam_pos.z), glm::vec3(0, 1, 0), glm::vec3(cam_pos.x, cam_pos.y, cam_pos.z)+glm::vec3(0, 0, -1000) );
+		//m_scene->MoveCameraAbs(cam_pos.x, cam_pos.y, cam_pos.z);
+		m_scene->adjustFreelookCamera(cam_rot.x, cam_rot.y);
+		//m_scene->RotateCameraAbs(cam_rot.x, A_X);
+		//m_scene->RotateCameraAbs(cam_rot.y, A_Y);
+		m_scene->updateCamera();
 	}
 
 	return scene;

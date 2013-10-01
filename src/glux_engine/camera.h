@@ -9,6 +9,8 @@
 #define _CAMERA_H_
 
 #include "globals.h"
+#include "hires_timer.h"
+#include "bitops.h"
 
 /**
 @class TCamera 
@@ -22,14 +24,25 @@ class TCamera
 protected:
     ///camera position
     glm::vec3 m_pos;
-    ///camera rotation
-    glm::vec3 m_rot;
+
     ///camera look
     glm::vec3 m_look;
+
+	//camera base vectors
+	glm::vec3 dU, dL;
+
+	glm::vec3 m_up;
+	glm::vec3 m_right;
+	float pitch;
+	float yaw;
+	float movementSpeed;
+
+	unsigned int flags;
+	HRTimer timer;
+
     ///camera view matrix
     glm::mat4 m_viewMatrix;
-    ///camera type
-    int m_type;
+
 	///clipping planes
     float m_near_plane, m_far_plane;
     ///field of view
@@ -38,25 +51,31 @@ protected:
 //-----------------------------------------------------------------------------
 //-- Public methods 
 public:
+	enum cam_events{CAMERA_FORWARD_DOWN=0, 
+		CAMERA_BACKWARD_DOWN, 
+		CAMERA_LEFT_DOWN, 
+		CAMERA_RIGHT_DOWN, 
+		CAMERA_FORWARD_UP, 
+		CAMERA_BACKWARD_UP, 
+		CAMERA_LEFT_UP,
+		CAMERA_RIGHT_UP};
+
     TCamera();
     ~TCamera(){}
 
-    //move camera
-    glm::mat4& Move(GLfloat wx, GLfloat wy, GLfloat wz);
-    glm::mat4& MoveAbs(GLfloat wx, GLfloat wy, GLfloat wz);
-    //rotate camera
-    glm::mat4& Rotate(GLfloat angle, GLint axis);
-    glm::mat4& RotateAbs(GLfloat angle, GLint axis);
-    //camera look
-    glm::mat4& LookAt(GLfloat wx, GLfloat wy, GLfloat wz);
     //update camera matrix
-    void UpdateMatrix();
+    glm::mat4 UpdateMatrix();
+	
+	void setFreelookCamera(glm::vec3 vPos, glm::vec3 vUp, glm::vec3 vLookAt);
+	void handleInputMessage(cam_events e);
+	void adjustOrientation(float pitch, float yaw);
+
 	///@brief Reset camera position
-    void Reset(){ 
-        m_pos = glm::vec3(0.0); 
-        m_rot = glm::vec3(0.0); 
-        m_look = glm::vec3(0.0); 
-    }
+    //void Reset(){ 
+    //    m_pos = glm::vec3(0.0); 
+    //    m_rot = glm::vec3(0.0); 
+    //    m_look = glm::vec3(0.0); 
+    //}
 	
     //Load & save camera from file
     glm::mat4& Load();
@@ -73,16 +92,21 @@ public:
 	float GetFarPlane(){ return m_far_plane; }
     ///@brief get camera position
     glm::vec3& GetPos(){ return m_pos; }
-    ///@brief get camera rotation
-    glm::vec3& GetRot(){ return m_rot; }
     ///@brief get camera look
     glm::vec3& GetLook(){ return m_look; }
+	///@brief get camera up
+    glm::vec3& GetUp(){ return m_up; }
     //-- Set/Get camera view matrix
     void SetMatrix(glm::mat4 &matrix){ m_viewMatrix = matrix; }
     glm::mat4& GetMatrix(){ return m_viewMatrix; }
-    //-- Set/Get camera type
-	void SetType(int type){ m_type = type; }
-	int GetType(){ return m_type; }
+
+	void setMovementSpeed(float speed)
+	{
+		if(speed<=0.0f)
+			return;
+
+		movementSpeed = speed;
+	}
 };
 
 #endif

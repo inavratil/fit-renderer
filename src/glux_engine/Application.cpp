@@ -212,6 +212,7 @@ void Application::MainLoop()
 
     while(true)
     {
+
         //measure time
 		time_now = SDL_GetTicks();
 
@@ -249,14 +250,10 @@ void Application::MainLoop()
                 //keyboard events
                 else if(event.type == SDL_KEYDOWN)
                 {
-                    keypress = true;
-                    last_keypress = time_now;
-					key = event.key.keysym.sym;		//store pressed key
-					if( key == SDLK_ESCAPE )
+					if( event.key.keysym.sym == SDLK_ESCAPE )
 						break;
                 }
-                else if(event.type == SDL_KEYUP)
-                    keypress = false;
+
                 //mouse events
                 else if(event.type == SDL_MOUSEMOTION)
                 {
@@ -274,7 +271,7 @@ void Application::MainLoop()
 
         //call keyboard handle when key pressed
         //if(keypress && (time_now - last_keypress > 150 || last_keypress == time_now) ) 
-            KeyInput( key, event.type );
+            KeyInput( event.key.keysym.sym, event.type );
 
 		//meminfo
 		if(GLEW_ATI_meminfo)
@@ -384,7 +381,7 @@ void Application::KeyInput( SDLKey _key, unsigned char _type )
 	glm::vec3 lpos1 = m_scene->GetLightPos(0);
 
     //camera rotation and position
-    glm::vec3 rot = m_scene->GetCameraRot();
+    //TODEL glm::vec3 rot = m_scene->GetCameraRot();
     glm::vec3 pos = m_scene->GetCameraPos();
 	switch(_key)
     {  
@@ -394,34 +391,34 @@ void Application::KeyInput( SDLKey _key, unsigned char _type )
         //pos.z -= INC*glm::cos( glm::radians( rot.y ) );
         //pos.y -= INC*glm::sin( glm::radians( rot.x ) );
 		if(_type == SDL_KEYDOWN)
-			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_BACKWARD_DOWN);
+			m_scene->handleCameraInputMessage(TCamera::CAMERA_BACKWARD_DOWN);
 		else if(_type == SDL_KEYUP)									  
-			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_BACKWARD_UP);
+			m_scene->handleCameraInputMessage(TCamera::CAMERA_BACKWARD_UP);
         break;
     case SDLK_w: 
         //pos.x -= INC*glm::sin( glm::radians( rot.y ) );
         //pos.z += INC*glm::cos( glm::radians( rot.y ) );
         //pos.y += INC*glm::sin( glm::radians( rot.x ) );
 		if(_type == SDL_KEYDOWN)
-			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_FORWARD_DOWN);
+			m_scene->handleCameraInputMessage(TCamera::CAMERA_FORWARD_DOWN);
 		else if(_type == SDL_KEYUP)
-			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_FORWARD_UP);
+			m_scene->handleCameraInputMessage(TCamera::CAMERA_FORWARD_UP);
         break;
     case SDLK_d:
         //pos.x -= INC*glm::cos( glm::radians( rot.y ) );
         //pos.z -= INC*glm::sin( glm::radians( rot.y ) );
 		if(_type == SDL_KEYDOWN)
-			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_RIGHT_DOWN);
+			m_scene->handleCameraInputMessage(TCamera::CAMERA_RIGHT_DOWN);
 		else if(_type == SDL_KEYUP)									  
-			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_RIGHT_UP);
+			m_scene->handleCameraInputMessage(TCamera::CAMERA_RIGHT_UP);
         break;		 
     case SDLK_a:
         //pos.x += INC*glm::cos( glm::radians( rot.y ) );
         //pos.z += INC*glm::sin( glm::radians( rot.y ) );
 		if(_type == SDL_KEYDOWN)
-			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_LEFT_DOWN);
+			m_scene->handleCameraInputMessage(TCamera::CAMERA_LEFT_DOWN);
 		else if(_type == SDL_KEYUP)									  
-			m_scene->handleCameraInputMessage(TFreelookCamera::CAMERA_LEFT_UP);
+			m_scene->handleCameraInputMessage(TCamera::CAMERA_LEFT_UP);
         break;		 
 
         //main light movement

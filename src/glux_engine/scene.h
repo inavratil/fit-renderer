@@ -12,7 +12,6 @@
 #include "GeometryMaterial.h"
 #include "light.h"
 #include "camera.h"
-#include "freelookcamera.h"
 #include "shadow.h"
 #include "IShadowTechnique.h"
 #include "ScreenGrid.h"
@@ -70,7 +69,6 @@ protected:
 
     ///scene camera
     TCamera *m_cam;
-	TFreelookCamera *m_freelookcam;
 
     ///number of multisaples in antialiasing
     GLint m_msamples;
@@ -199,12 +197,7 @@ public:
 			m_cam = new TCamera(); 
 		return m_cam; 
 	}
-	TFreelookCamera* CreateFreelookCamera()
-	{ 
-		if( !m_freelookcam )
-			m_freelookcam = new TFreelookCamera(); 
-		return m_freelookcam; 
-	}
+
     ///@brief Update new camera position and modelview matrix(for lights) in uniform buffer
     void UpdateCameraUniform(){
         glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_lights);
@@ -218,88 +211,36 @@ public:
 	//MUST be called before drawing
 	void updateCamera()
 	{
-		m_viewMatrix = m_freelookcam->UpdateMatrix();
+		m_viewMatrix = m_cam->UpdateMatrix();
 		UpdateCameraUniform();
 	}
 
 	void SetFreelookCamera(glm::vec3 pos, glm::vec3 up, glm::vec3 focusPoint)
 	{
-		m_freelookcam->setFreelookCamera(pos, up, focusPoint);
+		m_cam->setFreelookCamera(pos, up, focusPoint);
 	}
-
-//TO DELETE
-    ///@brief Move camera to new position(relative)
-    void MoveCamera(GLfloat wx, GLfloat wy, GLfloat wz){ 
-        m_viewMatrix = m_cam->Move(wx,wy,wz);
-        UpdateCameraUniform();
-    }
-    ///@brief Move camera to new position(absolute)
-    void MoveCameraAbs(GLfloat wx, GLfloat wy, GLfloat wz){ 
-        m_viewMatrix = m_cam->MoveAbs(wx,wy,wz); 
-        UpdateCameraUniform();
-    }
-//--
 	
-	void handleCameraInputMessage(TFreelookCamera::cam_events e)
+	void handleCameraInputMessage(TCamera::cam_events e)
 	{ 
-		m_freelookcam->handleInputMessage(e);
+		m_cam->handleInputMessage(e);
 	}
 
-//TO DELETE
-    ///@brief Camera look
-    void LookCameraAt(GLfloat wx, GLfloat wy, GLfloat wz){
-        m_viewMatrix = m_cam->LookAt(wx,wy,wz); 
-        UpdateCameraUniform();
-    }
-
-    ///@brief Rotate camera around axis(A_X, A_Y or A_Z) by angle(relative)
-    void RotateCamera(GLfloat angle, GLint axis){ 
-        m_viewMatrix =  m_cam->Rotate(angle,axis);
-        UpdateCameraUniform();
-    }
-    ///@brief Rotate camera around axis(A_X, A_Y or A_Z) by angle(absolute)
-    void RotateCameraAbs(GLfloat angle, GLint axis){ 
-        m_viewMatrix =  m_cam->RotateAbs(angle,axis); 
-        UpdateCameraUniform();
-    }
-//--
 	void adjustFreelookCamera(float pitch, float yaw)
 	{
-		m_freelookcam->adjustOrientation(pitch, yaw);
+		m_cam->adjustOrientation(pitch, yaw);
 	}
 
 
     ///@brief Print out camera position
-//TO DELETE
-    void PrintCamera(){ 
-        cout<<"POS: "<<m_cam->GetPos().x<<","<<m_cam->GetPos().y<<","<<m_cam->GetPos().z<<"\n"
-            <<"ROT: "<<m_cam->GetRot().x<<","<<m_cam->GetRot().y<<","<<m_cam->GetRot().z<<"\n"; 
-    }
-//--
     void PrinTFreelookCamera(){ 
-        cout<<"POS: "<<m_freelookcam->GetPos().x<<","<<m_freelookcam->GetPos().y<<","<<m_freelookcam->GetPos().z<<"\n";
+        cout<<"POS: "<<m_cam->GetPos().x<<","<<m_cam->GetPos().y<<","<<m_cam->GetPos().z<<"\n";
      }
 
     ///@brief Get screen-space camera position
-//TO DELETE
     glm::vec3 GetCameraPos(){ 
         return m_cam->GetPos(); 
     }
-//--
-	glm::vec3 GetFreelookCameraPos(){ 
-        return m_freelookcam->GetPos(); 
-    }
-//TO DELETE
-    ///@brief Get camera rotation
-    glm::vec3 GetCameraRot(){ 
-        return m_cam->GetRot();
-    }
 
-    ///@brief Change camera type
-    void SetCamType(int type){
-        m_cam->SetType(type);
-    }
-//--
     //Save camera into file
     void SaveCamera(){
         m_cam->Save();
