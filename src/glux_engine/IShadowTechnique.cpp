@@ -1,14 +1,10 @@
 #include "IShadowTechnique.h"
 
 
-IShadowTechnique::IShadowTechnique()
+IShadowTechnique::IShadowTechnique( ScenePtr _scene ) :
+	RenderListener( _scene )
 {
-	_Init( 0 );
-}
-
-IShadowTechnique::IShadowTechnique( GLuint _texid ) 
-{
-	_Init( _texid );
+	_Init();
 }
 
 IShadowTechnique::~IShadowTechnique(void)
@@ -16,9 +12,9 @@ IShadowTechnique::~IShadowTechnique(void)
 	_Destroy();
 }
 
-void IShadowTechnique::_Init( GLuint _texid )
+void IShadowTechnique::_Init()
 {
-	m_iTexID = _texid;
+	m_iTexID = 0;
 	m_pScreenGrid = new ScreenGrid( m_cDefaultRes );
 }
 

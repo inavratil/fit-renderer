@@ -12,7 +12,7 @@ protected:
 	float*		m_pFuncValues;
 
 public:
-	BilinearWarpedShadow();
+	BilinearWarpedShadow( ScenePtr _scene );
 	~BilinearWarpedShadow(void);
 
 	virtual bool Initialize();

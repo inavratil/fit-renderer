@@ -2,7 +2,8 @@
 
 //-----------------------------------------------------------------------------
 
-RenderListener::RenderListener(void)
+RenderListener::RenderListener( ScenePtr _scene ) :
+	m_scene( _scene )
 {
 }
 

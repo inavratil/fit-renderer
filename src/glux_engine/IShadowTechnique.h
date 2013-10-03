@@ -32,8 +32,7 @@ protected:
 	ShaderFeature*	m_pShaderFeature;
 
 public:
-	IShadowTechnique();
-	IShadowTechnique( GLuint _texid );
+	IShadowTechnique( ScenePtr _scene );
 	virtual ~IShadowTechnique(void);
 
 	//-----------------------------------------------------------------------------
@@ -76,7 +75,7 @@ public:
 	void DrawGrid();
 
 private:
-	void _Init( GLuint _texid );
+	void _Init();
 	void _Destroy();
 };
 

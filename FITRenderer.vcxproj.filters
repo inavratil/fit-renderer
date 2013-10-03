@@ -55,13 +55,7 @@
     <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp">
       <Filter>Source files\Shader Generation</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp">
-      <Filter>Source files\Shadow Techniques</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\IShadowTechnique.cpp">
-      <Filter>Source files\Shadow Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp">
       <Filter>Source files\Shadow Techniques</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.cpp">
@@ -124,6 +118,12 @@
     <ClCompile Include="src\glux_engine\RenderListener.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp">
+      <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp">
+      <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -174,13 +174,7 @@
     <ClInclude Include="src\glux_engine\shaderGen\ShaderFeature.h">
       <Filter>Header files\Shader Generation</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h">
-      <Filter>Header files\Shadow Techniques</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\IShadowTechnique.h">
-      <Filter>Header files\Shadow Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h">
       <Filter>Header files\Shadow Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.h">
@@ -245,6 +239,12 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\Application.h">
       <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h">
+      <Filter>Header files\Shadow Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h">
+      <Filter>Header files\Shadow Techniques</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

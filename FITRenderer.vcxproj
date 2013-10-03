@@ -99,6 +99,7 @@
     <ClCompile Include="src\glux_engine\BlitPass.cpp" />
     <ClCompile Include="src\glux_engine\camera.cpp" />
     <ClCompile Include="src\glux_engine\ConfigDialog.cpp" />
+    <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\RenderListener.cpp" />
     <ClCompile Include="src\glux_engine\ScreenSpaceMaterial.cpp" />
     <ClCompile Include="src\glux_engine\debug.cpp" />
@@ -113,7 +114,6 @@
     <ClCompile Include="src\glux_engine\modifyGrid.cpp" />
     <ClCompile Include="src\glux_engine\object.cpp" />
     <ClCompile Include="src\glux_engine\Pass.cpp" />
-    <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\render_target.cpp" />
     <ClCompile Include="src\glux_engine\resources\FBO.cpp" />
     <ClCompile Include="src\glux_engine\resources\SceneManager.cpp" />
@@ -146,6 +146,7 @@
     <ClInclude Include="src\glux_engine\camera.h" />
     <ClInclude Include="src\glux_engine\compute.h" />
     <ClInclude Include="src\glux_engine\ConfigDialog.h" />
+    <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\RenderListener.h" />
     <ClInclude Include="src\glux_engine\ScreenSpaceMaterial.h" />
     <ClInclude Include="src\glux_engine\engine.h" />
@@ -156,7 +157,6 @@
     <ClInclude Include="src\glux_engine\GeometryMaterial.h" />
     <ClInclude Include="src\glux_engine\object.h" />
     <ClInclude Include="src\glux_engine\Pass.h" />
-    <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\resources\FBO.h" />
     <ClInclude Include="src\glux_engine\resources\SceneManager.h" />
     <ClInclude Include="src\glux_engine\resources\TextureCache.h" />

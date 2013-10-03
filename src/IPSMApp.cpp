@@ -51,7 +51,7 @@ void IPSMApp::CreateContent()
 	//-- Bilinear shadow technique
 	//this->SetShadowTechnique( new BilinearWarpedShadow() );
 	//-- Spline shadow technique
-	IShadowTechnique* shadow_technique = m_scene->SetShadowTechnique( new SplineWarpedShadow() );
+	IShadowTechnique* shadow_technique = m_scene->SetShadowTechnique( new SplineWarpedShadow( m_scene ) );
 	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
 	shadow_technique->SetControlPointsCount( 17.0 );
 

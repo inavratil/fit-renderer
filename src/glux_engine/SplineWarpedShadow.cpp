@@ -5,7 +5,8 @@
 
 //----------------------------------------------------------------------------
 
-SplineWarpedShadow::SplineWarpedShadow()
+SplineWarpedShadow::SplineWarpedShadow( ScenePtr _scene ) :
+	IShadowTechnique( _scene )
 {
 	_Init();
 }
