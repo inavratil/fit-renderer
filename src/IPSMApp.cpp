@@ -1,5 +1,7 @@
 #include "IPSMApp.h"
 
+#include "glux_engine/SplineWarpedShadow.h"
+
 #define USE_DP
 
 bool g_use_pcf = false;
@@ -42,10 +44,19 @@ void IPSMApp::CreateContent()
 	shadow_technique->Set*( <whatever> );
 
 	light->SetShadowTechnique( shadow_technique );
-
 	*/
+	//-- Polynomial shadow technique
+	//this->SetShadowTechnique( new PolynomialWarpedShadow() );
+
+	//-- Bilinear shadow technique
+	//this->SetShadowTechnique( new BilinearWarpedShadow() );
+	//-- Spline shadow technique
+	IShadowTechnique* shadow_technique = m_scene->SetShadowTechnique( new SplineWarpedShadow() );
+	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
+	shadow_technique->SetControlPointsCount( 17.0 );
 
 	int scene = SetupExperiments( "experiments.cfg" );
+
 	//skybox
 	//s->AddMaterial("mat_sky",white,white,white,0.0,0.0,0.0,NONE);
 	//s->AddTexture("mat_sky",cubemap);
@@ -281,12 +292,11 @@ int IPSMApp::SetupExperiments( const string& _filename )
 		//parab_rot.x = exper.cut_params.z;
 		//parab_rot.y = exper.cut_params.w;
 		
+		//FIXME: opravit vypocet look vektoru
 		m_scene->SetFreelookCamera( glm::vec3(cam_pos.x, cam_pos.y, cam_pos.z), glm::vec3(0, 1, 0), glm::vec3(cam_pos.x, cam_pos.y, cam_pos.z)+glm::vec3(0, 0, -1000) );
-		//m_scene->MoveCameraAbs(cam_pos.x, cam_pos.y, cam_pos.z);
-		m_scene->adjustFreelookCamera(cam_rot.x, cam_rot.y);
-		//m_scene->RotateCameraAbs(cam_rot.x, A_X);
-		//m_scene->RotateCameraAbs(cam_rot.y, A_Y);
-		m_scene->updateCamera();
+		m_scene->AdjustFreelookCamera(cam_rot.x, cam_rot.y);
+
+		m_scene->UpdateCamera();
 	}
 
 	return scene;
@@ -395,9 +405,9 @@ void IPSMApp::MouseMoved(SDL_Event event)
 
 //-----------------------------------------------------------------------------
 
-void IPSMApp::KeyPressed( SDLKey _key )
+void IPSMApp::KeyInput( SDLKey _key, unsigned char _type )
 {
-	Application::KeyInput( _key, SDL_KEYDOWN );
+	Application::KeyInput( _key, _type );
 
     switch(_key)
     {

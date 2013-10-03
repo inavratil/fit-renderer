@@ -33,7 +33,7 @@ int Application::Run()
 	try
 	{
 		//initialize SDL video
-		//SDL_putenv("SDL_VIDEO_WINDOW=center");
+		SDL_putenv("SDL_VIDEO_WINDOW=center");
 		if(SDL_Init(SDL_INIT_VIDEO) < 0) throw ERR;
 
 		ShowConfigDialog();
@@ -157,7 +157,7 @@ void Application::InitScene()
 	m_camera->SetNearPlane( 0.1f );
 	m_camera->SetFarPlane( 10000.0f );
 
-	if( !m_scene->PreInit( m_window_width, m_window_height )	) throw ERR;
+	if( !m_scene->PreInit( m_window_width, m_window_height ) ) throw ERR;
 
 	CreateContent();
 
@@ -230,7 +230,8 @@ void Application::MainLoop()
         }
 
 		//TODO: ma/musi to opravdu byt tady??
-		m_scene->updateCamera();
+		m_scene->UpdateCamera();
+		UpdateScene();
 
         //call drawing functions
         RenderScene();
@@ -264,8 +265,7 @@ void Application::MainLoop()
             else    //update values bound with tweak bar
             {
                 //if(event.type != SDL_MOUSEMOTION)
-				//FIXME: odtud se to bude muset presunout vys pred RenderScene, aby to mohlo reagovat i na jine klavesy nez z tweakbaru
-                UpdateScene();
+				//FIXME: odtud se to bude muset presunout vys pred RenderScene, aby to mohlo reagovat i na jine klavesy nez z tweakbaru 
             }
         }
 
@@ -302,7 +302,7 @@ void Application::RenderScene()
 
 void Application::UpdateScene()
 {
-	m_scene	->	Wireframe	( m_is_wireframe_enabled );
+	m_scene	->	SetWireframe	( m_is_wireframe_enabled );
 }
 
 //-----------------------------------------------------------------------------
@@ -321,10 +321,7 @@ void Application::MouseClicked(SDL_Event event)
 
 	//hide cursor at moving
 	if(status == SDL_BUTTON_LEFT)
-	{
 		SDL_ShowCursor(SDL_DISABLE);
-		m_scene->adjustFreelookCamera(event.motion.yrel, event.motion.xrel);
-	}
 	else
 		SDL_ShowCursor(SDL_ENABLE);
 }
@@ -371,6 +368,10 @@ void Application::MouseMoved(SDL_Event event)
 	m_scene->RotateCameraAbs(rot.x, A_X);
 	m_scene->RotateCameraAbs(rot.y, A_Y);
 */
+
+	//hide cursor at moving
+	if(event.button.button == SDL_BUTTON_LEFT)
+		m_scene->AdjustFreelookCamera(event.motion.yrel, event.motion.xrel);
 }
 
 //-----------------------------------------------------------------------------
@@ -391,34 +392,34 @@ void Application::KeyInput( SDLKey _key, unsigned char _type )
         //pos.z -= INC*glm::cos( glm::radians( rot.y ) );
         //pos.y -= INC*glm::sin( glm::radians( rot.x ) );
 		if(_type == SDL_KEYDOWN)
-			m_scene->handleCameraInputMessage(TCamera::CAMERA_BACKWARD_DOWN);
+			m_scene->HandleCameraInputMessage(TCamera::CAMERA_BACKWARD_DOWN);
 		else if(_type == SDL_KEYUP)									  
-			m_scene->handleCameraInputMessage(TCamera::CAMERA_BACKWARD_UP);
+			m_scene->HandleCameraInputMessage(TCamera::CAMERA_BACKWARD_UP);
         break;
     case SDLK_w: 
         //pos.x -= INC*glm::sin( glm::radians( rot.y ) );
         //pos.z += INC*glm::cos( glm::radians( rot.y ) );
         //pos.y += INC*glm::sin( glm::radians( rot.x ) );
 		if(_type == SDL_KEYDOWN)
-			m_scene->handleCameraInputMessage(TCamera::CAMERA_FORWARD_DOWN);
+			m_scene->HandleCameraInputMessage(TCamera::CAMERA_FORWARD_DOWN);
 		else if(_type == SDL_KEYUP)
-			m_scene->handleCameraInputMessage(TCamera::CAMERA_FORWARD_UP);
+			m_scene->HandleCameraInputMessage(TCamera::CAMERA_FORWARD_UP);
         break;
     case SDLK_d:
         //pos.x -= INC*glm::cos( glm::radians( rot.y ) );
         //pos.z -= INC*glm::sin( glm::radians( rot.y ) );
 		if(_type == SDL_KEYDOWN)
-			m_scene->handleCameraInputMessage(TCamera::CAMERA_RIGHT_DOWN);
+			m_scene->HandleCameraInputMessage(TCamera::CAMERA_RIGHT_DOWN);
 		else if(_type == SDL_KEYUP)									  
-			m_scene->handleCameraInputMessage(TCamera::CAMERA_RIGHT_UP);
+			m_scene->HandleCameraInputMessage(TCamera::CAMERA_RIGHT_UP);
         break;		 
     case SDLK_a:
         //pos.x += INC*glm::cos( glm::radians( rot.y ) );
         //pos.z += INC*glm::sin( glm::radians( rot.y ) );
 		if(_type == SDL_KEYDOWN)
-			m_scene->handleCameraInputMessage(TCamera::CAMERA_LEFT_DOWN);
+			m_scene->HandleCameraInputMessage(TCamera::CAMERA_LEFT_DOWN);
 		else if(_type == SDL_KEYUP)									  
-			m_scene->handleCameraInputMessage(TCamera::CAMERA_LEFT_UP);
+			m_scene->HandleCameraInputMessage(TCamera::CAMERA_LEFT_UP);
         break;		 
 
         //main light movement
@@ -440,7 +441,7 @@ void Application::KeyInput( SDLKey _key, unsigned char _type )
 //        m_scene->RotateCameraAbs(rot.x, A_X);
 //        m_scene->RotateCameraAbs(rot.y, A_Y);
 //    }
-	m_scene->updateCamera();
+	m_scene->UpdateCamera();
 
 	//cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
     //s->PrintCamera();

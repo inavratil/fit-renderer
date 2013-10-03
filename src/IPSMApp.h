@@ -35,7 +35,7 @@ public:
 
 	
 	virtual void MouseMoved(SDL_Event event);
-	virtual void KeyPressed( SDLKey _key );
+	virtual void KeyInput( SDLKey _key, unsigned char _type );
 
 //-----------------------------------------------------------------------------
 //-- Private methods

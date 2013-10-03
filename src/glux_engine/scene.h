@@ -117,13 +117,14 @@ protected:
 	vector<ShaderFeature*>				m_shader_features;
 	vector<ShaderFeature*>::iterator	m_it_sf;
 
-	//FIXME: Tohle by melo prijit do tridy Application
+//FIXME: Tohle by melo prijit do tridy Application
 protected:
 	//-- associative array of render passes
 	map<string, PassPtr>				m_passes;
 	map<string, PassPtr>::iterator		m_it_pass;
 	//-- Texture Cache
 	TextureCachePtr						m_texture_cache;
+
 
 public:
 	void AppendPass( string _name, PassPtr _pass )
@@ -139,7 +140,7 @@ public:
 			m_passes[_name] = _pass;
 		}
 	}
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 	
 
 public:
@@ -186,7 +187,7 @@ public:
     }
 
     ///Toggle wireframe rendering
-    void Wireframe( bool flag ){ m_wireframe = flag;}
+    void SetWireframe( bool flag ){ m_wireframe = flag;}
 	bool IsWireframe(){ return m_wireframe; }
 
 /////////////////////////////////////////// CAMERA ////////////////////////////////////////
@@ -208,8 +209,8 @@ public:
                              glm::value_ptr(glm::vec3(m_viewMatrix * glm::vec4((*m_il)->GetPos(), 1.0))) );
     }
 
-	//MUST be called before drawing
-	void updateCamera()
+	//TODO: MUST be called before drawing
+	void UpdateCamera()
 	{
 		m_viewMatrix = m_cam->UpdateMatrix();
 		UpdateCameraUniform();
@@ -220,12 +221,12 @@ public:
 		m_cam->setFreelookCamera(pos, up, focusPoint);
 	}
 	
-	void handleCameraInputMessage(TCamera::cam_events e)
+	void HandleCameraInputMessage(TCamera::cam_events e)
 	{ 
 		m_cam->handleInputMessage(e);
 	}
 
-	void adjustFreelookCamera(float pitch, float yaw)
+	void AdjustFreelookCamera(float pitch, float yaw)
 	{
 		m_cam->adjustOrientation(pitch, yaw);
 	}
@@ -444,9 +445,10 @@ public:
         m_useShadows = flag; 
     }
 
-	void SetShadowTechnique( IShadowTechnique* _p_technique )
+	IShadowTechnique* SetShadowTechnique( IShadowTechnique* _p_technique )
 	{
 		m_shadow_technique = _p_technique;
+		return m_shadow_technique;
 	}
 
 	IShadowTechnique* GetShadowTechnique()
