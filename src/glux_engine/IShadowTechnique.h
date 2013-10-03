@@ -14,6 +14,7 @@ Abstraktni trida pro MOJE stinovaci techniky verze 2. Tedy ty, ktere pracuji s m
 #include "GeometryMaterial.h"
 #include "shaderGen/ShaderFeature.h"
 #include "RenderListener.h"
+#include "SimplePass.h"
 
 class ScreenGrid;
 
@@ -33,7 +34,7 @@ protected:
 	TLight*			m_pLight;			//-- pointer to the light associated with the shadow technique
 
 public:
-	IShadowTechnique( ScenePtr _scene );
+	IShadowTechnique( TScene* _scene );
 	virtual ~IShadowTechnique(void);
 
 	//-----------------------------------------------------------------------------

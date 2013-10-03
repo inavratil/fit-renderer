@@ -2,7 +2,7 @@
 
 //-----------------------------------------------------------------------------
 
-IShadowTechnique::IShadowTechnique( ScenePtr _scene ) :
+IShadowTechnique::IShadowTechnique( TScene* _scene ) :
 	RenderListener( _scene )
 {
 	_Init();

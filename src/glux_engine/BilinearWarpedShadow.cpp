@@ -3,7 +3,7 @@
 #include "shadow.h"
 #include "shaderGen/SFBilinearWarpedShadow.h"
 
-BilinearWarpedShadow::BilinearWarpedShadow( ScenePtr _scene ) :
+BilinearWarpedShadow::BilinearWarpedShadow( TScene* _scene ) :
 	IShadowTechnique( _scene )
 {
 	_Init();

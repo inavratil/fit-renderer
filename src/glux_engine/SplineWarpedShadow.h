@@ -3,6 +3,8 @@
 
 #include "IShadowTechnique.h"
 
+class TScene;
+
 struct Splines4x4 {
 	glm::mat4x2 p0;
 	glm::mat4x2 p1;
@@ -22,7 +24,7 @@ protected:
 	float*		m_pFuncValues;
 
 public:
-	SplineWarpedShadow( ScenePtr _scene );
+	SplineWarpedShadow( TScene* _scene );
 	~SplineWarpedShadow(void);
 	
 	//-----------------------------------------------------------------------------

@@ -415,8 +415,6 @@ public:
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//-- Polynomial Warped shadows
 
-    //prepare textures and FBOs for multiresolution rendering
-    bool WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii);
     //render omnidirectional shadow map using multiresolution techniques
     void WarpedShadows_RenderShadowMap(TLight *l);
 

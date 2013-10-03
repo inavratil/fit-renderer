@@ -10,7 +10,6 @@ Resp. umi zpracovat anebo nastavit jednotlive rendrovaci "passy".
 #define _RENDERLISTENER_H_
 
 class TScene;
-typedef TScene* ScenePtr;
 
 class RenderListener
 { 
@@ -19,13 +18,13 @@ class RenderListener
 // -- Member variables
 
 protected:
-	ScenePtr		m_scene;
+	TScene*		m_scene;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
 public:
-	RenderListener( ScenePtr _scene );
+	RenderListener( TScene* _scene );
 	virtual ~RenderListener(void);
 
 //-----------------------------------------------------------------------------	

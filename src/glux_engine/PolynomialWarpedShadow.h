@@ -11,8 +11,8 @@ protected:
 	glm::mat4 m_matCoeffsY;
 
 public:
-	PolynomialWarpedShadow( ScenePtr _scene );
-	PolynomialWarpedShadow(  ScenePtr _scene, glm::mat4 _coeffsX, glm::mat4 _coeffsY );
+	PolynomialWarpedShadow( TScene* _scene );
+	PolynomialWarpedShadow(  TScene* _scene, glm::mat4 _coeffsX, glm::mat4 _coeffsY );
 	~PolynomialWarpedShadow(void);
 
 	//-- Virtual methods from parent class

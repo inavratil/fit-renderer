@@ -192,7 +192,6 @@ bool TScene::PostInit()
 			if( m_dpshadow_method == WARP_DPSM )
 			{
 				if(!m_shadow_technique->Initialize()) return false;
-				if(!WarpedShadows_InitializeTechnique(m_il)) return false;
 			}
 				
 

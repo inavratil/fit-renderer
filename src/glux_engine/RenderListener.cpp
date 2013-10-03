@@ -2,7 +2,7 @@
 
 //-----------------------------------------------------------------------------
 
-RenderListener::RenderListener( ScenePtr _scene ) :
+RenderListener::RenderListener( TScene* _scene ) :
 	m_scene( _scene )
 {
 }
