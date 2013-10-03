@@ -4,7 +4,6 @@
 
 Application::Application(void) :
 	m_scene( 0 ),
-	m_camera( 0 ),
 	m_gui( 0 ),
 	m_window_width( 0 ),
 	m_window_height( 0 ),
@@ -152,10 +151,10 @@ void Application::InitScene()
 {
 	m_scene = new TScene();
 
-	m_camera = m_scene->CreateCamera();
-	m_camera->SetFOVy( 45.0f );
-	m_camera->SetNearPlane( 0.1f );
-	m_camera->SetFarPlane( 10000.0f );
+	TCamera* camera = m_scene->CreateCamera();
+	camera->SetFOVy( 45.0f );
+	camera->SetNearPlane( 0.1f );
+	camera->SetFarPlane( 10000.0f );
 
 	if( !m_scene->PreInit( m_window_width, m_window_height ) ) throw ERR;
 
@@ -382,8 +381,8 @@ void Application::KeyInput( SDLKey _key, unsigned char _type )
 	glm::vec3 lpos1 = m_scene->GetLightPos(0);
 
     //camera rotation and position
-    //TODEL glm::vec3 rot = m_scene->GetCameraRot();
     glm::vec3 pos = m_scene->GetCameraPos();
+
 	switch(_key)
     {  
 	        //WSAD camera movement

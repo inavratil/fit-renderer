@@ -22,7 +22,7 @@ protected:
 	float*		m_pFuncValues;
 
 public:
-	SplineWarpedShadow();
+	//SplineWarpedShadow();
 	~SplineWarpedShadow(void);
 	
 	//-----------------------------------------------------------------------------

@@ -15,7 +15,6 @@ class Application
 
 protected:
 	ScenePtr		m_scene;
-	TCamera*		m_camera;
 	TwBar*			m_gui;
 
 	//-- settings
@@ -30,6 +29,7 @@ protected:
 	int		m_memory_usage;
 	string	m_experiment_name;
 
+	//-- I use 'set', because of 'find' method
 	set<RenderListener*>		m_render_listeners;
 
 //-----------------------------------------------------------------------------
@@ -64,7 +64,7 @@ public:
 	{
 		set<RenderListener*>::iterator it = m_render_listeners.find( _listener );
 		if( it != m_render_listeners.end() )
-			m_render_listeners.erase( *it ); //FIXME: ma tady byt pointer nebo ne?
+			m_render_listeners.erase( it ); 
 	}
 //-----------------------------------------------------------------------------
 //-- Private methods
