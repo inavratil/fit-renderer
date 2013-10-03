@@ -17,7 +17,6 @@
 
 //#define DEBUG_DRAW 
 //#define GRADIENT_METHOD
-//#define ITERATION_ENABLED
 
 ///////////////////////////////////////////////////////////////////////////////
 //-- Global variables
@@ -51,14 +50,10 @@ bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 		//-- cam coords
 		{
 			//-- shader
-
-#ifdef ITERATION_ENABLED
-			CustomShader("mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag", m_shadow_technique->GetDefines(), "");
-#else
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag" );
 			mat->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_2Dfunc_values" ), "funcTex" );
 			AddMaterial( mat );
-#endif
+
 			//-- pass
 			SimplePassPtr pass_coords = new SimplePass( sh_res/8, sh_res/8 );
 			pass_coords->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "tex_camAndLightCoords" ) );
@@ -238,10 +233,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	glm::mat4 coeffsX = glm::mat4( 0.0 );
 	glm::mat4 coeffsY = glm::mat4( 0.0 );
 	glm::vec4 mask_range = glm::vec4( 128.0, 0.0, 128.0, 0.0 );
-
-#ifdef ITERATION_ENABLED
-	for( int rep=0; rep<5; ++rep )
-#endif
 
 	glClearColor(99.0, 0.0, 0.0, 0.0);
 
@@ -495,31 +486,9 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 
 	///////////////////////////////////////////////////////////////////////////////
 
-#ifdef ITERATION_ENABLED
-	RenderDebug();
 
-	cout << rep << endl;
-	SDL_Delay( 100 );
-	//std::string dummy;
-	//std::getline(std::cin, dummy);
-
-	glViewport(0,0,1024,1024);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"));                
-	RenderPass("mat_quad");
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	m_shadow_technique->DrawGrid();
-
-	SDL_GL_SwapBuffers();
-#endif
 	glEnable(GL_DEPTH_TEST);
 
-#ifdef ITERATION_ENABLED
-	cout << endl;
-#endif
 	glViewport( 0, 0, sh_res, sh_res );
 	//glColorMask(0, 0, 0, 0);      //disable colorbuffer write
 	glCullFace(GL_FRONT);
@@ -577,15 +546,6 @@ void TScene::WarpedShadows_RenderShadowMap(TLight *l)
 	glDisable( GL_CLIP_PLANE0 );
 	glCullFace(GL_BACK);
 	glColorMask(1, 1, 1, 1);
-
-
-#ifdef ITERATION_ENABLED
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos["ipsm"]);		
-	glViewport( 0, 0, m_shadow_technique->GetResolution(), m_shadow_technique->GetResolution() );
-	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, m_tex_cache["MTEX_2Dfunc_values"], 0);
-	glClear(GL_COLOR_BUFFER_BIT );
-	glBindFramebuffer( GL_FRAMEBUFFER, 0);
-#endif
 
 	///////////////////////////////////////////////////////////////////////////////
 
