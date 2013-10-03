@@ -30,6 +30,7 @@ protected:
 	GLuint			m_iTexID;
 	ScreenGrid*		m_pScreenGrid;
 	ShaderFeature*	m_pShaderFeature;
+	TLight*			m_pLight;			//-- pointer to the light associated with the shadow technique
 
 public:
 	IShadowTechnique( ScenePtr _scene );
@@ -60,6 +61,9 @@ public:
 
 	GLuint GetTexId();
 	void SetTexId( GLuint _texid);
+
+	TLight* GetLight();
+	void SetLight( TLight* _light );
 
 	ScreenGrid* GetGrid();
 	

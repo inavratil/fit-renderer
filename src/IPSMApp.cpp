@@ -37,23 +37,18 @@ void IPSMApp::CreateContent()
 
 	//-------------------------------------------------------------------------
 
-	m_scene->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
+	TLight* light = m_scene->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
 
-	/*
-	ShadowTechnique* shadow_technique = m_scene->CreateShadowTechnique( new SplineWarpedShadow() );
-	shadow_technique->Set*( <whatever> );
-
-	light->SetShadowTechnique( shadow_technique );
-	*/
 	//-- Polynomial shadow technique
 	//this->SetShadowTechnique( new PolynomialWarpedShadow() );
-
 	//-- Bilinear shadow technique
 	//this->SetShadowTechnique( new BilinearWarpedShadow() );
+
 	//-- Spline shadow technique
 	IShadowTechnique* shadow_technique = m_scene->SetShadowTechnique( new SplineWarpedShadow( m_scene ) );
 	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
 	shadow_technique->SetControlPointsCount( 17.0 );
+	shadow_technique->SetLight( light );
 
 	int scene = SetupExperiments( "experiments.cfg" );
 

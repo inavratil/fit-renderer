@@ -44,45 +44,8 @@ void ModifyGrid(glm::vec4 *precomputed_diffs);
 bool TScene::WarpedShadows_InitializeTechnique(vector<TLight*>::iterator ii)
 {
 	int sh_res = (*ii)->ShadowSize();
-
-
-	//create data textures
+	
 	try{
-
-		TextureCache::Instance()->Create2DManual( "tex_camAndLightCoords", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "tex_stencil_color", 128, 128, GL_RGBA16F,	GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "tex_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-		//FIXME: precision??? nestaci 16F ?
-		TextureCache::Instance()->Create2DManual( "MTEX_2Dfunc_values", m_shadow_technique->GetControlPointsCount(), m_shadow_technique->GetControlPointsCount(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "MTEX_2Dfunc_values_ping", m_shadow_technique->GetControlPointsCount(), m_shadow_technique->GetControlPointsCount(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
-		
-		TexturePtr tex_shadow = TextureCache::Instance()->Create2DArrayManual("tex_shadow",
-			sh_res, sh_res,			//-- width and height
-			2,						//-- number of layers
-			GL_DEPTH_COMPONENT,		//-- internal format
-			GL_FLOAT,				//-- type of the date
-			GL_NEAREST,				//-- filtering
-			false					//-- mipmap generation
-			);
-		tex_shadow->SetType( SHADOW_OMNI );
-		tex_shadow->SetIntensity( (*ii)->ShadowIntensity() );
-		TextureCache::Instance()->Create2DArrayManual("MTEX_warped_depth_color",
-			sh_res, sh_res,	//-- width and height
-			2,				//-- number of layers
-			GL_RGBA16F,		//-- internal format
-			GL_FLOAT,		//-- type of the date
-			GL_NEAREST,		//-- filtering
-			false			//-- mipmap generation
-			);
-		TextureCache::Instance()->Create2DManual("aliaserr_mipmap",
-			128, 128,		//-- width and height
-			GL_RGBA16F,		//-- internal format
-			GL_FLOAT,		//-- type of the date
-			GL_NEAREST,		//-- filtering
-			true			//-- mipmap generation
-			);
 
 		//-----------------------------------------------------------------------------
 		//-- cam coords

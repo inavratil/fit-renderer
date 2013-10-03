@@ -255,7 +255,7 @@ public:
 
 /////////////////////////////////////////// LIGHTS ////////////////////////////////////////
 
-    void AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 lpos, GLfloat radius = 1000.0);
+    TLight* AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 lpos, GLfloat radius = 1000.0);
 
     ///@brief Remove light identified by number
     ///@todo remove selected light only, not whole list

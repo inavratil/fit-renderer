@@ -190,8 +190,11 @@ bool TScene::PostInit()
 			if( m_dpshadow_method == CUT || m_dpshadow_method == DPSM )
 				if(!CreateShadowMap(m_il)) return false;
 			if( m_dpshadow_method == WARP_DPSM )
+			{
+				if(!m_shadow_technique->Initialize()) return false;
 				if(!WarpedShadows_InitializeTechnique(m_il)) return false;
-				//if(!m_shadow_technique->Initialize(*m_il)) return false;
+			}
+				
 
             //add shadow map to all materials (except those who don't receive shadows)
             for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
@@ -450,7 +453,7 @@ TObject* TScene::AddObject(const char *name, const char* file)
 @param lpos light position
 @param radius light faloff radius
 ***************************************************************************************************/
-void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 lpos, GLfloat radius)
+TLight* TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 lpos, GLfloat radius)
 { 
     //-- name
     string m_name = "default_light_" + num2str(m_lights.size());
@@ -470,6 +473,8 @@ void TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3 sp
     m_lights.push_back(l); 
     //update position
     MoveLight(_lights, lpos);
+
+	return l;
 }
 
 
