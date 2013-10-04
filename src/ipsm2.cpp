@@ -1,11 +1,5 @@
 #include "glux_engine/scene.h"
 
-#include "glux_engine/PolynomialWarpedShadow.h"
-#include "glux_engine/BilinearWarpedShadow.h"
-
-#include "glux_engine/BlitPass.h"
-#include "glux_engine/SimplePass.h"
-
 #include "precomputed_diffs.h"
 
 //-- Documentation

@@ -266,6 +266,10 @@ void SplineWarpedShadow::PreRender()
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, m_pFuncValues);
 	glBindTexture(GL_TEXTURE_2D, 0 ); 
 
+	//FIXME:
+	//-- kod vyse se vola jen pro to, ze metoda GenerateGrid vola stejnojmennou metodu m_screen_grid,
+	//-- kde se vola ciste virtualni metodu IShadowTechnique, kde v teto konretni tride se m_pFuncValues
+	//-- pouzije.
 	this->GenerateGrid();
 
 	delete [] m_pFuncValues;
