@@ -55,9 +55,6 @@
     <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp">
       <Filter>Source files\Shader Generation</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\IShadowTechnique.cpp">
-      <Filter>Source files\Shadow Techniques</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.cpp">
       <Filter>Source files\Shader Generation</Filter>
     </ClCompile>
@@ -79,9 +76,6 @@
     <ClCompile Include="src\glux_engine\modifyGrid.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\Application.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
     <ClCompile Include="src\IPSMApp.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -91,31 +85,13 @@
     <ClCompile Include="src\glux_engine\BlitPass.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\SimplePass.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\Pass.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\Material.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\ScreenSpaceMaterial.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\shaderGen\SFDPShadowMap.cpp">
       <Filter>Source files\Shader Generation</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\ConfigDialog.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\GeometryMaterial.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\StringUtil.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\RenderListener.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp">
@@ -123,6 +99,30 @@
     </ClCompile>
     <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp">
       <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\IWarpedShadowTechnique.cpp">
+      <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\sdk\Application.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\sdk\GeometryMaterial.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\sdk\Pass.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\sdk\RenderListener.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\sdk\ScreenSpaceMaterial.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\sdk\SimplePass.cpp">
+      <Filter>Source files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\sdk\Material.cpp">
+      <Filter>Source files\SDK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,9 +174,6 @@
     <ClInclude Include="src\glux_engine\shaderGen\ShaderFeature.h">
       <Filter>Header files\Shader Generation</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\IShadowTechnique.h">
-      <Filter>Header files\Shadow Techniques</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\shaderGen\SFSplineWarpedShadow.h">
       <Filter>Header files\Shader Generation</Filter>
     </ClInclude>
@@ -210,41 +207,44 @@
     <ClInclude Include="src\glux_engine\BlitPass.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\SimplePass.h">
-      <Filter>Header files\SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\Pass.h">
-      <Filter>Header files\SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\Material.h">
-      <Filter>Header files\SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\ScreenSpaceMaterial.h">
-      <Filter>Header files\SDK</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\shaderGen\SFDPShadowMap.h">
       <Filter>Header files\Shader Generation</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\ConfigDialog.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\GeometryMaterial.h">
-      <Filter>Header files\SDK</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\StringUtil.h">
       <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\RenderListener.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glux_engine\Application.h">
-      <Filter>Header files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h">
       <Filter>Header files\Shadow Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h">
       <Filter>Header files\Shadow Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\IWarpedShadowTechnique.h">
+      <Filter>Header files\Shadow Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\sdk\Application.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\sdk\GeometryMaterial.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\sdk\Pass.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\sdk\RenderListener.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\sdk\ScreenSpaceMaterial.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\sdk\SimplePass.h">
+      <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\sdk\Material.h">
+      <Filter>Header files\SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

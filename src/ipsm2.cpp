@@ -1,4 +1,4 @@
-#include "glux_engine/scene.h"
+#include "engine.h"
 
 #include "precomputed_diffs.h"
 

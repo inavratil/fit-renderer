@@ -8,18 +8,7 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
-#include "globals.h"
-#include "GeometryMaterial.h"
-#include "light.h"
-#include "camera.h"
-#include "shadow.h"
-#include "IShadowTechnique.h"
-#include "ScreenGrid.h"
-#include "Pass.h"
-#include "ScreenSpaceMaterial.h"
-
-#include "resources/SceneManager.h"
-#include "resources/TextureCache.h"
+#include "engine.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 

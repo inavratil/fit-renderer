@@ -1,7 +1,7 @@
 #ifndef _SPLINEWARPEDSHADOW_H_
 #define _SPLINEWARPEDSHADOW_H_
 
-#include "IShadowTechnique.h"
+#include "engine.h"
 
 class TScene;
 
@@ -13,7 +13,7 @@ struct Splines4x4 {
 };
 
 class SplineWarpedShadow :
-	public IShadowTechnique
+	public IWarpedShadowTechnique
 {
 protected:
 	enum Diff { D_X, D_Y };

@@ -1,7 +1,7 @@
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
-#include "texture.h"
+#include "engine.h"
 
 ///Aligned buffer size
 #define BUFFER 512
