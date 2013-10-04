@@ -10,7 +10,7 @@
 
 #include "globals.h"
 #include "sdk/Material.h"
-#include "IWarpedShadowTechnique.h"
+#include "shadows/IWarpedShadowTechnique.h"
 #include "sdk/Pass.h"
 #include "resources/TextureCache.h"
 #include "sdk/GeometryMaterial.h"

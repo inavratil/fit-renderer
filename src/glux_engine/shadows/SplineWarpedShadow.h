@@ -1,7 +1,7 @@
 #ifndef _SPLINEWARPEDSHADOW_H_
 #define _SPLINEWARPEDSHADOW_H_
 
-#include "engine.h"
+#include "IWarpedShadowTechnique.h"
 
 class TScene;
 

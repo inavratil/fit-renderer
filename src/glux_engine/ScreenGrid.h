@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "resources/SceneManager.h"
 #include "sdk/ScreenSpaceMaterial.h"
-#include "IWarpedShadowTechnique.h"
+#include "shadows/IWarpedShadowTechnique.h"
 
 class IWarpedShadowTechnique;
 

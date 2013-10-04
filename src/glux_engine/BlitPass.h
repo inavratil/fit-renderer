@@ -2,7 +2,7 @@
 #define _BLITPASS_H_
 
 #include "globals.h"
-#include "Pass.h"
+#include "sdk/Pass.h"
 
 
 class BlitPass : public Pass

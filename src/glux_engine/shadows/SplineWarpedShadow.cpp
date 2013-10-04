@@ -4,6 +4,7 @@
 #include "shaderGen/SFSplineWarpedShadow.h"
 #include "resources/TextureCache.h"
 #include "scene.h"
+#include "sdk/SimplePass.h"
 
 //----------------------------------------------------------------------------
 

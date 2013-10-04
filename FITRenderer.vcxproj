@@ -94,18 +94,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\glux_engine\shadows\IShadowTechnique.cpp" />
     <ClCompile Include="src\glux_engine\sdk\Application.cpp" />
-    <ClCompile Include="src\glux_engine\BilinearWarpedShadow.cpp" />
+    <ClCompile Include="src\glux_engine\shadows\BilinearWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\BlitPass.cpp" />
     <ClCompile Include="src\glux_engine\camera.cpp" />
     <ClCompile Include="src\glux_engine\ConfigDialog.cpp" />
-    <ClCompile Include="src\glux_engine\PolynomialWarpedShadow.cpp" />
+    <ClCompile Include="src\glux_engine\shadows\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\sdk\RenderListener.cpp" />
     <ClCompile Include="src\glux_engine\sdk\ScreenSpaceMaterial.cpp" />
     <ClCompile Include="src\glux_engine\debug.cpp" />
     <ClCompile Include="src\glux_engine\draw.cpp" />
     <ClCompile Include="src\glux_engine\font.cpp" />
-    <ClCompile Include="src\glux_engine\IWarpedShadowTechnique.cpp" />
+    <ClCompile Include="src\glux_engine\shadows\IWarpedShadowTechnique.cpp" />
     <ClCompile Include="src\glux_engine\light.cpp" />
     <ClCompile Include="src\glux_engine\load3DS.cpp" />
     <ClCompile Include="src\glux_engine\loadScene.cpp" />
@@ -128,8 +129,9 @@
     <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp" />
     <ClCompile Include="src\glux_engine\shadow.cpp" />
     <ClCompile Include="src\glux_engine\sdk\SimplePass.cpp" />
+    <ClCompile Include="src\glux_engine\shadows\OmniShadow.cpp" />
     <ClCompile Include="src\glux_engine\Singleton.cpp" />
-    <ClCompile Include="src\glux_engine\SplineWarpedShadow.cpp" />
+    <ClCompile Include="src\glux_engine\shadows\SplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\StringUtil.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
     <ClCompile Include="src\IPSMApp.cpp" />
@@ -139,20 +141,21 @@
   <ItemGroup>
     <ClInclude Include="src\ellipse_params.h" />
     <ClInclude Include="src\experiments.h" />
+    <ClInclude Include="src\glux_engine\shadows\IShadowTechnique.h" />
     <ClInclude Include="src\glux_engine\sdk\Application.h" />
-    <ClInclude Include="src\glux_engine\BilinearWarpedShadow.h" />
+    <ClInclude Include="src\glux_engine\shadows\BilinearWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\bitops.h" />
     <ClInclude Include="src\glux_engine\BlitPass.h" />
     <ClInclude Include="src\glux_engine\camera.h" />
     <ClInclude Include="src\glux_engine\compute.h" />
     <ClInclude Include="src\glux_engine\ConfigDialog.h" />
-    <ClInclude Include="src\glux_engine\PolynomialWarpedShadow.h" />
+    <ClInclude Include="src\glux_engine\shadows\PolynomialWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\sdk\RenderListener.h" />
     <ClInclude Include="src\glux_engine\sdk\ScreenSpaceMaterial.h" />
     <ClInclude Include="src\glux_engine\engine.h" />
     <ClInclude Include="src\glux_engine\globals.h" />
     <ClInclude Include="src\glux_engine\hires_timer.h" />
-    <ClInclude Include="src\glux_engine\IWarpedShadowTechnique.h" />
+    <ClInclude Include="src\glux_engine\shadows\IWarpedShadowTechnique.h" />
     <ClInclude Include="src\glux_engine\light.h" />
     <ClInclude Include="src\glux_engine\sdk\GeometryMaterial.h" />
     <ClInclude Include="src\glux_engine\object.h" />
@@ -171,8 +174,9 @@
     <ClInclude Include="src\glux_engine\shaderGen\shader_generator.h" />
     <ClInclude Include="src\glux_engine\shadow.h" />
     <ClInclude Include="src\glux_engine\sdk\SimplePass.h" />
+    <ClInclude Include="src\glux_engine\shadows\OmniShadow.h" />
     <ClInclude Include="src\glux_engine\Singleton.h" />
-    <ClInclude Include="src\glux_engine\SplineWarpedShadow.h" />
+    <ClInclude Include="src\glux_engine\shadows\SplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\StringUtil.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
     <ClInclude Include="src\IPSMApp.h" />

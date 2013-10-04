@@ -1,6 +1,6 @@
 #include "IPSMApp.h"
 
-#include "glux_engine/SplineWarpedShadow.h"
+#include "shadows/SplineWarpedShadow.h"
 
 #define USE_DP
 

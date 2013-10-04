@@ -1,14 +1,15 @@
-#include "ErrorSolver.h"
+#include "IShadowTechnique.h"
 
 //-----------------------------------------------------------------------------
 
-ErrorSolver::ErrorSolver(void)
+IShadowTechnique::IShadowTechnique( TScene* _scene ) :
+	RenderListener( _scene )
 {
 }
 
 //-----------------------------------------------------------------------------
 
-ErrorSolver::~ErrorSolver(void)
+IShadowTechnique::~IShadowTechnique(void)
 {
 }
 
