@@ -18,9 +18,17 @@ void TScene::Redraw(bool delete_buffer)
 {
     GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
+	for( m_it_render_listeners = m_render_listeners.begin();
+		m_it_render_listeners != m_render_listeners.end();
+		m_it_render_listeners++
+		)
+	{
+		(*m_it_render_listeners)->PreRender();
+	}
+
 	//-------------------------------------------------------------------------
     //-- draw all lights
-
+	/*
     unsigned i;
     for(i=0, m_il = m_lights.begin(); m_il != m_lights.end(), i<m_lights.size(); ++m_il, i++)
     {
@@ -41,6 +49,7 @@ void TScene::Redraw(bool delete_buffer)
                 RenderShadowMap(*m_il);
         }
     }
+	*/
 
 	//-------------------------------------------------------------------------
     //-- HDR/SSAO renderer - render to texture

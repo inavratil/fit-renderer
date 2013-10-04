@@ -76,9 +76,6 @@
     <ClCompile Include="src\IPSMApp.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glux_engine\Singleton.cpp">
-      <Filter>Source files\SDK</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\BlitPass.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
@@ -129,6 +126,9 @@
     </ClCompile>
     <ClCompile Include="src\glux_engine\shadows\BilinearWarpedShadow.cpp">
       <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glux_engine\sdk\Singleton.cpp">
+      <Filter>Source files\SDK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -204,9 +204,6 @@
     <ClInclude Include="src\IPSMApp.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="src\glux_engine\Singleton.h">
-      <Filter>Header files\SDK</Filter>
-    </ClInclude>
     <ClInclude Include="src\glux_engine\BlitPass.h">
       <Filter>Header files\SDK</Filter>
     </ClInclude>
@@ -257,6 +254,9 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\shadows\SplineWarpedShadow.h">
       <Filter>Header files\Shadow Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\sdk\Singleton.h">
+      <Filter>Header files\SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

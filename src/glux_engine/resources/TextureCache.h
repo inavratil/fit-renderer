@@ -2,7 +2,7 @@
 #define _TEXTURECACHE_H_
 
 #include "globals.h"
-#include "Singleton.h"
+#include "sdk\Singleton.h"
 #include "texture.h"
 
 class TextureCache : public Singleton<TextureCache>

@@ -524,3 +524,11 @@ void TScene::ChangeLightColor(GLint light, GLint component, glm::vec3 color)
         glBufferSubData(GL_UNIFORM_BUFFER, component*offset1 + offset2, sizeof(glm::vec3), glm::value_ptr(color)); 
     }
 }
+
+void TScene::SetWarping( bool _isEnabled )
+{
+	if(_isEnabled)
+		m_shadow_technique->Enable();
+	else
+		m_shadow_technique->Disable();
+}

@@ -10,14 +10,13 @@ Abstraktni trida pro MOJE stinovaci techniky verze 2. Tedy ty, ktere pracuji s m
 #define _IWARPEDSHADOWTECHNIQUE_H_
 
 #include "globals.h"
-#include "sdk/RenderListener.h"
+#include "IShadowTechnique.h"
 #include "shaderGen/ShaderFeature.h"
-#include "light.h"
 #include "ScreenGrid.h"
 
 class ScreenGrid;
 
-class IWarpedShadowTechnique : public RenderListener
+class IWarpedShadowTechnique : public IShadowTechnique
 {
 protected:
 	
@@ -25,12 +24,12 @@ protected:
 
 	const char*			m_sName;
 	const char*			m_sDefines;
-	bool				m_bEnabled;
+	
 
 	GLuint			m_iTexID;
 	ScreenGrid*		m_pScreenGrid;
 	ShaderFeature*	m_pShaderFeature;
-	TLight*			m_pLight;			//-- pointer to the light associated with the shadow technique
+
 
 public:
 	IWarpedShadowTechnique( TScene* _scene );
@@ -55,15 +54,9 @@ public:
 	
 	const char* GetName();
 	const char* GetDefines();
-	void Enable();
-	void Disable();
-	bool IsEnabled();
 
 	GLuint GetTexId();
 	void SetTexId( GLuint _texid);
-
-	TLight* GetLight();
-	void SetLight( TLight* _light );
 
 	ScreenGrid* GetGrid();
 	

@@ -5,7 +5,6 @@
 #include "scene.h"
 #include "ConfigDialog.h"
 #include "StringUtil.h"
-#include "RenderListener.h"
 
 class Application
 { 
@@ -28,9 +27,6 @@ protected:
 	int		m_fps;
 	int		m_memory_usage;
 	string	m_experiment_name;
-
-	//-- I use 'set', because of 'find' method
-	set<RenderListener*>		m_render_listeners;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -56,16 +52,6 @@ public:
 
 	void RenderScene();
 
-	void AddRenderListener( RenderListener* _listener )
-	{
-		m_render_listeners.insert( _listener );
-	}
-	void RemoveRenderListener( RenderListener* _listener )
-	{
-		set<RenderListener*>::iterator it = m_render_listeners.find( _listener );
-		if( it != m_render_listeners.end() )
-			m_render_listeners.erase( it ); 
-	}
 //-----------------------------------------------------------------------------
 //-- Private methods
 

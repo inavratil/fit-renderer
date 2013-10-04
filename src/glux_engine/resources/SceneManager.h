@@ -3,7 +3,7 @@
 
 #include "globals.h"
 #include "object.h"
-#include "Singleton.h"
+#include "sdk\Singleton.h"
 
 enum VBOMembers { VBO_ARRAY, VBO_BUFFER, VBO_INDEX };
 

@@ -61,27 +61,6 @@ const char* IWarpedShadowTechnique::GetDefines()
 
 //-----------------------------------------------------------------------------
 
-void IWarpedShadowTechnique::Enable()
-{
-	m_bEnabled = true;
-}
-
-//-----------------------------------------------------------------------------
-
-void IWarpedShadowTechnique::Disable()
-{
-	m_bEnabled = false;
-}
-
-//-----------------------------------------------------------------------------
-
-bool IWarpedShadowTechnique::IsEnabled()
-{
-	return m_bEnabled;
-}
-
-//-----------------------------------------------------------------------------
-
 GLuint IWarpedShadowTechnique::GetTexId()
 { 
 	return m_iTexID; 
@@ -92,20 +71,6 @@ GLuint IWarpedShadowTechnique::GetTexId()
 void IWarpedShadowTechnique::SetTexId( GLuint _texid)
 { 
 	m_iTexID = _texid; 
-}
-
-//-----------------------------------------------------------------------------
-
-TLight* IWarpedShadowTechnique::GetLight()
-{
-	return m_pLight;
-}
-
-//-----------------------------------------------------------------------------
-
-void IWarpedShadowTechnique::SetLight( TLight* _light )
-{
-	m_pLight = _light;
 }
 
 //-----------------------------------------------------------------------------

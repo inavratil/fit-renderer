@@ -3,6 +3,7 @@
 
 #include "sdk/RenderListener.h"
 #include "scene.h"
+#include "light.h"
 
 class IShadowTechnique : public RenderListener
 { 
@@ -11,6 +12,9 @@ class IShadowTechnique : public RenderListener
 // -- Member variables
 
 protected:
+	bool			m_bEnabled;
+	TLight*			m_pLight;			//-- pointer to the light associated with the shadow technique
+
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -24,6 +28,12 @@ public:
 	//virtual void PreRender() = 0;
 	//virtual void PostRender() = 0;
 
+	void Enable();
+	void Disable();
+	bool IsEnabled();
+
+	TLight* GetLight();
+	void SetLight( TLight* _light );
 //-----------------------------------------------------------------------------
 //-- Private methods
 

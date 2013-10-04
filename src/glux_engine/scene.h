@@ -9,13 +9,17 @@
 #define _SCENE_H_
 
 #include "globals.h"
+#include "engine.h"
+
 #include "sdk/Material.h"
-#include "shadows/IWarpedShadowTechnique.h"
 #include "sdk/Pass.h"
 #include "resources/TextureCache.h"
 #include "sdk/GeometryMaterial.h"
 #include "camera.h"
 #include "shadow.h"
+#include "sdk/RenderListener.h"
+#include "object.h"
+#include "light.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
@@ -108,7 +112,7 @@ protected:
 	//-----------------------------------------------------------------------------
 	//FIXME
 	int m_texPreview_id;
-	IWarpedShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
+	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
 
 	vector<ShaderFeature*>				m_shader_features;
 	vector<ShaderFeature*>::iterator	m_it_sf;
@@ -121,6 +125,9 @@ protected:
 	//-- Texture Cache
 	TextureCachePtr						m_texture_cache;
 
+	//-- I use 'set', because of 'find' method
+	set<RenderListener*>			m_render_listeners;
+	set<RenderListener*>::iterator	m_it_render_listeners;
 
 public:
 	void AppendPass( string _name, PassPtr _pass )
@@ -135,6 +142,34 @@ public:
 			_pass->SetQuad( m_screen_quad.vao );
 			m_passes[_name] = _pass;
 		}
+	}
+
+	PassPtr GetPassPtr( string _name )
+	{
+		if(m_passes.find(_name) == m_passes.end())
+		{
+			cerr<<"ERROR (GetPassPtr): no pass with name "<<_name<<" exist.\n";
+			return NULL;
+		}
+
+		return m_passes[_name];
+	}
+
+	void AddRenderListener( RenderListener* _listener )
+	{
+		if(m_render_listeners.find(_listener) != m_render_listeners.end())
+		{
+			cerr<<"WARNING (AddRenderListener): listener has already been added to the list.\n";
+			return;
+		}
+		m_render_listeners.insert( _listener );
+	}
+
+	void RemoveRenderListener( RenderListener* _listener )
+	{
+		m_it_render_listeners = m_render_listeners.find( _listener );
+		if( m_it_render_listeners != m_render_listeners.end() )
+			m_render_listeners.erase( m_it_render_listeners ); 
 	}
 //-----------------------------------------------------------------------------
 	
@@ -205,6 +240,16 @@ public:
                              glm::value_ptr(glm::vec3(m_viewMatrix * glm::vec4((*m_il)->GetPos(), 1.0))) );
     }
 
+	glm::mat4 GetViewMatrix()
+	{
+		return m_cam->GetMatrix();
+	}
+
+	glm::mat4 GetProjMatrix()
+	{
+		return m_projMatrix;
+	}
+
 	//TODO: MUST be called before drawing
 	void UpdateCamera()
 	{
@@ -233,10 +278,15 @@ public:
         cout<<"POS: "<<m_cam->GetPos().x<<","<<m_cam->GetPos().y<<","<<m_cam->GetPos().z<<"\n";
      }
 
+	TCamera* GetCameraPtr()
+	{
+		return m_cam;
+	}
     ///@brief Get screen-space camera position
     glm::vec3 GetCameraPos(){ 
         return m_cam->GetPos(); 
     }
+
 
     //Save camera into file
     void SaveCamera(){
@@ -439,13 +489,15 @@ public:
         m_useShadows = flag; 
     }
 
-	IWarpedShadowTechnique* SetShadowTechnique( IWarpedShadowTechnique* _p_technique )
+	IShadowTechnique* SetShadowTechnique( IShadowTechnique* _p_technique )
 	{
 		m_shadow_technique = _p_technique;
+
+		this->AddRenderListener( reinterpret_cast<RenderListener*>(m_shadow_technique) );
 		return m_shadow_technique;
 	}
 
-	IWarpedShadowTechnique* GetShadowTechnique()
+	IShadowTechnique* GetShadowTechnique()
 	{
 		return m_shadow_technique;
 	}
@@ -515,13 +567,7 @@ public:
 		m_texPreview_id = _id;
 	}
 
-	void SetWarping( bool _isEnabled )
-	{
-		if(_isEnabled)
-			m_shadow_technique->Enable();
-		else
-			m_shadow_technique->Disable();
-	}
+	void SetWarping( bool _isEnabled );
 
     ////////////////////////// RENDER TARGETS, HDR AND SSAO ////////////////////////
 
