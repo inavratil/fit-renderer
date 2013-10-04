@@ -82,7 +82,7 @@ void ScreenGrid::InitVertexData()
 
 //----------------------------------------------------------------------------
 
-void ScreenGrid::GenerateGrid( IShadowTechnique* _pShadowTech )
+void ScreenGrid::GenerateGrid( IWarpedShadowTechnique* _pShadowTech )
 {
 		vector<glm::vec2> vertices;
 		vector<glm::vec3> colors;

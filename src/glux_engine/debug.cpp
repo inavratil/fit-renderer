@@ -1,5 +1,5 @@
 #include "scene.h"
-#include "SimplePass.h"
+#include "sdk/SimplePass.h"
 
 //-- Vola se na konci funkce scene->PostInit()
 bool TScene::InitDebug()

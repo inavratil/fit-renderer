@@ -1,10 +1,10 @@
 #ifndef _POLYNOMIALWARPEDSHADOW_H_
 #define _POLYNOMIALWARPEDSHADOW_H_
 
-#include "IShadowTechnique.h"
+#include "IWarpedShadowTechnique.h"
 
 class PolynomialWarpedShadow :
-	public IShadowTechnique
+	public IWarpedShadowTechnique
 {
 protected:
 	glm::mat4 m_matCoeffsX;

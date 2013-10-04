@@ -8,7 +8,7 @@
 //----------------------------------------------------------------------------
 
 SplineWarpedShadow::SplineWarpedShadow( TScene* _scene ) :
-	IShadowTechnique( _scene )
+	IWarpedShadowTechnique( _scene )
 {
 	_Init();
 }
@@ -268,7 +268,7 @@ void SplineWarpedShadow::PreRender()
 
 	//FIXME:
 	//-- kod vyse se vola jen pro to, ze metoda GenerateGrid vola stejnojmennou metodu m_screen_grid,
-	//-- kde se vola ciste virtualni metodu IShadowTechnique, kde v teto konretni tride se m_pFuncValues
+	//-- kde se vola ciste virtualni metodu IWarpedShadowTechnique, kde v teto konretni tride se m_pFuncValues
 	//-- pouzije.
 	this->GenerateGrid();
 
@@ -374,5 +374,5 @@ Splines4x4 SplineWarpedShadow::_GetSplinesValues( glm::vec2 _c )
 float SplineWarpedShadow::GetControlPointsCount()
 {
 	//-- potrebujeme o jedno vetsi rozliseni na kazde strane kvuli navic bodum pro spline
-	return (IShadowTechnique::GetControlPointsCount() + 2.0);
+	return (IWarpedShadowTechnique::GetControlPointsCount() + 2.0);
 }

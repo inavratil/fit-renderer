@@ -4,13 +4,13 @@
 #include "shaderGen/SFPolynomialWarpedShadow.h"
 
 PolynomialWarpedShadow::PolynomialWarpedShadow( TScene* _scene ) :
-	IShadowTechnique( _scene )
+	IWarpedShadowTechnique( _scene )
 {
 	_Init( glm::mat4(1.0), glm::mat4(1.0) );
 }
 
 PolynomialWarpedShadow::PolynomialWarpedShadow(  TScene* _scene, glm::mat4 _coeffsX, glm::mat4 _coeffsY ) :
-	IShadowTechnique( _scene )
+	IWarpedShadowTechnique( _scene )
 {
 	_Init( _coeffsX, _coeffsY );
 }

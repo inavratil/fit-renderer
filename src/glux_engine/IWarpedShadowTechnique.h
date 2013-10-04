@@ -1,5 +1,5 @@
 /**
-Class IShadowTechnique
+Class IWarpedShadowTechnique
 ======================
 
 Abstraktni trida pro MOJE stinovaci techniky verze 2. Tedy ty, ktere pracuji s mrizkou.
@@ -9,7 +9,11 @@ Abstraktni trida pro MOJE stinovaci techniky verze 2. Tedy ty, ktere pracuji s m
 #ifndef _IWARPEDSHADOWTECHNIQUE_H_
 #define _IWARPEDSHADOWTECHNIQUE_H_
 
-#include "engine.h"
+#include "globals.h"
+#include "sdk/RenderListener.h"
+#include "shaderGen/ShaderFeature.h"
+#include "light.h"
+#include "ScreenGrid.h"
 
 class ScreenGrid;
 

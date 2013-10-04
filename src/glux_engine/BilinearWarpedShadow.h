@@ -1,10 +1,10 @@
 #ifndef _BILINEARWARPEDSHADOW_H_
 #define _BILINEARWARPEDSHADOW_H_
 
-#include "IShadowTechnique.h"
+#include "IWarpedShadowTechnique.h"
 
 class BilinearWarpedShadow :
-	public IShadowTechnique
+	public IWarpedShadowTechnique
 {
 protected:
 	enum Diff { D_X, D_Y };

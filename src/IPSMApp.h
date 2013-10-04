@@ -2,7 +2,7 @@
 #define _IPSMAPP_H_
 
 #include "globals.h"
-#include "glux_engine/Application.h"
+#include "sdk/Application.h"
 
 enum IPSMTextures { OUTPUT, PING, PONG, MASK, CAM_ERR };
 

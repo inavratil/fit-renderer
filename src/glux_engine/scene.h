@@ -8,7 +8,14 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
-#include "engine.h"
+#include "globals.h"
+#include "sdk/Material.h"
+#include "IWarpedShadowTechnique.h"
+#include "sdk/Pass.h"
+#include "resources/TextureCache.h"
+#include "sdk/GeometryMaterial.h"
+#include "camera.h"
+#include "shadow.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
@@ -101,7 +108,7 @@ protected:
 	//-----------------------------------------------------------------------------
 	//FIXME
 	int m_texPreview_id;
-	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
+	IWarpedShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
 
 	vector<ShaderFeature*>				m_shader_features;
 	vector<ShaderFeature*>::iterator	m_it_sf;
@@ -432,13 +439,13 @@ public:
         m_useShadows = flag; 
     }
 
-	IShadowTechnique* SetShadowTechnique( IShadowTechnique* _p_technique )
+	IWarpedShadowTechnique* SetShadowTechnique( IWarpedShadowTechnique* _p_technique )
 	{
 		m_shadow_technique = _p_technique;
 		return m_shadow_technique;
 	}
 
-	IShadowTechnique* GetShadowTechnique()
+	IWarpedShadowTechnique* GetShadowTechnique()
 	{
 		return m_shadow_technique;
 	}

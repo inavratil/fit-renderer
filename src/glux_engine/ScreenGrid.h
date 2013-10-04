@@ -3,10 +3,10 @@
 
 #include "globals.h"
 #include "resources/SceneManager.h"
-#include "ScreenSpaceMaterial.h"
-#include "IShadowTechnique.h"
+#include "sdk/ScreenSpaceMaterial.h"
+#include "IWarpedShadowTechnique.h"
 
-class IShadowTechnique;
+class IWarpedShadowTechnique;
 
 class ScreenGrid
 {
@@ -52,7 +52,7 @@ public:
 
 	void Draw();
 	void InitVertexData();
-	void GenerateGrid( IShadowTechnique* _pShadowTech );
+	void GenerateGrid( IWarpedShadowTechnique* _pShadowTech );
 
 
 private:
