@@ -26,7 +26,6 @@ class SimplePass : public Pass
 // -- Member variables
 
 protected:
-	//FIXME: tohle by mely byt pointer na Shader a ne string
 	vector<PassTexture>		m_output_textures;
 	FBOPtr					m_fbo;
 

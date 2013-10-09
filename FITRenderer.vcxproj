@@ -104,7 +104,6 @@
     <ClCompile Include="src\glux_engine\shadows\PolynomialWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\sdk\RenderListener.cpp" />
     <ClCompile Include="src\glux_engine\sdk\ScreenSpaceMaterial.cpp" />
-    <ClCompile Include="src\glux_engine\debug.cpp" />
     <ClCompile Include="src\glux_engine\draw.cpp" />
     <ClCompile Include="src\glux_engine\font.cpp" />
     <ClCompile Include="src\glux_engine\shadows\IWarpedShadowTechnique.cpp" />

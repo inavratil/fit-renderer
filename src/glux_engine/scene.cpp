@@ -203,7 +203,7 @@ bool TScene::PostInit()
 					string tex_shadow_name = m_im->first + "_texShadowOMNI_A";
 					m_im->second->AddTexture( m_texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
 	
-					//FIXME: static_cast<GeometryMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
+					static_cast<GeometryMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
 				}
 			}
 
