@@ -7,45 +7,52 @@
 ***************************************************************************************************/
 #include "scene.h"
 
+#include "resources/SceneManager.h"
 /**
 ****************************************************************************************************
 @brief Create screen quad
 ***************************************************************************************************/
 void TScene::AddScreenQuad()
 {
-    glGenVertexArrays(1, &m_screen_quad.vao);
-    glBindVertexArray(m_screen_quad.vao);
+	VBO tmp_vbo;
+
+    glGenVertexArrays(1, &tmp_vbo.vao);
+    glBindVertexArray(tmp_vbo.vao);
 
     //vertex attributes for screen quad
     GLfloat vertattribs[] = { -1.0,1.0, 1.0,1.0, -1.0,-1.0, 1.0,-1.0 };
-    glGenBuffers(1, &m_screen_quad.buffer[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, m_screen_quad.buffer[0]);
+    glGenBuffers(1, &tmp_vbo.buffer[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, tmp_vbo.buffer[0]);
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_STATIC_DRAW); 
     //bind attributes to index
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 
+	SceneManager::Instance()->setVBO("screen_quad", tmp_vbo);
+
     //add also small quad
     GLfloat texattribs[] = { 0.0,1.0, 1.0,1.0, 0.0,0.0, 1.0,0.0 };
 
-    glGenVertexArrays(1, &m_small_quad.vao);
-    glBindVertexArray(m_small_quad.vao);
+    glGenVertexArrays(1, &tmp_vbo.vao);
+    glBindVertexArray(tmp_vbo.vao);
 
     //vertex attribs...
-    glGenBuffers(1, &m_small_quad.buffer[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, m_small_quad.buffer[0]);
+    glGenBuffers(1, &tmp_vbo.buffer[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, tmp_vbo.buffer[0]);
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_DYNAMIC_DRAW); 
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
     //and also texcoords
-    glGenBuffers(1, &m_small_quad.buffer[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, m_small_quad.buffer[1]);
+    glGenBuffers(1, &tmp_vbo.buffer[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, tmp_vbo.buffer[1]);
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &texattribs, GL_STATIC_DRAW); 
     glVertexAttribPointer(GLuint(1), 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
+
+	SceneManager::Instance()->setVBO("small_quad", tmp_vbo);
 }
 
 /**
@@ -57,7 +64,7 @@ void TScene::RenderPass(const char* material)
 {
     //render material and quad covering whole screen
     m_materials[material]->RenderMaterial();
-    glBindVertexArray(m_screen_quad.vao);
+    glBindVertexArray( SceneManager::Instance()->getVBO(VBO_ARRAY, "screen_quad") );
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	m_materials[material]->DectivateTextures();
 }
@@ -83,8 +90,8 @@ void TScene::RenderSmallQuad(const char* material, float offset_x, float offset_
     //render material and quad covering whole screen
     m_materials[material]->RenderMaterial();
 
-    glBindVertexArray(m_small_quad.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, m_small_quad.buffer[0]);
+    glBindVertexArray( SceneManager::Instance()->getVBO(VBO_ARRAY, "small_quad") );
+    glBindBuffer(GL_ARRAY_BUFFER,SceneManager::Instance()->getVBO(VBO_BUFFER, "small_quad", 0 ) );
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &vertattribs, GL_DYNAMIC_DRAW);   //update vertex data
     glVertexAttribPointer(GLuint(0), 2, GL_FLOAT, GL_FALSE, 0, 0);  //bind attributes to index
 

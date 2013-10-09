@@ -13,7 +13,6 @@
 
 #include "sdk/Material.h"
 #include "sdk/Pass.h"
-#include "resources/Resource.h"
 #include "resources/TextureCache.h"
 #include "sdk/GeometryMaterial.h"
 #include "camera.h"
@@ -21,6 +20,7 @@
 #include "sdk/RenderListener.h"
 #include "object.h"
 #include "light.h"
+#include "shadows/IShadowTechnique.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
@@ -30,7 +30,7 @@ const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers alig
 It has 3 main lists: objects, materials and lights. Materials are being applied to objects and
 all this is lit by lights.
 ***************************************************************************************************/
-class TScene : public Resource<TScene>
+class TScene
 {
 protected:
     ///associative array with all objects
@@ -76,9 +76,6 @@ protected:
 
     ///camera matrices
     glm::mat4 m_viewMatrix, m_projMatrix;
-
-    //scene render to texture target (FBO) and progress bar
-    VBO m_screen_quad, m_small_quad;
 
     ///shall we use HDR, SSAO or shadows?
     bool m_useHDR, m_useSSAO, m_useShadows, m_useNormalBuffer;
@@ -423,9 +420,6 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////SHADOWS ///////////////////////////////////////
-
-	bool InitDebug();
-	void RenderDebug();
 
     //create shadow map for selected light
     bool CreateShadowMap(vector<TLight*>::iterator ii);

@@ -42,6 +42,12 @@ public:
 
 	void AppendPass( string _name, PassPtr _pass );
 	PassPtr GetPassPtr( string _name );
+
+//-----------------------------------------------------------------------------
+//-- Private methods
+private:
+	void _Init();
+	void _Destroy();
 };
 
 #endif

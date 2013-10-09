@@ -7,7 +7,7 @@
 ***************************************************************************************************/
 #include "scene.h"
 
-
+#include "resources/SceneManager.h"
 /**
 ****************************************************************************************************
 @brief Render scene - camera, lights and objects(run through object list and call render function
@@ -248,10 +248,16 @@ void TScene::Redraw(bool delete_buffer)
 
 		}
 
-		m_shadow_technique->DrawGrid();
+		
 	}
 
-	RenderDebug();
+	for( m_it_render_listeners = m_render_listeners.begin();
+		m_it_render_listeners != m_render_listeners.end();
+		m_it_render_listeners++
+		)
+	{
+		(*m_it_render_listeners)->PostRender();
+	}
 
     //finish drawing, restore buffers
     glBindVertexArray(0);

@@ -2,10 +2,10 @@
 #define _MATERIALMANAGER_H_
 
 #include "globals.h"
-#include "resources/Resource.h"
+#include "sdk/Singleton.h"
 #include "sdk/Material.h"
 
-class MaterialManager : public Resource<MaterialManager>
+class MaterialManager : public Singleton<MaterialManager>
 { 
 
 //-----------------------------------------------------------------------------

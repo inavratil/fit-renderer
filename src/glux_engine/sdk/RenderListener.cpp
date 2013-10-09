@@ -1,16 +1,36 @@
 #include "RenderListener.h"
 
+#include "resources/SceneManager.h"
+
 //-----------------------------------------------------------------------------
 
 RenderListener::RenderListener( TScene* _scene ) :
 m_scene( _scene )
 {
+	_Init();
 }
 
 //-----------------------------------------------------------------------------
 
 RenderListener::~RenderListener(void)
 {
+	_Destroy();
+}
+
+//-----------------------------------------------------------------------------
+
+void RenderListener::_Init()
+{
+	m_passes.clear();
+}
+
+//-----------------------------------------------------------------------------
+
+void RenderListener::_Destroy()
+{
+	for(m_it_pass = m_passes.begin(); m_it_pass != m_passes.end(); m_it_pass++)
+		delete m_it_pass->second;
+	m_passes.clear(); 
 }
 
 //-----------------------------------------------------------------------------
@@ -24,7 +44,7 @@ void RenderListener::AppendPass( string _name, PassPtr _pass )
 	}
 	if( _pass->Validate() )
 	{
-		_pass->SetQuad( m_screen_quad.vao );
+		_pass->SetQuad( SceneManager::Instance()->getVBO(VBO_ARRAY, "screen_quad") );
 		m_passes[_name] = _pass;
 	}
 }

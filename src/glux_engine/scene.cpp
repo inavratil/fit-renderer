@@ -7,6 +7,9 @@
 ***************************************************************************************************/
 #include "scene.h"
 
+#include "resources/SceneManager.h"
+#include "sdk/ScreenSpaceMaterial.h"
+
 /**
 ****************************************************************************************************
 @brief Initialize scene by clearing lists
@@ -49,8 +52,7 @@ TScene::TScene()
 	m_texPreview_id = 0;
 	m_shadow_technique = NULL;
 	m_shader_features.clear();
-	//FIXME: do tridy Application??
-	m_passes.clear();
+	
 	m_texture_cache = new TextureCache();
 	
 }
@@ -65,7 +67,7 @@ TScene::~TScene()
     //delete font
     glDeleteLists(m_font2D, 256);
     //delete buffers
-    GLuint to_delete[] = { m_screen_quad.vao, SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar") };
+    GLuint to_delete[] = { SceneManager::Instance()->getVBO(VBO_ARRAY, "screen_quad"), SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar") };
     glDeleteVertexArrays(2, to_delete);
 
     delete [] m_select_buffer;
@@ -149,9 +151,6 @@ enabled, and to add this shadow map(GeometryMaterial::AddShadowMap()) to all mat
 ****************************************************************************************************/
 bool TScene::PostInit()
 {    
-	//-- Init debug stuff
-	InitDebug();
-
 	//-------------------------------------------------------------------------
     //-- Generate uniform buffers 
     
@@ -204,7 +203,7 @@ bool TScene::PostInit()
 					string tex_shadow_name = m_im->first + "_texShadowOMNI_A";
 					m_im->second->AddTexture( m_texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
 	
-					static_cast<GeometryMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
+					//FIXME: static_cast<GeometryMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
 				}
 			}
 
@@ -351,9 +350,7 @@ void TScene::Destroy(bool delete_cache)
 	for(m_it_sf = m_shader_features.begin(); m_it_sf != m_shader_features.end(); m_it_sf++)
 		delete *m_it_sf;
 	m_shader_features.clear();    
-	for(m_it_pass = m_passes.begin(); m_it_pass != m_passes.end(); m_it_pass++)
-		delete m_it_pass->second;
-	m_passes.clear();    
+   
     
     if(delete_cache)
     {
