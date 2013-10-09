@@ -94,6 +94,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\glux_engine\resources\MaterialManager.cpp" />
     <ClCompile Include="src\glux_engine\shadows\IShadowTechnique.cpp" />
     <ClCompile Include="src\glux_engine\sdk\Application.cpp" />
     <ClCompile Include="src\glux_engine\shadows\BilinearWarpedShadow.cpp" />
@@ -141,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="src\ellipse_params.h" />
     <ClInclude Include="src\experiments.h" />
+    <ClInclude Include="src\glux_engine\resources\MaterialManager.h" />
     <ClInclude Include="src\glux_engine\shadows\IShadowTechnique.h" />
     <ClInclude Include="src\glux_engine\sdk\Application.h" />
     <ClInclude Include="src\glux_engine\shadows\BilinearWarpedShadow.h" />

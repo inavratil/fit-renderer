@@ -104,7 +104,7 @@ bool SplineWarpedShadow::Initialize()
 			pass_coords->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "tex_camAndLightCoords" ) );
 			pass_coords->AttachOutputTexture( 1, TextureCache::Instance()->GetPtr( "tex_stencil_color" ) );
 			pass_coords->SetShader( mat );
-			m_scene->AppendPass("pass_coords", pass_coords );
+			this->AppendPass("pass_coords", pass_coords );
 		}
 
 		//-----------------------------------------------------------------------------
@@ -120,7 +120,7 @@ bool SplineWarpedShadow::Initialize()
 			pass_compute_aliasError->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "tex_output" ) );
 			pass_compute_aliasError->DisableDepthBuffer();
 			pass_compute_aliasError->SetShader( mat );
-			m_scene->AppendPass("pass_compute_aliasError", pass_compute_aliasError );
+			this->AppendPass("pass_compute_aliasError", pass_compute_aliasError );
 		}
 		//-----------------------------------------------------------------------------
 
@@ -141,7 +141,7 @@ bool SplineWarpedShadow::Initialize()
 			SimplePassPtr pass_horiz_blur = new SimplePass( sh_res/8, sh_res/8 );
 			pass_horiz_blur->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "MTEX_ping" ) );
 			pass_horiz_blur->DisableDepthBuffer();
-			m_scene->AppendPass("pass_horiz_blur", pass_horiz_blur );
+			this->AppendPass("pass_horiz_blur", pass_horiz_blur );
 		}
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasblur_vert","data/shaders/quad.vert","data/shaders/warping/aliasblur.frag", " ", "#define VERTICAL\n" );
@@ -151,7 +151,7 @@ bool SplineWarpedShadow::Initialize()
 			SimplePassPtr pass_vert_blur = new SimplePass( sh_res/8, sh_res/8 );
 			pass_vert_blur->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "MTEX_pong" ) );
 			pass_vert_blur->DisableDepthBuffer();
-			m_scene->AppendPass("pass_vert_blur", pass_vert_blur );
+			this->AppendPass("pass_vert_blur", pass_vert_blur );
 		}
 		//-----------------------------------------------------------------------------
 		//alias gradient
@@ -163,7 +163,7 @@ bool SplineWarpedShadow::Initialize()
 			SimplePassPtr pass_gradient = new SimplePass( sh_res/8, sh_res/8 );
 			pass_gradient->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "MTEX_ping" ) );
 			pass_gradient->DisableDepthBuffer();
-			m_scene->AppendPass("pass_gradient", pass_gradient );
+			this->AppendPass("pass_gradient", pass_gradient );
 		}
 		//-----------------------------------------------------------------------------
 		//2D func values
@@ -175,7 +175,7 @@ bool SplineWarpedShadow::Initialize()
 			SimplePassPtr pass_func_values = new SimplePass( this->GetControlPointsCount(), this->GetControlPointsCount() );
 			pass_func_values->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "MTEX_2Dfunc_values" ) );
 			pass_func_values->DisableDepthBuffer();
-			m_scene->AppendPass("pass_func_values", pass_func_values );
+			this->AppendPass("pass_func_values", pass_func_values );
 		}
 		//-----------------------------------------------------------------------------
 		//draw depth with warping
@@ -192,7 +192,7 @@ bool SplineWarpedShadow::Initialize()
 			SimplePassPtr pass_warped_depth = new SimplePass( sh_res, sh_res );
 			pass_warped_depth->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr("MTEX_warped_depth_color") );
 			pass_warped_depth->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "tex_shadow" ), true );
-			m_scene->AppendPass("pass_warped_depth", pass_warped_depth );	
+			this->AppendPass("pass_warped_depth", pass_warped_depth );	
 		}
 		//-----------------------------------------------------------------------------
 		//-- blit pass
@@ -211,7 +211,7 @@ bool SplineWarpedShadow::Initialize()
 			mp->AttachOutputTexture(0, TextureCache::Instance()->GetPtr("aliaserr_mipmap") ); 
 			mp->DisableDepthBuffer();
 			mp->SetShader( mat );
-			m_scene->AppendPass("pass_copy_squared_error", mp);
+			this->AppendPass("pass_copy_squared_error", mp);
 		}
 		//-----------------------------------------------------------------------------
 		//-- mipmap pass
@@ -224,7 +224,7 @@ bool SplineWarpedShadow::Initialize()
 			SimplePass *mp = new SimplePass( 128, 128 );
 			mp->AttachOutputTexture(0, TextureCache::Instance()->GetPtr("aliaserr_mipmap") ); 
 			mp->DisableDepthBuffer();
-			m_scene->AppendPass("pass_alias_mipmap", mp);
+			this->AppendPass("pass_alias_mipmap", mp);
 		}
 		//-----------------------------------------------------------------------------
 		{
@@ -295,8 +295,8 @@ void SplineWarpedShadow::PreRender()
 	//glEnable( GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
-	m_scene->GetPassPtr( "pass_coords" )->Activate();
-	MaterialPtr mat_coords = m_scene->GetPassPtr( "pass_coords" )->GetShader();
+	this->GetPassPtr( "pass_coords" )->Activate();
+	MaterialPtr mat_coords = this->GetPassPtr( "pass_coords" )->GetShader();
 	mat_coords->SetUniform("cam_mv", cam_view_matrix );
 	mat_coords->SetUniform("cam_proj", cam_proj_matrix );
 	mat_coords->SetUniform("near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
@@ -306,7 +306,7 @@ void SplineWarpedShadow::PreRender()
 
 	m_scene->DrawGeometry(mat_coords->GetName().c_str(), lightViewMatrix[1]);
 
-	m_scene->GetPassPtr( "pass_coords" )->Deactivate();
+	this->GetPassPtr( "pass_coords" )->Deactivate();
 
 	//if(!m_wireframe)
 	//	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -351,9 +351,9 @@ void SplineWarpedShadow::PreRender()
 	//FIXME: opravdu mohu pouzit tex_coords v plnem rozliseni, pri mensim rozliseni se bude brat jenom kazda n-ta hodnota
 	//		textureOffset se pousouva v rozliseni textury, takze kdyz je rozliseni 1024, posune se o pixel v tomto rozliseni
 	//		pri rendrovani do 128x128 je mi toto chovani ale na prd ?????
-	m_scene->GetPassPtr( "pass_compute_aliasError" )->Activate();
-	m_scene->GetPassPtr( "pass_compute_aliasError" )->Render();
-	m_scene->GetPassPtr( "pass_compute_aliasError" )->Deactivate();	
+	this->GetPassPtr( "pass_compute_aliasError" )->Activate();
+	this->GetPassPtr( "pass_compute_aliasError" )->Render();
+	this->GetPassPtr( "pass_compute_aliasError" )->Deactivate();	
 
 #ifndef GRADIENT_METHOD
 	//calculate custom mipmaps 
@@ -361,9 +361,9 @@ void SplineWarpedShadow::PreRender()
 		//-----------------------------------------------------------------------------
 
 		//m_passes["pass_blit_0"]->Process();
-		m_scene->GetPassPtr( "pass_copy_squared_error" )->Activate();
-		m_scene->GetPassPtr( "pass_copy_squared_error" )->Render(); //RenderPass("mat_copy_squared_error");		
-		m_scene->GetPassPtr( "pass_copy_squared_error" )->Deactivate();
+		this->GetPassPtr( "pass_copy_squared_error" )->Activate();
+		this->GetPassPtr( "pass_copy_squared_error" )->Render(); //RenderPass("mat_copy_squared_error");		
+		this->GetPassPtr( "pass_copy_squared_error" )->Deactivate();
 
 		//-----------------------------------------------------------------------------
 
@@ -372,7 +372,7 @@ void SplineWarpedShadow::PreRender()
 		glClearColor( 1, 1, 1, 1 );
 
 		glColorMask( 0, 0, 0, 0 );	//-- nutno vypnout, aby se neclearovalo FBO
-		m_scene->GetPassPtr( "pass_alias_mipmap" )->Activate();
+		this->GetPassPtr( "pass_alias_mipmap" )->Activate();
 		glColorMask( 1, 1, 1, 1 );	//-- znovu zapnout
 
 		for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
@@ -386,7 +386,7 @@ void SplineWarpedShadow::PreRender()
 			m_scene->RenderPass("mat_aliasMipmap");				
 		}
 	
-		m_scene->GetPassPtr( "pass_alias_mipmap" )->Deactivate();
+		this->GetPassPtr( "pass_alias_mipmap" )->Deactivate();
 
 
 		glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
@@ -409,7 +409,7 @@ void SplineWarpedShadow::PreRender()
 
 	float sigma = 2.7;
 
-	m_scene->GetPassPtr( "pass_horiz_blur" )->Activate();
+	this->GetPassPtr( "pass_horiz_blur" )->Activate();
 
 	//GetMaterial( "mat_aliasblur_horiz" )->AddTexture( TextureCache::Instance()->GetPtr( "tex_output" ), "bloom_texture" );
 	m_scene->SetUniform("mat_aliasblur_horiz", "texsize", glm::ivec2(sh_res/8, sh_res/8));
@@ -419,11 +419,11 @@ void SplineWarpedShadow::PreRender()
 
 	m_scene->RenderPass("mat_aliasblur_horiz");
 
-	m_scene->GetPassPtr( "pass_horiz_blur" )->Deactivate();
+	this->GetPassPtr( "pass_horiz_blur" )->Deactivate();
 
 	//-----------------------------------------------------------------------------
 
-	m_scene->GetPassPtr( "pass_vert_blur" )->Activate();
+	this->GetPassPtr( "pass_vert_blur" )->Activate();
 
 	//GetMaterial( "mat_aliasblur_vert" )->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_ping" ), "bloom_texture" );
 	m_scene->SetUniform("mat_aliasblur_vert", "texsize", glm::ivec2(sh_res/8, sh_res/8));
@@ -433,7 +433,7 @@ void SplineWarpedShadow::PreRender()
 
 	m_scene->RenderPass("mat_aliasblur_vert");
 
-	m_scene->GetPassPtr( "pass_vert_blur" )->Deactivate();
+	this->GetPassPtr( "pass_vert_blur" )->Deactivate();
 
 	//GetMaterial( "mat_aliasblur_horiz" )->DeleteTexture( "bloom_texture" );
 	//GetMaterial( "mat_aliasblur_vert" )->DeleteTexture( "bloom_texture" );
@@ -444,14 +444,14 @@ void SplineWarpedShadow::PreRender()
 	glm::vec2 limit = this->GetGrid()->GetOffset() / 128.0f;
 	limit /= POLY_BIAS;
 
-	m_scene->GetPassPtr( "pass_gradient" )->Activate();
+	this->GetPassPtr( "pass_gradient" )->Activate();
 
 	//FIXME: limit pocitat nejak inteligentne bez bulharske konstanty
 	//SetUniform("mat_aliasgradient", "limit", glm::vec2(100.0f));
 	m_scene->SetUniform("mat_aliasgradient", "limit", limit);
 	m_scene->RenderPass("mat_aliasgradient");
 
-	m_scene->GetPassPtr( "pass_gradient" )->Deactivate();
+	this->GetPassPtr( "pass_gradient" )->Deactivate();
 
 	///////////////////////////////////////////////////////////////////////////////
 	//-- 5. get a function value from gradient texture for a given grid (defined by 'range') and store it into 4x4 texture
@@ -462,7 +462,7 @@ void SplineWarpedShadow::PreRender()
 	glGetFloatv( GL_COLOR_CLEAR_VALUE, glm::value_ptr( clear_color ) );
 	glClearColor( 0, 0, 0, 0 );
 
-	m_scene->GetPassPtr( "pass_func_values" )->Activate();
+	this->GetPassPtr( "pass_func_values" )->Activate();
 
 	glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
 
@@ -493,7 +493,7 @@ void SplineWarpedShadow::PreRender()
 
 	}
 
-	m_scene->GetPassPtr( "pass_func_values" )->Deactivate();
+	this->GetPassPtr( "pass_func_values" )->Deactivate();
 
 	if ( (string) this->GetName() ==  "Spline" )
 		//-- 0, 0, 19, 19
@@ -562,7 +562,7 @@ void SplineWarpedShadow::PreRender()
 	if(m_scene->IsWireframe())
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
-	m_scene->GetPassPtr( "pass_warped_depth" )->Activate();
+	this->GetPassPtr( "pass_warped_depth" )->Activate();
 
 	for(int i=0; i<2; i++)
 	{
@@ -603,7 +603,7 @@ void SplineWarpedShadow::PreRender()
 			m_scene->DrawGeometry("mat_depth_with_warping", lightViewMatrix[i]);
 		}
 	}
-	m_scene->GetPassPtr( "pass_warped_depth" )->Deactivate();
+	this->GetPassPtr( "pass_warped_depth" )->Deactivate();
 
 	if( !m_scene->IsWireframe() )
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);

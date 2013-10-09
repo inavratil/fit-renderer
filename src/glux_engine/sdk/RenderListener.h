@@ -9,6 +9,8 @@ Resp. umi zpracovat anebo nastavit jednotlive rendrovaci "passy".
 #ifndef _RENDERLISTENER_H_
 #define _RENDERLISTENER_H_
 
+#include "sdk/Pass.h"
+
 class TScene;
 
 class RenderListener
@@ -19,6 +21,10 @@ class RenderListener
 
 protected:
 	TScene*		m_scene;
+	
+	//-- associative array of render passes
+	map<string, PassPtr>				m_passes;
+	map<string, PassPtr>::iterator		m_it_pass;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -33,6 +39,9 @@ public:
 	virtual bool Initialize() = 0;
 	virtual void PreRender() = 0;
 	virtual void PostRender() = 0;
+
+	void AppendPass( string _name, PassPtr _pass );
+	PassPtr GetPassPtr( string _name );
 };
 
 #endif

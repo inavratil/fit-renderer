@@ -119,9 +119,7 @@ protected:
 
 //FIXME: Tohle by melo prijit do tridy Application
 protected:
-	//-- associative array of render passes
-	map<string, PassPtr>				m_passes;
-	map<string, PassPtr>::iterator		m_it_pass;
+
 	//-- Texture Cache
 	TextureCachePtr						m_texture_cache;
 
@@ -130,30 +128,7 @@ protected:
 	set<RenderListener*>::iterator	m_it_render_listeners;
 
 public:
-	void AppendPass( string _name, PassPtr _pass )
-	{
-		if(m_passes.find(_name) != m_passes.end())
-		{
-			cerr<<"WARNING (AppendPass): pass with name "<<_name<<" already exist.\n";
-			return;
-		}
-		if( _pass->Validate() )
-		{
-			_pass->SetQuad( m_screen_quad.vao );
-			m_passes[_name] = _pass;
-		}
-	}
 
-	PassPtr GetPassPtr( string _name )
-	{
-		if(m_passes.find(_name) == m_passes.end())
-		{
-			cerr<<"ERROR (GetPassPtr): no pass with name "<<_name<<" exist.\n";
-			return NULL;
-		}
-
-		return m_passes[_name];
-	}
 
 	void AddRenderListener( RenderListener* _listener )
 	{
@@ -416,7 +391,7 @@ public:
 	void AddMaterial( Material* _mat )
 	{
 		if( !_mat ) return;
-		_mat->SetSceneID( m_sceneID );
+		_mat->SetSceneID( /* );
 		_mat->SetID( m_materials.size() );
 		m_materials[_mat->GetName()] = _mat;
 		UpdateLoadList( 1 );

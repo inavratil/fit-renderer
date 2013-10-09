@@ -130,6 +130,9 @@
     <ClCompile Include="src\glux_engine\sdk\Singleton.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\resources\MaterialManager.cpp">
+      <Filter>Source files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -257,6 +260,9 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\sdk\Singleton.h">
       <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\resources\MaterialManager.h">
+      <Filter>Header files\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
