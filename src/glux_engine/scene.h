@@ -13,6 +13,7 @@
 
 #include "sdk/Material.h"
 #include "sdk/Pass.h"
+#include "resources/Resource.h"
 #include "resources/TextureCache.h"
 #include "sdk/GeometryMaterial.h"
 #include "camera.h"
@@ -29,7 +30,7 @@ const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers alig
 It has 3 main lists: objects, materials and lights. Materials are being applied to objects and
 all this is lit by lights.
 ***************************************************************************************************/
-class TScene
+class TScene : public Resource<TScene>
 {
 protected:
     ///associative array with all objects
@@ -391,7 +392,7 @@ public:
 	void AddMaterial( Material* _mat )
 	{
 		if( !_mat ) return;
-		_mat->SetSceneID( /* );
+		_mat->SetSceneID( m_sceneID );
 		_mat->SetID( m_materials.size() );
 		m_materials[_mat->GetName()] = _mat;
 		UpdateLoadList( 1 );

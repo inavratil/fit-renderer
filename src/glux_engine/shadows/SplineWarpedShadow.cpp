@@ -637,6 +637,7 @@ void SplineWarpedShadow::PreRender()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	*/
 
+/*FIXME: odkomentovat
 	//set light matrices and near/far planes to all materials
 	for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
 	{
@@ -665,7 +666,7 @@ void SplineWarpedShadow::PreRender()
 	m_scene->SetUniform("mat_perspective_error", "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 	m_scene->SetUniform("mat_perspective_error", "camera_space_light_position", cam_view_matrix * glm::vec4( m_pLight->GetPos(), 1.0 ));
 	m_scene->SetUniform("mat_perspective_error", "matrix_ortho", glm::ortho(-512.f, 512.f, -512.f, 512.f, 0.1f, 10000.0f) );
-
+*/
 }
 
 //----------------------------------------------------------------------------

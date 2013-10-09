@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 
 IWarpedShadowTechnique::IWarpedShadowTechnique( TScene* _scene ) :
-	RenderListener( _scene )
+	IShadowTechnique( _scene )
 {
 	_Init();
 }

@@ -133,6 +133,9 @@
     <ClCompile Include="src\glux_engine\resources\MaterialManager.cpp">
       <Filter>Source files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\resources\Resource.cpp">
+      <Filter>Source files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -262,6 +265,9 @@
       <Filter>Header files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="src\glux_engine\resources\MaterialManager.h">
+      <Filter>Header files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\resources\Resource.h">
       <Filter>Header files\Resources</Filter>
     </ClInclude>
   </ItemGroup>
