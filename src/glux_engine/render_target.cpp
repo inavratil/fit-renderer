@@ -63,10 +63,10 @@ void TScene::AddScreenQuad()
 void TScene::RenderPass(const char* material)
 {
     //render material and quad covering whole screen
-    m_materials[material]->RenderMaterial();
+	m_material_manager->GetMaterial(material)->RenderMaterial();
     glBindVertexArray( SceneManager::Instance()->getVBO(VBO_ARRAY, "screen_quad") );
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	m_materials[material]->DectivateTextures();
+	m_material_manager->GetMaterial(material)->DectivateTextures();
 }
 
 
@@ -88,7 +88,7 @@ void TScene::RenderSmallQuad(const char* material, float offset_x, float offset_
     GLfloat vertattribs[] = { left, top, right, top, left, bottom, right, bottom };
 
     //render material and quad covering whole screen
-    m_materials[material]->RenderMaterial();
+    m_material_manager->GetMaterial(material)->RenderMaterial();
 
     glBindVertexArray( SceneManager::Instance()->getVBO(VBO_ARRAY, "small_quad") );
     glBindBuffer(GL_ARRAY_BUFFER,SceneManager::Instance()->getVBO(VBO_BUFFER, "small_quad", 0 ) );
@@ -97,7 +97,7 @@ void TScene::RenderSmallQuad(const char* material, float offset_x, float offset_
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	m_materials[material]->DectivateTextures();
+	m_material_manager->GetMaterial(material)->DectivateTextures();
 }
 
 /**

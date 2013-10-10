@@ -51,9 +51,9 @@ TScene::TScene()
 	//FIXME
 	m_texPreview_id = 0;
 	m_shadow_technique = NULL;
-	m_shader_features.clear();
 	
 	m_texture_cache = new TextureCache();
+	m_material_manager = new MaterialManager();
 	
 }
 
@@ -80,6 +80,7 @@ TScene::~TScene()
 	//FIXME
 	delete m_shadow_technique;
 	delete m_texture_cache;
+	delete m_material_manager;
 }
 
 /**
@@ -133,7 +134,7 @@ bool TScene::PreInit(GLint resx, GLint resy, int msamples, bool load_font)
 
 	ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_progress_bar", "data/shaders/quad.vert", "data/shaders/progress_bar.frag" );
 	mat->AddTexture( m_texture_cache->CreateFromImage( "data/load.png" ), "tex" );
-	AddMaterial( mat );
+	m_material_manager->AddMaterial( mat );
 	
     //add screen quad for render targets
     AddScreenQuad();
@@ -193,19 +194,23 @@ bool TScene::PostInit()
 				if(!m_shadow_technique->Initialize()) return false;
 			}
 				
-
+			/* TO DELETE??? spis ne, akorat musim pro shadow techniku naimplementovat ShaderFeature
             //add shadow map to all materials (except those who don't receive shadows)
-            for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
+			for(MaterialManager::Instance()->Begin(); 
+				!MaterialManager::Instance()->End();
+				MaterialManager::Instance()->Next())
 			{
-				if( m_im->second->IsScreenSpace() ) continue;
-                if(m_im->second->GetSceneID() == m_sceneID )
+				Material* mat = MaterialManager::Instance()->GetItem();
+				if( mat->IsScreenSpace() ) continue;
+                if (mat->GetSceneID() == m_sceneID )
 				{
-					string tex_shadow_name = m_im->first + "_texShadowOMNI_A";
-					m_im->second->AddTexture( m_texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
+					string tex_shadow_name = mat->GetName() + "_texShadowOMNI_A";
+					mat->AddTexture( m_texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
 	
-					static_cast<GeometryMaterial*>(m_im->second)->AddFeature(m_shadow_technique->GetShaderFeature());
+					static_cast<GeometryMaterial*>(mat)->AddFeature(m_shadow_technique->GetShaderFeature());
 				}
 			}
+			*/
 
 			m_texture_cache->Create2DManual( "select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
             //create render target for depth calculations
@@ -255,15 +260,18 @@ bool TScene::PostInit()
 	cout<<"-------------------------------------------------------------------------------"<<endl;
 
     //assign light count to all materials and then bake them
-    for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
-    {
-        if(m_im->second->GetSceneID() == m_sceneID)
+	for(MaterialManager::Instance()->Begin(); 
+		!MaterialManager::Instance()->End();
+		MaterialManager::Instance()->Next())
+	{
+		Material* mat = MaterialManager::Instance()->GetItem();
+        if(mat->GetSceneID() == m_sceneID)
         {
             //set MRT if we use rendering to normal buffer
             //if(m_useNormalBuffer)
             //   m_im->second->UseMRT(true);
             //bake material
-            m_im->second->BakeMaterial(m_lights.size(), m_dpshadow_method, m_use_pcf);
+            mat->BakeMaterial(m_lights.size(), m_dpshadow_method, m_use_pcf);
 
             LoadScreen();
         }
@@ -273,6 +281,7 @@ bool TScene::PostInit()
 	    
     cout<<"Post Init OK\n";
     
+	/* TO DELETE
 	typedef void (*NOVYTYP) (GLuint,GLuint,GLsizei,GLsizei*,GLint*,GLenum*,GLchar*);
 	typedef GLint (*NOVYTYP2) (GLuint,const GLchar*);
 	
@@ -307,6 +316,7 @@ bool TScene::PostInit()
         }
         delete[]Buffer;//free buffer
     }
+	*/
 
     return true;
 }
@@ -337,9 +347,11 @@ uses the same textures)
 void TScene::Destroy(bool delete_cache)
 {
 	//free all objects, materials, textures...
+	/* TO DELETE
     for(m_im = m_materials.begin(); m_im != m_materials.end(); m_im++)
         delete m_im->second;
 	m_materials.clear();
+	*/
     for(m_io = m_objects.begin(); m_io != m_objects.end(); m_io++)
         delete m_io->second;
 	m_objects.clear();
@@ -347,9 +359,11 @@ void TScene::Destroy(bool delete_cache)
         delete *m_il;
 	m_lights.clear();
 	//FIXME
+	/* TO DELETE
 	for(m_it_sf = m_shader_features.begin(); m_it_sf != m_shader_features.end(); m_it_sf++)
 		delete *m_it_sf;
 	m_shader_features.clear();    
+	*/
    
     
     if(delete_cache)
@@ -388,14 +402,9 @@ void TScene::SetMaterial(const char* obj_name, const char *mat_name)
     {
         cerr<<"WARNING (SetMaterial): no object with name "<<obj_name<<"\n";
         return;
-    }
-    //material existence control
-    if(m_materials.find(mat_name) == m_materials.end())
-    {
-        cerr<<"WARNING (SetMaterial): no object with name "<<mat_name<<"\n";
-        return;
-    }
-    m_objects[obj_name]->SetMaterial(m_materials[mat_name]->GetID());
+   } 
+
+	m_objects[obj_name]->SetMaterial(MaterialManager::Instance()->GetMaterial(mat_name)->GetID());
 }
 
 /**
@@ -458,7 +467,7 @@ TLight* TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3
 	mat->SetColor( 2.0f*diff, 2.0f*diff, 2.0f*diff );
 	mat->SetShininess( 0.0 );
 	mat->ReceiveShadow( false );
-	AddMaterial( mat );
+	MaterialManager::Instance()->AddMaterial( mat );
 	//-- object for light
     TObject* obj = AddObject(m_name.c_str(), "data/obj/light.3ds");
 	obj->SetMaterial( mat->GetID() );
@@ -490,9 +499,10 @@ void TScene::MoveLight(GLint light, glm::vec3 w)
         string l_name = "default_light_" + num2str(light);
         //update light position
         MoveObjAbs(l_name.c_str(), w.x, w.y, w.z);
-        if(m_materials[l_name.c_str()]->IsShaderOK())
+		Material* mat = MaterialManager::Instance()->GetMaterial( l_name.c_str() );
+        if(mat->IsShaderOK())
         {
-            SetUniform(l_name.c_str(), "in_ModelViewMatrix",m_viewMatrix * m_objects[l_name.c_str()]->GetMatrix());
+            mat->SetUniform( "in_ModelViewMatrix",m_viewMatrix * m_objects[l_name.c_str()]->GetMatrix());
             //update uniform buffer
             glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_lights);
             glBufferSubData(GL_UNIFORM_BUFFER, light*align, sizeof(glm::vec3), glm::value_ptr(glm::vec3(m_viewMatrix * glm::vec4(w, 1.0)))); 

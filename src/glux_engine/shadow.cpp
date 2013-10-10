@@ -302,10 +302,11 @@ void TScene::RenderShadowMapOmni(TLight *l)
         //set light position and zoom        
         if(m_dpshadow_tess)
         {
-            m_materials["_mat_default_shadow_omni_tess"]->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-            m_materials["_mat_default_shadow_omni_tess"]->SetUniform("ZOOM", zoom[i]);
-            m_materials["_mat_default_shadow_omni_tess"]->SetUniform("cut_params", tmp_params);
-            m_materials["_mat_default_shadow_omni_tess"]->SetUniform("in_CutMatrix", tmp_mat );
+			Material* _mat_default_shadow_omni_tess = MaterialManager::Instance()->GetMaterial( "_mat_default_shadow_omni_tess" );
+            _mat_default_shadow_omni_tess->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+            _mat_default_shadow_omni_tess->SetUniform("ZOOM", zoom[i]);
+            _mat_default_shadow_omni_tess->SetUniform("cut_params", tmp_params);
+            _mat_default_shadow_omni_tess->SetUniform("in_CutMatrix", tmp_mat );
 
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
             DrawSceneDepth("_mat_default_shadow_omni_tess", lightViewMatrix[i]);
@@ -313,10 +314,11 @@ void TScene::RenderShadowMapOmni(TLight *l)
         }
         else
         {
-            m_materials["_mat_default_shadow_omni"]->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-            m_materials["_mat_default_shadow_omni"]->SetUniform("ZOOM", zoom[i]);
-            m_materials["_mat_default_shadow_omni"]->SetUniform("cut_params", tmp_params);
-            m_materials["_mat_default_shadow_omni"]->SetUniform("in_CutMatrix", tmp_mat);
+			Material* _mat_default_shadow_omni = MaterialManager::Instance()->GetMaterial( "_mat_default_shadow_omni" );
+            _mat_default_shadow_omni->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+            _mat_default_shadow_omni->SetUniform("ZOOM", zoom[i]);
+            _mat_default_shadow_omni->SetUniform("cut_params", tmp_params);
+            _mat_default_shadow_omni->SetUniform("in_CutMatrix", tmp_mat);
 
 			
 			if(m_wireframe)
@@ -336,21 +338,25 @@ void TScene::RenderShadowMapOmni(TLight *l)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     //set light matrices and near/far planes to all materials
-    for(m_im = m_materials.begin(); m_im != m_materials.end(); ++m_im)
-    {
-        m_im->second->SetUniform("lightModelView[0]", lightViewMatrix[0]);
-        m_im->second->SetUniform("lightModelView[1]", lightViewMatrix[1]);
-        m_im->second->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-        m_im->second->SetUniform("ZOOM[0]", zoom[0]);
-        m_im->second->SetUniform("ZOOM[1]", zoom[1]);
+	for(MaterialManager::Instance()->Begin(); 
+		!MaterialManager::Instance()->End();
+		MaterialManager::Instance()->Next())
+	{
+		Material* mat = MaterialManager::Instance()->GetItem();
+        mat->SetUniform("lightModelView[0]", lightViewMatrix[0]);
+        mat->SetUniform("lightModelView[1]", lightViewMatrix[1]);
+        mat->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+        mat->SetUniform("ZOOM[0]", zoom[0]);
+        mat->SetUniform("ZOOM[1]", zoom[1]);
         //im->second.SetUniform("ZOOM[2]", zoom[2]);
 
-			m_im->second->SetUniform("in_CutMatrix[0]", cut_matrix_X);
-			m_im->second->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
-			m_im->second->SetUniform("cut_params", cut_params);
+			mat->SetUniform("in_CutMatrix[0]", cut_matrix_X);
+			mat->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
+			mat->SetUniform("cut_params", cut_params);
     }
 
-		m_materials["mat_aliasError"]->SetUniform("in_CutMatrix[0]", cut_matrix_X);
-		m_materials["mat_aliasError"]->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
-		m_materials["mat_aliasError"]->SetUniform("cut_params", cut_params);
+	Material* mat_aliasError = MaterialManager::Instance()->GetMaterial( "mat_aliasError" );
+	mat_aliasError->SetUniform("in_CutMatrix[0]", cut_matrix_X);
+	mat_aliasError->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
+	mat_aliasError->SetUniform("cut_params", cut_params);
 }

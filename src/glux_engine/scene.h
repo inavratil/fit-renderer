@@ -14,6 +14,7 @@
 #include "sdk/Material.h"
 #include "sdk/Pass.h"
 #include "resources/TextureCache.h"
+#include "resources/MaterialManager.h"
 #include "sdk/GeometryMaterial.h"
 #include "camera.h"
 #include "shadow.h"
@@ -39,9 +40,9 @@ protected:
     map<string,TObject*>::iterator m_io;
 
     ///associative array with all materials
-    map<string,Material*> m_materials;
+    //TO DELETE map<string,Material*> m_materials;
     ///iterator for materials container
-    map<string,Material*>::iterator m_im;
+    //TO DELETE map<string,Material*>::iterator m_im;
     
 	///associative array with all lights
     vector<TLight*> m_lights;
@@ -112,14 +113,16 @@ protected:
 	int m_texPreview_id;
 	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
 
-	vector<ShaderFeature*>				m_shader_features;
-	vector<ShaderFeature*>::iterator	m_it_sf;
+	//TO DELETE vector<ShaderFeature*>				m_shader_features;
+	//TO DELETE vector<ShaderFeature*>::iterator	m_it_sf;
 
 //FIXME: Tohle by melo prijit do tridy Application
 protected:
 
 	//-- Texture Cache
-	TextureCachePtr						m_texture_cache;
+	TextureCachePtr							m_texture_cache;
+	//-- Texture Cache
+	MaterialManagerPtr						m_material_manager;
 
 	//-- I use 'set', because of 'find' method
 	set<RenderListener*>			m_render_listeners;
@@ -189,6 +192,10 @@ public:
     void ChangeSceneID(int id){  
         m_sceneID = id; 
     }
+	int GetSceneID()
+	{
+		return m_sceneID;
+	}
 
     ///Toggle wireframe rendering
     void SetWireframe( bool flag ){ m_wireframe = flag;}
@@ -379,37 +386,14 @@ public:
 
     /////////////////////////////////////// MATERIALS&TEXTURES /////////////////////////////////
 
-	Material* GetMaterial( const char* _name )
-	{
-		if(m_materials.find(_name) == m_materials.end())
-			cerr<<"ERROR (GetMaterial): no material with name "<<_name<<"\n";
-		return m_materials[_name];
-	}
 
-	void AddMaterial( Material* _mat )
-	{
-		if( !_mat ) return;
-		_mat->SetSceneID( m_sceneID );
-		_mat->SetID( m_materials.size() );
-		m_materials[_mat->GetName()] = _mat;
-		UpdateLoadList( 1 );
-		cout<<"Adding material "<<_mat->GetName()<<endl;
-	}
-    ///@brief Add new material(see GeometryMaterial()) to list
-    void AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
-        GLfloat shin = 64.0, GLfloat reflect = 0.0, GLfloat transp = 0.0, GLint lm = PHONG){
-            GeometryMaterial *m = new GeometryMaterial(name, -1, amb, diff, spec, shin, reflect, transp, lm);
-            m->SetSceneID(m_sceneID);
-			m->SetID( m_materials.size() );
-			m_materials[name] = m;
-			UpdateLoadList( 1 );
-			cout<<"Adding material "<<name<<endl;
-    }
 
     //bind material to object
     void SetMaterial(const char* obj_name, const char *mat_name);
 
     ///@brief Set uniform variable in material shader (see GeometryMaterial::SetUniform() )
+	//TO DELETE
+	/*
     template<class UNIFORM>
     void SetUniform(const char* m_name, const char* v_name, UNIFORM value){ 
         if(m_materials.find(m_name) == m_materials.end())
@@ -417,6 +401,7 @@ public:
         else
             m_materials[m_name]->SetUniform(v_name, value);
     }
+	*/
 
 	///////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////SHADOWS ///////////////////////////////////////

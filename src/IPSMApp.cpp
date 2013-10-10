@@ -100,8 +100,8 @@ void IPSMApp::CreateContent()
 		m_scene->SetMaterial("cube","mat_green");
 
 		//add materials
-		m_scene->AddMaterial("mat_ground",silver,silver);
-		m_scene->AddMaterial("mat_cone",green,white);            
+		MaterialManager::Instance()->AddMaterial("mat_ground",silver,silver);
+		MaterialManager::Instance()->AddMaterial("mat_cone",green,white);            
 		//set materials
 		m_scene->SetMaterial("ground","mat_ground");
 
@@ -126,9 +126,9 @@ void IPSMApp::CreateContent()
 		m_scene->AddObject("ground",PLANE,1000.0,1000.0);
 
 		//add materials
-		m_scene->AddMaterial("mat_bark",lgrey,white);
-		m_scene->AddMaterial("mat_leaf",lgrey,white);
-		m_scene->AddMaterial("mat_ground",silver,silver);
+		MaterialManager::Instance()->AddMaterial("mat_bark",lgrey,white);
+		MaterialManager::Instance()->AddMaterial("mat_leaf",lgrey,white);
+		MaterialManager::Instance()->AddMaterial("mat_ground",silver,silver);
 
 		//add textures
 		//s->AddTexture("mat_bark","data/tex/bark4.tga");
@@ -218,21 +218,21 @@ void IPSMApp::CreateContent()
 
 	//---------------------------------------------------------------------
 
-	m_scene->AddMaterial( new ScreenSpaceMaterial( "show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag" ) );
+	MaterialManager::Instance()->AddMaterial( new ScreenSpaceMaterial( "show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag" ) );
 
 	//draw quad
-	m_scene->AddMaterial( new ScreenSpaceMaterial( "mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag" ) );
-	m_scene->AddMaterial( new ScreenSpaceMaterial( "mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag" ) );
-	m_scene->AddMaterial( new ScreenSpaceMaterial( "mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag" ) );        
+	MaterialManager::Instance()->AddMaterial( new ScreenSpaceMaterial( "mat_quad","data/shaders/quad.vert", "data/shaders/quad.frag" ) );
+	MaterialManager::Instance()->AddMaterial( new ScreenSpaceMaterial( "mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag" ) );
+	MaterialManager::Instance()->AddMaterial( new ScreenSpaceMaterial( "mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag" ) );        
 
 	//add shadow shader when shadows are enabled (will be sending depth values only)
-	m_scene->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag" ) );
+	MaterialManager::Instance()->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag" ) );
 	string defines;
 	//if(dpshadow_method == CUT)
 	//	defines = "#define PARABOLA_CUT\n";
 
 	//and also for omnidirectional lights with dual-paraboloid
-	m_scene->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag" ) );
+	MaterialManager::Instance()->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag" ) );
 
 	//optionally, add tessellation for paraboloid projection
 	/*
