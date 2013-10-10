@@ -112,7 +112,6 @@
     <ClCompile Include="src\glux_engine\loadScene.cpp" />
     <ClCompile Include="src\glux_engine\sdk\GeometryMaterial.cpp" />
     <ClCompile Include="src\glux_engine\material_generator.cpp" />
-    <ClCompile Include="src\glux_engine\modifyGrid.cpp" />
     <ClCompile Include="src\glux_engine\object.cpp" />
     <ClCompile Include="src\glux_engine\sdk\Pass.cpp" />
     <ClCompile Include="src\glux_engine\render_target.cpp" />
@@ -136,7 +135,6 @@
     <ClCompile Include="src\glux_engine\texture.cpp" />
     <ClCompile Include="src\IPSMApp.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\ipsm2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ellipse_params.h" />

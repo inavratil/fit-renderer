@@ -403,8 +403,6 @@ public:
     //render shadow map (omnidirectional, dual-paraboloid)
     void RenderShadowMapOmni(TLight *l);
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	//-- Polynomial Warped shadows
 
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()

@@ -196,11 +196,11 @@ bool TScene::PostInit()
 				
 			/* TO DELETE??? spis ne, akorat musim pro shadow techniku naimplementovat ShaderFeature
             //add shadow map to all materials (except those who don't receive shadows)
-			for(MaterialManager::Instance()->Begin(); 
-				!MaterialManager::Instance()->End();
-				MaterialManager::Instance()->Next())
+			for(m_material_manager->Begin(); 
+				!m_material_manager->End();
+				m_material_manager->Next())
 			{
-				Material* mat = MaterialManager::Instance()->GetItem();
+				Material* mat = m_material_manager->GetItem();
 				if( mat->IsScreenSpace() ) continue;
                 if (mat->GetSceneID() == m_sceneID )
 				{
@@ -260,11 +260,11 @@ bool TScene::PostInit()
 	cout<<"-------------------------------------------------------------------------------"<<endl;
 
     //assign light count to all materials and then bake them
-	for(MaterialManager::Instance()->Begin(); 
-		!MaterialManager::Instance()->End();
-		MaterialManager::Instance()->Next())
+	for(m_material_manager->Begin(); 
+		!m_material_manager->End();
+		m_material_manager->Next())
 	{
-		Material* mat = MaterialManager::Instance()->GetItem();
+		Material* mat = m_material_manager->GetItem();
         if(mat->GetSceneID() == m_sceneID)
         {
             //set MRT if we use rendering to normal buffer
@@ -455,7 +455,7 @@ TLight* TScene::AddLight(GLint _lights, glm::vec3 amb, glm::vec3 diff, glm::vec3
 	mat->SetColor( 2.0f*diff, 2.0f*diff, 2.0f*diff );
 	mat->SetShininess( 0.0 );
 	mat->ReceiveShadow( false );
-	MaterialManager::Instance()->AddMaterial( mat );
+	m_material_manager->AddMaterial( mat );
 	//-- object for light
     TObject* obj = AddObject(m_name.c_str(), "data/obj/light.3ds");
 	obj->SetMaterial( mat->GetID() );
@@ -487,7 +487,7 @@ void TScene::MoveLight(GLint light, glm::vec3 w)
         string l_name = "default_light_" + num2str(light);
         //update light position
         MoveObjAbs(l_name.c_str(), w.x, w.y, w.z);
-		Material* mat = MaterialManager::Instance()->GetMaterial( l_name.c_str() );
+		Material* mat = m_material_manager->GetMaterial( l_name.c_str() );
         if(mat->IsShaderOK())
         {
             mat->SetUniform( "in_ModelViewMatrix",m_viewMatrix * m_objects[l_name.c_str()]->GetMatrix());

@@ -78,7 +78,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 				glm::vec3(specular.r, specular.g, specular.b) 
 				);
 			mat->SetShininess( 256.0f - 256.0f*shininess );
-			MaterialManager::Instance()->AddMaterial( mat );
+			m_material_manager->AddMaterial( mat );
 
 			mats.push_back(m_name);
 

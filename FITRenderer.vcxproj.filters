@@ -40,9 +40,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ipsm2.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\glux_engine\ScreenGrid.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -66,9 +63,6 @@
     </ClCompile>
     <ClCompile Include="src\glux_engine\resources\TextureCache.cpp">
       <Filter>Source files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glux_engine\modifyGrid.cpp">
-      <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\IPSMApp.cpp">
       <Filter>Source files</Filter>

@@ -210,14 +210,14 @@ void TScene::Redraw(bool delete_buffer)
             const float q_size = 2.0f;
             if(m_lights[0]->GetType() == OMNI)
             {
-				Material* show_depth_omni = MaterialManager::Instance()->GetMaterial( "show_depth_omni" );
+				Material* show_depth_omni = m_material_manager->GetMaterial( "show_depth_omni" );
                 show_depth_omni->SetUniform( "far_plane", SHADOW_FAR);
                 show_depth_omni->SetUniform( "index", float(i));
                 RenderSmallQuad("show_depth_omni", 0.0f, 0*q_size, q_size);
             }
             else
             {
-                MaterialManager::Instance()->GetMaterial( "show_depth" )->SetUniform( "far_plane", SHADOW_FAR);
+                m_material_manager->GetMaterial( "show_depth" )->SetUniform( "far_plane", SHADOW_FAR);
                 RenderSmallQuad("show_depth", 0.0f, 0.0f, q_size);
                 break;
             }
@@ -270,11 +270,11 @@ void TScene::Redraw(bool delete_buffer)
 ***************************************************************************************************/
 void TScene::DrawScene(int drawmode)
 {
-	for(MaterialManager::Instance()->Begin(); 
-		!MaterialManager::Instance()->End();
-		MaterialManager::Instance()->Next())
+	for(m_material_manager->Begin(); 
+		!m_material_manager->End();
+		m_material_manager->Next())
 	{
-		Material* mat = MaterialManager::Instance()->GetItem();
+		Material* mat = m_material_manager->GetItem();
         if(!mat->IsScreenSpace()) //don't render shaders working in screen space!
         {
             ///select drawing mode
@@ -313,18 +313,18 @@ void TScene::DrawScene(int drawmode)
 void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
 {
     //then other with depth-only shader
-	Material* mat_shadow_mat = MaterialManager::Instance()->GetMaterial( shadow_mat );
+	Material* mat_shadow_mat = m_material_manager->GetMaterial( shadow_mat );
     mat_shadow_mat->RenderMaterial();
     //glActiveTexture(GL_TEXTURE0);
     //m_materials[shadow_mat]->SetUniform("alpha_tex", 0);
 	bool tess = mat_shadow_mat->HasTessellationShader();
 
     //draw objects in mode according to their material
-	for(MaterialManager::Instance()->Begin(); 
-		!MaterialManager::Instance()->End();
-		MaterialManager::Instance()->Next())
+	for(m_material_manager->Begin(); 
+		!m_material_manager->End();
+		m_material_manager->Next())
 	{
-		Material* mat = MaterialManager::Instance()->GetItem();
+		Material* mat = m_material_manager->GetItem();
 
 		if( mat->IsScreenSpace() ) continue;
 
@@ -361,7 +361,7 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
 void TScene::DrawGeometry(const char* _shader, glm::mat4& _mvMatrix )
 {
     //then other with depth-only shader
-	Material* mat_shader = MaterialManager::Instance()->GetMaterial( _shader );
+	Material* mat_shader = m_material_manager->GetMaterial( _shader );
 	mat_shader->RenderMaterial();
 	//glActiveTexture(GL_TEXTURE0);
     //m_materials[shadow_mat]->SetUniform("alpha_tex", 0);
@@ -401,7 +401,7 @@ void TScene::LoadScreen(bool swap)
         loaded = 0.7f;
     
     //draw progress bar
-	Material* mat_progress_bar = MaterialManager::Instance()->GetMaterial( "mat_progress_bar" );
+	Material* mat_progress_bar = m_material_manager->GetMaterial( "mat_progress_bar" );
     mat_progress_bar->RenderMaterial();
     
     GLfloat vertattribs[] = { 

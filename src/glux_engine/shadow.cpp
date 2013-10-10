@@ -302,7 +302,7 @@ void TScene::RenderShadowMapOmni(TLight *l)
         //set light position and zoom        
         if(m_dpshadow_tess)
         {
-			Material* _mat_default_shadow_omni_tess = MaterialManager::Instance()->GetMaterial( "_mat_default_shadow_omni_tess" );
+			Material* _mat_default_shadow_omni_tess = m_material_manager->GetMaterial( "_mat_default_shadow_omni_tess" );
             _mat_default_shadow_omni_tess->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
             _mat_default_shadow_omni_tess->SetUniform("ZOOM", zoom[i]);
             _mat_default_shadow_omni_tess->SetUniform("cut_params", tmp_params);
@@ -314,7 +314,7 @@ void TScene::RenderShadowMapOmni(TLight *l)
         }
         else
         {
-			Material* _mat_default_shadow_omni = MaterialManager::Instance()->GetMaterial( "_mat_default_shadow_omni" );
+			Material* _mat_default_shadow_omni = m_material_manager->GetMaterial( "_mat_default_shadow_omni" );
             _mat_default_shadow_omni->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
             _mat_default_shadow_omni->SetUniform("ZOOM", zoom[i]);
             _mat_default_shadow_omni->SetUniform("cut_params", tmp_params);
@@ -338,11 +338,11 @@ void TScene::RenderShadowMapOmni(TLight *l)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     //set light matrices and near/far planes to all materials
-	for(MaterialManager::Instance()->Begin(); 
-		!MaterialManager::Instance()->End();
-		MaterialManager::Instance()->Next())
+	for(m_material_manager->Begin(); 
+		!m_material_manager->End();
+		m_material_manager->Next())
 	{
-		Material* mat = MaterialManager::Instance()->GetItem();
+		Material* mat = m_material_manager->GetItem();
         mat->SetUniform("lightModelView[0]", lightViewMatrix[0]);
         mat->SetUniform("lightModelView[1]", lightViewMatrix[1]);
         mat->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
@@ -355,7 +355,7 @@ void TScene::RenderShadowMapOmni(TLight *l)
 			mat->SetUniform("cut_params", cut_params);
     }
 
-	Material* mat_aliasError = MaterialManager::Instance()->GetMaterial( "mat_aliasError" );
+	Material* mat_aliasError = m_material_manager->GetMaterial( "mat_aliasError" );
 	mat_aliasError->SetUniform("in_CutMatrix[0]", cut_matrix_X);
 	mat_aliasError->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
 	mat_aliasError->SetUniform("cut_params", cut_params);
