@@ -406,9 +406,6 @@ public:
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//-- Polynomial Warped shadows
 
-    //render omnidirectional shadow map using multiresolution techniques
-    void WarpedShadows_RenderShadowMap(TLight *l);
-
     ///@brief Set shadow parameters(shadow size and intensity) for selected light (by index)
     ///(see TLight::SetShadow()
     void SetShadow(GLint lightNum, GLint shadow_size = 2048, int type = SPOT, 

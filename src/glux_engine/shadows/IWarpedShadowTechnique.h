@@ -70,6 +70,7 @@ public:
 	glm::vec4 GetGridRange();
 	void GenerateGrid();
 	void DrawGrid();
+	void ModifyGrid(glm::vec4 *precomputed_diffs);
 
 private:
 	void _Init();

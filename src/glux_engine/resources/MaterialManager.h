@@ -31,25 +31,12 @@ public:
     void AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
         GLfloat shin = 64.0, GLfloat reflect = 0.0, GLfloat transp = 0.0, GLint lm = PHONG);
 
-	void Begin()
-	{
-		m_im = m_materials.begin();
-	}
+	//-- (Something like) Iterator pattern
+	void Begin(){ m_im = m_materials.begin(); }
+	void Next(){ m_im++; }
+	bool End(){	return m_im == m_materials.end(); }
+	Material* GetItem(){ return m_im->second; }
 
-	void Next()
-	{
-		m_im++;
-	}
-
-	bool End()
-	{
-		return m_im == m_materials.end();
-	}
-
-	Material* GetItem()
-	{
-		return m_im->second;
-	}
 //-----------------------------------------------------------------------------
 //-- Private methods
 

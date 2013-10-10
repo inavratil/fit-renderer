@@ -26,12 +26,3 @@ const float COVERAGE[100] = { 0.2525314589560607, 0.2576326279264187, 0.26283603
 
 void ModifyGrid(glm::vec4 *precomputed_diffs);
 
-/**
-****************************************************************************************************
-@brief Render omnidirectional shadow map using multiresolution techniques
-@param l current light
-****************************************************************************************************/
-void TScene::WarpedShadows_RenderShadowMap(TLight *l)
-{
-	
-}
