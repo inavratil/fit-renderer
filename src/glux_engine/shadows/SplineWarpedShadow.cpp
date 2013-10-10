@@ -51,21 +51,25 @@ bool SplineWarpedShadow::Initialize()
 
 	int sh_res = m_pLight->ShadowSize();
 
+	//-- Get access to managers and caches
+	MaterialManagerPtr material_manager = m_scene->GetMaterialManager();
+	TextureCachePtr texture_cache = m_scene->GetTextureCache();
+
 	try
 	{
 		//-----------------------------------------------------------------------------
 		//-- create data textures
 
-		TextureCache::Instance()->Create2DManual( "tex_camAndLightCoords", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "tex_stencil_color", 128, 128, GL_RGBA16F,	GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "tex_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
+		texture_cache->Create2DManual( "tex_camAndLightCoords", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
+		texture_cache->Create2DManual( "tex_stencil_color", 128, 128, GL_RGBA16F,	GL_FLOAT, GL_NEAREST, false );
+		texture_cache->Create2DManual( "tex_output", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
+		texture_cache->Create2DManual( "MTEX_ping", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
+		texture_cache->Create2DManual( "MTEX_pong", sh_res/8, sh_res/8, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
 		//FIXME: precision??? nestaci 16F ?
-		TextureCache::Instance()->Create2DManual( "MTEX_2Dfunc_values", this->GetControlPointsCount(), this->GetControlPointsCount(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
-		TextureCache::Instance()->Create2DManual( "MTEX_2Dfunc_values_ping", this->GetControlPointsCount(), this->GetControlPointsCount(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
+		texture_cache->Create2DManual( "MTEX_2Dfunc_values", this->GetControlPointsCount(), this->GetControlPointsCount(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
+		texture_cache->Create2DManual( "MTEX_2Dfunc_values_ping", this->GetControlPointsCount(), this->GetControlPointsCount(), GL_RGBA32F, GL_FLOAT, GL_NEAREST, false );
 		
-		TexturePtr tex_shadow = TextureCache::Instance()->Create2DArrayManual("tex_shadow",
+		TexturePtr tex_shadow = texture_cache->Create2DArrayManual("tex_shadow",
 			sh_res, sh_res,			//-- width and height
 			2,						//-- number of layers
 			GL_DEPTH_COMPONENT,		//-- internal format
@@ -75,7 +79,7 @@ bool SplineWarpedShadow::Initialize()
 			);
 		tex_shadow->SetType( SHADOW_OMNI );
 		tex_shadow->SetIntensity( m_pLight->ShadowIntensity() );
-		TextureCache::Instance()->Create2DArrayManual("MTEX_warped_depth_color",
+		texture_cache->Create2DArrayManual("MTEX_warped_depth_color",
 			sh_res, sh_res,	//-- width and height
 			2,				//-- number of layers
 			GL_RGBA16F,		//-- internal format
@@ -83,7 +87,7 @@ bool SplineWarpedShadow::Initialize()
 			GL_NEAREST,		//-- filtering
 			false			//-- mipmap generation
 			);
-		TextureCache::Instance()->Create2DManual("aliaserr_mipmap",
+		texture_cache->Create2DManual("aliaserr_mipmap",
 			128, 128,		//-- width and height
 			GL_RGBA16F,		//-- internal format
 			GL_FLOAT,		//-- type of the date
@@ -96,13 +100,13 @@ bool SplineWarpedShadow::Initialize()
 		{
 			//-- shader
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_camAndLightCoords_afterDP","data/shaders/warping/camAndLightCoords_afterDP.vert", "data/shaders/warping/camAndLightCoords_afterDP.frag" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_2Dfunc_values" ), "funcTex" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->GetPtr( "MTEX_2Dfunc_values" ), "funcTex" );
+			material_manager->AddMaterial( mat );
 
 			//-- pass
 			SimplePassPtr pass_coords = new SimplePass( sh_res/8, sh_res/8 );
-			pass_coords->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "tex_camAndLightCoords" ) );
-			pass_coords->AttachOutputTexture( 1, TextureCache::Instance()->GetPtr( "tex_stencil_color" ) );
+			pass_coords->AttachOutputTexture( 0, texture_cache->GetPtr( "tex_camAndLightCoords" ) );
+			pass_coords->AttachOutputTexture( 1, texture_cache->GetPtr( "tex_stencil_color" ) );
 			pass_coords->SetShader( mat );
 			this->AppendPass("pass_coords", pass_coords );
 		}
@@ -112,12 +116,12 @@ bool SplineWarpedShadow::Initialize()
 		{				
 			//-- shader
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_compute_aliasError", "data/shaders/warping/computeAliasError.vert"/*quad.vert*/, "data/shaders/warping/computeAliasError.frag" );
-			mat->AddTexture( TextureCache::Instance()->CreateFromImage( "data/tex/error_color.tga" ), "tex_error" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr( "tex_camAndLightCoords" ), "tex_coords" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "tex_error" );
+			mat->AddTexture( texture_cache->GetPtr( "tex_camAndLightCoords" ), "tex_coords" );
+			material_manager->AddMaterial( mat );
 			//-- pass
 			SimplePassPtr pass_compute_aliasError = new SimplePass( sh_res/8, sh_res/8 );
-			pass_compute_aliasError->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "tex_output" ) );
+			pass_compute_aliasError->AttachOutputTexture( 0, texture_cache->GetPtr( "tex_output" ) );
 			pass_compute_aliasError->DisableDepthBuffer();
 			pass_compute_aliasError->SetShader( mat );
 			this->AppendPass("pass_compute_aliasError", pass_compute_aliasError );
@@ -125,31 +129,31 @@ bool SplineWarpedShadow::Initialize()
 		//-----------------------------------------------------------------------------
 
 		//FIXME: Tohle by melo prijit do Init metody dane shadow techniky
-		this->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", TextureCache::Instance()->Get("MTEX_2Dfunc_values"), 1.0, ShaderFeature::FS );
+		this->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", texture_cache->Get("MTEX_2Dfunc_values"), 1.0, ShaderFeature::FS );
 
 		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
-		m_pLight->SetShadowTexID( TextureCache::Instance()->Get( "tex_shadow" ) );
+		m_pLight->SetShadowTexID( texture_cache->Get( "tex_shadow" ) );
 
 		//-----------------------------------------------------------------------------
 		//blur
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasblur_horiz","data/shaders/quad.vert","data/shaders/warping/aliasblur.frag", " ","#define HORIZONTAL\n" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr( "tex_output" ), "bloom_texture" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->GetPtr( "tex_output" ), "bloom_texture" );
+			material_manager->AddMaterial( mat );
 
 			//-- pass
 			SimplePassPtr pass_horiz_blur = new SimplePass( sh_res/8, sh_res/8 );
-			pass_horiz_blur->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "MTEX_ping" ) );
+			pass_horiz_blur->AttachOutputTexture( 0, texture_cache->GetPtr( "MTEX_ping" ) );
 			pass_horiz_blur->DisableDepthBuffer();
 			this->AppendPass("pass_horiz_blur", pass_horiz_blur );
 		}
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasblur_vert","data/shaders/quad.vert","data/shaders/warping/aliasblur.frag", " ", "#define VERTICAL\n" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_ping" ), "bloom_texture" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->GetPtr( "MTEX_ping" ), "bloom_texture" );
+			material_manager->AddMaterial( mat );
 			//-- pass
 			SimplePassPtr pass_vert_blur = new SimplePass( sh_res/8, sh_res/8 );
-			pass_vert_blur->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "MTEX_pong" ) );
+			pass_vert_blur->AttachOutputTexture( 0, texture_cache->GetPtr( "MTEX_pong" ) );
 			pass_vert_blur->DisableDepthBuffer();
 			this->AppendPass("pass_vert_blur", pass_vert_blur );
 		}
@@ -157,11 +161,11 @@ bool SplineWarpedShadow::Initialize()
 		//alias gradient
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasgradient","data/shaders/quad.vert","data/shaders/warping/aliasgradient.frag" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_pong" ), "tex_blurred_error" );
-			MaterialManager::Instance()->AddMaterial( mat );	
+			mat->AddTexture( texture_cache->GetPtr( "MTEX_pong" ), "tex_blurred_error" );
+			material_manager->AddMaterial( mat );	
 			//-- pass
 			SimplePassPtr pass_gradient = new SimplePass( sh_res/8, sh_res/8 );
-			pass_gradient->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "MTEX_ping" ) );
+			pass_gradient->AttachOutputTexture( 0, texture_cache->GetPtr( "MTEX_ping" ) );
 			pass_gradient->DisableDepthBuffer();
 			this->AppendPass("pass_gradient", pass_gradient );
 		}
@@ -169,11 +173,11 @@ bool SplineWarpedShadow::Initialize()
 		//2D func values
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_get_2Dfunc_values","data/shaders/quad.vert","data/shaders/warping/get2DfuncValues.frag" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_ping" ), "gradient_map" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->GetPtr( "MTEX_ping" ), "gradient_map" );
+			material_manager->AddMaterial( mat );
 			//-- pass
 			SimplePassPtr pass_func_values = new SimplePass( this->GetControlPointsCount(), this->GetControlPointsCount() );
-			pass_func_values->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "MTEX_2Dfunc_values" ) );
+			pass_func_values->AttachOutputTexture( 0, texture_cache->GetPtr( "MTEX_2Dfunc_values" ) );
 			pass_func_values->DisableDepthBuffer();
 			this->AppendPass("pass_func_values", pass_func_values );
 		}
@@ -186,29 +190,29 @@ bool SplineWarpedShadow::Initialize()
 				"data/shaders/warping/drawDepthWithWarping.vert", "data/shaders/warping/drawDepthWithWarping.frag", 
 				this->GetDefines(), "" 
 				);
-			mat->AddTexture( TextureCache::Instance()->GetPtr("MTEX_2Dfunc_values"), "funcTex" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->GetPtr("MTEX_2Dfunc_values"), "funcTex" );
+			material_manager->AddMaterial( mat );
 			//-- pass
 			SimplePassPtr pass_warped_depth = new SimplePass( sh_res, sh_res );
-			pass_warped_depth->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr("MTEX_warped_depth_color") );
-			pass_warped_depth->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "tex_shadow" ), true );
+			pass_warped_depth->AttachOutputTexture( 0, texture_cache->GetPtr("MTEX_warped_depth_color") );
+			pass_warped_depth->AttachOutputTexture( 0, texture_cache->GetPtr( "tex_shadow" ), true );
 			this->AppendPass("pass_warped_depth", pass_warped_depth );	
 		}
 		//-----------------------------------------------------------------------------
 		//-- blit pass
 		//BlitPass *bp = new BlitPass( 128, 128 );
-		//bp->AttachReadTexture( TextureCache::Instance()->GetPtr( "tex_output" ) );
-		//bp->AttachDrawTexture( TextureCache::Instance()->GetPtr( "aliaserr_mipmap" ) );
+		//bp->AttachReadTexture( texture_cache->GetPtr( "tex_output" ) );
+		//bp->AttachDrawTexture( texture_cache->GetPtr( "aliaserr_mipmap" ) );
 		//AppendPass("pass_blit_0", bp );
 		//-- copy squared error
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_copy_squared_error", "data/shaders/quad.vert", "data/shaders/warping/copy_squared_error.frag" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr("tex_output"), "tex_alias_error" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->GetPtr("tex_output"), "tex_alias_error" );
+			material_manager->AddMaterial( mat );
 
 			//-- pass
 			SimplePass *mp = new SimplePass( 128, 128 );
-			mp->AttachOutputTexture(0, TextureCache::Instance()->GetPtr("aliaserr_mipmap") ); 
+			mp->AttachOutputTexture(0, texture_cache->GetPtr("aliaserr_mipmap") ); 
 			mp->DisableDepthBuffer();
 			mp->SetShader( mat );
 			this->AppendPass("pass_copy_squared_error", mp);
@@ -217,42 +221,42 @@ bool SplineWarpedShadow::Initialize()
 		//-- mipmap pass
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasMipmap", "data/shaders/quad.vert", "data/shaders/shadow_alias_mipmap.frag" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr("aliaserr_mipmap"), "mat_aliasError" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->GetPtr("aliaserr_mipmap"), "mat_aliasError" );
+			material_manager->AddMaterial( mat );
 
 			//-- pass
 			SimplePass *mp = new SimplePass( 128, 128 );
-			mp->AttachOutputTexture(0, TextureCache::Instance()->GetPtr("aliaserr_mipmap") ); 
+			mp->AttachOutputTexture(0, texture_cache->GetPtr("aliaserr_mipmap") ); 
 			mp->DisableDepthBuffer();
 			this->AppendPass("pass_alias_mipmap", mp);
 		}
 		//-----------------------------------------------------------------------------
 		{
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag" ); 
-			mat->AddTexture( TextureCache::Instance()->GetPtr("MTEX_warped_depth_color"), "show_depth_dpShadowA" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->GetPtr("MTEX_warped_depth_color"), "show_depth_dpShadowA" );
+			material_manager->AddMaterial( mat );
 		}
 		//-----------------------------------------------------------------------------
 		{
 			//-- shader showing shadow map alias error
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag" );
-			mat->AddTexture( TextureCache::Instance()->CreateFromImage( "data/tex/error_color.tga" ), "mat_aliasErrorBaseA" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_2Dfunc_values" ), "MTEX_2Dfunc_values" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "mat_aliasErrorBaseA" );
+			mat->AddTexture( texture_cache->GetPtr( "MTEX_2Dfunc_values" ), "MTEX_2Dfunc_values" );
+			material_manager->AddMaterial( mat );
 		}
 		{
 			//-- shader showing perspective alias error
 			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_perspective_error", "data/shaders/perspective_alias_error.vert", "data/shaders/perspective_alias_error.frag" );
-			mat->AddTexture( TextureCache::Instance()->CreateFromImage( "data/tex/error_color.tga" ), "tex_error_color" );
-			mat->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_2Dfunc_values" ), "tex_2Dfunc_values" );
-			MaterialManager::Instance()->AddMaterial( mat );
+			mat->AddTexture( texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "tex_error_color" );
+			mat->AddTexture( texture_cache->GetPtr( "MTEX_2Dfunc_values" ), "tex_2Dfunc_values" );
+			material_manager->AddMaterial( mat );
 		}
 		//-----------------------------------------------------------------------------
 		//-- Init Debug
 		{
 
 			//-- texture
-			TextureCache::Instance()->Create2DManual("aliaserr_texture",
+			texture_cache->Create2DManual("aliaserr_texture",
 				128.0, 128.0,	//-- width and height
 				GL_RGBA16F,		//-- internal format
 				GL_FLOAT,		//-- type of the date
@@ -261,21 +265,21 @@ bool SplineWarpedShadow::Initialize()
 				);
 			//-- pass
 			SimplePass* pass_eyespace_aliaserror = new SimplePass( 128, 128 );
-			pass_eyespace_aliaserror->AttachOutputTexture( 0, TextureCache::Instance()->GetPtr( "aliaserr_texture" ) );
+			pass_eyespace_aliaserror->AttachOutputTexture( 0, texture_cache->GetPtr( "aliaserr_texture" ) );
 			AppendPass( "pass_eyespace_aliaserror", pass_eyespace_aliaserror );
 		}
 
 		//add shadow map to all materials (except those who don't receive shadows)
-		for(MaterialManager::Instance()->Begin(); 
-			!MaterialManager::Instance()->End();
-			MaterialManager::Instance()->Next())
+		for(material_manager->Begin(); 
+			!material_manager->End();
+			material_manager->Next())
 		{
-			Material* mat = MaterialManager::Instance()->GetItem();
+			Material* mat = material_manager->GetItem();
 			if( mat->IsScreenSpace() ) continue;
 			if (mat->GetSceneID() == m_scene->GetSceneID() )
 			{
 				string tex_shadow_name = mat->GetName() + "_texShadowOMNI_A";
-				mat->AddTexture( TextureCache::Instance()->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
+				mat->AddTexture( texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
 
 				static_cast<GeometryMaterial*>(mat)->AddFeature( this->GetShaderFeature() );
 			}
@@ -294,6 +298,10 @@ void SplineWarpedShadow::PreRender()
 {
 	int sh_res = m_pLight->ShadowSize();
 	GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+
+	//-- Get access to managers and caches
+	MaterialManagerPtr material_manager = m_scene->GetMaterialManager();
+	TextureCachePtr texture_cache = m_scene->GetTextureCache();
 
 	glm::mat4 cam_view_matrix = m_scene->GetViewMatrix();
 	glm::mat4 cam_proj_matrix = m_scene->GetProjMatrix();
@@ -356,7 +364,7 @@ void SplineWarpedShadow::PreRender()
 	if ( (string) m_shadow_technique->GetName() ==  "Polynomial" )
 	{
 		float mask_values[128*128];
-		glBindTexture(GL_TEXTURE_2D, TextureCache::Instance()->Get( "tex_stencil_color" ) );
+		glBindTexture(GL_TEXTURE_2D, texture_cache->Get( "tex_stencil_color" ) );
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, mask_values);
 
 		for(int i=0; i<128; ++i)
@@ -411,11 +419,11 @@ void SplineWarpedShadow::PreRender()
 		for(int i=1, j = 128.0/2; j>=1; i++, j/=2)
 		{
 			glViewport(0, 0, j, j);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_mipmap" ), i);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_cache->Get("aliaserr_mipmap" ), i);
 			glClear(GL_COLOR_BUFFER_BIT );
 
-			MaterialManager::Instance()->GetMaterial( "mat_aliasMipmap" )->SetUniform( "offset", 0.5f/((float)j*2.0f));
-			MaterialManager::Instance()->GetMaterial( "mat_aliasMipmap" )->SetUniform( "mip_level", i-1);
+			material_manager->GetMaterial( "mat_aliasMipmap" )->SetUniform( "offset", 0.5f/((float)j*2.0f));
+			material_manager->GetMaterial( "mat_aliasMipmap" )->SetUniform( "mip_level", i-1);
 			m_scene->RenderPass("mat_aliasMipmap");				
 		}
 	
@@ -444,8 +452,8 @@ void SplineWarpedShadow::PreRender()
 
 	this->GetPassPtr( "pass_horiz_blur" )->Activate();
 
-	//GetMaterial( "mat_aliasblur_horiz" )->AddTexture( TextureCache::Instance()->GetPtr( "tex_output" ), "bloom_texture" );
-	Material* mat_aliasblur_horiz = MaterialManager::Instance()->GetMaterial( "mat_aliasblur_horiz" );
+	//GetMaterial( "mat_aliasblur_horiz" )->AddTexture( texture_cache->GetPtr( "tex_output" ), "bloom_texture" );
+	Material* mat_aliasblur_horiz = material_manager->GetMaterial( "mat_aliasblur_horiz" );
 	mat_aliasblur_horiz->SetUniform( "texsize", glm::ivec2(sh_res/8, sh_res/8));
 	mat_aliasblur_horiz->SetUniform( "kernel_size", 9.0);
 	mat_aliasblur_horiz->SetUniform( "two_sigma_sq", TWOSIGMA2(sigma));
@@ -459,8 +467,8 @@ void SplineWarpedShadow::PreRender()
 
 	this->GetPassPtr( "pass_vert_blur" )->Activate();
 
-	//GetMaterial( "mat_aliasblur_vert" )->AddTexture( TextureCache::Instance()->GetPtr( "MTEX_ping" ), "bloom_texture" );
-	Material* mat_aliasblur_vert = MaterialManager::Instance()->GetMaterial( "mat_aliasblur_vert" );
+	//GetMaterial( "mat_aliasblur_vert" )->AddTexture( texture_cache->GetPtr( "MTEX_ping" ), "bloom_texture" );
+	Material* mat_aliasblur_vert = material_manager->GetMaterial( "mat_aliasblur_vert" );
 	mat_aliasblur_vert->SetUniform( "texsize", glm::ivec2(sh_res/8, sh_res/8));
 	mat_aliasblur_vert->SetUniform( "kernel_size", 9.0);
 	mat_aliasblur_vert->SetUniform( "two_sigma_sq",TWOSIGMA2(sigma));
@@ -483,7 +491,7 @@ void SplineWarpedShadow::PreRender()
 
 	//FIXME: limit pocitat nejak inteligentne bez bulharske konstanty
 	//SetUniform("mat_aliasgradient", "limit", glm::vec2(100.0f));
-	MaterialManager::Instance()->GetMaterial( "mat_aliasgradient" )->SetUniform( "limit", limit);
+	material_manager->GetMaterial( "mat_aliasgradient" )->SetUniform( "limit", limit);
 	m_scene->RenderPass("mat_aliasgradient");
 
 	this->GetPassPtr( "pass_gradient" )->Deactivate();
@@ -509,19 +517,19 @@ void SplineWarpedShadow::PreRender()
 			func_range.z +=  func_range.w;
 
 			glViewport( 0+2, 0+2, this->GetGrid()->GetControlPointsCount()-2, this->GetGrid()->GetControlPointsCount()-2 );
-			MaterialManager::Instance()->GetMaterial( "mat_get_2Dfunc_values" )->SetUniform( "grid_res", (float) this->GetGrid()->GetControlPointsCount() - 2.0 );
+			material_manager->GetMaterial( "mat_get_2Dfunc_values" )->SetUniform( "grid_res", (float) this->GetGrid()->GetControlPointsCount() - 2.0 );
 		}
 		else
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
-			MaterialManager::Instance()->GetMaterial( "mat_get_2Dfunc_values" )->SetUniform( "grid_res", (float) this->GetGrid()->GetControlPointsCount() );
+			material_manager->GetMaterial( "mat_get_2Dfunc_values" )->SetUniform( "grid_res", (float) this->GetGrid()->GetControlPointsCount() );
 		}
 
 #ifdef GRADIENT_METHOD
 		SetUniform("mat_get_2Dfunc_values", "range", func_range );	
 		RenderPass("mat_get_2Dfunc_values");
 #else
-		glBindTexture( GL_TEXTURE_2D, TextureCache::Instance()->Get( "MTEX_2Dfunc_values" ) );
+		glBindTexture( GL_TEXTURE_2D, texture_cache->Get( "MTEX_2Dfunc_values" ) );
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, this->GetControlPointsCount(), this->GetControlPointsCount(), 0, GL_RGBA, GL_FLOAT, g_precomputed_diffs);
 		glBindTexture( GL_TEXTURE_2D, 0 );
 #endif
@@ -563,7 +571,7 @@ void SplineWarpedShadow::PreRender()
 	//-- 6. compute 2D polynomial coefficents and store them into textures (gradient for x and y axes)
 	//-- odtud zacina cast, ktera je pro kazdou warpovaci metodu jina. Proto se pouziva abstraktni trida shadow_technique
 
-	this->SetTexId(TextureCache::Instance()->Get( "MTEX_2Dfunc_values" ));
+	this->SetTexId(texture_cache->Get( "MTEX_2Dfunc_values" ));
 
 	//-- vrati pocet ridicich bodu mrizky, 
 	int res = (int)this->GetControlPointsCount();
@@ -601,13 +609,13 @@ void SplineWarpedShadow::PreRender()
 
 	for(int i=0; i<2; i++)
 	{
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  TextureCache::Instance()->Get("MTEX_warped_depth_color"), 0, i);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  TextureCache::Instance()->Get("tex_shadow"), 0, i);	    
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  texture_cache->Get("MTEX_warped_depth_color"), 0, i);
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  texture_cache->Get("tex_shadow"), 0, i);	    
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//-- Shared uniforms
-		Material* mat_depth_with_warping = MaterialManager::Instance()->GetMaterial( "mat_depth_with_warping" );
+		Material* mat_depth_with_warping = material_manager->GetMaterial( "mat_depth_with_warping" );
 		mat_depth_with_warping->SetUniform( "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
 		mat_depth_with_warping->SetUniform( "range", this->GetGridRange());
 		mat_depth_with_warping->SetUniform( "grid_res", (float) this->GetControlPointsCount() );
@@ -674,11 +682,11 @@ void SplineWarpedShadow::PreRender()
 	*/
 
 	//set light matrices and near/far planes to all materials
-	for(MaterialManager::Instance()->Begin(); 
-		!MaterialManager::Instance()->End();
-		MaterialManager::Instance()->Next())
+	for(material_manager->Begin(); 
+		!material_manager->End();
+		material_manager->Next())
 	{
-		Material* mat = MaterialManager::Instance()->GetItem();
+		Material* mat = material_manager->GetItem();
 		if(mat->GetSceneID() == m_scene->GetSceneID() && !mat->IsScreenSpace())
 		{
 			mat->SetUniform("lightModelView[0]", lightViewMatrix[0]);
@@ -692,7 +700,7 @@ void SplineWarpedShadow::PreRender()
 	}
 
 	//-- set debug shaders
-	Material* mat_aliasError = MaterialManager::Instance()->GetMaterial( "mat_aliasError" );
+	Material* mat_aliasError = material_manager->GetMaterial( "mat_aliasError" );
 	mat_aliasError->SetUniform( "lightModelView[0]", lightViewMatrix[0]);
 	mat_aliasError->SetUniform( "lightModelView[1]", lightViewMatrix[1]);
 	mat_aliasError->SetUniform( "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
@@ -701,7 +709,7 @@ void SplineWarpedShadow::PreRender()
 	//-- set debug shaders
 
 	//SetUniform("mat_perspective_error", "lightModelView", glm::lookAt( l->GetPos(), glm::vec3( 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f) ));
-	Material* mat_perspective_error = MaterialManager::Instance()->GetMaterial( "mat_perspective_error" );
+	Material* mat_perspective_error = material_manager->GetMaterial( "mat_perspective_error" );
 	mat_perspective_error->SetUniform( "lightModelView[0]", lightViewMatrix[0]);
 	mat_perspective_error->SetUniform( "lightModelView[1]", lightViewMatrix[1]);
 	mat_perspective_error->SetUniform( "near_far_bias", glm::vec3(SHADOW_NEAR, SHADOW_FAR, POLY_BIAS));
@@ -732,7 +740,7 @@ void SplineWarpedShadow::PostRender()
 
 	/*	
 	float *aerr_buffer = new float[128*128];
-	glBindTexture(GL_TEXTURE_2D, TextureCache::Instance()->Get("aliaserr_texture"));
+	glBindTexture(GL_TEXTURE_2D, texture_cache->Get("aliaserr_texture"));
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, aerr_buffer);
 
 	float sum = 0.0;

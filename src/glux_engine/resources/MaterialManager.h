@@ -54,6 +54,8 @@ public:
 //-- Private methods
 
 private:
+	void _Init();
+	void _Destroy();
 
 };
 

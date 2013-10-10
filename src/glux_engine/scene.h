@@ -38,11 +38,6 @@ protected:
     map<string,TObject*> m_objects;
     ///iterator for objects container
     map<string,TObject*>::iterator m_io;
-
-    ///associative array with all materials
-    //TO DELETE map<string,Material*> m_materials;
-    ///iterator for materials container
-    //TO DELETE map<string,Material*>::iterator m_im;
     
 	///associative array with all lights
     vector<TLight*> m_lights;
@@ -112,9 +107,6 @@ protected:
 	//FIXME
 	int m_texPreview_id;
 	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
-
-	//TO DELETE vector<ShaderFeature*>				m_shader_features;
-	//TO DELETE vector<ShaderFeature*>::iterator	m_it_sf;
 
 //FIXME: Tohle by melo prijit do tridy Application
 protected:
@@ -189,17 +181,15 @@ public:
     void LoadScene(const char* file, bool load_materials = true, bool load_lights = true, string name_space = "");
 
     ///Change scene ID. All objects will from now belong to this ID. Only one sceneID section can be active at time
-    void ChangeSceneID(int id){  
-        m_sceneID = id; 
-    }
-	int GetSceneID()
-	{
-		return m_sceneID;
-	}
+    void ChangeSceneID(int id){ m_sceneID = id; }
+	int GetSceneID(){ return m_sceneID; }
 
     ///Toggle wireframe rendering
     void SetWireframe( bool flag ){ m_wireframe = flag;}
 	bool IsWireframe(){ return m_wireframe; }
+
+	MaterialManager* GetMaterialManager(){ return m_material_manager; }
+	TextureCache* GetTextureCache(){ return m_texture_cache; }
 
 /////////////////////////////////////////// CAMERA ////////////////////////////////////////
 

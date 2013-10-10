@@ -6,12 +6,30 @@ template<> MaterialManager * Singleton<MaterialManager>::m_pInstance = 0;
 
 MaterialManager::MaterialManager()
 {
+	_Init();
 }
 
 //-----------------------------------------------------------------------------
 
 MaterialManager::~MaterialManager(void)
 {
+	_Destroy();
+}
+
+//-----------------------------------------------------------------------------
+
+void MaterialManager::_Init()
+{
+}
+
+//-----------------------------------------------------------------------------
+
+void MaterialManager::_Destroy()
+{
+	//free all objects, materials, textures...
+    for(m_im = m_materials.begin(); m_im != m_materials.end(); m_im++)
+        delete m_im->second;
+	m_materials.clear();
 }
 
 //-----------------------------------------------------------------------------

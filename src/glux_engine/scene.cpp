@@ -346,24 +346,12 @@ uses the same textures)
 ***************************************************************************************************/
 void TScene::Destroy(bool delete_cache)
 {
-	//free all objects, materials, textures...
-	/* TO DELETE
-    for(m_im = m_materials.begin(); m_im != m_materials.end(); m_im++)
-        delete m_im->second;
-	m_materials.clear();
-	*/
     for(m_io = m_objects.begin(); m_io != m_objects.end(); m_io++)
         delete m_io->second;
 	m_objects.clear();
     for(m_il = m_lights.begin(); m_il != m_lights.end(); m_il++)
         delete *m_il;
 	m_lights.clear();
-	//FIXME
-	/* TO DELETE
-	for(m_it_sf = m_shader_features.begin(); m_it_sf != m_shader_features.end(); m_it_sf++)
-		delete *m_it_sf;
-	m_shader_features.clear();    
-	*/
    
     
     if(delete_cache)
