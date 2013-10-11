@@ -327,30 +327,6 @@ public:
     //add new object from external file
     TObject* AddObject(const char *name, const char* file);
 
-    ///@brief Move object identified by name to new position(relative) (see TObject::Move() )
-    void MoveObj(const char* name, GLfloat wx, GLfloat wy, GLfloat wz){ 
-        m_objects[name]->Move(wx,wy,wz); 
-    }
-    ///@brief Move object identified by name to new position(absolute) (see TObject::MoveAbs() )
-    void MoveObjAbs(const char* name, GLfloat wx, GLfloat wy, GLfloat wz){ 
-        m_objects[name]->MoveAbs(wx,wy,wz); 
-    }
-
-    ///@brief Rotate object identified by name around axis(can be A_X, A_Y, A_Z) by angle(relative)
-    ///(see TObject::Rotate() )
-    void RotateObj(const char* name, GLfloat angle, GLint axis){ 
-        m_objects[name]->Rotate(angle,axis); 
-    }
-    ///@brief Rotate object identified by name around axis(can be A_X, A_Y, A_Z) by angle(absolute)
-    ///(see TObject::RotateAbs() )
-    void RotateObjAbs(const char* name, GLfloat angle, GLint axis){ 
-        m_objects[name]->RotateAbs(angle,axis); 
-    }
-
-    ///@brief Resize object identified by name according to resize factor
-    void ResizeObj(const char* name, GLfloat sx, GLfloat sy, GLfloat sz){ 
-        m_objects[name]->Resize(sx,sy,sz); 
-    }
     ///@brief Return object's vertex buffer ID
     GLint GetVertexBuffer(const char* name){
         return m_objects[name]->GetVertexBuffer(); 
@@ -371,27 +347,6 @@ public:
     void SetGInstances(const char* obj_name, int count){ 
         m_objects[obj_name]->SetGInstances(count); 
     }
-
-
-
-    /////////////////////////////////////// MATERIALS&TEXTURES /////////////////////////////////
-
-
-
-    //bind material to object
-    void SetMaterial(const char* obj_name, const char *mat_name);
-
-    ///@brief Set uniform variable in material shader (see GeometryMaterial::SetUniform() )
-	//TO DELETE
-	/*
-    template<class UNIFORM>
-    void SetUniform(const char* m_name, const char* v_name, UNIFORM value){ 
-        if(m_materials.find(m_name) == m_materials.end())
-            cerr<<"WARNING (SetUniform): no material with name "<<m_name<<"\n";
-        else
-            m_materials[m_name]->SetUniform(v_name, value);
-    }
-	*/
 
 	///////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////SHADOWS ///////////////////////////////////////
@@ -513,10 +468,7 @@ public:
 
     //prepare screen quad
     void AddScreenQuad();
-    //create single data texture
-    //void CreateDataTexture(const char* name, int resX, int resY, GLint tex_format, GLenum tex_type, GLenum tex_target = GL_TEXTURE_2D, bool mipmaps = false);
-    //prepare texture to render into for HDR rendering
-    //void CreateHDRRenderTarget(int resX = -1, int resY = -1, GLint tex_format = GL_RGBA16F, GLenum tex_type = GL_FLOAT, bool normal_buffer = false);
+
     //resize render target textures
     void ResizeHDRRenderTarget(int resX, int resY, GLint tex_format = GL_RGBA16F, GLenum tex_type = GL_FLOAT);
     //check framebuffer status

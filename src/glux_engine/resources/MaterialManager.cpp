@@ -20,6 +20,11 @@ MaterialManager::~MaterialManager(void)
 
 void MaterialManager::_Init()
 {
+	//-- Adding default color materials
+	this->AddMaterial( "DEFAULT_RED", black, red );
+	this->AddMaterial( "DEFAULT_GREEN", black, green );
+	this->AddMaterial( "DEFAULT_BLUE", black, blue );
+	this->AddMaterial( "DEFAULT_SILVER", lgrey, silver );
 }
 
 //-----------------------------------------------------------------------------

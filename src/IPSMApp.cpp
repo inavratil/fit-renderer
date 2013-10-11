@@ -97,36 +97,34 @@ void IPSMApp::CreateContent()
 		//s->LoadScene("../data/obj/scenes/zla_scena.3ds");
 
 		//s->AddObject("ground",PLANE,1000.0,1000.0);
-		m_scene->AddObject("ground","data/obj/plane.3ds");            
-		m_scene->AddObject("cube",CUBE,10.0,10.0);
-		m_scene->MoveObj("cube", 100.0, 10.0, 100.0 );
-		m_scene->SetMaterial("cube","mat_green");
+		TObjectPtr ground = m_scene->AddObject("ground","data/obj/plane.3ds");     
+		ground->SetMaterial( material_manager->DEFAULT_SILVER_ID() );
 
-		//add materials
-		material_manager->AddMaterial("mat_ground",silver,silver);
-		material_manager->AddMaterial("mat_cone",green,white);            
-		//set materials
-		m_scene->SetMaterial("ground","mat_ground");
+		TObjectPtr cube = m_scene->AddObject("cube",CUBE,10.0,10.0);
+		cube->Move( 100.0, 10.0, 100.0 );
+		cube->SetMaterial( material_manager->DEFAULT_GREEN_ID() ); 
+		
 
 		int CONE_COUNT = 10;
-		string cone;
+		string cone_name;
 
 		for(int i=0; i<CONE_COUNT; ++i)
 		{
-			cone = "cone" + num2str(i);
-			m_scene->AddObject(cone.c_str(), "data/obj/cone.3ds");
+			cone_name = "cone" + num2str(i);
+			TObjectPtr cone =  m_scene->AddObject(cone_name.c_str(), "data/obj/cone.3ds");
 
 			float movx = (i%5)*50.0f - 10.0f*CONE_COUNT;
 			float movz = (i/5)*200.0f - 100.0f;
 
-			m_scene->MoveObj(cone.c_str(), movx, 0.0, movz );                
-			m_scene->SetMaterial(cone.c_str(),"mat_cone");
+			cone->Move( movx, 0.0, movz );                
+			cone->SetMaterial( material_manager->DEFAULT_GREEN_ID() );
 		}           
 	}
 	//scene 4 - outdoor
 	else if(scene == 4)
 	{
-		m_scene->AddObject("ground",PLANE,1000.0,1000.0);
+		TObjectPtr ground = m_scene->AddObject("ground",PLANE,1000.0,1000.0);
+		ground->SetMaterial(material_manager->DEFAULT_SILVER_ID()); //-- set materials
 
 		//add materials
 		material_manager->AddMaterial("mat_bark",lgrey,white);
@@ -139,50 +137,51 @@ void IPSMApp::CreateContent()
 		//s->AddTexture("mat_leaf","data/tex/alpha/leafs4.tga",ALPHA);
 		//s->AddTexture("mat_ground","data/tex/grass.tga",BASE, MODULATE, 1.0, 50.0, 100.0);
 
-		//set materials
-		m_scene->SetMaterial("ground","mat_ground");
 
 		//trees
 		float rnd;
 		int OBJECT_COUNT = 7;
-		string bark, leaf;
+		string bark_name, leaf_name;
 		for(int i=0; i<OBJECT_COUNT; i++)
 		{
 			for(int j=0; j<OBJECT_COUNT; j++)
 			{
 				rnd = rand()%100 / 25.0f - 2.0f;
-				bark = "tree" + num2str(i*OBJECT_COUNT + j) + "_bark";
-				leaf = "tree" + num2str(i*OBJECT_COUNT + j) + "_leaf";
+				bark_name = "tree" + num2str(i*OBJECT_COUNT + j) + "_bark";
+				leaf_name = "tree" + num2str(i*OBJECT_COUNT + j) + "_leaf";
+
+				TObjectPtr bark, leaf;
 				//two tree types
 				if( (i*OBJECT_COUNT + j)%2 == 1)
 				{
-					m_scene->AddObject(bark.c_str(),"data/obj/trees/tree1_bark.3ds");
-					m_scene->AddObject(leaf.c_str(),"data/obj/trees/tree1_leaf.3ds");
+					bark = m_scene->AddObject(bark_name.c_str(),"data/obj/trees/tree1_bark.3ds");
+					leaf = m_scene->AddObject(leaf_name.c_str(),"data/obj/trees/tree1_leaf.3ds");
 				}
 				else
 				{
-					m_scene->AddObject(bark.c_str(),"data/obj/trees/tree2_bark.3ds");
-					m_scene->AddObject(leaf.c_str(),"data/obj/trees/tree2_leaf.3ds");
+					bark = m_scene->AddObject(bark_name.c_str(),"data/obj/trees/tree2_bark.3ds");
+					leaf = m_scene->AddObject(leaf_name.c_str(),"data/obj/trees/tree2_leaf.3ds");
 				}
 				float movx = j*50.0f + rnd - 25.0f*OBJECT_COUNT;
 				float movz = i*50.0f - rnd - 25.0f* OBJECT_COUNT;
 				float roty = 10.0f * rnd;
-				m_scene->MoveObj(bark.c_str(), movx, 0.0, movz);
-				m_scene->MoveObj(leaf.c_str(), movx, 0.0, movz);
-				m_scene->RotateObj(bark.c_str(), roty, A_Z);
-				m_scene->RotateObj(leaf.c_str(), roty, A_Z);
-				m_scene->SetMaterial(bark.c_str(), "mat_bark");
-				m_scene->SetMaterial(leaf.c_str(), "mat_leaf");
+				bark->Move( movx, 0.0, movz );
+				leaf->Move( movx, 0.0, movz );
+				bark->Rotate( roty, A_Z );
+				leaf->Rotate( roty, A_Z );
+				bark->SetMaterial( material_manager->GetMaterial( "mat_bark" )->GetID() );
+				leaf->SetMaterial( material_manager->GetMaterial( "mat_leaf" )->GetID() );
 			}
 		}
 
 		//big tree
-		m_scene->AddObject("bigtree_bark","data/obj/trees/tree2_bark.3ds");
-		m_scene->ResizeObj("bigtree_bark", 10.0,10.0,10.0);
-		m_scene->AddObject("bigtree_leaves","data/obj/trees/tree2_leaf.3ds");
-		m_scene->ResizeObj("bigtree_leaves", 10.0,10.0,10.0);
-		m_scene->SetMaterial("bigtree_bark","mat_bark");
-		m_scene->SetMaterial("bigtree_leaves","mat_leaf");
+		TObjectPtr bigtree_bark = m_scene->AddObject("bigtree_bark","data/obj/trees/tree2_bark.3ds");
+		bigtree_bark->Resize( 10.0,10.0,10.0 );
+		bigtree_bark->SetMaterial( material_manager->GetMaterial("mat_bark")->GetID() );
+
+		TObjectPtr bigtree_leaves = m_scene->AddObject("bigtree_leaves","data/obj/trees/tree2_leaf.3ds");
+		bigtree_leaves->Resize( 10.0,10.0,10.0 );
+		bigtree_leaves->SetMaterial( material_manager->GetMaterial("mat_leaf")->GetID() );
 	}      
 
 

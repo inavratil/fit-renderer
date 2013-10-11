@@ -41,7 +41,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 	}
 
 	//Load materials
-	vector<string> mats;						//array with materials (to index them)
+	vector<int> mats;						//array with materials (to index them)
     if(load_materials)
     {
 		cout<<scene->mNumMaterials<<" materials. Loading textures:\n";
@@ -55,11 +55,11 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			m->Get(AI_MATKEY_NAME,name);
 
             //remove not-allowed chars from name
-            string m_name = name_space + name.C_Str();
-            for(unsigned j=0; j<m_name.length(); j++)
+            string mat_name = name_space + name.C_Str();
+            for(unsigned j=0; j<mat_name.length(); j++)
             {
-                if(m_name[j] < 0 || (!isalpha(m_name[j]) && !isdigit(m_name[j])) || m_name[j] > 128)
-					m_name.replace(j--,1,"");
+                if(mat_name[j] < 0 || (!isalpha(mat_name[j]) && !isdigit(mat_name[j])) || mat_name[j] > 128)
+					mat_name.replace(j--,1,"");
             }
 
 			//get material properties
@@ -71,7 +71,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			m->Get(AI_MATKEY_COLOR_SPECULAR, specular);
 			m->Get(AI_MATKEY_SHININESS, shininess);
 
-			GeometryMaterial* mat = new GeometryMaterial( m_name.c_str() );
+			GeometryMaterial* mat = new GeometryMaterial( mat_name.c_str() );
 			mat->SetColor( 
 				glm::vec3(ambient.r, ambient.g, ambient.b), 
 				glm::vec3(diffuse.r, diffuse.g, diffuse.b), 
@@ -80,7 +80,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			mat->SetShininess( 256.0f - 256.0f*shininess );
 			m_material_manager->AddMaterial( mat );
 
-			mats.push_back(m_name);
+			mats.push_back( mat->GetID() );
 
 			//Textures
 			string path;
@@ -193,7 +193,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 		//assign material
 		if(load_materials)
 		{
-			SetMaterial(oname.c_str(), mats[mesh->mMaterialIndex].c_str());
+			o->SetMaterial( mats[mesh->mMaterialIndex] );
 		}
 		//set sceneID
 		m_objects[oname]->SetSceneID(m_sceneID);

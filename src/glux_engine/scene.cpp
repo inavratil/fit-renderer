@@ -379,24 +379,6 @@ void TScene::Destroy(bool delete_cache)
 
 /**
 ****************************************************************************************************
-@brief Bind material(identified by mat_name) to object(identified by obj_name)
-@param obj_name object name
-@param mat_name material name
-***************************************************************************************************/
-void TScene::SetMaterial(const char* obj_name, const char *mat_name)
-{
-    //object existence control
-    if(m_objects.find(obj_name) == m_objects.end())
-    {
-        cerr<<"WARNING (SetMaterial): no object with name "<<obj_name<<"\n";
-        return;
-   } 
-
-	m_objects[obj_name]->SetMaterial(MaterialManager::Instance()->GetMaterial(mat_name)->GetID());
-}
-
-/**
-****************************************************************************************************
 @brief Add 3DS object to scene. If objects has been loaded, a object pointer from cache is used
 instead of reloading from file
 @param name object name
@@ -486,7 +468,7 @@ void TScene::MoveLight(GLint light, glm::vec3 w)
         m_lights[light]->Move(w);
         string l_name = "default_light_" + num2str(light);
         //update light position
-        MoveObjAbs(l_name.c_str(), w.x, w.y, w.z);
+        m_objects[l_name.c_str()]->MoveAbs(w.x, w.y, w.z);
 		Material* mat = m_material_manager->GetMaterial( l_name.c_str() );
         if(mat->IsShaderOK())
         {

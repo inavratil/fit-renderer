@@ -163,4 +163,7 @@ public:
         m_sceneID = id; 
     }
 };
+
+typedef TObject* TObjectPtr;
+
 #endif

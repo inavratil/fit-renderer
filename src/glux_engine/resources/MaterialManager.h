@@ -6,6 +6,10 @@
 #include "sdk/Material.h"
 #include "sdk/GeometryMaterial.h"
 
+#define DECL_MATERIAL( c ) \
+	MaterialPtr DEFAULT_##c##(){ return m_materials["DEFAULT_##c##"]; } \
+	int DEFAULT_##c##_ID(){ return m_materials["DEFAULT_##c##"]->GetID(); }
+
 class MaterialManager : public Singleton<MaterialManager>
 { 
 
@@ -35,7 +39,13 @@ public:
 	void Begin(){ m_im = m_materials.begin(); }
 	void Next(){ m_im++; }
 	bool End(){	return m_im == m_materials.end(); }
-	Material* GetItem(){ return m_im->second; }
+	MaterialPtr GetItem(){ return m_im->second; }
+
+	//-- Get default colored materials	
+	DECL_MATERIAL( RED )
+	DECL_MATERIAL( GREEN )
+	DECL_MATERIAL( BLUE )
+	DECL_MATERIAL( SILVER )
 
 //-----------------------------------------------------------------------------
 //-- Private methods
