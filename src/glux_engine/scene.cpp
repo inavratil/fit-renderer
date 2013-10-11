@@ -197,10 +197,6 @@ bool TScene::PostInit()
         {
 			if( m_dpshadow_method == CUT || m_dpshadow_method == DPSM )
 				if(!CreateShadowMap(m_il)) return false;
-			if( m_dpshadow_method == WARP_DPSM )
-			{
-				if(!m_shadow_technique->Initialize()) return false;
-			}
 				
 			/* TO DELETE??? spis ne, akorat musim pro shadow techniku naimplementovat ShaderFeature
             //add shadow map to all materials (except those who don't receive shadows)

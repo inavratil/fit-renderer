@@ -6,15 +6,16 @@
 #include "sdk/Material.h"
 #include "sdk/GeometryMaterial.h"
 
-#define DECL_MATERIAL( c ) \
-	MaterialPtr DEFAULT_##c##(){ return m_materials["DEFAULT_##c##"]; } \
-	int DEFAULT_##c##_ID(){ return m_materials["DEFAULT_##c##"]->GetID(); }
-
 class MaterialManager : public Singleton<MaterialManager>
 { 
 
 //-----------------------------------------------------------------------------
 // -- Member variables
+public:
+	static const int DEFAULT_RED = 0;
+	static const int DEFAULT_GREEN = 1;
+	static const int DEFAULT_BLUE = 2;
+	static const int DEFAULT_SILVER = 3;
 
 protected:	    
 	//-- associative array with all materials
@@ -30,9 +31,9 @@ public:
 	virtual ~MaterialManager(void);
 
 	Material* GetMaterial( const char* _name );
-	void AddMaterial( Material* _mat );
+	Material* AddMaterial( Material* _mat );
     ///@brief Add new material(see GeometryMaterial()) to list
-    void AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
+    GeometryMaterial* AddMaterial(const char* name, glm::vec3 amb = black, glm::vec3 diff = silver, glm::vec3 spec = white,
         GLfloat shin = 64.0, GLfloat reflect = 0.0, GLfloat transp = 0.0, GLint lm = PHONG);
 
 	//-- (Something like) Iterator pattern
@@ -40,12 +41,6 @@ public:
 	void Next(){ m_im++; }
 	bool End(){	return m_im == m_materials.end(); }
 	MaterialPtr GetItem(){ return m_im->second; }
-
-	//-- Get default colored materials	
-	DECL_MATERIAL( RED )
-	DECL_MATERIAL( GREEN )
-	DECL_MATERIAL( BLUE )
-	DECL_MATERIAL( SILVER )
 
 //-----------------------------------------------------------------------------
 //-- Private methods

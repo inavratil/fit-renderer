@@ -103,11 +103,11 @@ void IPSMApp::CreateContent()
 
 		//s->AddObject("ground",PLANE,1000.0,1000.0);
 		TObjectPtr ground = m_scene->AddObject("ground","data/obj/plane.3ds");     
-		ground->SetMaterial( material_manager->DEFAULT_SILVER_ID() );
+		ground->SetMaterial( MaterialManager::DEFAULT_SILVER );
 
 		TObjectPtr cube = m_scene->AddObject("cube",CUBE,10.0,10.0);
 		cube->Move( 100.0, 10.0, 100.0 );
-		cube->SetMaterial( material_manager->DEFAULT_GREEN_ID() ); 
+		cube->SetMaterial( MaterialManager::DEFAULT_GREEN ); 
 		
 
 		int CONE_COUNT = 10;
@@ -122,14 +122,14 @@ void IPSMApp::CreateContent()
 			float movz = (i/5)*200.0f - 100.0f;
 
 			cone->Move( movx, 0.0, movz );                
-			cone->SetMaterial( material_manager->DEFAULT_GREEN_ID() );
+			cone->SetMaterial( MaterialManager::DEFAULT_GREEN );
 		}           
 	}
 	//scene 4 - outdoor
 	else if(scene == 4)
 	{
 		TObjectPtr ground = m_scene->AddObject("ground",PLANE,1000.0,1000.0);
-		ground->SetMaterial(material_manager->DEFAULT_SILVER_ID()); //-- set materials
+		ground->SetMaterial( MaterialManager::DEFAULT_SILVER ); //-- set materials
 
 		//add materials
 		material_manager->AddMaterial("mat_bark",lgrey,white);
