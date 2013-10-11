@@ -25,6 +25,9 @@ TextureCache::~TextureCache(void)
 
 TexturePtr TextureCache::Create2DManual(const char* _name, int _resX, int _resY, GLint _internalFormat, GLenum _dataType, GLenum _filter, bool _mipmaps )
 {
+	if( Exist( _name ) )
+		return GetPtr( _name );
+
 	TexturePtr tex = new Texture( TEX_2D );
 
 	//-- set up filtering
@@ -72,6 +75,9 @@ TexturePtr TextureCache::Create2DArrayManual(
 	bool _mipmaps
 	)
 {
+	if( Exist( _name ) )
+		return GetPtr( _name );
+
 	TexturePtr tex = new Texture( TEX_2D_ARRAY );
 
 	//-- set up filtering
@@ -112,7 +118,7 @@ TexturePtr TextureCache::Create2DArrayManual(
 
 TexturePtr TextureCache::CreateFromImage( const char* _filename )
 {
-	if( m_texture_cache.find(_filename) != m_texture_cache.end() )
+	if( Exist( _filename ) )
 	{
 		return GetPtr( _filename );
 	}
@@ -242,7 +248,7 @@ TexturePtr TextureCache::CreateFromImage( const char* _filename )
 
 void TextureCache::Add( const char* _name, TexturePtr _tex )
 {
-	if( m_texture_cache.find(_name) != m_texture_cache.end() )
+	if( Exist( _name ) )
 	{
 		cerr<<"WARNING (TextureCache): texture with name "<<_name<<" already exist\n";
 		return;
@@ -255,7 +261,7 @@ void TextureCache::Add( const char* _name, TexturePtr _tex )
 
 GLuint TextureCache::Get( const char* _name )
 {
-	if( m_texture_cache.find(_name) == m_texture_cache.end() )
+	if( !Exist( _name ) )
 	{
 		cerr<<"WARNING (TextureCache): no texture with name "<<_name<<"\n";
 		return 0;
@@ -269,7 +275,7 @@ GLuint TextureCache::Get( const char* _name )
 
 TexturePtr TextureCache::GetPtr( const char* _name )
 {
-	if( m_texture_cache.find(_name) == m_texture_cache.end() )
+	if( !Exist( _name ) )
 	{
 		cerr<<"WARNING (TextureCache): no texture with name "<<_name<<"\n";
 	}

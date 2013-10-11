@@ -180,6 +180,7 @@ int GeometryMaterial::RenderMaterial()
 	return i;
 }
 
+//TODO: nekontroluje se, ze ficura jiz je v seznamu a pak se dvakrat priradi do shaderu stejny kus kodu
 void GeometryMaterial::AddFeature( ShaderFeature* _pFeat )
 {
 	if( m_custom_shader || this->IsScreenSpace() )

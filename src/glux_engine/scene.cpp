@@ -182,6 +182,14 @@ bool TScene::PostInit()
 	//-------------------------------------------------------------------------
     //do we have shadows from lights?
 
+	for( m_it_render_listeners = m_render_listeners.begin();
+		m_it_render_listeners != m_render_listeners.end();
+		m_it_render_listeners++
+		)
+	{
+		if(!(*m_it_render_listeners)->Initialize()) return false;
+	}
+
     int i;
     for(i = 0, m_il = m_lights.begin(); m_il != m_lights.end(); ++m_il, i++)
     {
@@ -280,43 +288,6 @@ bool TScene::PostInit()
 	//-------------------------------------------------------------------------
 	    
     cout<<"Post Init OK\n";
-    
-	/* TO DELETE
-	typedef void (*NOVYTYP) (GLuint,GLuint,GLsizei,GLsizei*,GLint*,GLenum*,GLchar*);
-	typedef GLint (*NOVYTYP2) (GLuint,const GLchar*);
-	
-	void (*GetActive[2])(GLuint,GLuint,GLsizei,GLsizei*,GLint*,GLenum*,GLchar*)={
-        (NOVYTYP)glGetActiveAttrib,(NOVYTYP)glGetActiveUniform};
-    GLint(*GetLocation[2])(GLuint,const GLchar*)={
-        (NOVYTYP2)glGetAttribLocation,(NOVYTYP2)glGetUniformLocation}; 
-
-	GLenum Active[2]={ GL_ACTIVE_ATTRIBUTES,GL_ACTIVE_UNIFORMS };
-	GLenum MaxLenght[2]={ GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,GL_ACTIVE_UNIFORM_MAX_LENGTH };
-
-	GLuint PROG = 43;
-	{//loop over set of types {attribute,uniform}
-        GLint Num;//number of active parameter
-        glGetProgramiv(PROG,GL_ACTIVE_UNIFORMS,&Num);//number
-
-        GLint BufLen;//length of the longest attribute name
-        glGetProgramiv(PROG,GL_ACTIVE_UNIFORM_MAX_LENGTH,&BufLen);
-
-        char*Buffer=new char[BufLen+1];//alocate buffer
-        for(GLint i=0;i<Num;++i)
-		{//loop over active parameter
-            GLenum Type;//type of parameter
-            GLint Size;//size of parameter
-            std::string Name;//name of parameter
-            GLint Location;//location of parameter
-            glGetActiveUniform(PROG,i,BufLen,NULL,&Size,&Type,Buffer);
-            Location=glGetUniformLocation(PROG,Buffer);//location
-            Name=std::string(Buffer);//convert buffer to string
-
-			cout<< Location << ", " << Type << ", " << Name << ", " <<Size << endl;
-        }
-        delete[]Buffer;//free buffer
-    }
-	*/
 
     return true;
 }

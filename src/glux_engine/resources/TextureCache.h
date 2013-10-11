@@ -49,9 +49,22 @@ public:
 	GLuint Get( const char* _name );
 	TexturePtr GetPtr( const char* _name );
 
+	bool Exist( const char* _name );
+
 };
 
 typedef TextureCache* TextureCachePtr;
+
+//-----------------------------------------------------------------------------
+//-- Inline methods
+
+inline bool TextureCache::Exist( const char* _name )
+{
+	return ( m_texture_cache.find(_name) != m_texture_cache.end() );
+}
+
+//-----------------------------------------------------------------------------
+
 
 #endif
 

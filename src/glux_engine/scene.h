@@ -110,7 +110,6 @@ protected:
 
 //FIXME: Tohle by melo prijit do tridy Application
 protected:
-
 	//-- Texture Cache
 	TextureCachePtr							m_texture_cache;
 	//-- Texture Cache

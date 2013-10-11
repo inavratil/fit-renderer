@@ -1,5 +1,7 @@
 #include "OmniShadow.h"
 
+#include "sdk/SimplePass.h"
+
 //-----------------------------------------------------------------------------
 
 OmniShadow::OmniShadow( TScene* _scene ) :
@@ -17,6 +19,36 @@ OmniShadow::~OmniShadow(void)
 
 bool OmniShadow::Initialize()
 {
+	//-- The light must be set
+	if( !m_pLight ) return false;
+
+	//-- Get access to managers and caches
+	TextureCachePtr texture_cache = m_scene->GetTextureCache();
+
+	int output_size = m_pLight->ShadowSize(); //TODO: tohle jinak, oddelit shadow od svetla?
+
+	TexturePtr tex_shadow = texture_cache->Create2DArrayManual( 
+		"tex_omni_shadowmap",
+		output_size, output_size, 
+		2,
+		GL_DEPTH_COMPONENT,
+		GL_FLOAT,
+		GL_NEAREST,
+		false
+		);
+	//TODO: Todle je tam proc?
+	tex_shadow->SetType( SHADOW_OMNI );
+	tex_shadow->SetIntensity( m_pLight->ShadowIntensity() );
+
+	//-- pass
+	SimplePassPtr pass_omni_depth = new SimplePass( output_size, output_size );
+	pass_omni_depth->AttachOutputTexture( 0, tex_shadow, true );
+	this->AppendPass("pass_omni_depth", pass_omni_depth );	
+
+	//FIXME: zapisujeme pouze do depth textury
+	//glDrawBuffer(GL_NONE); 
+    //glReadBuffer(GL_NONE);
+
 	return true;
 }
 

@@ -1,6 +1,7 @@
 #include "IPSMApp.h"
 
 #include "shadows/SplineWarpedShadow.h"
+#include "shadows/OmniShadow.h"
 
 #define USE_DP
 
@@ -54,6 +55,10 @@ void IPSMApp::CreateContent()
 	shadow_technique->SetLight( light );
 	m_scene->SetShadowTechnique( shadow_technique  );
 
+	//-- Dual-Paraboloid shadow technique
+	//OmniShadow* omni_shadow_technique = new OmniShadow( m_scene );
+	//omni_shadow_technique->SetLight( light );
+	//m_scene->AddRenderListener( omni_shadow_technique );
 
 	int scene = SetupExperiments( "experiments.cfg" );
 
