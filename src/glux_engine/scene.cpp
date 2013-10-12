@@ -36,7 +36,6 @@ TScene::TScene()
     m_useShadows = false;
     m_shadow_textures = 0;
     m_dpshadow_tess = false;
-    m_draw_shadow_map = false;
     m_min_depth = 0.0;
     m_avg_depth = 100.0;
     m_max_depth = 1000.0;
@@ -44,12 +43,10 @@ TScene::TScene()
 
     m_use_pcf = true;
     m_dpshadow_method = WARP_DPSM;
-    m_draw_aliasError = false;
     m_parab_angle = glm::vec3(0.0, 0.0, 0.0);
     m_cut_angle = glm::vec2(0.0);
 
 	//FIXME
-	m_texPreview_id = 0;
 	m_shadow_technique = NULL;
 	
 	m_texture_cache = new TextureCache();
@@ -471,6 +468,8 @@ void TScene::ChangeLightColor(GLint light, GLint component, glm::vec3 color)
 
 void TScene::SetWarping( bool _isEnabled )
 {
+	if( !m_shadow_technique ) return;
+
 	if(_isEnabled)
 		m_shadow_technique->Enable();
 	else

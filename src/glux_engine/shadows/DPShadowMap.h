@@ -1,22 +1,23 @@
-#ifndef _OMNISHADOW_H_
-#define _OMNISHADOW_H_
+#ifndef _DPSHADOWMAP_H_
+#define _DPSHADOWMAP_H_
 
 #include "IShadowTechnique.h"
+#include "shaderGen/ShaderFeature.h"
 
-class OmniShadow : public IShadowTechnique
+class DPShadowMap : public IShadowTechnique
 { 
 
 //-----------------------------------------------------------------------------
 // -- Member variables
 
 protected:
-
+	ShaderFeaturePtr	m_pShaderFeature;
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
 public:
-	OmniShadow( TScene* _scene );
-	virtual ~OmniShadow(void);
+	DPShadowMap( TScene* _scene );
+	virtual ~DPShadowMap(void);
 
 	virtual bool Initialize();
 	virtual void PreRender();
@@ -26,6 +27,8 @@ public:
 //-- Private methods
 
 private:
+	void _Init();
+	void _Destroy();
 	void _EvaluateBestConfiguration();
 };
 

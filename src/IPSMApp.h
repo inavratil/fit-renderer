@@ -4,6 +4,9 @@
 #include "globals.h"
 #include "sdk/Application.h"
 
+#include "shadows/SplineWarpedShadow.h"
+#include "shadows/DPShadowMap.h"
+
 enum IPSMTextures { OUTPUT, PING, PONG, MASK, CAM_ERR };
 
 class IPSMApp : public Application
@@ -19,6 +22,8 @@ protected:
 	bool			m_param_is_warping_enabled;
 	bool			m_param_is_draw_error_enabled;
 	int				m_param_preview_texture_id;
+
+	SplineWarpedShadow*		m_shadow_technique;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 

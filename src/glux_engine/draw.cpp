@@ -203,53 +203,12 @@ void TScene::Redraw(bool delete_buffer)
 	//-------------------------------------------------------------------------
 	//-- show shadow maps 
 
-    if(m_draw_shadow_map)
-    {
-        for(int i=1; i<2; i++)
-        {
-            const float q_size = 2.0f;
-            if(m_lights[0]->GetType() == OMNI)
-            {
-				Material* show_depth_omni = m_material_manager->GetMaterial( "show_depth_omni" );
-                show_depth_omni->SetUniform( "far_plane", SHADOW_FAR);
-                show_depth_omni->SetUniform( "index", float(i));
-                RenderSmallQuad("show_depth_omni", 0.0f, 0*q_size, q_size);
-            }
-            else
-            {
-                m_material_manager->GetMaterial( "show_depth" )->SetUniform( "far_plane", SHADOW_FAR);
-                RenderSmallQuad("show_depth", 0.0f, 0.0f, q_size);
-                break;
-            }
-        }	
-    }
+	if( false )
+	{
+		const float q_size = 2.0f;
 
-	//-------------------------------------------------------------------------
-
-	if(m_dpshadow_method == WARP_DPSM)
-    {
-		GLuint previewTexs[] =
-	{	
-			m_texture_cache->Get( "tex_output" ),
-			m_texture_cache->Get( "MTEX_ping" ),
-			m_texture_cache->Get( "MTEX_pong" ),
-			m_texture_cache->Get( "tex_stencil_color" ),
-			m_texture_cache->Get( "aliaserr_texture" )
-		};
-		
-		//show alias error
-		if(m_draw_aliasError)
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, previewTexs[m_texPreview_id]);                
-			//glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get("MTEX_warped_depth_color"));
-			//SetUniform("mat_quad_array", "index", 1.0);
-			RenderPass("mat_quad");
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-		}
-
-		
+		m_material_manager->GetMaterial( "show_depth" )->SetUniform( "far_plane", SHADOW_FAR);
+		RenderSmallQuad("show_depth", 0.0f, 0.0f, q_size);
 	}
 
 	for( m_it_render_listeners = m_render_listeners.begin();

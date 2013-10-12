@@ -1,23 +1,41 @@
-#include "OmniShadow.h"
+#include "DPShadowMap.h"
 
 #include "sdk/SimplePass.h"
+#include "shaderGen/SFDPShadowMap.h"
 
 //-----------------------------------------------------------------------------
 
-OmniShadow::OmniShadow( TScene* _scene ) :
+DPShadowMap::DPShadowMap( TScene* _scene ) :
 	IShadowTechnique( _scene )
 {
+	_Init();
 }
 
 //-----------------------------------------------------------------------------
 
-OmniShadow::~OmniShadow(void)
+DPShadowMap::~DPShadowMap(void)
 {
+	_Destroy();
 }
 
 //-----------------------------------------------------------------------------
 
-bool OmniShadow::Initialize()
+void DPShadowMap::_Init()
+{
+	m_pShaderFeature = new SFDPShadowMap();
+}
+
+//-----------------------------------------------------------------------------
+
+void DPShadowMap::_Destroy()
+{
+	if( m_pShaderFeature )
+		delete m_pShaderFeature;
+}
+
+//-----------------------------------------------------------------------------
+
+bool DPShadowMap::Initialize()
 {
 	//-- The light must be set
 	if( !m_pLight ) return false;
@@ -54,19 +72,19 @@ bool OmniShadow::Initialize()
 
 //-----------------------------------------------------------------------------
 
-void OmniShadow::PreRender()
+void DPShadowMap::PreRender()
 {
 }
 
 //-----------------------------------------------------------------------------
 
-void OmniShadow::PostRender()
+void DPShadowMap::PostRender()
 {
 }
 
 //-----------------------------------------------------------------------------
 
-void OmniShadow::_EvaluateBestConfiguration()
+void DPShadowMap::_EvaluateBestConfiguration()
 {
 	//#define TEST_DPSM
 #if 0

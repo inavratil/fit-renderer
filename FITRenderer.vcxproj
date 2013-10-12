@@ -128,7 +128,7 @@
     <ClCompile Include="src\glux_engine\shaderGen\ShaderFeature.cpp" />
     <ClCompile Include="src\glux_engine\shadow.cpp" />
     <ClCompile Include="src\glux_engine\sdk\SimplePass.cpp" />
-    <ClCompile Include="src\glux_engine\shadows\OmniShadow.cpp" />
+    <ClCompile Include="src\glux_engine\shadows\DPShadowMap.cpp" />
     <ClCompile Include="src\glux_engine\sdk\Singleton.cpp" />
     <ClCompile Include="src\glux_engine\shadows\SplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\StringUtil.cpp" />
@@ -173,7 +173,7 @@
     <ClInclude Include="src\glux_engine\shaderGen\shader_generator.h" />
     <ClInclude Include="src\glux_engine\shadow.h" />
     <ClInclude Include="src\glux_engine\sdk\SimplePass.h" />
-    <ClInclude Include="src\glux_engine\shadows\OmniShadow.h" />
+    <ClInclude Include="src\glux_engine\shadows\DPShadowMap.h" />
     <ClInclude Include="src\glux_engine\sdk\Singleton.h" />
     <ClInclude Include="src\glux_engine\shadows\SplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\StringUtil.h" />

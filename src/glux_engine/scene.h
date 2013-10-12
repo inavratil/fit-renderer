@@ -95,7 +95,7 @@ protected:
     ///settings for DPSM
     float m_dp_FOV;
     glm::vec3 m_parab_angle;
-    bool m_dpshadow_tess, m_draw_shadow_map;
+    bool m_dpshadow_tess;
     bool m_use_pcf, m_draw_aliasError;
     int m_dpshadow_method;
     float m_min_depth, m_avg_depth, m_max_depth;
@@ -105,7 +105,6 @@ protected:
 
 	//-----------------------------------------------------------------------------
 	//FIXME
-	int m_texPreview_id;
 	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
 
 //FIXME: Tohle by melo prijit do tridy Application
@@ -446,20 +445,6 @@ public:
         }
         m_dpshadow_tess = flag;
     }
-
-    ///@brief Toggle shadow map drawing
-    void DPDrawSM(bool flag){
-        m_draw_shadow_map = flag;
-    }
-
-    void DPDrawAliasError(bool flag){
-        m_draw_aliasError = flag;
-    }
-
-	void SetTexturePreviewId( int _id )
-	{
-		m_texPreview_id = _id;
-	}
 
 	void SetWarping( bool _isEnabled );
 

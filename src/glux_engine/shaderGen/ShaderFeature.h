@@ -74,4 +74,6 @@ public:
 
 };
 
+typedef ShaderFeature* ShaderFeaturePtr;
+
 #endif

@@ -20,7 +20,7 @@ public:
 
 //-----------------------------------------------------------------------------
 //-- Virtual Methods	
-	virtual void Init() = 0;
+	virtual void Init();
 	virtual string GetVars( int _shaderType );
 	virtual string GetModifiers( int _shaderType );
 	virtual string GetFunc( int _shaderType );

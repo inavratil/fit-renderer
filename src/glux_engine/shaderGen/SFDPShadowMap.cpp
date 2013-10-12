@@ -50,7 +50,7 @@ string SFDPShadowMap::GetModifiers( int _shaderType )
 
 string SFDPShadowMap::GetFunc( int _shaderType )
 {
-	return ShaderFeature::GetModifiers( _shaderType );
+	return ShaderFeature::GetFunc( _shaderType );
 }
 
 //-----------------------------------------------------------------------------

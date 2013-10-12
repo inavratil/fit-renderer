@@ -1,7 +1,6 @@
 #include "IPSMApp.h"
 
-#include "shadows/SplineWarpedShadow.h"
-#include "shadows/OmniShadow.h"
+
 
 #define USE_DP
 
@@ -18,7 +17,8 @@ IPSMApp::IPSMApp(void) :
 	m_param_cut_angle( 0 ),
 	m_param_is_warping_enabled( true ),
 	m_param_is_draw_error_enabled( false ),
-	m_param_preview_texture_id( OUTPUT )
+	m_param_preview_texture_id( OUTPUT ),
+	m_shadow_technique( NULL )
 {
 }
 
@@ -49,11 +49,11 @@ void IPSMApp::CreateContent()
 	//this->SetShadowTechnique( new BilinearWarpedShadow() );
 
 	//-- Spline shadow technique
-	IWarpedShadowTechnique* shadow_technique = new SplineWarpedShadow( m_scene );
+	m_shadow_technique = new SplineWarpedShadow( m_scene );
 	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
-	shadow_technique->SetControlPointsCount( 17.0 );
-	shadow_technique->SetLight( light );
-	m_scene->SetShadowTechnique( shadow_technique  );
+	m_shadow_technique->SetControlPointsCount( 17.0 );
+	m_shadow_technique->SetLight( light );
+	m_scene->SetShadowTechnique( m_shadow_technique  );
 
 	//-- Dual-Paraboloid shadow technique
 	//OmniShadow* omni_shadow_technique = new OmniShadow( m_scene );
@@ -132,9 +132,8 @@ void IPSMApp::CreateContent()
 		ground->SetMaterial( MaterialManager::DEFAULT_SILVER ); //-- set materials
 
 		//add materials
-		material_manager->AddMaterial("mat_bark",lgrey,white);
-		material_manager->AddMaterial("mat_leaf",lgrey,white);
-		material_manager->AddMaterial("mat_ground",silver,silver);
+		MaterialPtr mat_bark = material_manager->AddMaterial("mat_bark",lgrey,white);
+		MaterialPtr mat_leaf = material_manager->AddMaterial("mat_leaf",lgrey,white);
 
 		//add textures
 		//s->AddTexture("mat_bark","data/tex/bark4.tga");
@@ -174,19 +173,19 @@ void IPSMApp::CreateContent()
 				leaf->Move( movx, 0.0, movz );
 				bark->Rotate( roty, A_Z );
 				leaf->Rotate( roty, A_Z );
-				bark->SetMaterial( material_manager->GetMaterial( "mat_bark" )->GetID() );
-				leaf->SetMaterial( material_manager->GetMaterial( "mat_leaf" )->GetID() );
+				bark->SetMaterial( mat_bark->GetID() );
+				leaf->SetMaterial( mat_leaf->GetID() );
 			}
 		}
 
 		//big tree
 		TObjectPtr bigtree_bark = m_scene->AddObject("bigtree_bark","data/obj/trees/tree2_bark.3ds");
 		bigtree_bark->Resize( 10.0,10.0,10.0 );
-		bigtree_bark->SetMaterial( material_manager->GetMaterial("mat_bark")->GetID() );
+		bigtree_bark->SetMaterial( mat_bark->GetID() );
 
 		TObjectPtr bigtree_leaves = m_scene->AddObject("bigtree_leaves","data/obj/trees/tree2_leaf.3ds");
 		bigtree_leaves->Resize( 10.0,10.0,10.0 );
-		bigtree_leaves->SetMaterial( material_manager->GetMaterial("mat_leaf")->GetID() );
+		bigtree_leaves->SetMaterial( mat_leaf->GetID() );
 	}      
 
 
@@ -312,10 +311,11 @@ void IPSMApp::UpdateScene()
 {
 	Application::UpdateScene();
 
-	m_scene	->	DPDrawSM			( m_param_is_drawSM_enabled );
+	m_shadow_technique	->	SetDrawShadowMap	( m_param_is_drawSM_enabled );
+	m_shadow_technique	->	SetDrawAliasError	( m_param_is_draw_error_enabled );
+	m_shadow_technique	->	SetTexturePreviewId	( m_param_preview_texture_id );
 	m_scene	->	SetWarping			( m_param_is_warping_enabled );
-	m_scene	->	DPDrawAliasError	( m_param_is_draw_error_enabled );
-	m_scene	->	SetTexturePreviewId	( m_param_preview_texture_id );
+
 }
 
 //-----------------------------------------------------------------------------

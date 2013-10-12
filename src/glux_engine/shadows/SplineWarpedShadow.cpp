@@ -52,6 +52,18 @@ void SplineWarpedShadow::_Init()
 		 2.0f, -5.0f,	4.0f,  -1.0f,
 		-1.0f,	3.0f,	-3.0f,  1.0f
 		);
+
+	m_draw_shadow_map = false;
+	m_draw_aliasError = false;
+	m_texPreview_id = 0;
+}
+
+//----------------------------------------------------------------------------
+
+void SplineWarpedShadow::_Destroy()
+{
+	if( m_pShaderFeature )
+		delete m_pShaderFeature;
 }
 
 //----------------------------------------------------------------------------
@@ -771,6 +783,42 @@ void SplineWarpedShadow::PostRender()
 
 	cout << sum/count << " ";
 	*/
+	
+	if( m_draw_shadow_map )
+	{
+		for(int i=1; i<2; i++)
+		{
+			const float q_size = 2.0f;
+
+			Material* show_depth_omni = MaterialManager::Instance()->GetMaterial( "show_depth_omni" );
+			show_depth_omni->SetUniform( "far_plane", SHADOW_FAR);
+			show_depth_omni->SetUniform( "index", float(i));
+			m_scene->RenderSmallQuad("show_depth_omni", 0.0f, 0*q_size, q_size);
+		}	
+	}
+
+	//-- show alias error
+	if(m_draw_aliasError)
+	{
+		TextureCachePtr texture_cache = m_scene->GetTextureCache();
+		GLuint previewTexs[] =
+		{	
+			texture_cache->Get( "tex_output" ),
+			texture_cache->Get( "MTEX_ping" ),
+			texture_cache->Get( "MTEX_pong" ),
+			texture_cache->Get( "tex_stencil_color" ),
+			texture_cache->Get( "aliaserr_texture" )
+		};
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, previewTexs[m_texPreview_id]);                
+		//glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get("MTEX_warped_depth_color"));
+		//SetUniform("mat_quad_array", "index", 1.0);
+		m_scene->RenderPass("mat_quad");
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+	}
+
 
 	DrawGrid();
 }
@@ -864,8 +912,34 @@ Splines4x4 SplineWarpedShadow::_GetSplinesValues( glm::vec2 _c )
 	return ret;
 }
 
+//-----------------------------------------------------------------------------
+
 float SplineWarpedShadow::GetControlPointsCount()
 {
 	//-- potrebujeme o jedno vetsi rozliseni na kazde strane kvuli navic bodum pro spline
 	return (IWarpedShadowTechnique::GetControlPointsCount() + 2.0);
 }
+
+//-----------------------------------------------------------------------------
+
+///@brief Toggle shadow map drawing
+void SplineWarpedShadow::SetDrawShadowMap(bool _flag)
+{
+	m_draw_shadow_map = _flag;
+}
+
+//-----------------------------------------------------------------------------
+
+void SplineWarpedShadow::SetDrawAliasError(bool _flag)
+{
+	m_draw_aliasError = _flag;
+}
+
+//-----------------------------------------------------------------------------
+
+void  SplineWarpedShadow::SetTexturePreviewId( int _id )
+{
+	m_texPreview_id = _id;
+}
+
+//-----------------------------------------------------------------------------

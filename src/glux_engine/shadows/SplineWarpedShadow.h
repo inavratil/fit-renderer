@@ -22,6 +22,9 @@ protected:
 	glm::mat4	Mcr;
 
 	float*		m_pFuncValues;
+	bool		m_draw_shadow_map;
+	bool		m_draw_aliasError;
+	int			m_texPreview_id;
 
 public:
 	SplineWarpedShadow( TScene* _scene );
@@ -43,11 +46,16 @@ public:
 	//-- Virtualni metoda tridy IWarpedShadowTechnique
 	virtual float GetControlPointsCount();
 
+	void SetDrawShadowMap( bool _flag );
+	void SetDrawAliasError( bool _flag );
+	void SetTexturePreviewId( int _id );
+
 //-----------------------------------------------------------------------------
 //-- Private methods
 
 private:
 	void _Init();
+	void _Destroy();
 
 	//-- vrati 4 funkcni hodnoty lezi v rozich dane bunky mrizky. Druhy parametr urcuje, zda-li vraci x-ovy nebo y-ovy posun
 	Splines4x4 _GetSplinesValues( glm::vec2 _c );

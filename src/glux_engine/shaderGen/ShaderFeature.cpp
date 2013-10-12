@@ -105,7 +105,7 @@ string ShaderFeature::GetVars( int _shaderType )
 			uniforms += SG_UNIFORM + SG_SAMPLER2D + m_it->first + SG_SEMINL;
 	}
 
-	output = ioVars + SG_NEWLINE + uniforms + SG_NEWLINE;
+	output = ioVars + uniforms;
 
 	return output;
 }
