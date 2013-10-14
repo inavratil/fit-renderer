@@ -42,6 +42,7 @@ bool DPShadowMap::Initialize()
 
 	//-- Get access to managers and caches
 	TextureCachePtr texture_cache = m_scene->GetTextureCache();
+	MaterialManagerPtr material_manager = m_scene->GetMaterialManager();
 
 	int output_size = m_pLight->ShadowSize(); //TODO: tohle jinak, oddelit shadow od svetla?
 
@@ -66,6 +67,19 @@ bool DPShadowMap::Initialize()
 	//FIXME: zapisujeme pouze do depth textury
 	//glDrawBuffer(GL_NONE); 
     //glReadBuffer(GL_NONE);
+
+	for(material_manager->Begin(); 
+		!material_manager->End();
+		material_manager->Next())
+	{
+		Material* mat = material_manager->GetItem();
+		if( mat->IsScreenSpace() ) continue;
+		if (mat->GetSceneID() == m_scene->GetSceneID() )
+		{
+			mat->AddTexture( tex_shadow, "tex_shadow_map" );
+			static_cast<GeometryMaterial*>(mat)->AddFeature( this->GetShaderFeature() );
+		}
+	}
 
 	return true;
 }

@@ -104,7 +104,7 @@ void TScene::RenderShadowMap(TLight *l)
     glViewport(0, 0, m_resx, m_resy);         //reset viewport
 
     ///3. Calculate shadow texture matrix
-    glm::mat4 shadowMatrix = biasMatrix * lightProjMatrix * lightViewMatrix * glm::inverse(m_viewMatrix);
+    glm::mat4 shadowMatrix = biasMatrix * lightProjMatrix * lightViewMatrix;
 
     //restore projection matrix and set shadow matrices
     glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_matrices);

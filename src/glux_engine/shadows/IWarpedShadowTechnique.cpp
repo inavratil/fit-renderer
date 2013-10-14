@@ -82,20 +82,6 @@ ScreenGrid* IWarpedShadowTechnique::GetGrid()
 
 //-----------------------------------------------------------------------------
 
-void IWarpedShadowTechnique::SetShaderFeature( ShaderFeature* _pFeature )
-{
-	m_pShaderFeature = _pFeature;
-}
-
-//-----------------------------------------------------------------------------
-
-ShaderFeature* IWarpedShadowTechnique::GetShaderFeature()
-{
-	return m_pShaderFeature;
-}
-
-//-----------------------------------------------------------------------------
-
 void IWarpedShadowTechnique::UpdateGridRange( glm::vec4 _range )
 {
 	m_pScreenGrid->UpdateRange(_range);

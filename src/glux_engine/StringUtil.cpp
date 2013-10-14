@@ -1,7 +1,5 @@
 #include "StringUtil.h"
 
-string StringUtil::LONG_DELIM = string(80,'/');
-
 //-----------------------------------------------------------------------------
 
 int StringUtil::ParseInt(const string& val, int defaultValue)

@@ -10,6 +10,7 @@ Resp. umi zpracovat anebo nastavit jednotlive rendrovaci "passy".
 #define _RENDERLISTENER_H_
 
 #include "sdk/Pass.h"
+#include "shaderGen/ShaderFeature.h"
 
 class TScene;
 
@@ -21,7 +22,8 @@ class RenderListener
 
 protected:
 	TScene*		m_scene;
-	
+	ShaderFeature*	m_pShaderFeature;
+
 	//-- associative array of render passes
 	map<string, PassPtr>				m_passes;
 	map<string, PassPtr>::iterator		m_it_pass;
@@ -42,6 +44,9 @@ public:
 
 	void AppendPass( string _name, PassPtr _pass );
 	PassPtr GetPassPtr( string _name );
+
+	void SetShaderFeature( ShaderFeature* _pFeature );
+	ShaderFeature* GetShaderFeature();
 
 //-----------------------------------------------------------------------------
 //-- Private methods

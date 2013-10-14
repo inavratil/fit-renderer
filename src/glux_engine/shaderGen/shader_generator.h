@@ -38,6 +38,7 @@ const string SG_V4_VERTCOORD =	"vertCoord ";				// souradnice vrcholu v objektov
 
 const string SG_ASSIGN =		" = ";
 
+const string SG_LONG_DELIM =	string(80,'/');
 const string SG_NEWLINE =		"\n";
 const string SG_SEMI =			";";
 const string SG_SEMINL =		";\n";

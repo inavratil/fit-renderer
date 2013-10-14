@@ -2,7 +2,6 @@
 #define _DPSHADOWMAP_H_
 
 #include "IShadowTechnique.h"
-#include "shaderGen/ShaderFeature.h"
 
 class DPShadowMap : public IShadowTechnique
 { 
@@ -11,7 +10,7 @@ class DPShadowMap : public IShadowTechnique
 // -- Member variables
 
 protected:
-	ShaderFeaturePtr	m_pShaderFeature;
+
 //-----------------------------------------------------------------------------
 //-- Public methods 
 

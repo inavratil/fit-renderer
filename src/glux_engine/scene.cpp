@@ -268,7 +268,8 @@ bool TScene::PostInit()
             //if(m_useNormalBuffer)
             //   m_im->second->UseMRT(true);
             //bake material
-            mat->BakeMaterial(m_lights.size(), m_dpshadow_method, m_use_pcf);
+            if( !mat->BakeMaterial(m_lights.size(), m_dpshadow_method, m_use_pcf) )
+				throw ERR;
 
             LoadScreen();
         }

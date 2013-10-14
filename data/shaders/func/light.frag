@@ -1,3 +1,5 @@
+// @INPUT: normal
+// @INPUT: eyeVec
 
 //material settings
 struct Material{

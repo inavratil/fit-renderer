@@ -50,15 +50,14 @@ void IPSMApp::CreateContent()
 
 	//-- Spline shadow technique
 	m_shadow_technique = new SplineWarpedShadow( m_scene );
-	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
-	m_shadow_technique->SetControlPointsCount( 17.0 );
+	m_shadow_technique->SetControlPointsCount( 17.0 );	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
 	m_shadow_technique->SetLight( light );
-	m_scene->AddRenderListener( m_shadow_technique  );
+	//m_scene->AddRenderListener( m_shadow_technique  );
 
 	//-- Dual-Paraboloid shadow technique
-	//OmniShadow* omni_shadow_technique = new OmniShadow( m_scene );
-	//omni_shadow_technique->SetLight( light );
-	//m_scene->AddRenderListener( omni_shadow_technique );
+	DPShadowMap* m_shadow_technique = new DPShadowMap( m_scene );
+	m_shadow_technique->SetLight( light );
+	m_scene->AddRenderListener( m_shadow_technique );
 
 	int scene = SetupExperiments( "experiments.cfg" );
 

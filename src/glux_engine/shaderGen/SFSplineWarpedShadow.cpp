@@ -43,10 +43,16 @@ string SFSplineWarpedShadow::GetModifiers( int _shaderType )
 
 string SFSplineWarpedShadow::GetFunc( int _shaderType )
 {
-	string output;
+	string output = ShaderFeature::GetFunc( _shaderType );
 
-	output += LoadFunc("warp_spline");
-	output += LoadFunc("shadow_omni");
+	if( _shaderType == ShaderFeature::VS )
+	{
+	}
+	else if( _shaderType == ShaderFeature::FS )
+	{
+		output += LoadFunc("warp_spline");
+		output += LoadFunc("shadow_omni");
+	}
 
 	return output;
 }

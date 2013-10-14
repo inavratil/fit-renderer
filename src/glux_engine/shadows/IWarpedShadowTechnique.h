@@ -11,7 +11,6 @@ Abstraktni trida pro MOJE stinovaci techniky verze 2. Tedy ty, ktere pracuji s m
 
 #include "globals.h"
 #include "IShadowTechnique.h"
-#include "shaderGen/ShaderFeature.h"
 #include "ScreenGrid.h"
 
 class ScreenGrid;
@@ -28,8 +27,6 @@ protected:
 
 	GLuint			m_iTexID;
 	ScreenGrid*		m_pScreenGrid;
-	ShaderFeature*	m_pShaderFeature;
-
 
 public:
 	IWarpedShadowTechnique( TScene* _scene );
@@ -59,9 +56,6 @@ public:
 	void SetTexId( GLuint _texid);
 
 	ScreenGrid* GetGrid();
-	
-	void SetShaderFeature( ShaderFeature* _pFeature );
-	ShaderFeature* GetShaderFeature();
 
 	//-----------------------------------------------------------------------------
 	//-- Miscellaneous

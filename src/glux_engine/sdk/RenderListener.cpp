@@ -61,3 +61,19 @@ PassPtr RenderListener::GetPassPtr( string _name )
 
 	return m_passes[_name];
 }
+
+//-----------------------------------------------------------------------------
+
+void RenderListener::SetShaderFeature( ShaderFeature* _pFeature )
+{
+	m_pShaderFeature = _pFeature;
+}
+
+//-----------------------------------------------------------------------------
+
+ShaderFeature* RenderListener::GetShaderFeature()
+{
+	return m_pShaderFeature;
+}
+
+//-----------------------------------------------------------------------------
