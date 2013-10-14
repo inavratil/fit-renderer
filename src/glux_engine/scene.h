@@ -105,7 +105,7 @@ protected:
 
 	//-----------------------------------------------------------------------------
 	//FIXME
-	IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
+	//IShadowTechnique* m_shadow_technique; //?? Musi se to opravovat
 
 //FIXME: Tohle by melo prijit do tridy Application
 protected:
@@ -382,19 +382,6 @@ public:
         m_useShadows = flag; 
     }
 
-	IShadowTechnique* SetShadowTechnique( IShadowTechnique* _p_technique )
-	{
-		m_shadow_technique = _p_technique;
-
-		this->AddRenderListener( reinterpret_cast<RenderListener*>(m_shadow_technique) );
-		return m_shadow_technique;
-	}
-
-	IShadowTechnique* GetShadowTechnique()
-	{
-		return m_shadow_technique;
-	}
-
     //IMPROVED DUAL-PARABOLOID SHADOWS SETTINGS
 
     void DPSetCutAngle( glm::vec2 _angle ){
@@ -446,7 +433,6 @@ public:
         m_dpshadow_tess = flag;
     }
 
-	void SetWarping( bool _isEnabled );
 
     ////////////////////////// RENDER TARGETS, HDR AND SSAO ////////////////////////
 

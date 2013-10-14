@@ -53,7 +53,7 @@ void IPSMApp::CreateContent()
 	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
 	m_shadow_technique->SetControlPointsCount( 17.0 );
 	m_shadow_technique->SetLight( light );
-	m_scene->SetShadowTechnique( m_shadow_technique  );
+	m_scene->AddRenderListener( m_shadow_technique  );
 
 	//-- Dual-Paraboloid shadow technique
 	//OmniShadow* omni_shadow_technique = new OmniShadow( m_scene );
@@ -314,7 +314,10 @@ void IPSMApp::UpdateScene()
 	m_shadow_technique	->	SetDrawShadowMap	( m_param_is_drawSM_enabled );
 	m_shadow_technique	->	SetDrawAliasError	( m_param_is_draw_error_enabled );
 	m_shadow_technique	->	SetTexturePreviewId	( m_param_preview_texture_id );
-	m_scene	->	SetWarping			( m_param_is_warping_enabled );
+	if( m_param_is_warping_enabled )
+		m_shadow_technique->Enable();
+	else
+		m_shadow_technique->Disable();
 
 }
 

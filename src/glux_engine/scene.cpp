@@ -45,9 +45,6 @@ TScene::TScene()
     m_dpshadow_method = WARP_DPSM;
     m_parab_angle = glm::vec3(0.0, 0.0, 0.0);
     m_cut_angle = glm::vec2(0.0);
-
-	//FIXME
-	m_shadow_technique = NULL;
 	
 	m_texture_cache = new TextureCache();
 	m_material_manager = new MaterialManager();
@@ -74,8 +71,7 @@ TScene::~TScene()
 
     delete m_cam;
 
-	//FIXME
-	delete m_shadow_technique;
+	//-- delete managers and caches
 	delete m_texture_cache;
 	delete m_material_manager;
 }
@@ -464,14 +460,4 @@ void TScene::ChangeLightColor(GLint light, GLint component, glm::vec3 color)
         glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_lights);
         glBufferSubData(GL_UNIFORM_BUFFER, component*offset1 + offset2, sizeof(glm::vec3), glm::value_ptr(color)); 
     }
-}
-
-void TScene::SetWarping( bool _isEnabled )
-{
-	if( !m_shadow_technique ) return;
-
-	if(_isEnabled)
-		m_shadow_technique->Enable();
-	else
-		m_shadow_technique->Disable();
 }
