@@ -1,6 +1,7 @@
 #ifndef _DPSHADOWMAP_H_
 #define _DPSHADOWMAP_H_
 
+#include "globals.h"
 #include "IShadowTechnique.h"
 
 class DPShadowMap : public IShadowTechnique

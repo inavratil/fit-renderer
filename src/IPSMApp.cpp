@@ -237,7 +237,7 @@ void IPSMApp::CreateContent()
 	//	defines = "#define PARABOLA_CUT\n";
 
 	//and also for omnidirectional lights with dual-paraboloid
-	material_manager->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow_omni", "data/shaders/shadow_omni.vert", "data/shaders/shadow_omni.frag" ) );
+	material_manager->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow_omni", "data/shaders/default_shadow_omni.vert", "data/shaders/default_shadow_omni.frag" ) );
 
 	//optionally, add tessellation for paraboloid projection
 	/*

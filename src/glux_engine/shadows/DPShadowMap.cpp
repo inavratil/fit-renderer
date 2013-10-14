@@ -88,6 +88,79 @@ bool DPShadowMap::Initialize()
 
 void DPShadowMap::PreRender()
 {
+	//-- Get access to managers and caches
+	MaterialManagerPtr material_manager = m_scene->GetMaterialManager();
+	TextureCachePtr texture_cache = m_scene->GetTextureCache();
+
+	glm::mat4 cam_view_matrix = m_scene->GetViewMatrix();
+	glm::mat4 cam_proj_matrix = m_scene->GetProjMatrix();
+
+	glm::vec3 l_pos = m_pLight->GetPos();
+    glm::mat4 lightViewMatrix[2];
+
+    //position of camera in eye space = 0.0
+    glm::vec3 cam_pos = glm::vec3(0.0);
+    //position of light in eye space
+    glm::vec3 l_pos_eye =  glm::vec3(cam_view_matrix * glm::vec4(l_pos, 1.0));
+
+
+	///draw only back faces of polygons
+	glCullFace(GL_FRONT);
+	//glColorMask(0, 0, 0, 0);      //disable colorbuffer write
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_CLIP_PLANE0);
+
+	if(m_scene->IsWireframe())
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+
+	this->GetPassPtr("pass_omni_depth")->Activate();
+
+	//TWO PASS - FRONT AND BACK
+	for(int i=0; i<2; i++)
+	{
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_cache->Get("tex_omni_shadowmap"), 0, i);
+
+		float z_direction = 1.0;
+		if(i == 1)
+			z_direction = -1.0;                  
+
+		glClear( GL_DEPTH_BUFFER_BIT );
+
+		lightViewMatrix[i] = glm::lookAt(
+			m_pLight->GetPos(), 
+			m_pLight->GetPos() + glm::vec3(-z_direction*m_scene->GetCameraPtr()->GetFarPlane(), 0.0f, 0.0f ), 
+			glm::vec3(0.0f, 1.0f, 0.0f) );  
+
+		Material* _mat_default_shadow_omni = material_manager->GetMaterial( "_mat_default_shadow_omni" );
+		_mat_default_shadow_omni->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+
+
+		m_scene->DrawGeometry("_mat_default_shadow_omni", lightViewMatrix[i]);
+
+	}
+
+	this->GetPassPtr("pass_omni_depth")->Deactivate();
+
+
+	if( !m_scene->IsWireframe() )
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
+    //Finish, restore values
+    glDisable( GL_CLIP_PLANE0 );
+    glCullFace(GL_BACK);
+    glColorMask(1, 1, 1, 1);
+
+
+    //set light matrices and near/far planes to all materials
+	for(material_manager->Begin(); 
+		!material_manager->End();
+		material_manager->Next())
+	{
+		Material* mat = material_manager->GetItem();
+        mat->SetUniform("lightModelView[0]", lightViewMatrix[0]);
+        mat->SetUniform("lightModelView[1]", lightViewMatrix[1]);
+        mat->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+	}
 }
 
 //-----------------------------------------------------------------------------
