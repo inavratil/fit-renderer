@@ -422,7 +422,6 @@ bool GeometryMaterial::BakeMaterial(int light_count, int dpshadow_method, bool u
         if(!m_it_textures->second->Empty() &&
 			//FIXME: misto SHADOW* sem ma prijit CUSTOM 
 			m_it_textures->second->GetType() != SHADOW && 
-			m_it_textures->second->GetType() != SHADOW_OMNI && 
 			//FIXME: Lepsi ..
 			m_it_textures->second->GetType() != CUSTOM &&
 			m_it_textures->second->GetType() != DISPLACE )
@@ -542,7 +541,7 @@ bool GeometryMaterial::BakeMaterial(int light_count, int dpshadow_method, bool u
                 frag_main += "\n  //Shadow map projection\n"
                     "  color *= PCFShadow(" + m_it_textures->first + "," + m_it_textures->first + "_projShadow, " + m_it_textures->first + "_intensity);\n";
             }
-            else if(m_it_textures->second->GetType() == SHADOW_OMNI)
+            else if(m_it_textures->second->GetType() == CUSTOM)
             {				
                 //do we use parabola cut?
                 if(dpshadow_method == CUT)

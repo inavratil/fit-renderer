@@ -56,6 +56,7 @@ bool DPShadowMap::Initialize()
 		false
 		);
 	//TODO: Todle je tam proc?
+	tex_shadow->SetType( CUSTOM );
 	tex_shadow->SetIntensity( m_pLight->ShadowIntensity() );
 
 	//-- pass

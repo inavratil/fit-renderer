@@ -102,7 +102,7 @@ bool SplineWarpedShadow::Initialize()
 			GL_NEAREST,				//-- filtering
 			false					//-- mipmap generation
 			);
-		tex_shadow->SetType( SHADOW_OMNI );
+		tex_shadow->SetType( CUSTOM );
 		tex_shadow->SetIntensity( m_pLight->ShadowIntensity() );
 		texture_cache->Create2DArrayManual("MTEX_warped_depth_color",
 			sh_res, sh_res,	//-- width and height
