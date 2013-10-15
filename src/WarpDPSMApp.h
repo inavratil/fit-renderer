@@ -1,5 +1,5 @@
-#ifndef _IPSMAPP_H_
-#define _IPSMAPP_H_
+#ifndef _WARPDPSMAPP_H_
+#define _WARPDPSMAPP_H_
 
 #include "globals.h"
 #include "sdk/Application.h"
@@ -8,7 +8,7 @@
 
 enum IPSMTextures { OUTPUT, PING, PONG, MASK, CAM_ERR };
 
-class IPSMApp : public Application
+class WarpDPSMApp : public Application
 { 
 
 //-----------------------------------------------------------------------------
@@ -28,8 +28,8 @@ protected:
 //-- Public methods 
 
 public:
-	IPSMApp(void);
-	virtual ~IPSMApp(void);
+	WarpDPSMApp(void);
+	virtual ~WarpDPSMApp(void);
 
 	int SetupExperiments( const string& _filename );
 

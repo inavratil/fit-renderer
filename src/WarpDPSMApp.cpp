@@ -1,4 +1,4 @@
-#include "IPSMApp.h"
+#include "WarpDPSMApp.h"
 
 #include "shadows/DPShadowMap.h"
 
@@ -12,7 +12,7 @@ glm::vec3 g_parab_rot = glm::vec3( 0 );
 
 //-----------------------------------------------------------------------------
 
-IPSMApp::IPSMApp(void) :
+WarpDPSMApp::WarpDPSMApp(void) :
 	m_param_is_drawSM_enabled( true ),
 	m_param_cut_angle( 0 ),
 	m_param_is_warping_enabled( true ),
@@ -24,13 +24,13 @@ IPSMApp::IPSMApp(void) :
 
 //-----------------------------------------------------------------------------
 
-IPSMApp::~IPSMApp(void)
+WarpDPSMApp::~WarpDPSMApp(void)
 {
 }
 
 //-----------------------------------------------------------------------------
 
-void IPSMApp::CreateContent()
+void WarpDPSMApp::CreateContent()
 { 	
 	const char *cubemap[] = {   "data/tex/cubemaps/posx.tga", "data/tex/cubemaps/negx.tga",
 		"data/tex/cubemaps/posy.tga", "data/tex/cubemaps/negy.tga",
@@ -254,7 +254,7 @@ void IPSMApp::CreateContent()
 
 //-----------------------------------------------------------------------------
 
-int IPSMApp::SetupExperiments( const string& _filename )
+int WarpDPSMApp::SetupExperiments( const string& _filename )
 {
 	int scene = 1;
 	if( !m_experiment_name.empty() )
@@ -294,7 +294,7 @@ int IPSMApp::SetupExperiments( const string& _filename )
 
 //-----------------------------------------------------------------------------
 
-void IPSMApp::UpdateScene()
+void WarpDPSMApp::UpdateScene()
 {
 	Application::UpdateScene();
 
@@ -310,7 +310,7 @@ void IPSMApp::UpdateScene()
 
 //-----------------------------------------------------------------------------
 
-void IPSMApp::InitGUI()
+void WarpDPSMApp::InitGUI()
 {
 	Application::InitGUI();
 
@@ -370,7 +370,7 @@ void IPSMApp::InitGUI()
 
 //-----------------------------------------------------------------------------
 
-void IPSMApp::MouseMoved(SDL_Event event)
+void WarpDPSMApp::MouseMoved(SDL_Event event)
 {	
 	int status = event.button.button;
 /*
@@ -399,7 +399,7 @@ void IPSMApp::MouseMoved(SDL_Event event)
 
 //-----------------------------------------------------------------------------
 
-void IPSMApp::KeyInput( SDLKey _key, unsigned char _type )
+void WarpDPSMApp::KeyInput( SDLKey _key, unsigned char _type )
 {
 	Application::KeyInput( _key, _type );
 

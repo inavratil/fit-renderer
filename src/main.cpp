@@ -1,7 +1,8 @@
-#include "IPSMApp.h"
+#include "WarpDPSMApp.h"
+#include "DPSMApp.h"
 
 int main(int argc, char **argv)
 { 
-	IPSMApp app; 
+	WarpDPSMApp app; 
 	return app.Run(); 
 }

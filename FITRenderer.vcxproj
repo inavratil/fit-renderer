@@ -94,6 +94,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\DPSMApp.cpp" />
     <ClCompile Include="src\glux_engine\resources\MaterialManager.cpp" />
     <ClCompile Include="src\glux_engine\shadows\IShadowTechnique.cpp" />
     <ClCompile Include="src\glux_engine\sdk\Application.cpp" />
@@ -133,10 +134,11 @@
     <ClCompile Include="src\glux_engine\shadows\SplineWarpedShadow.cpp" />
     <ClCompile Include="src\glux_engine\StringUtil.cpp" />
     <ClCompile Include="src\glux_engine\texture.cpp" />
-    <ClCompile Include="src\IPSMApp.cpp" />
+    <ClCompile Include="src\WarpDPSMApp.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\DPSMApp.h" />
     <ClInclude Include="src\ellipse_params.h" />
     <ClInclude Include="src\experiments.h" />
     <ClInclude Include="src\glux_engine\resources\MaterialManager.h" />
@@ -178,7 +180,7 @@
     <ClInclude Include="src\glux_engine\shadows\SplineWarpedShadow.h" />
     <ClInclude Include="src\glux_engine\StringUtil.h" />
     <ClInclude Include="src\glux_engine\texture.h" />
-    <ClInclude Include="src\IPSMApp.h" />
+    <ClInclude Include="src\WarpDPSMApp.h" />
     <ClInclude Include="src\precomputed_diffs.h" />
   </ItemGroup>
   <ItemGroup>
