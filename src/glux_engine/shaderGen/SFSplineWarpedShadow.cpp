@@ -25,6 +25,8 @@ string SFSplineWarpedShadow::GetVars( int _shaderType )
 	else if( _shaderType == ShaderFeature::FS )
 	{
 		output +=
+			"uniform float tex_shadowmap_intensity;\n"
+			"uniform sampler2DArray tex_shadowmap;\n"
 			"uniform vec3 near_far_bias; // near and far plane for cm-cams\n"
 			"uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid\n"
 			"\n"
@@ -38,7 +40,18 @@ string SFSplineWarpedShadow::GetVars( int _shaderType )
 
 string SFSplineWarpedShadow::GetModifiers( int _shaderType )
 {
-	return ShaderFeature::GetModifiers( _shaderType );
+	string output = ShaderFeature::GetModifiers( _shaderType );
+
+	if( _shaderType == ShaderFeature::VS )
+	{
+	}
+	else if( _shaderType == ShaderFeature::FS )
+	{
+		output += "\n  //Shadow map projection\n"
+			"  color *= ShadowOMNI( tex_shadowmap, tex_shadowmap_intensity);\n";
+	}
+
+	return output;
 }
 
 string SFSplineWarpedShadow::GetFunc( int _shaderType )

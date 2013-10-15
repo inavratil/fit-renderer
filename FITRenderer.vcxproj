@@ -185,9 +185,10 @@
     <None Include="config.cfg" />
     <None Include="data\shaders\bloom_ssao.frag" />
     <None Include="data\shaders\blur.frag" />
-    <None Include="data\shaders\default_shadow_omni .vert" />
     <None Include="data\shaders\default_shadow_omni.frag" />
+    <None Include="data\shaders\default_shadow_omni.vert" />
     <None Include="data\shaders\func\blur.frag" />
+    <None Include="data\shaders\func\default_shadow_omni.frag" />
     <None Include="data\shaders\func\env.frag" />
     <None Include="data\shaders\func\light.frag" />
     <None Include="data\shaders\func\shadow.frag" />

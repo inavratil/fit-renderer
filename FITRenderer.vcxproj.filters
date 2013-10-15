@@ -430,10 +430,13 @@
     <None Include="data\shaders\perspective_alias_error.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="data\shaders\default_shadow_omni .vert">
+    <None Include="data\shaders\default_shadow_omni.frag">
       <Filter>Shaders\shadows</Filter>
     </None>
-    <None Include="data\shaders\default_shadow_omni.frag">
+    <None Include="data\shaders\func\default_shadow_omni.frag">
+      <Filter>Shaders\func</Filter>
+    </None>
+    <None Include="data\shaders\default_shadow_omni.vert">
       <Filter>Shaders\shadows</Filter>
     </None>
   </ItemGroup>

@@ -156,9 +156,6 @@ bool SplineWarpedShadow::Initialize()
 		//FIXME: Tohle by melo prijit do Init metody dane shadow techniky
 		this->GetShaderFeature()->AddTexture( "MTEX_2Dfunc_values", texture_cache->Get("MTEX_2Dfunc_values"), 1.0, ShaderFeature::FS );
 
-		//FIXME: to shadowID by se mohlo/melo nastavovat jinde
-		m_pLight->SetShadowTexID( texture_cache->Get( "tex_shadow" ) );
-
 		//-----------------------------------------------------------------------------
 		//blur
 		{
@@ -303,8 +300,7 @@ bool SplineWarpedShadow::Initialize()
 			if( mat->IsScreenSpace() ) continue;
 			if (mat->GetSceneID() == m_scene->GetSceneID() )
 			{
-				string tex_shadow_name = mat->GetName() + "_texShadowOMNI_A";
-				mat->AddTexture( texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
+				mat->AddTexture( texture_cache->GetPtr( "tex_shadow" ), "tex_shadowmap" );
 
 				static_cast<GeometryMaterial*>(mat)->AddFeature( this->GetShaderFeature() );
 			}

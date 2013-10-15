@@ -56,7 +56,6 @@ bool DPShadowMap::Initialize()
 		false
 		);
 	//TODO: Todle je tam proc?
-	tex_shadow->SetType( SHADOW_OMNI );
 	tex_shadow->SetIntensity( m_pLight->ShadowIntensity() );
 
 	//-- pass
@@ -76,7 +75,7 @@ bool DPShadowMap::Initialize()
 		if( mat->IsScreenSpace() ) continue;
 		if (mat->GetSceneID() == m_scene->GetSceneID() )
 		{
-			mat->AddTexture( tex_shadow, "tex_shadow_map" );
+			mat->AddTexture( tex_shadow, "tex_shadowmap" );
 			static_cast<GeometryMaterial*>(mat)->AddFeature( this->GetShaderFeature() );
 		}
 	}

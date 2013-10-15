@@ -23,7 +23,7 @@ string LoadFunc(char* func, char* type)
     file += type;
     ifstream fin(file.c_str());
     if(!fin) 
-        return "null";
+        return "";
     string data;
     char ch;
     while(fin.get(ch))
@@ -543,12 +543,7 @@ bool GeometryMaterial::BakeMaterial(int light_count, int dpshadow_method, bool u
                     "  color *= PCFShadow(" + m_it_textures->first + "," + m_it_textures->first + "_projShadow, " + m_it_textures->first + "_intensity);\n";
             }
             else if(m_it_textures->second->GetType() == SHADOW_OMNI)
-            {
-				/*TO DELETE
-                frag_vars +=
-                    "uniform float " + m_it_textures->first + "_intensity;\n"
-                    "uniform sampler2DArray " + m_it_textures->first + ";\n";
-				*/
+            {				
                 //do we use parabola cut?
                 if(dpshadow_method == CUT)
                     frag_vars += "#define PARABOLA_CUT\n";
@@ -560,12 +555,7 @@ bool GeometryMaterial::BakeMaterial(int light_count, int dpshadow_method, bool u
                 if(m_it_textures->first.find("ShadowOMNI_A") != string::npos)
 					if( dpshadow_method == CUT || dpshadow_method == DPSM  )
 						frag_func += LoadFunc("shadow_cut");
-				
-
-				//FIXME: jako parametr funkce dat m_variables["ObjSpacePosition"]
-                frag_main += "\n  //Shadow map projection\n"
-                    "  color *= ShadowOMNI(" + m_it_textures->first + ", " + m_it_textures->first + "_intensity);\n";
-					*/
+				*/				
             }
 
             //other texture types
