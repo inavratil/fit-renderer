@@ -190,24 +190,6 @@ bool TScene::PostInit()
         {
 			if( m_dpshadow_method == CUT || m_dpshadow_method == DPSM )
 				if(!CreateShadowMap(m_il)) return false;
-				
-			/* TO DELETE??? spis ne, akorat musim pro shadow techniku naimplementovat ShaderFeature
-            //add shadow map to all materials (except those who don't receive shadows)
-			for(m_material_manager->Begin(); 
-				!m_material_manager->End();
-				m_material_manager->Next())
-			{
-				Material* mat = m_material_manager->GetItem();
-				if( mat->IsScreenSpace() ) continue;
-                if (mat->GetSceneID() == m_sceneID )
-				{
-					string tex_shadow_name = mat->GetName() + "_texShadowOMNI_A";
-					mat->AddTexture( m_texture_cache->GetPtr( "tex_shadow" ), tex_shadow_name.c_str() );
-	
-					static_cast<GeometryMaterial*>(mat)->AddFeature(m_shadow_technique->GetShaderFeature());
-				}
-			}
-			*/
 
 			m_texture_cache->Create2DManual( "select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
             //create render target for depth calculations

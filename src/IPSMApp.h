@@ -5,7 +5,6 @@
 #include "sdk/Application.h"
 
 #include "shadows/SplineWarpedShadow.h"
-#include "shadows/DPShadowMap.h"
 
 enum IPSMTextures { OUTPUT, PING, PONG, MASK, CAM_ERR };
 
@@ -34,13 +33,13 @@ public:
 
 	int SetupExperiments( const string& _filename );
 
-	virtual void InitGUI();
-	virtual void CreateContent();	// <== Must be redefined
-	virtual void UpdateScene();
+	/*virtual*/ void InitGUI();
+	/*virtual*/ void CreateContent();	// <== Must be redefined
+	/*virtual*/ void UpdateScene();
 
 	
-	virtual void MouseMoved(SDL_Event event);
-	virtual void KeyInput( SDLKey _key, unsigned char _type );
+	/*virtual*/ void MouseMoved(SDL_Event event);
+	/*virtual*/ void KeyInput( SDLKey _key, unsigned char _type );
 
 //-----------------------------------------------------------------------------
 //-- Private methods

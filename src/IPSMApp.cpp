@@ -1,6 +1,6 @@
 #include "IPSMApp.h"
 
-
+#include "shadows/DPShadowMap.h"
 
 #define USE_DP
 
@@ -43,11 +43,6 @@ void IPSMApp::CreateContent()
 
 	TLight* light = m_scene->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
 
-	//-- Polynomial shadow technique
-	//this->SetShadowTechnique( new PolynomialWarpedShadow() );
-	//-- Bilinear shadow technique
-	//this->SetShadowTechnique( new BilinearWarpedShadow() );
-
 	//-- Spline shadow technique
 	m_shadow_technique = new SplineWarpedShadow( m_scene );
 	//m_shadow_technique->SetControlPointsCount( 17.0 );	//-- nastavi se rozliseni MRIZKY, tj. kolik ridicich bodu bude mit mrizka
@@ -69,10 +64,6 @@ void IPSMApp::CreateContent()
 	//cast/receive shadows
 	//s->ObjCastShadow("sky",false);
 	//s->MatReceiveShadow("mat_sky",false);
-
-	//s->AddObject("camera",CUBE, 10, 10);//"data/obj/camera.3ds");
-	//s->AddMaterial("mat_camera", black, green);
-	//s->SetMaterial("camera", "mat_camera");
 
 	//scene 1 - car
 	if(scene == 1)
@@ -207,9 +198,6 @@ void IPSMApp::CreateContent()
 	//toggle effects (HDR & SSAO)
 	//s->UseHDR();
 	//s->UseSSAO();
-
-	//prepare render to texture
-	//s->CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT);
 
 	////General HDR settings
 	//s->SetUniform("mat_tonemap","exposure",1.0);
@@ -437,11 +425,6 @@ void IPSMApp::KeyInput( SDLKey _key, unsigned char _type )
         m_scene->DPSetCutAngle(m_param_cut_angle);
         break;
 	*/
-	//-------------------------------------------
-	//case SDLK_t:
-	//	m_param_is_drawSM_enabled = !m_param_is_drawSM_enabled;
-	//	m_scene->DPDrawSM( m_param_is_drawSM_enabled );
-    //    break;
 
     default:
         break;
