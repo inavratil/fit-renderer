@@ -22,7 +22,8 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 	//Do not import line and point meshes
 	importer.SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE, aiPrimitiveType_LINE | aiPrimitiveType_POINT);
 
-	const aiScene* scene = importer.ReadFile(file,	aiProcess_JoinIdenticalVertices|
+	const aiScene* scene = importer.ReadFile(file,	
+		aiProcess_JoinIdenticalVertices|
 		aiProcess_LimitBoneWeights|
 		aiProcess_RemoveRedundantMaterials|
 		aiProcess_PreTransformVertices |
@@ -31,8 +32,9 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 		aiProcess_SortByPType|
 		aiProcess_FindDegenerates|
 		aiProcess_FindInvalidData|
-		aiProcess_FixInfacingNormals|
-		aiProcess_GenNormals);
+		//aiProcess_FixInfacingNormals|
+		aiProcess_GenSmoothNormals
+		);
 
 	if(!scene)
 	{
@@ -66,10 +68,11 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 			aiColor3D ambient,diffuse,specular;
 			float shininess;
 
-			m->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-			m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-			m->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-			m->Get(AI_MATKEY_SHININESS, shininess);
+			aiReturn r;
+			r = m->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+			r = m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+			r = m->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+			r = m->Get(AI_MATKEY_SHININESS, shininess);
 
 			GeometryMaterial* mat = new GeometryMaterial( mat_name.c_str() );
 			mat->SetColor( 
@@ -77,7 +80,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 				glm::vec3(diffuse.r, diffuse.g, diffuse.b), 
 				glm::vec3(specular.r, specular.g, specular.b) 
 				);
-			mat->SetShininess( 256.0f - 256.0f*shininess );
+			mat->SetShininess( 256.0f );
 			m_material_manager->AddMaterial( mat );
 
 			mats.push_back( mat->GetID() );
