@@ -100,7 +100,7 @@ bool TScene::PreInit(GLint resx, GLint resy, int msamples, bool load_font)
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
 
-    glClearColor(0.0, 0.0, 0.0, 0.5); //clear color and depth
+    glClearColor(0.1, 0.1, 0.1, 0.5); //clear color and depth
     glEnable(GL_DEPTH_TEST);          //enable depth buffer
     glDepthFunc(GL_LEQUAL);
     //glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);

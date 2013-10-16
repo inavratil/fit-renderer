@@ -3,6 +3,6 @@
 
 int main(int argc, char **argv)
 { 
-	WarpDPSMApp app; 
+	DPSMApp app; 
 	return app.Run(); 
 }

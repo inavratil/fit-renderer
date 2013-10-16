@@ -17,8 +17,9 @@ TCamera::TCamera() :
 	m_fovy( 0 )
 {
 	m_pos = glm::vec3(0.0);
-	m_look = glm::vec3(0.0);
-	m_up = glm::vec3(0.0);
+	m_look = glm::vec3(0.0, 0.0, -1.0);
+	m_up = glm::vec3(0.0, 1.0, 0.0);
+	m_right = glm::vec3(1.0, 0.0, 0.0);
 
 	pitch = 0.0f;
 	yaw = 0.0f;
@@ -28,7 +29,7 @@ TCamera::TCamera() :
 	dU = glm::vec3(0.0f, 1.0f, 0.0f);
 	dL = glm::vec3(0.0f, 0.0f, -1.0f);
 
-	m_right = glm::vec3(0.0);
+
 }
 
 
