@@ -35,8 +35,8 @@ protected:
     int		m_id;
     int		m_sceneID;	//-- scene ID - when drawing more scenes than 1
 	bool	m_is_screenspace;
-	bool	m_has_alpha_channel;
 	bool	m_baked;
+	Texture*	m_alpha_texture;
 	
 	//-- associative array of input textures
 	map<string,Texture*>			m_textures;		//-- textures list    
@@ -93,8 +93,8 @@ public:
         return m_has_tessellation_shader;  
     }
 	//-- Has shader material alpha channel?
-    bool IsAlpha(){  
-        return m_has_alpha_channel; 
+    Texture* GetAlphaTexture(){  
+        return m_alpha_texture; 
     }
 	//-- is material working in screen space?
     bool IsScreenSpace(){  

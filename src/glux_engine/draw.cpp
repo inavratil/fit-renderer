@@ -242,7 +242,7 @@ void TScene::DrawScene(int drawmode)
                 continue;
             else if(drawmode == DRAW_TRANSPARENT && transparent == 0.0)
                 continue;
-            else if(drawmode == DRAW_ALPHA && !mat->IsAlpha())
+            else if(drawmode == DRAW_ALPHA && !mat->GetAlphaTexture())
                 continue;
 
             ///attach material shader
@@ -310,7 +310,7 @@ void TScene::DrawSceneDepth(const char* shadow_mat, glm::mat4& lightMatrix)
                 }
             }
             //disable alpha test (if was enabled)
-            if(mat->IsAlpha())
+            if(mat->GetAlphaTexture())
                 mat_shadow_mat->SetUniform("alpha_test", 0);
         }
     }
@@ -321,18 +321,46 @@ void TScene::DrawGeometry(const char* _shader, glm::mat4& _mvMatrix )
 {
     //then other with depth-only shader
 	Material* mat_shader = m_material_manager->GetMaterial( _shader );
-	mat_shader->RenderMaterial();
-	//glActiveTexture(GL_TEXTURE0);
-    //m_materials[shadow_mat]->SetUniform("alpha_tex", 0);
-	for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
-	{
-		if(m_io->second->IsShadowCaster() && m_io->second->GetSceneID() == m_sceneID )
-		{
-			//update matrix
-			glm::mat4 m = _mvMatrix * m_io->second->GetMatrix();
-			mat_shader->SetUniform("in_ModelViewMatrix", m);
+	int tex_unit = mat_shader->RenderMaterial();
 
-			m_io->second->Draw(mat_shader->HasTessellationShader());
+	for(m_material_manager->Begin(); 
+		!m_material_manager->End();
+		m_material_manager->Next())
+	{
+		Material* mat = m_material_manager->GetItem();
+		if(!mat->IsScreenSpace()) //don't render shaders working in screen space!
+		{
+			TexturePtr tex_alpha = mat->GetAlphaTexture();
+			//if there is alpha channel texture, attach it to depth shader
+			if( tex_alpha )
+			{
+				mat_shader->SetUniform("alpha_test", 1);   
+				
+				glActiveTexture(GL_TEXTURE0 + tex_unit);
+				//texture location must be updated regularly
+				mat_shader->SetUniform( "alpha_tex", tex_unit++ );
+
+				tex_alpha->Bind(); 
+			}
+
+			for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
+			{
+				if(m_io->second->IsShadowCaster() && m_io->second->GetSceneID() == m_sceneID && mat->GetID() == m_io->second->GetMatID())
+				{
+					//update matrix
+					glm::mat4 m = _mvMatrix * m_io->second->GetMatrix();
+					mat_shader->SetUniform("in_ModelViewMatrix", m);
+
+					m_io->second->Draw(mat_shader->HasTessellationShader());
+				}
+			}
+
+			//disable alpha test (if was enabled)
+			if( tex_alpha )
+			{
+				mat_shader->SetUniform("alpha_test", 0);   
+				tex_alpha->Unbind(); 
+			}
 		}
 	}
 

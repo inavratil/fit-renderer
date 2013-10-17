@@ -38,7 +38,7 @@ void Material::_Init( const char* _name, int _id )
 	m_name = _name;
 	m_id = _id;
 
-	m_has_alpha_channel = false;
+	m_alpha_texture = NULL;
 	m_has_tessellation_shader = false;
 	m_baked = false;
 
@@ -85,7 +85,7 @@ GLuint Material::AddTexture( TexturePtr _tex, const char* _texname )
 			//base map
 		case BASE: texname = NextTexture(m_name + "_Base_A"); break;
 			//alpha map
-		case ALPHA: texname = NextTexture(m_name + "_Alpha_A"); m_has_alpha_channel = true; break;
+		case ALPHA: texname = NextTexture(m_name + "_Alpha_A"); break;
 			//environment map
 		case ENV: texname = NextTexture(m_name + "_Env_A"); break;
 			//bump map
@@ -105,6 +105,8 @@ GLuint Material::AddTexture( TexturePtr _tex, const char* _texname )
 			break; 
 		}
 	}
+	if(_tex->GetType() == ALPHA) 
+		m_alpha_texture = _tex; 
 
 	m_textures[texname] = _tex;
 	return _tex->GetID();

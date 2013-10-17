@@ -38,7 +38,7 @@ void DPSMApp::CreateContent()
 	TexturePtr tex_pletivo = m_scene->GetTextureCache()->CreateFromImage( "data/tex/alpha/fence.tga" );
 	tex_pletivo->SetType( ALPHA );
 	if( MaterialPtr mat_pletivo = m_scene->GetMaterialManager()->GetMaterial("pletivoplate") )
-		mat_pletivo->AddTexture( tex_pletivo, "tex_pletivo" );
+		mat_pletivo->AddTexture( tex_pletivo, "alpha_tex" );	//TODO: jmeno jako konstantu ??
 
 	//-- setup camera
 	m_scene->SetFreelookCamera( glm::vec3(-13.1099,7.05098,-207.398 ), glm::vec3(0, 1, 0), glm::vec3(-13.1099,7.05098,-207.398)+glm::vec3(0, 0, -1000) );

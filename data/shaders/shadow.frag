@@ -1,6 +1,7 @@
 uniform int alpha_test;
 uniform sampler2D alpha_tex;
 
+in vec4 position;
 in vec2 fragTexCoord;
 out vec4 out_FragData;
 
