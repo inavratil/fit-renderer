@@ -41,7 +41,7 @@ void WarpDPSMApp::CreateContent()
 
 	//-------------------------------------------------------------------------
 
-	TLight* light = m_scene->AddLight(0, dgrey, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
+	TLight* light = m_scene->AddLight(0, silver, white, white, glm::vec3(0.0,0.0,0.0), 1000.0f);
 
 	//-- Spline shadow technique
 	m_shadow_technique = new SplineWarpedShadow( m_scene );

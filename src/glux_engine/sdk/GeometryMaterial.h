@@ -109,10 +109,7 @@ public:
     //render material
     virtual int RenderMaterial();
 
-    ///@brief toggle receiving shadows
-    void ReceiveShadow(bool flag){ 
-        m_receive_shadows = flag; 
-    }
+
 
     ///@brief should we render material as reflective?
     GLfloat GetReflect(){ 

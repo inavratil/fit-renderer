@@ -252,6 +252,8 @@ void TScene::DrawScene(int drawmode)
             ///render all objects attached to this material
             for(m_io = m_objects.begin(); m_io != m_objects.end(); ++m_io)
             {
+				if( m_io->second->GetName() == "default_light_0" )
+					int QQ = 1;
                 if(m_io->second->GetSceneID() == m_sceneID && m_io->second->GetMatID() == matID)
                 {
                     //update matrix

@@ -31,7 +31,7 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 		aiProcess_GenUVCoords|
 		aiProcess_SortByPType|
 		aiProcess_FindDegenerates|
-		aiProcess_FindInvalidData|
+		aiProcess_FindInvalidData |
 		aiProcess_GenNormals
 		);
 

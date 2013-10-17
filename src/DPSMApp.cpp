@@ -25,9 +25,10 @@ void DPSMApp::InitGUI()
 void DPSMApp::CreateContent()
 {
 	//-- setup light
-	TLight* light = m_scene->AddLight( 0, dgrey, white, white, glm::vec3( 0.0, 0.0, 0.0 ), 1e4f );
-	light->Move(  glm::vec3( -89, 55,125 ) );
+	TLight* light = m_scene->AddLight( 0, silver, white, white, glm::vec3( 0.0, 0.0, 0.0 ), 5000.0f );
 	light->SetType( OMNI );
+	m_scene->MoveLight( 0,  glm::vec3( -89, 155, 125 ) );
+	
 
 	//-- load content
 	m_scene->LoadScene("data/obj/scenes/car2.3ds");

@@ -78,7 +78,7 @@ bool DPShadowMap::Initialize()
 		material_manager->Next())
 	{
 		Material* mat = material_manager->GetItem();
-		if( mat->IsScreenSpace() ) continue;
+		if( mat->IsScreenSpace() || !mat->IsReceivingShadow() ) continue;
 		if (mat->GetSceneID() == m_scene->GetSceneID() )
 		{
 			mat->AddTexture( tex_shadow, "tex_shadowmap" );

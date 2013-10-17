@@ -36,6 +36,7 @@ protected:
     int		m_sceneID;	//-- scene ID - when drawing more scenes than 1
 	bool	m_is_screenspace;
 	bool	m_baked;
+	bool	m_receive_shadows;
 	Texture*	m_alpha_texture;
 	
 	//-- associative array of input textures
@@ -104,6 +105,12 @@ public:
     bool IsShaderOK(){
         return (m_program > 0);
     }
+
+	///@brief toggle receiving shadows
+    void ReceiveShadow(bool flag){ 
+        m_receive_shadows = flag; 
+    }
+	bool IsReceivingShadow(){ return m_receive_shadows; }
 
 //-----------------------------------------------------------------------------
     ///@brief Set float uniform value in shader
