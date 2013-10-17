@@ -67,12 +67,12 @@ float ShadowOMNI(in sampler2DArray shadow_map, in float intensity)
         {
           if(split_plane < 0.0)
           {
-              depth = texture(shadow_map, vec3(front_coords.xy + vec2((i - 1.0)*PCF_STEP, (j - 1.0)*PCF_STEP), cascade) ).r;
+              depth = texture(shadow_map, vec3(front_coords.xy + vec2((i - 1.0)*PCF_STEP, (j - 1.0)*PCF_STEP), 0.0) ).r;
               mydepth = front_coords.z;
           }
           else
           {
-              depth = texture(shadow_map, vec3(back_coords.xy + vec2((i - 1.0)*PCF_STEP, (j - 1.0)*PCF_STEP), cascades) ).r;
+              depth = texture(shadow_map, vec3(back_coords.xy + vec2((i - 1.0)*PCF_STEP, (j - 1.0)*PCF_STEP), 1.0) ).r;
               mydepth = back_coords.z;
           }
 
