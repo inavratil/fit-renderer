@@ -25,15 +25,14 @@ void TScene::LoadScene(const char* file, bool load_materials, bool load_lights, 
 	const aiScene* scene = importer.ReadFile(file,	
 		aiProcess_JoinIdenticalVertices|
 		aiProcess_LimitBoneWeights|
-		aiProcess_RemoveRedundantMaterials|
+		//aiProcess_RemoveRedundantMaterials|
 		aiProcess_PreTransformVertices |
 		aiProcess_Triangulate|
 		aiProcess_GenUVCoords|
 		aiProcess_SortByPType|
 		aiProcess_FindDegenerates|
 		aiProcess_FindInvalidData|
-		//aiProcess_FixInfacingNormals|
-		aiProcess_GenSmoothNormals
+		aiProcess_GenNormals
 		);
 
 	if(!scene)

@@ -48,7 +48,10 @@ void MaterialManager::_Destroy()
 Material* MaterialManager::GetMaterial( const char* _name )
 {
 	if(m_materials.find(_name) == m_materials.end())
+	{
 		cerr<<"ERROR (GetMaterial): no material with name "<<_name<<"\n";
+		return NULL;
+	}
 	return m_materials[_name];
 }
 
