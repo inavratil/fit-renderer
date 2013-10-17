@@ -22,6 +22,12 @@ DPShadowMap::~DPShadowMap(void)
 
 void DPShadowMap::_Init()
 {
+	//-- shadow map parameters
+	m_i_shadow_res = 1024;
+	m_f_intensity = 0.1f;
+	m_b_use_pcf = false;
+
+	//-- setup shader feature
 	m_pShaderFeature = new SFDPShadowMap();
 }
 
@@ -44,7 +50,7 @@ bool DPShadowMap::Initialize()
 	TextureCachePtr texture_cache = m_scene->GetTextureCache();
 	MaterialManagerPtr material_manager = m_scene->GetMaterialManager();
 
-	int output_size = m_pLight->ShadowSize(); //TODO: tohle jinak, oddelit shadow od svetla?
+	int output_size = m_i_shadow_res;
 
 	TexturePtr tex_shadow = texture_cache->Create2DArrayManual( 
 		"tex_omni_shadowmap",
@@ -55,9 +61,8 @@ bool DPShadowMap::Initialize()
 		GL_NEAREST,
 		false
 		);
-	//TODO: Todle je tam proc?
 	tex_shadow->SetType( CUSTOM );
-	tex_shadow->SetIntensity( m_pLight->ShadowIntensity() );
+	tex_shadow->SetIntensity( m_f_intensity );
 
 	//-- pass
 	SimplePassPtr pass_omni_depth = new SimplePass( output_size, output_size );
@@ -80,6 +85,9 @@ bool DPShadowMap::Initialize()
 			static_cast<GeometryMaterial*>(mat)->AddFeature( this->GetShaderFeature() );
 		}
 	}
+	
+	if( m_b_use_pcf )
+		m_pShaderFeature->AddVariable( "USE_PCF", "", ShaderFeature::DEFINE );
 
 	return true;
 }
@@ -169,6 +177,13 @@ void DPShadowMap::PostRender()
 {
 }
 
+//-----------------------------------------------------------------------------
+
+void DPShadowMap::SetShadowParams( int _res, int _intensity )
+{
+	m_i_shadow_res = _res;
+	m_f_intensity = _intensity;
+}
 //-----------------------------------------------------------------------------
 
 void DPShadowMap::_EvaluateBestConfiguration()

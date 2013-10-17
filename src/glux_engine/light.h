@@ -100,6 +100,8 @@ public:
     GLuint GetFBO(){ 
         return fbo; 
     }
+
+	void SetType( int _type ){ m_light_type = _type; }
     ///@brief get light type
     int GetType(){ 
         return m_light_type; 

@@ -11,6 +11,10 @@ class DPShadowMap : public IShadowTechnique
 // -- Member variables
 
 protected:
+	int			m_i_shadow_res;
+	float		m_f_intensity;
+	bool		m_b_use_pcf;
+
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -22,6 +26,8 @@ public:
 	virtual bool Initialize();
 	virtual void PreRender();
 	virtual void PostRender();
+
+	void SetShadowParams( int _res, int _intensity = 0.1f );
 
 //-----------------------------------------------------------------------------
 //-- Private methods

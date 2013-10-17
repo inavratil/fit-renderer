@@ -1,10 +1,16 @@
 #include "IShadowTechnique.h"
 
+#include "sdk/ScreenSpaceMaterial.h"
 //-----------------------------------------------------------------------------
 
 IShadowTechnique::IShadowTechnique( TScene* _scene ) :
 	RenderListener( _scene )
 {
+	MaterialManagerPtr material_manager = _scene->GetMaterialManager();
+	//add shadow shader when shadows are enabled (will be sending depth values only)
+	material_manager->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag" ) );
+	//and also for omnidirectional lights with dual-paraboloid
+	material_manager->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow_omni", "data/shaders/default_shadow_omni.vert", "data/shaders/default_shadow_omni.frag" ) );
 }
 
 //-----------------------------------------------------------------------------

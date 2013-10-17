@@ -546,8 +546,6 @@ bool GeometryMaterial::BakeMaterial(int light_count, int dpshadow_method, bool u
                 //do we use parabola cut?
                 if(dpshadow_method == CUT)
                     frag_vars += "#define PARABOLA_CUT\n";
-                if(use_pcf)
-                    frag_vars += "#define USE_PCF\n";
 
 				/*TO DELETE
                 //insert shadow function (only once)

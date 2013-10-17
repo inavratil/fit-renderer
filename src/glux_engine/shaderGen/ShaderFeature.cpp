@@ -86,26 +86,25 @@ void ShaderFeature::DeactivateTextures( GLuint _shader, int& _unitId )
 string ShaderFeature::GetVars( int _shaderType )
 {
 	string output;
-	string ioVars;
-	string uniforms;
 
 	for( m_iv = m_variables.begin(); m_iv != m_variables.end(); ++m_iv )
 	{
 		Variable v = m_iv->second;
 
 		if( v.varType == INOUT )
-			ioVars += InOut[_shaderType] + v.type + v.name + SG_SEMINL;
+			output += InOut[_shaderType] + v.type + v.name + SG_SEMINL;
 		else if( v.varType == VS_UNIFORM )
-			uniforms += SG_UNIFORM + v.type + v.name + SG_SEMINL;
+			output += SG_UNIFORM + v.type + v.name + SG_SEMINL;
+		else if( v.varType == DEFINE )
+			output += SG_DEFINE + v.name + SG_SEMINL;
 	}
 
 	for( m_it = m_textures.begin(); m_it != m_textures.end(); ++m_it )
 	{
 		if( _shaderType == m_it->second.shType )
-			uniforms += SG_UNIFORM + SG_SAMPLER2D + m_it->first + SG_SEMINL;
+			output += SG_UNIFORM + SG_SAMPLER2D + m_it->first + SG_SEMINL;
 	}
 
-	output = ioVars + uniforms;
 
 	return output;
 }

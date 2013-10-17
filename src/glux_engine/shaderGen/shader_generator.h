@@ -23,6 +23,7 @@ const string SG_OUT =			"out ";
 const string SG_UNIFORM =		"uniform ";
 const string SG_VEC4 =			"vec4 ";
 const string SG_SAMPLER2D =		"sampler2D ";
+const string SG_DEFINE =		"#define ";
 
 //------------------------------------------------------------------------------
 //-- Variables

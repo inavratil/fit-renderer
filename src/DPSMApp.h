@@ -21,6 +21,7 @@ public:
 	/*virtual*/ void InitGUI();
 	/*virtual*/ void CreateContent();	// <== Must be redefined
 	/*virtual*/ void UpdateScene();
+
 //-----------------------------------------------------------------------------
 //-- Private methods
 

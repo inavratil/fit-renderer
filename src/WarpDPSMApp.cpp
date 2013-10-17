@@ -218,14 +218,7 @@ void WarpDPSMApp::CreateContent()
 	material_manager->AddMaterial( new ScreenSpaceMaterial( "mat_quad_lod","data/shaders/quad.vert", "data/shaders/quad_lod.frag" ) );
 	material_manager->AddMaterial( new ScreenSpaceMaterial( "mat_quad_array","data/shaders/quad.vert", "data/shaders/quad_array.frag" ) );        
 
-	//add shadow shader when shadows are enabled (will be sending depth values only)
-	material_manager->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow", "data/shaders/shadow.vert", "data/shaders/shadow.frag" ) );
-	string defines;
-	//if(dpshadow_method == CUT)
-	//	defines = "#define PARABOLA_CUT\n";
 
-	//and also for omnidirectional lights with dual-paraboloid
-	material_manager->AddMaterial( new ScreenSpaceMaterial( "_mat_default_shadow_omni", "data/shaders/default_shadow_omni.vert", "data/shaders/default_shadow_omni.frag" ) );
 
 	//optionally, add tessellation for paraboloid projection
 	/*

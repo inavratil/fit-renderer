@@ -30,7 +30,7 @@ const string InOut[] = { SG_IN, SG_OUT };
 class ShaderFeature
 {
 public:
-	enum SF_VariableTypes { VS_UNIFORM, FS_UNIFORM, INOUT };
+	enum SF_VariableTypes { VS_UNIFORM, FS_UNIFORM, INOUT, DEFINE };
 	enum SF_ShaderType { FS, VS };
 
 //-----------------------------------------------------------------------------
