@@ -27,6 +27,8 @@ void DPShadowMap::_Init()
 	m_i_shadow_res = 1024;
 	m_f_intensity = 0.1f;
 	m_b_use_pcf = false;
+	m_b_draw_shadow_map = false;
+	m_b_draw_alias_error = false;
 
 	//-- setup shader feature
 	m_pShaderFeature = new SFDPShadowMap();
@@ -194,7 +196,8 @@ void DPShadowMap::PreRender()
 
 void DPShadowMap::PostRender()
 {
-	m_scene->DrawGeometry( "mat_aliasError", m_scene->GetViewMatrix() );
+	if( m_b_draw_alias_error )
+		m_scene->DrawGeometry( "mat_aliasError", m_scene->GetViewMatrix() );
 }
 
 //-----------------------------------------------------------------------------
@@ -204,8 +207,21 @@ void DPShadowMap::SetShadowParams( int _res, int _intensity )
 	m_i_shadow_res = _res;
 	m_f_intensity = _intensity;
 }
+
+//-----------------------------------------------------------------------------
+///@brief Toggle shadow map drawing
+void DPShadowMap::SetDrawShadowMap(bool _flag)
+{
+	m_b_draw_shadow_map = _flag;
+}
+
 //-----------------------------------------------------------------------------
 
+void DPShadowMap::SetDrawAliasError(bool _flag)
+{
+	m_b_draw_alias_error = _flag;
+}
+//-----------------------------------------------------------------------------
 void DPShadowMap::_EvaluateBestConfiguration()
 {
 	//#define TEST_DPSM

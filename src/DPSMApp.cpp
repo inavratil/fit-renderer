@@ -1,10 +1,10 @@
 #include "DPSMApp.h"
 
-#include "shadows/DPShadowMap.h"
-
 //-----------------------------------------------------------------------------
 
-DPSMApp::DPSMApp(void)
+DPSMApp::DPSMApp(void) :
+	m_param_is_drawSM_enabled( false ),
+	m_param_is_draw_error_enabled( false )
 {
 }
 
@@ -18,6 +18,13 @@ DPSMApp::~DPSMApp(void)
 void DPSMApp::InitGUI()
 {
 	Application::InitGUI();
+
+	//show shadow maps
+	TwAddVarRW( m_gui, "drawSM", TW_TYPE_BOOLCPP, &m_param_is_drawSM_enabled, 
+               " label='Show shadow maps' group='DPSM' key=t ");
+	//draw aliasing error
+    TwAddVarRW( m_gui, "draw_error", TW_TYPE_BOOLCPP, &m_param_is_draw_error_enabled, 
+               " label='Show alias error' group='DPSM' key=f ");
 }
 
 //-----------------------------------------------------------------------------
@@ -46,10 +53,10 @@ void DPSMApp::CreateContent()
 	m_scene->AdjustFreelookCamera(-4,-169);
 
 	//-- Dual-Paraboloid shadow technique
-	DPShadowMap* shadow_technique = new DPShadowMap( m_scene );
-	shadow_technique->SetLight( light );
-	shadow_technique->SetShadowParams( 1024, 0.3f );
-	m_scene->AddRenderListener( shadow_technique );
+	m_shadow_technique = new DPShadowMap( m_scene );
+	m_shadow_technique->SetLight( light );
+	m_shadow_technique->SetShadowParams( 1024, 0.3f );
+	m_scene->AddRenderListener( m_shadow_technique );
 }
 
 //-----------------------------------------------------------------------------
@@ -57,6 +64,9 @@ void DPSMApp::CreateContent()
 void DPSMApp::UpdateScene()
 {
 	Application::UpdateScene();
+
+	m_shadow_technique	->	SetDrawShadowMap	( m_param_is_drawSM_enabled );
+	m_shadow_technique	->	SetDrawAliasError	( m_param_is_draw_error_enabled );
 }
 
 //-----------------------------------------------------------------------------

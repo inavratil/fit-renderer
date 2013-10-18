@@ -14,6 +14,8 @@ protected:
 	int			m_i_shadow_res;
 	float		m_f_intensity;
 	bool		m_b_use_pcf;
+	bool		m_b_draw_shadow_map;
+	bool		m_b_draw_alias_error;
 
 
 //-----------------------------------------------------------------------------
@@ -28,6 +30,8 @@ public:
 	virtual void PostRender();
 
 	void SetShadowParams( int _res, int _intensity = 0.1f );
+	void SetDrawShadowMap( bool _flag );
+	void SetDrawAliasError( bool _flag );
 
 //-----------------------------------------------------------------------------
 //-- Private methods
