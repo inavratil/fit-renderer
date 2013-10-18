@@ -1,0 +1,26 @@
+var class_t_compute =
+[
+    [ "TCompute", "class_t_compute.html#a59e86cdee1e4c09bb6b82485bdb9c5f0", null ],
+    [ "~TCompute", "class_t_compute.html#a5260b7a83c4f29f5100c57af28ff61da", null ],
+    [ "Destroy", "class_t_compute.html#afb55aa9aae6a5195e29a07f2158b7510", null ],
+    [ "Init", "class_t_compute.html#a20bb11d57532c998e1fced558893d072", null ],
+    [ "InitCL", "class_t_compute.html#a9d7b374235474e05597bb69b08422f91", null ],
+    [ "LoadSource", "class_t_compute.html#aab448c6e0df7a440fb69f81a0c2508b8", null ],
+    [ "Run", "class_t_compute.html#a6361d6a01188c191ec556e1cd70b9f4e", null ],
+    [ "SetupKernel", "class_t_compute.html#ac56463e81466f5e66764b2ac9ff4620a", null ],
+    [ "SetupKernelArgs", "class_t_compute.html#a0876f97805045019d4707004eaa2cd69", null ],
+    [ "commandQueue", "class_t_compute.html#ab31cebb24f65c98d764176fd6324fb68", null ],
+    [ "context", "class_t_compute.html#a5ae34fa18acf7262509d48b63fb2ccce", null ],
+    [ "device", "class_t_compute.html#abecfa3e978a16059102e7ff9bf6d3ad0", null ],
+    [ "dT", "class_t_compute.html#ab94ee68ecc9362f40e1036b84c5acb94", null ],
+    [ "groupSize", "class_t_compute.html#a2bbf23f0e7ed32e3a18cc77b4fa28f1d", null ],
+    [ "kernel", "class_t_compute.html#a86816d6a07459579b5490f819cd4d6b4", null ],
+    [ "maxDimensions", "class_t_compute.html#a9b9955074e1ccc710584814f0ff932d0", null ],
+    [ "maxWorkGroupSize", "class_t_compute.html#a9208f1236cbf7d95e954bfcf16cc94f8", null ],
+    [ "maxWorkItemSizes", "class_t_compute.html#ac86dc9d9606512a5abc1843301b53ac3", null ],
+    [ "pos", "class_t_compute.html#a5df7565a7f94fe71837f15155b8c7335", null ],
+    [ "program", "class_t_compute.html#a413a224aafe36507c25224f15a157534", null ],
+    [ "status", "class_t_compute.html#aadcc95f00410c02e7a842bc00d62cb02", null ],
+    [ "totalLocalMemory", "class_t_compute.html#a0199acdd32334280b41b681ccdcf9f01", null ],
+    [ "usedLocalMemory", "class_t_compute.html#ab169607b9bfb536f834acddc1e73b3b6", null ]
+];
