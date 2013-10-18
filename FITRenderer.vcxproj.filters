@@ -416,12 +416,6 @@
     <None Include="data\shaders\warping\dbg_stencil_test.frag">
       <Filter>Shaders\warp</Filter>
     </None>
-    <None Include="data\shaders\shadow_alias_error.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="data\shaders\shadow_alias_error.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="data\shaders\shadow_alias_mipmap.frag">
       <Filter>Shaders</Filter>
     </None>
@@ -444,6 +438,12 @@
     </None>
     <None Include="data\shaders\default_shadow_omni.vert">
       <Filter>Shaders\shadows</Filter>
+    </None>
+    <None Include="data\shaders\default_shadow_alias_error.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="data\shaders\default_shadow_alias_error.vert">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

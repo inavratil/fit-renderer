@@ -261,7 +261,7 @@ bool SplineWarpedShadow::Initialize()
 		//-----------------------------------------------------------------------------
 		{
 			//-- shader showing shadow map alias error
-			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/shadow_alias_error.vert", "data/shaders/shadow_alias_error.frag" );
+			ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/warp_shadow_alias_error.vert", "data/shaders/warp_shadow_alias_error.frag" );
 			mat->AddTexture( texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "mat_aliasErrorBaseA" );
 			mat->AddTexture( texture_cache->GetPtr( "MTEX_2Dfunc_values" ), "MTEX_2Dfunc_values" );
 			material_manager->AddMaterial( mat );

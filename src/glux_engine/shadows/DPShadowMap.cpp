@@ -1,12 +1,13 @@
 #include "DPShadowMap.h"
 
 #include "sdk/SimplePass.h"
+#include "sdk/ScreenSpaceMaterial.h"
 #include "shaderGen/SFDPShadowMap.h"
 
 //-----------------------------------------------------------------------------
 
 DPShadowMap::DPShadowMap( TScene* _scene ) :
-	IShadowTechnique( _scene )
+IShadowTechnique( _scene )
 {
 	_Init();
 }
@@ -46,48 +47,61 @@ bool DPShadowMap::Initialize()
 	//-- The light must be set
 	if( !m_pLight ) return false;
 
-	//-- Get access to managers and caches
-	TextureCachePtr texture_cache = m_scene->GetTextureCache();
-	MaterialManagerPtr material_manager = m_scene->GetMaterialManager();
-
-	int output_size = m_i_shadow_res;
-
-	TexturePtr tex_shadow = texture_cache->Create2DArrayManual( 
-		"tex_omni_shadowmap",
-		output_size, output_size, 
-		2,
-		GL_DEPTH_COMPONENT,
-		GL_FLOAT,
-		GL_NEAREST,
-		false
-		);
-	tex_shadow->SetType( CUSTOM );
-	tex_shadow->SetIntensity( m_f_intensity );
-
-	//-- pass
-	SimplePassPtr pass_omni_depth = new SimplePass( output_size, output_size );
-	pass_omni_depth->AttachOutputTexture( 0, tex_shadow, true );
-	this->AppendPass("pass_omni_depth", pass_omni_depth );	
-
-	//FIXME: zapisujeme pouze do depth textury
-	//glDrawBuffer(GL_NONE); 
-    //glReadBuffer(GL_NONE);
-
-	for(material_manager->Begin(); 
-		!material_manager->End();
-		material_manager->Next())
+	try
 	{
-		Material* mat = material_manager->GetItem();
-		if( mat->IsScreenSpace() || !mat->IsReceivingShadow() ) continue;
-		if (mat->GetSceneID() == m_scene->GetSceneID() )
+		//-- Get access to managers and caches
+		TextureCachePtr texture_cache = m_scene->GetTextureCache();
+		MaterialManagerPtr material_manager = m_scene->GetMaterialManager();
+
+		int output_size = m_i_shadow_res;
+
+		TexturePtr tex_shadow = texture_cache->Create2DArrayManual( 
+			"tex_omni_shadowmap",
+			output_size, output_size, 
+			2,
+			GL_DEPTH_COMPONENT,
+			GL_FLOAT,
+			GL_NEAREST,
+			false
+			);
+		tex_shadow->SetType( CUSTOM );
+		tex_shadow->SetIntensity( m_f_intensity );
+
+		//-- pass
+		SimplePassPtr pass_omni_depth = new SimplePass( output_size, output_size );
+		pass_omni_depth->AttachOutputTexture( 0, tex_shadow, true );
+		this->AppendPass("pass_omni_depth", pass_omni_depth );	
+
+		//FIXME: zapisujeme pouze do depth textury
+		//glDrawBuffer(GL_NONE); 
+		//glReadBuffer(GL_NONE);
+
+		for(material_manager->Begin(); 
+			!material_manager->End();
+			material_manager->Next())
 		{
-			mat->AddTexture( tex_shadow, "tex_shadowmap" );
-			static_cast<GeometryMaterial*>(mat)->AddFeature( this->GetShaderFeature() );
+			Material* mat = material_manager->GetItem();
+			if( mat->IsScreenSpace() || !mat->IsReceivingShadow() ) continue;
+			if (mat->GetSceneID() == m_scene->GetSceneID() )
+			{
+				mat->AddTexture( tex_shadow, "tex_shadowmap" );
+				static_cast<GeometryMaterial*>(mat)->AddFeature( this->GetShaderFeature() );
+			}
 		}
+
+		if( m_b_use_pcf )
+			m_pShaderFeature->AddVariable( "USE_PCF", "", ShaderFeature::DEFINE );
+
+
+		//-- shader showing shadow map alias error
+		ScreenSpaceMaterial* mat_aliasError = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/default_shadow_alias_error.vert", "data/shaders/default_shadow_alias_error.frag" );
+		mat_aliasError->AddTexture( texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "mat_aliasErrorBaseA" );
+		material_manager->AddMaterial( mat_aliasError );
 	}
-	
-	if( m_b_use_pcf )
-		m_pShaderFeature->AddVariable( "USE_PCF", "", ShaderFeature::DEFINE );
+	catch( int )
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -104,12 +118,12 @@ void DPShadowMap::PreRender()
 	glm::mat4 cam_proj_matrix = m_scene->GetProjMatrix();
 
 	glm::vec3 l_pos = m_pLight->GetPos();
-    glm::mat4 lightViewMatrix[2];
+	glm::mat4 lightViewMatrix[2];
 
-    //position of camera in eye space = 0.0
-    glm::vec3 cam_pos = glm::vec3(0.0);
-    //position of light in eye space
-    glm::vec3 l_pos_eye =  glm::vec3(cam_view_matrix * glm::vec4(l_pos, 1.0));
+	//position of camera in eye space = 0.0
+	glm::vec3 cam_pos = glm::vec3(0.0);
+	//position of light in eye space
+	glm::vec3 l_pos_eye =  glm::vec3(cam_view_matrix * glm::vec4(l_pos, 1.0));
 
 
 	///draw only back faces of polygons
@@ -153,28 +167,34 @@ void DPShadowMap::PreRender()
 	if( !m_scene->IsWireframe() )
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
-    //Finish, restore values
-    glDisable( GL_CLIP_PLANE0 );
-    glCullFace(GL_BACK);
-    glColorMask(1, 1, 1, 1);
+	//Finish, restore values
+	glDisable( GL_CLIP_PLANE0 );
+	glCullFace(GL_BACK);
+	glColorMask(1, 1, 1, 1);
 
 
-    //set light matrices and near/far planes to all materials
+	//set light matrices and near/far planes to all materials
 	for(material_manager->Begin(); 
 		!material_manager->End();
 		material_manager->Next())
 	{
 		Material* mat = material_manager->GetItem();
-        mat->SetUniform("lightModelView[0]", lightViewMatrix[0]);
-        mat->SetUniform("lightModelView[1]", lightViewMatrix[1]);
-        mat->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+		mat->SetUniform("lightModelView[0]", lightViewMatrix[0]);
+		mat->SetUniform("lightModelView[1]", lightViewMatrix[1]);
+		mat->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 	}
+
+	MaterialPtr mat_aliasError = material_manager->GetMaterial( "mat_aliasError" );
+	mat_aliasError->SetUniform("lightModelView[0]", lightViewMatrix[0]);
+	mat_aliasError->SetUniform("lightModelView[1]", lightViewMatrix[1]);
+	mat_aliasError->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 }
 
 //-----------------------------------------------------------------------------
 
 void DPShadowMap::PostRender()
 {
+	m_scene->DrawGeometry( "mat_aliasError", m_scene->GetViewMatrix() );
 }
 
 //-----------------------------------------------------------------------------
@@ -195,79 +215,79 @@ void DPShadowMap::_EvaluateBestConfiguration()
 
 	float min_sum = 1000.0f;
 
-    static bool first = true;
-    if( first )
-    {
+	static bool first = true;
+	if( first )
+	{
 #ifdef TEST_DPSM
-        float d_cutx = 0.0;
-        float d_cuty = 0.0;
+		float d_cutx = 0.0;
+		float d_cuty = 0.0;
 #else
-        for( float d_cuty = -64.0; d_cuty < 64.0; d_cuty += 10 )
-            for( float d_cutx = -64.0; d_cutx < 64.0; d_cutx += 10 )
+		for( float d_cuty = -64.0; d_cuty < 64.0; d_cuty += 10 )
+			for( float d_cutx = -64.0; d_cutx < 64.0; d_cutx += 10 )
 #endif
-            {
-                cout << "Cut angles:" << d_cutx << "-" << d_cuty << endl;
-                for( float d_roty = 0; d_roty <= 180; d_roty += 18 )
-                {
-                    for( float d_rotx = 0; d_rotx <= 180; d_rotx += 18 )
-                    {
-                        cut_angle.x = d_cutx;
-                        cut_angle.y = d_cuty;
-                        parab_angle.x = d_rotx;
-                        parab_angle.y = d_roty;
-                        //cut_tgangle = -1.5;
-                        //parab_angle.x = 54;
-                        //parab_angle.y = 162;
-                        ///draw all lights
-                        unsigned i;
-                        for(i=0, il = lights.begin(); il != lights.end(), i<lights.size(); il++, i++)
-                        {
-                            ///if light has a shadow, render scene from light view to texture (TScene::RenderShadowMap())
-                            if(il->HasShadow())
-                            {
+			{
+				cout << "Cut angles:" << d_cutx << "-" << d_cuty << endl;
+				for( float d_roty = 0; d_roty <= 180; d_roty += 18 )
+				{
+					for( float d_rotx = 0; d_rotx <= 180; d_rotx += 18 )
+					{
+						cut_angle.x = d_cutx;
+						cut_angle.y = d_cuty;
+						parab_angle.x = d_rotx;
+						parab_angle.y = d_roty;
+						//cut_tgangle = -1.5;
+						//parab_angle.x = 54;
+						//parab_angle.y = 162;
+						///draw all lights
+						unsigned i;
+						for(i=0, il = lights.begin(); il != lights.end(), i<lights.size(); il++, i++)
+						{
+							///if light has a shadow, render scene from light view to texture (TScene::RenderShadowMap())
+							if(il->HasShadow())
+							{
 
-                                //render shadow map
-                                if(il->GetType() == OMNI)
-                                    RenderShadowMapOmni(&(*il));
-                                else 
-                                    RenderShadowMap(&(*il));
-                            }
-                        }
+								//render shadow map
+								if(il->GetType() == OMNI)
+									RenderShadowMapOmni(&(*il));
+								else 
+									RenderShadowMap(&(*il));
+							}
+						}
 
-                        RenderAliasError();
-                        glBindTexture(GL_TEXTURE_2D, tex_cache["aliaserr_texture"]);
-                        glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, aerr_buffer);
+						RenderAliasError();
+						glBindTexture(GL_TEXTURE_2D, tex_cache["aliaserr_texture"]);
+						glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, aerr_buffer);
 
-                        float sum = 0.0;
-                        int count = 0;
-                        for( int i=0; i<(resx*resy); ++i )
-                        {
-                            if( aerr_buffer[i] > 0.0 )
-                            {
-                                sum += aerr_buffer[i];
-                                count++;
-                            }
-                        }
+						float sum = 0.0;
+						int count = 0;
+						for( int i=0; i<(resx*resy); ++i )
+						{
+							if( aerr_buffer[i] > 0.0 )
+							{
+								sum += aerr_buffer[i];
+								count++;
+							}
+						}
 
-                        //cout << ""<< sum/count << ";" << cut_angle.x << ";" << parab_angle.x << ";" << parab_angle.y << endl;
-                        cout << sum/count << " ";
+						//cout << ""<< sum/count << ";" << cut_angle.x << ";" << parab_angle.x << ";" << parab_angle.y << endl;
+						cout << sum/count << " ";
 
-                        if( sum/count < min_sum )
-                        {
-                            min_sum = sum/count;
-                            res_cut_angle.x = cut_angle.x;
-                            res_cut_angle.y = cut_angle.y;
-                            res_parab_angle.x = parab_angle.x;
-                            res_parab_angle.y = parab_angle.y;
-                        }
-                    }
-                    cout << endl;
-                }
-            }
+						if( sum/count < min_sum )
+						{
+							min_sum = sum/count;
+							res_cut_angle.x = cut_angle.x;
+							res_cut_angle.y = cut_angle.y;
+							res_parab_angle.x = parab_angle.x;
+							res_parab_angle.y = parab_angle.y;
+						}
+					}
+					cout << endl;
+				}
+			}
 
-        cout << "Res: "<< min_sum << ", " << res_cut_angle.x << ", " << res_cut_angle.y << ", " << res_parab_angle.x << ", " << res_parab_angle.y << endl;
-        first = false;
-    } //-- first
+			cout << "Res: "<< min_sum << ", " << res_cut_angle.x << ", " << res_cut_angle.y << ", " << res_parab_angle.x << ", " << res_parab_angle.y << endl;
+			first = false;
+	} //-- first
 #endif
 
 }
