@@ -1,5 +1,5 @@
 //Fragment shader for dual-paraboloid mapping
-in vec4 position;
+in float depth;
 in vec2 fragTexCoord;
 
 uniform int alpha_test;
@@ -15,8 +15,8 @@ void main(void)
             discard;
         else
             // write depth
-            gl_FragDepth = position.z;
+            gl_FragDepth = depth;
     }
     else
-        gl_FragDepth = position.z;
+        gl_FragDepth = depth;
 }

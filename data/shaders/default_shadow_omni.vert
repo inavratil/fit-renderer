@@ -7,7 +7,7 @@ uniform mat4 in_ModelViewMatrix;
 uniform vec2 near_far; // near and far plane for cm-cams
 
 out vec2 fragTexCoord;
-out vec4 position;
+out float depth;
 
 void main(void)
 {
@@ -27,7 +27,7 @@ void main(void)
     vertexEyeSpace.z = (Length - near_far.x)/(near_far.y  - near_far.x);
     vertexEyeSpace.w = 1.0; 
 
-    position = vertexEyeSpace;
+    depth = vertexEyeSpace.z;
 
     gl_Position = vertexEyeSpace; //ftransform();
 }
