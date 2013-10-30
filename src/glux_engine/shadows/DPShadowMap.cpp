@@ -32,6 +32,11 @@ void DPShadowMap::_Init()
 
 	//-- setup shader feature
 	m_pShaderFeature = new SFDPShadowMap();
+
+	//NAVY_FIX: do vydedene tridy pro IPSM
+	m_min_depth = 0.0;
+    m_avg_depth = 100.0;
+    m_max_depth = 1000.0;
 }
 
 //-----------------------------------------------------------------------------
@@ -112,57 +117,71 @@ bool DPShadowMap::Initialize()
 
 void DPShadowMap::PreRender()
 {
+	//-----------------------------------------------------------------------------
 	//-- Get access to managers and caches
 	MaterialManagerPtr material_manager = m_scene->GetMaterialManager();
 	TextureCachePtr texture_cache = m_scene->GetTextureCache();
 
-	glm::mat4 cam_view_matrix = m_scene->GetViewMatrix();
-	glm::mat4 cam_proj_matrix = m_scene->GetProjMatrix();
+	//-----------------------------------------------------------------------------
+	//-- Initialize local variables
 
-	glm::vec3 l_pos = m_pLight->GetPos();
+	//glm::mat4 cam_view_matrix = m_scene->GetViewMatrix();
+	//glm::mat4 cam_proj_matrix = m_scene->GetProjMatrix();
+	
+
+	//glm::vec3 l_pos = m_pLight->GetPos();
 	glm::mat4 lightViewMatrix[2];
 
-	//position of camera in eye space = 0.0
-	glm::vec3 cam_pos = glm::vec3(0.0);
-	//position of light in eye space
-	glm::vec3 l_pos_eye =  glm::vec3(cam_view_matrix * glm::vec4(l_pos, 1.0));
+	//-- position of camera in eye space = 0.0
+	//glm::vec3 cam_pos = glm::vec3(0.0);
+	//-- position of light in eye space
+	//glm::vec3 l_pos_eye =  glm::vec3(cam_view_matrix * glm::vec4(l_pos, 1.0));
+
+	//NAVY_FIX:
+	/*
+	//-- IPSM variables
+	float cam_fovy = m_scene->GetCameraPtr()->GetFOVy();
+	//size of near/far plane of view frustum
+	//m_max_depth = 2*m_avg_depth;
+	float far_hsize = m_max_depth * glm::tan(glm::radians(cam_fovy/2.0f));
+	float near_hsize = m_min_depth * glm::tan(glm::radians(cam_fovy/2.0f));
+
+	glm::vec3 cam_nearfar[2*F_POINTS];          //near/far points
+	glm::vec3 nearfar_light[2*F_POINTS];        //vectors from near/far into light position in eye space
+	glm::vec3 look_point = glm::vec3( glm::inverse(cam_view_matrix) * glm::vec4(0.0f, 0.0f, 1.0, 1.0));
+	float zoom[MAX_CASCADES];
+	bool in_frustum = true;
+	*/
+	_PreDrawDepthMap();
 
 
+	//-----------------------------------------------------------------------------
 	///draw only back faces of polygons
 	glCullFace(GL_FRONT);
 	//glColorMask(0, 0, 0, 0);      //disable colorbuffer write
-	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_CLIP_PLANE0);
 
 	if(m_scene->IsWireframe())
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
+	//-- Activate pass, i.e. it binds the associated FBO
 	this->GetPassPtr("pass_omni_depth")->Activate();
 
 	//TWO PASS - FRONT AND BACK
 	for(int i=0; i<2; i++)
 	{
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_cache->Get("tex_omni_shadowmap"), 0, i);
-
-		float z_direction = 1.0;
-		if(i == 1)
-			z_direction = -1.0;                  
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_cache->Get("tex_omni_shadowmap"), 0, i);               
 
 		glClear( GL_DEPTH_BUFFER_BIT );
 
-		lightViewMatrix[i] = glm::lookAt(
-			m_pLight->GetPos(), 
-			m_pLight->GetPos() + glm::vec3(-z_direction*m_scene->GetCameraPtr()->GetFarPlane(), 0.0f, 0.0f ), 
-			glm::vec3(0.0f, 1.0f, 0.0f) );  
-
-		Material* _mat_default_shadow_omni = material_manager->GetMaterial( "_mat_default_shadow_omni" );
-		_mat_default_shadow_omni->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-
+		lightViewMatrix[i] =_GetLightViewMatrix( i );
+		_UpdateShaderUniforms( i );
 
 		m_scene->DrawGeometry("_mat_default_shadow_omni", lightViewMatrix[i]);
 
 	}
 
+	//-- Deactivate pass, i.e. it unbinds the associated FBO
 	this->GetPassPtr("pass_omni_depth")->Deactivate();
 
 
@@ -174,8 +193,8 @@ void DPShadowMap::PreRender()
 	glCullFace(GL_BACK);
 	glColorMask(1, 1, 1, 1);
 
-
-	//set light matrices and near/far planes to all materials
+	//-----------------------------------------------------------------------------
+	//-- set light matrices and near/far planes to all materials
 	for(material_manager->Begin(); 
 		!material_manager->End();
 		material_manager->Next())
@@ -190,6 +209,34 @@ void DPShadowMap::PreRender()
 	mat_aliasError->SetUniform("lightModelView[0]", lightViewMatrix[0]);
 	mat_aliasError->SetUniform("lightModelView[1]", lightViewMatrix[1]);
 	mat_aliasError->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+}
+
+//-----------------------------------------------------------------------------
+
+void DPShadowMap::_PreDrawDepthMap()
+{
+}
+
+//-----------------------------------------------------------------------------
+
+glm::mat4 DPShadowMap::_GetLightViewMatrix( int _i )
+{
+	float z_direction = 1.0;
+	if(_i == 1)
+		z_direction = -1.0;  
+
+	return glm::lookAt(
+		m_pLight->GetPos(), 
+		m_pLight->GetPos() + glm::vec3(-z_direction*m_scene->GetCameraPtr()->GetFarPlane(), 0.0f, 0.0f ), 
+		glm::vec3(0.0f, 1.0f, 0.0f) );
+}
+
+//-----------------------------------------------------------------------------
+
+void DPShadowMap::_UpdateShaderUniforms( int _i )
+{
+	Material* _mat_default_shadow_omni = m_scene->GetMaterialManager()->GetMaterial( "_mat_default_shadow_omni" );
+	_mat_default_shadow_omni->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
 }
 
 //-----------------------------------------------------------------------------

@@ -98,7 +98,6 @@ protected:
     bool m_dpshadow_tess;
     bool m_use_pcf, m_draw_aliasError;
     int m_dpshadow_method;
-    float m_min_depth, m_avg_depth, m_max_depth;
     glm::vec3 m_avg_normal;
     float *m_select_buffer;
     glm::vec2 m_cut_angle;
@@ -399,15 +398,16 @@ public:
         if(type == DPSM)
         {
             m_dp_FOV = 179.0f;
-            m_avg_depth = 1000.0f;
+            //NAVY_FIX: m_avg_depth = 1000.0f;
         }
     }
 
 
     ///@brief Get far point value
-    float DPGetFarPoint(){
-        return m_avg_depth;
-    }
+	//NAVY_FIX
+    //float DPGetFarPoint(){
+    //    return m_avg_depth;
+    //}
     ///@brief Get average normal
     glm::vec3 DPGetAvgNormal(){
         return m_avg_normal;

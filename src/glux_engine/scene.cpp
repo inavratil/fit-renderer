@@ -36,9 +36,6 @@ TScene::TScene()
     m_useShadows = false;
     m_shadow_textures = 0;
     m_dpshadow_tess = false;
-    m_min_depth = 0.0;
-    m_avg_depth = 100.0;
-    m_max_depth = 1000.0;
     m_select_buffer = 0;
 
     m_use_pcf = true;

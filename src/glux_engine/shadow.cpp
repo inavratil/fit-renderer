@@ -123,6 +123,7 @@ void TScene::RenderShadowMap(TLight *l)
 ****************************************************************************************************/
 void TScene::RenderShadowMapOmni(TLight *l)
 {
+#if 0
     glm::vec3 l_pos = l->GetPos();
     glm::mat4 lightViewMatrix[2];
 
@@ -359,4 +360,5 @@ void TScene::RenderShadowMapOmni(TLight *l)
 	mat_aliasError->SetUniform("in_CutMatrix[0]", cut_matrix_X);
 	mat_aliasError->SetUniform("in_CutMatrix[1]", cut_matrix_Y);
 	mat_aliasError->SetUniform("cut_params", cut_params);
+#endif
 }

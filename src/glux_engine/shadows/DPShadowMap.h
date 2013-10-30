@@ -17,6 +17,8 @@ protected:
 	bool		m_b_draw_shadow_map;
 	bool		m_b_draw_alias_error;
 
+	//NAVY_FIX: do vydedene tridy pro IPSM
+	float		m_min_depth, m_avg_depth, m_max_depth;
 
 //-----------------------------------------------------------------------------
 //-- Public methods 
@@ -32,6 +34,13 @@ public:
 	void SetShadowParams( int _res, int _intensity = 0.1f );
 	void SetDrawShadowMap( bool _flag );
 	void SetDrawAliasError( bool _flag );
+
+//-----------------------------------------------------------------------------
+//-- Protected methods
+protected:
+	virtual void _PreDrawDepthMap();
+	virtual glm::mat4 _GetLightViewMatrix( int _i );
+	virtual void _UpdateShaderUniforms( int _i );
 
 //-----------------------------------------------------------------------------
 //-- Private methods
