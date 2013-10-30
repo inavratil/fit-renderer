@@ -2,7 +2,7 @@
 #define _DPSMAPP_H_
 
 #include "sdk/Application.h"
-#include "shadows/DPShadowMap.h"
+#include "shadows/ImprovedDPShadowMap.h"
 
 class DPSMApp : public Application
 { 
@@ -14,7 +14,7 @@ protected:
 	bool			m_param_is_drawSM_enabled;
 	bool			m_param_is_draw_error_enabled;
 
-	DPShadowMap*		m_shadow_technique;
+	ImprovedDPShadowMap*		m_shadow_technique;
 //-----------------------------------------------------------------------------
 //-- Public methods 
 

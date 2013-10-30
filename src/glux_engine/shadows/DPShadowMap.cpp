@@ -32,11 +32,6 @@ void DPShadowMap::_Init()
 
 	//-- setup shader feature
 	m_pShaderFeature = new SFDPShadowMap();
-
-	//NAVY_FIX: do vydedene tridy pro IPSM
-	m_min_depth = 0.0;
-    m_avg_depth = 100.0;
-    m_max_depth = 1000.0;
 }
 
 //-----------------------------------------------------------------------------
@@ -125,33 +120,11 @@ void DPShadowMap::PreRender()
 	//-----------------------------------------------------------------------------
 	//-- Initialize local variables
 
-	//glm::mat4 cam_view_matrix = m_scene->GetViewMatrix();
-	//glm::mat4 cam_proj_matrix = m_scene->GetProjMatrix();
-	
-
-	//glm::vec3 l_pos = m_pLight->GetPos();
 	glm::mat4 lightViewMatrix[2];
 
 	//-- position of camera in eye space = 0.0
 	//glm::vec3 cam_pos = glm::vec3(0.0);
-	//-- position of light in eye space
-	//glm::vec3 l_pos_eye =  glm::vec3(cam_view_matrix * glm::vec4(l_pos, 1.0));
 
-	//NAVY_FIX:
-	/*
-	//-- IPSM variables
-	float cam_fovy = m_scene->GetCameraPtr()->GetFOVy();
-	//size of near/far plane of view frustum
-	//m_max_depth = 2*m_avg_depth;
-	float far_hsize = m_max_depth * glm::tan(glm::radians(cam_fovy/2.0f));
-	float near_hsize = m_min_depth * glm::tan(glm::radians(cam_fovy/2.0f));
-
-	glm::vec3 cam_nearfar[2*F_POINTS];          //near/far points
-	glm::vec3 nearfar_light[2*F_POINTS];        //vectors from near/far into light position in eye space
-	glm::vec3 look_point = glm::vec3( glm::inverse(cam_view_matrix) * glm::vec4(0.0f, 0.0f, 1.0, 1.0));
-	float zoom[MAX_CASCADES];
-	bool in_frustum = true;
-	*/
 	_PreDrawDepthMap();
 
 

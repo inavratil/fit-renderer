@@ -17,9 +17,6 @@ protected:
 	bool		m_b_draw_shadow_map;
 	bool		m_b_draw_alias_error;
 
-	//NAVY_FIX: do vydedene tridy pro IPSM
-	float		m_min_depth, m_avg_depth, m_max_depth;
-
 //-----------------------------------------------------------------------------
 //-- Public methods 
 
