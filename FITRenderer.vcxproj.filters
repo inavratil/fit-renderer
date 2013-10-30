@@ -130,6 +130,9 @@
     <ClCompile Include="src\glux_engine\sdk\CameraAnimation.cpp">
       <Filter>Source files\SDK</Filter>
     </ClCompile>
+    <ClCompile Include="src\glux_engine\shadows\ImprovedDPShadowMap.cpp">
+      <Filter>Source files\Shadow Techniques</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glux_engine\camera.h">
@@ -266,6 +269,9 @@
     </ClInclude>
     <ClInclude Include="src\glux_engine\sdk\CameraAnimation.h">
       <Filter>Header files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glux_engine\shadows\ImprovedDPShadowMap.h">
+      <Filter>Header files\Shadow Techniques</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

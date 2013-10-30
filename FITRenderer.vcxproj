@@ -97,6 +97,7 @@
     <ClCompile Include="src\DPSMApp.cpp" />
     <ClCompile Include="src\glux_engine\resources\MaterialManager.cpp" />
     <ClCompile Include="src\glux_engine\sdk\CameraAnimation.cpp" />
+    <ClCompile Include="src\glux_engine\shadows\ImprovedDPShadowMap.cpp" />
     <ClCompile Include="src\glux_engine\shadows\IShadowTechnique.cpp" />
     <ClCompile Include="src\glux_engine\sdk\Application.cpp" />
     <ClCompile Include="src\glux_engine\shadows\BilinearWarpedShadow.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="src\experiments.h" />
     <ClInclude Include="src\glux_engine\resources\MaterialManager.h" />
     <ClInclude Include="src\glux_engine\sdk\CameraAnimation.h" />
+    <ClInclude Include="src\glux_engine\shadows\ImprovedDPShadowMap.h" />
     <ClInclude Include="src\glux_engine\shadows\IShadowTechnique.h" />
     <ClInclude Include="src\glux_engine\sdk\Application.h" />
     <ClInclude Include="src\glux_engine\shadows\BilinearWarpedShadow.h" />
