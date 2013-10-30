@@ -23,6 +23,8 @@ vec3 DPCoordsFront()
     texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
     texCoords.w = 1.0;
 
+	texCoords.xy /= ZOOM[0];
+
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }
 
@@ -42,6 +44,8 @@ vec3 DPCoordsBack()
 
     texCoords.z = (Length - near_far.x)/(near_far.y + POLY_OFFSET - near_far.x);
     texCoords.w = 1.0;
+
+	texCoords.xy /= ZOOM[1];
 
     return vec3( 0.5*texCoords.xy + 0.5, texCoords.z);
 }

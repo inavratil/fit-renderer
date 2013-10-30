@@ -4,6 +4,8 @@
 #include "globals.h"
 #include "DPShadowMap.h"
 
+const int Z_SELECT_SIZE = 64;             //selection size of z-buffer (to compute average depth)
+
 class ImprovedDPShadowMap : public DPShadowMap
 { 
 
@@ -18,6 +20,7 @@ protected:
 	float		m_FOV;
 
 	float		m_zoom[2];
+	float*		m_select_buffer;
 	
 
 //-----------------------------------------------------------------------------
@@ -27,7 +30,7 @@ public:
 	ImprovedDPShadowMap( TScene* _scene );
 	virtual ~ImprovedDPShadowMap(void);
 
-//	virtual bool Initialize();
+	virtual bool Initialize();
 	virtual void PreRender();
 //	virtual void PostRender();
 

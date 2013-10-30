@@ -38,7 +38,8 @@ string SFDPShadowMap::GetVars( int _shaderType )
 			"\n"
 			"uniform vec2 near_far; // near and far plane for cm-cams\n"
 			"uniform mat4 lightModelView[2]; //model view matrices for front and back side of paraboloid\n"
-			"\n";
+			"\n"
+			"uniform float ZOOM[2];\n";
 	}
 
 	return output;

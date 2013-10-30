@@ -9,6 +9,8 @@ uniform vec2 near_far; // near and far plane for cm-cams
 out vec2 fragTexCoord;
 out float depth;
 
+uniform float ZOOM;
+
 void main(void)
 {
     fragTexCoord = in_Coord.xy;
@@ -26,6 +28,8 @@ void main(void)
 
     vertexEyeSpace.z = (Length - near_far.x)/(near_far.y  - near_far.x);
     vertexEyeSpace.w = 1.0; 
+
+	vertexEyeSpace.xy /= ZOOM;
 
     depth = vertexEyeSpace.z;
 

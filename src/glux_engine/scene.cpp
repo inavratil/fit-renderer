@@ -187,31 +187,6 @@ bool TScene::PostInit()
         {
 			if( m_dpshadow_method == CUT || m_dpshadow_method == DPSM )
 				if(!CreateShadowMap(m_il)) return false;
-
-			m_texture_cache->Create2DManual( "select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-            //create render target for depth calculations
-            glGenFramebuffers(1, &m_f_buffer_select);
-            glBindFramebuffer(GL_FRAMEBUFFER, m_f_buffer_select);
-            //attach texture to the frame buffer
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture_cache->Get( "select_texture" ), 0);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            //add shader for selecting depth values (IPSM only)
-            if((*m_il)->GetType() == OMNI)
-            {
-                //if(!m_useNormalBuffer)  //normal buffer must be enabled before we can use IPSM
-                //    CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT, true);
-
-				//ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag" );
-				//mat->AddTexturePtr( m_texture_cache->GetPtr( "normal_texture" ) );
-				//AddMaterial( mat );	
-                //AddMaterial("mat_depth_select",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-                //AddTexture("mat_depth_select", "normal_texture", RENDER_TEXTURE);
-                //CustomShader("mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag");
-                //SetUniform("mat_depth_select","near_far",glm::vec2(m_near_p, m_far_p));
-
-                //allocate z-selection buffer
-                m_select_buffer = new float[Z_SELECT_SIZE*Z_SELECT_SIZE];
-            }
         }
 
         //fill uniform block with light settings. Be careful to offsets!!!

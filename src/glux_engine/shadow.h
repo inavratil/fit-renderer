@@ -9,7 +9,6 @@
 #define _SHADOW_H_
 #include "globals.h"
 
-const int Z_SELECT_SIZE = 64;             //selection size of z-buffer (to compute average depth)
 //near and far shadow planes
 const float SHADOW_NEAR = 0.1f;
 const float SHADOW_FAR = 5000.0f;

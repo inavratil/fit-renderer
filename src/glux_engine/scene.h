@@ -99,7 +99,7 @@ protected:
     bool m_use_pcf, m_draw_aliasError;
     int m_dpshadow_method;
     glm::vec3 m_avg_normal;
-    float *m_select_buffer;
+    
     glm::vec2 m_cut_angle;
 
 	//-----------------------------------------------------------------------------

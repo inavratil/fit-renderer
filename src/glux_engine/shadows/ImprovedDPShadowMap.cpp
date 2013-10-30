@@ -1,5 +1,8 @@
 #include "ImprovedDPShadowMap.h"
 
+#include "sdk/SimplePass.h"
+#include "sdk/ScreenSpaceMaterial.h"
+
 //-----------------------------------------------------------------------------
 
 ImprovedDPShadowMap::ImprovedDPShadowMap( TScene* _scene ) :
@@ -24,6 +27,7 @@ void ImprovedDPShadowMap::_Init()
 	m_max_depth = 1000.0;
 	m_in_frustum = true;
 	m_FOV = 0.0;
+	m_select_buffer = NULL;
 
 	m_light_position_eyespace = glm::vec3( 0.0f );
 	m_avg_direction = glm::vec3( 0.0f );
@@ -150,6 +154,47 @@ void ImprovedDPShadowMap::_UpdateShaderUniforms( int _i )
 }
 
 //-----------------------------------------------------------------------------
+bool ImprovedDPShadowMap::Initialize()
+{	
+	try
+	{
+		//-- Call parent method	
+		DPShadowMap::Initialize();
+
+		//-- Get access to managers and caches
+		TextureCachePtr texture_cache = m_scene->GetTextureCache();
+
+		TexturePtr tex = texture_cache->Create2DManual( "select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
+				//-- pass
+		SimplePassPtr pass_select = new SimplePass( Z_SELECT_SIZE, Z_SELECT_SIZE );
+		pass_select->AttachOutputTexture( 0, tex );
+		this->AppendPass("pass_select", pass_select );	
+
+		//if(!m_useNormalBuffer)  //normal buffer must be enabled before we can use IPSM
+		//    CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT, true);
+
+		//ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag" );
+		//mat->AddTexturePtr( m_texture_cache->GetPtr( "normal_texture" ) );
+		//AddMaterial( mat );	
+		//AddMaterial("mat_depth_select",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
+		//AddTexture("mat_depth_select", "normal_texture", RENDER_TEXTURE);
+		//CustomShader("mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag");
+		//SetUniform("mat_depth_select","near_far",glm::vec2(m_near_p, m_far_p));
+
+		//allocate z-selection buffer
+		m_select_buffer = new float[Z_SELECT_SIZE*Z_SELECT_SIZE];
+
+	}
+	catch( int )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+
 
 void ImprovedDPShadowMap::PreRender()
 {
