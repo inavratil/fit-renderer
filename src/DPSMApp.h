@@ -14,7 +14,7 @@ protected:
 	bool			m_param_is_drawSM_enabled;
 	bool			m_param_is_draw_error_enabled;
 
-	ImprovedDPShadowMap*		m_shadow_technique;
+	DPShadowMap*		m_shadow_technique;
 //-----------------------------------------------------------------------------
 //-- Public methods 
 

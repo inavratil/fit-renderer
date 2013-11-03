@@ -36,7 +36,6 @@ TScene::TScene()
     m_useShadows = false;
     m_shadow_textures = 0;
     m_dpshadow_tess = false;
-    m_select_buffer = 0;
 
     m_use_pcf = true;
     m_dpshadow_method = WARP_DPSM;
@@ -45,6 +44,7 @@ TScene::TScene()
 	
 	m_texture_cache = new TextureCache();
 	m_material_manager = new MaterialManager();
+	m_mrt_pass = NULL;
 	
 }
 
@@ -60,8 +60,6 @@ TScene::~TScene()
     //delete buffers
     GLuint to_delete[] = { SceneManager::Instance()->getVBO(VBO_ARRAY, "screen_quad"), SceneManager::Instance()->getVBO(VBO_ARRAY, "progress_bar") };
     glDeleteVertexArrays(2, to_delete);
-
-    delete [] m_select_buffer;
 
     delete m_font2D_tex;
     delete m_font2D_bkg;
@@ -126,8 +124,32 @@ bool TScene::PreInit(GLint resx, GLint resy, int msamples, bool load_font)
 	mat->AddTexture( m_texture_cache->CreateFromImage( "data/load.png" ), "tex" );
 	m_material_manager->AddMaterial( mat );
 	
+	TexturePtr render_texture = m_texture_cache->Create2DManual( 
+		"render_texture",
+		m_resx, m_resy,
+		GL_RGBA16F,
+		GL_FLOAT,
+		GL_NEAREST,
+		false
+		);
+	TexturePtr normal_texture = m_texture_cache->Create2DManual( 
+		"normal_texture",
+		m_resx, m_resy,
+		GL_RGBA16F,
+		GL_FLOAT,
+		GL_NEAREST,
+		false
+		);
+
+	//m_mrt_pass = new SimplePass( m_resx, m_resy );
+	//m_mrt_pass->AttachOutputTexture( 0, render_texture );
+	//m_mrt_pass->AttachOutputTexture( 1, normal_texture );
+	//m_mrt_pass->Validate();
+
     //add screen quad for render targets
     AddScreenQuad();
+
+	m_material_manager->AddMaterial( new ScreenSpaceMaterial( "mat_default_quad","data/shaders/quad.vert", "data/shaders/quad.frag" ) );
 
     return true;
 }
@@ -220,7 +242,7 @@ bool TScene::PostInit()
         {
             //set MRT if we use rendering to normal buffer
             //if(m_useNormalBuffer)
-            //   m_im->second->UseMRT(true);
+            //   mat->UseMRT(true);
             //bake material
             if( !mat->BakeMaterial(m_lights.size(), m_dpshadow_method, m_use_pcf) )
 				throw ERR;

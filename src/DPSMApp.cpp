@@ -1,5 +1,7 @@
 #include "DPSMApp.h"
 
+#include "sdk/ScreenSpaceMaterial.h"
+
 //-----------------------------------------------------------------------------
 
 DPSMApp::DPSMApp(void) :
@@ -53,10 +55,12 @@ void DPSMApp::CreateContent()
 	m_scene->AdjustFreelookCamera(-4,-169);
 
 	//-- Dual-Paraboloid shadow technique
-	m_shadow_technique = new ImprovedDPShadowMap( m_scene );
+	m_shadow_technique = new DPShadowMap( m_scene );
 	m_shadow_technique->SetLight( light );
 	m_shadow_technique->SetShadowParams( 1024, 0.3f );
 	m_scene->AddRenderListener( m_shadow_technique );
+
+	m_scene->GetMaterialManager()->AddMaterial( new ScreenSpaceMaterial( "show_depth", "data/shaders/showDepth.vert", "data/shaders/showDepth.frag" ) );
 }
 
 //-----------------------------------------------------------------------------

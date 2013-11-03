@@ -65,7 +65,8 @@ void ImprovedDPShadowMap::_PreDrawDepthMap()
 
 
 	//OPTIMAL VIEW FRUSTUM COVERAGE CALCULATION
-
+	m_avg_direction = glm::vec3( 0.0 );
+	m_FOV = 0.0;
 	//Test, if light is inside frustum                
 	glm::vec4 l_pos_proj =  glm::vec4(cam_proj_matrix * glm::vec4(m_light_position_eyespace, 1.0));
 	l_pos_proj /= l_pos_proj.w;                
@@ -112,8 +113,17 @@ void ImprovedDPShadowMap::_PreDrawDepthMap()
 
 //-----------------------------------------------------------------------------
 
+bool ImprovedDPShadowMap::_IsDrawingAllowed()
+{
+	return m_in_frustum;
+}
+
+//-----------------------------------------------------------------------------
+
 glm::mat4 ImprovedDPShadowMap::_GetLightViewMatrix( int _i )
 {	
+	m_zoom[_i] = 1.0;
+
 	float z_direction = 1.0;
 	if(_i == 1)
 		z_direction = -1.0;  
@@ -164,22 +174,15 @@ bool ImprovedDPShadowMap::Initialize()
 		//-- Get access to managers and caches
 		TextureCachePtr texture_cache = m_scene->GetTextureCache();
 
+		ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag" );
+		mat->AddTexture( texture_cache->GetPtr( "normal_texture" ) );
+
 		TexturePtr tex = texture_cache->Create2DManual( "select_texture", Z_SELECT_SIZE, Z_SELECT_SIZE, GL_RGBA16F, GL_FLOAT, GL_NEAREST, false );
-				//-- pass
+		//-- pass
 		SimplePassPtr pass_select = new SimplePass( Z_SELECT_SIZE, Z_SELECT_SIZE );
 		pass_select->AttachOutputTexture( 0, tex );
+		pass_select->SetShader( mat );
 		this->AppendPass("pass_select", pass_select );	
-
-		//if(!m_useNormalBuffer)  //normal buffer must be enabled before we can use IPSM
-		//    CreateHDRRenderTarget(-1, -1, GL_RGBA16F, GL_FLOAT, true);
-
-		//ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag" );
-		//mat->AddTexturePtr( m_texture_cache->GetPtr( "normal_texture" ) );
-		//AddMaterial( mat );	
-		//AddMaterial("mat_depth_select",white,white,white,0.0,0.0,0.0,SCREEN_SPACE);
-		//AddTexture("mat_depth_select", "normal_texture", RENDER_TEXTURE);
-		//CustomShader("mat_depth_select","data/shaders/quad.vert", "data/shaders/select_depth.frag");
-		//SetUniform("mat_depth_select","near_far",glm::vec2(m_near_p, m_far_p));
 
 		//allocate z-selection buffer
 		m_select_buffer = new float[Z_SELECT_SIZE*Z_SELECT_SIZE];
@@ -194,7 +197,6 @@ bool ImprovedDPShadowMap::Initialize()
 }
 
 //-----------------------------------------------------------------------------
-
 
 void ImprovedDPShadowMap::PreRender()
 {
@@ -212,4 +214,53 @@ void ImprovedDPShadowMap::PreRender()
 		mat->SetUniform("ZOOM[0]", m_zoom[0] );
 		mat->SetUniform("ZOOM[1]", m_zoom[1] );
 	}
+}
+
+//-----------------------------------------------------------------------------
+
+void ImprovedDPShadowMap::PostRender()
+{
+
+
+	//GET CAMERA DISTANCE TO NEAREST OBJECT FROM Z-BUFFER
+	this->GetPassPtr( "pass_select" )->Process();
+
+	//copy depth values to buffer (from GPU to CPU)
+	glBindTexture(GL_TEXTURE_2D, m_scene->GetTextureCache()->Get( "select_texture") );
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, m_select_buffer);
+	//minimum, maximum and average depth
+	float far_p = 10000;
+	float near_p = 0.1;
+	m_avg_depth = m_max_depth = 0.0;
+	m_min_depth = 10000;
+	int select_size = Z_SELECT_SIZE*Z_SELECT_SIZE;
+	vector<float> sorted_buffer;
+
+	//filter out values beyond far plane (where are no vertices) and push into vector for sorting
+	for(int i=0; i<select_size; i++)
+	{
+		if(m_select_buffer[i] > 1.0 && m_select_buffer[i] < far_p)
+			sorted_buffer.push_back(m_select_buffer[i]);
+	}
+	//sort by z-value
+	std::sort(sorted_buffer.begin(), sorted_buffer.end());
+
+	//run through 90% of pixels sorted by z-value
+	select_size = int(0.9*sorted_buffer.size());
+	for(int i=0; i<select_size; i++)
+	{
+		//depth values
+		float curr_depth = sorted_buffer[i];
+		if(curr_depth < m_min_depth)  //minimum
+			m_min_depth = curr_depth;
+		if(curr_depth > m_max_depth)  //maximum
+			m_max_depth = curr_depth;
+		m_avg_depth += curr_depth;    //average
+	}
+	m_avg_depth /= select_size;
+
+	//cout<<"MIN: "<<m_min_depth<<" | AVG: "<<m_avg_depth<<" | MAX:"<<m_max_depth<<endl;
+
+	//-- Call parent method
+	DPShadowMap::PostRender();
 }

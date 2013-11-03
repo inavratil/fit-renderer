@@ -99,6 +99,10 @@ bool DPShadowMap::Initialize()
 		ScreenSpaceMaterial* mat_aliasError = new ScreenSpaceMaterial( "mat_aliasError", "data/shaders/default_shadow_alias_error.vert", "data/shaders/default_shadow_alias_error.frag" );
 		mat_aliasError->AddTexture( texture_cache->CreateFromImage( "data/tex/error_color.tga" ), "mat_aliasErrorBaseA" );
 		material_manager->AddMaterial( mat_aliasError );
+
+		ScreenSpaceMaterial* mat = new ScreenSpaceMaterial( "show_depth_omni", "data/shaders/showDepth.vert", "data/shaders/showDepth_omni.frag" ); 
+		mat->AddTexture( tex_shadow, "show_depth_dpShadowA" );
+		material_manager->AddMaterial( mat );
 	}
 	catch( int )
 	{
@@ -143,6 +147,7 @@ void DPShadowMap::PreRender()
 	//TWO PASS - FRONT AND BACK
 	for(int i=0; i<2; i++)
 	{
+		if( !_IsDrawingAllowed() && i==1 ) break;
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_cache->Get("tex_omni_shadowmap"), 0, i);               
 
 		glClear( GL_DEPTH_BUFFER_BIT );
@@ -176,6 +181,8 @@ void DPShadowMap::PreRender()
 		mat->SetUniform("lightModelView[0]", lightViewMatrix[0]);
 		mat->SetUniform("lightModelView[1]", lightViewMatrix[1]);
 		mat->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+		mat->SetUniform("ZOOM[0]", 1.0);
+		mat->SetUniform("ZOOM[1]", 1.0);
 	}
 
 	MaterialPtr mat_aliasError = material_manager->GetMaterial( "mat_aliasError" );
@@ -210,12 +217,26 @@ void DPShadowMap::_UpdateShaderUniforms( int _i )
 {
 	Material* _mat_default_shadow_omni = m_scene->GetMaterialManager()->GetMaterial( "_mat_default_shadow_omni" );
 	_mat_default_shadow_omni->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+	_mat_default_shadow_omni->SetUniform("ZOOM", 1.0f );
+
 }
 
 //-----------------------------------------------------------------------------
 
 void DPShadowMap::PostRender()
 {
+	if( m_b_draw_shadow_map )
+	{
+		for(int i=0; i<2; i++)
+		{
+			const float q_size = 0.5f;
+
+			Material* show_depth_omni = MaterialManager::Instance()->GetMaterial( "show_depth_omni" );
+			show_depth_omni->SetUniform( "far_plane", SHADOW_FAR);
+			show_depth_omni->SetUniform( "index", float(i));
+			m_scene->RenderSmallQuad("show_depth_omni", 0.0f, i*q_size, q_size);
+		}	
+	}
 	if( m_b_draw_alias_error )
 		m_scene->DrawGeometry( "mat_aliasError", m_scene->GetViewMatrix() );
 }

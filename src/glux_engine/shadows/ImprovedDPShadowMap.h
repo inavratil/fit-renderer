@@ -32,7 +32,7 @@ public:
 
 	virtual bool Initialize();
 	virtual void PreRender();
-//	virtual void PostRender();
+	virtual void PostRender();
 
 //-----------------------------------------------------------------------------
 //-- Protected methods
@@ -41,6 +41,7 @@ protected:
 	virtual void _PreDrawDepthMap();
 	virtual glm::mat4 _GetLightViewMatrix( int _i );
 	virtual void _UpdateShaderUniforms( int _i );
+	virtual bool _IsDrawingAllowed();
 
 //-----------------------------------------------------------------------------
 //-- Private methods

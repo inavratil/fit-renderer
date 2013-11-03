@@ -80,6 +80,9 @@ void TScene::Redraw(bool delete_buffer)
 
 	//-------------------------------------------------------------------------
 
+	if( m_mrt_pass )
+		m_mrt_pass->Activate();
+
 	glViewport(0,0,m_RT_resX,m_RT_resY);
 
 	if(delete_buffer)
@@ -102,6 +105,9 @@ void TScene::Redraw(bool delete_buffer)
     if(m_wireframe)
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     
+	if( m_mrt_pass )
+		m_mrt_pass->Deactivate();
+
 	//-------------------------------------------------------------------------
     //-- HDR/SSAO renderer
 
@@ -152,64 +158,18 @@ void TScene::Redraw(bool delete_buffer)
     }
 
 	//-------------------------------------------------------------------------
-
-#if 0
-    //GET CAMERA DISTANCE TO NEAREST OBJECT FROM Z-BUFFER
-    if(m_dpshadow_method >= IPSM)
-    {
-        glViewport(0, 0, Z_SELECT_SIZE, Z_SELECT_SIZE);     //scale down using HW interpolation
-        glBindFramebuffer(GL_FRAMEBUFFER, m_f_buffer_select);
-        RenderPass("mat_depth_select");
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        //copy depth values to buffer (from GPU to CPU)
-        glBindTexture(GL_TEXTURE_2D, m_tex_cache["select_texture"]);
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_ALPHA, GL_FLOAT, m_select_buffer);
-        //minimum, maximum and average depth
-        m_avg_depth = m_max_depth = 0.0;
-        m_min_depth = m_far_p;
-        int select_size = Z_SELECT_SIZE*Z_SELECT_SIZE;
-        vector<float> sorted_buffer;
-
-        //filter out values beyond far plane (where are no vertices) and push into vector for sorting
-        for(int i=0; i<select_size; i++)
-        {
-            if(m_select_buffer[i] > 1.0 && m_select_buffer[i] < m_far_p)
-                sorted_buffer.push_back(m_select_buffer[i]);
-        }
-        //sort by z-value
-        std::sort(sorted_buffer.begin(), sorted_buffer.end());
-
-        //run through 90% of pixels sorted by z-value
-        select_size = int(0.9*sorted_buffer.size());
-        for(int i=0; i<select_size; i++)
-        {
-            //depth values
-            float curr_depth = sorted_buffer[i];
-            if(curr_depth < m_min_depth)  //minimum
-                m_min_depth = curr_depth;
-            if(curr_depth > m_max_depth)  //maximum
-                m_max_depth = curr_depth;
-            m_avg_depth += curr_depth;    //average
-        }
-        m_avg_depth /= select_size;
-
-        //cout<<"MIN: "<<m_min_depth<<" | AVG: "<<m_avg_depth<<" | MAX:"<<m_max_depth<<endl;
-
-        //restore viewport
-        glViewport(0,0,m_resx,m_resy);
-    }
-#endif
+	if( m_mrt_pass )
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get("render_texture") );                
+		//glBindTexture(GL_TEXTURE_2D, m_texture_cache->Get("MTEX_warped_depth_color"));
+		//SetUniform("mat_quad_array", "index", 1.0);
+		RenderPass("mat_default_quad");
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
     
 	//-------------------------------------------------------------------------
 	//-- show shadow maps 
-
-	if( false )
-	{
-		const float q_size = 2.0f;
-
-		m_material_manager->GetMaterial( "show_depth" )->SetUniform( "far_plane", SHADOW_FAR);
-		RenderSmallQuad("show_depth", 0.0f, 0.0f, q_size);
-	}
 
 	for( m_it_render_listeners = m_render_listeners.begin();
 		m_it_render_listeners != m_render_listeners.end();

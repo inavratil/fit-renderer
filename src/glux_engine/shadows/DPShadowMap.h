@@ -38,6 +38,7 @@ protected:
 	virtual void _PreDrawDepthMap();
 	virtual glm::mat4 _GetLightViewMatrix( int _i );
 	virtual void _UpdateShaderUniforms( int _i );
+	virtual bool _IsDrawingAllowed(){ return true; }
 
 //-----------------------------------------------------------------------------
 //-- Private methods

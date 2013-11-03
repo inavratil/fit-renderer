@@ -22,9 +22,11 @@
 #include "object.h"
 #include "light.h"
 #include "shadows/IShadowTechnique.h"
+#include "sdk/SimplePass.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
+class SimplePass;
 /**
 @class TScene
 @brief containts list of objects, inits and draws 3D scene.
@@ -116,6 +118,8 @@ protected:
 	//-- I use 'set', because of 'find' method
 	set<RenderListener*>			m_render_listeners;
 	set<RenderListener*>::iterator	m_it_render_listeners;
+
+	SimplePass*		m_mrt_pass;
 
 public:
 
