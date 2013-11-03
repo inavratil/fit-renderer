@@ -75,7 +75,7 @@ void GeometryMaterial::_Init( const char* name, int id, glm::vec3 amb, glm::vec3
 
     m_program = -1;
     m_baked = false;
-    m_useMRT = false;
+    m_useMRT = true;
     m_custom_shader = false;
 	m_is_screenspace = false;
     if(m_lightModel == SCREEN_SPACE)  //screen space quad cannot receive shadows

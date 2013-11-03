@@ -141,10 +141,10 @@ bool TScene::PreInit(GLint resx, GLint resy, int msamples, bool load_font)
 		false
 		);
 
-	//m_mrt_pass = new SimplePass( m_resx, m_resy );
-	//m_mrt_pass->AttachOutputTexture( 0, render_texture );
-	//m_mrt_pass->AttachOutputTexture( 1, normal_texture );
-	//m_mrt_pass->Validate();
+	m_mrt_pass = new SimplePass( m_resx, m_resy );
+	m_mrt_pass->AttachOutputTexture( 0, render_texture );
+	m_mrt_pass->AttachOutputTexture( 1, normal_texture );
+	m_mrt_pass->Validate();
 
     //add screen quad for render targets
     AddScreenQuad();

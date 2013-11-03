@@ -181,8 +181,8 @@ void DPShadowMap::PreRender()
 		mat->SetUniform("lightModelView[0]", lightViewMatrix[0]);
 		mat->SetUniform("lightModelView[1]", lightViewMatrix[1]);
 		mat->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-		mat->SetUniform("ZOOM[0]", 1.0);
-		mat->SetUniform("ZOOM[1]", 1.0);
+		//mat->SetUniform("ZOOM[0]", 1.0);
+		//mat->SetUniform("ZOOM[1]", 1.0);
 	}
 
 	MaterialPtr mat_aliasError = material_manager->GetMaterial( "mat_aliasError" );
@@ -217,7 +217,7 @@ void DPShadowMap::_UpdateShaderUniforms( int _i )
 {
 	Material* _mat_default_shadow_omni = m_scene->GetMaterialManager()->GetMaterial( "_mat_default_shadow_omni" );
 	_mat_default_shadow_omni->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
-	_mat_default_shadow_omni->SetUniform("ZOOM", 1.0f );
+	//_mat_default_shadow_omni->SetUniform("ZOOM", 1.0f );
 
 }
 
