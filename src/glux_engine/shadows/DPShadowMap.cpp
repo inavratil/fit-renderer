@@ -238,7 +238,10 @@ void DPShadowMap::PostRender()
 		}	
 	}
 	if( m_b_draw_alias_error )
+	{
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		m_scene->DrawGeometry( "mat_aliasError", m_scene->GetViewMatrix() );
+	}
 }
 
 //-----------------------------------------------------------------------------

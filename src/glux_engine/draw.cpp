@@ -83,8 +83,6 @@ void TScene::Redraw(bool delete_buffer)
 	if( m_mrt_pass )
 		m_mrt_pass->Activate();
 
-	glViewport(0,0,m_RT_resX,m_RT_resY);
-
 	if(delete_buffer)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -178,7 +176,6 @@ void TScene::Redraw(bool delete_buffer)
 	{
 		(*m_it_render_listeners)->PostRender();
 	}
-
     //finish drawing, restore buffers
     glBindVertexArray(0);
 }

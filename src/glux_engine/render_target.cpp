@@ -67,6 +67,7 @@ void TScene::RenderPass(const char* material)
     glBindVertexArray( SceneManager::Instance()->getVBO(VBO_ARRAY, "screen_quad") );
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	m_material_manager->GetMaterial(material)->DectivateTextures();
+	glBindVertexArray(0);
 }
 
 
