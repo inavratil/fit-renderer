@@ -109,6 +109,9 @@ void ImprovedDPShadowMap::_PreDrawDepthMap()
 		if( deg < 180.0f && deg > m_FOV )
 			m_FOV = deg;
 	}        
+
+	m_zoom[0] = 1.0;
+	m_zoom[1] = 1.0;
 }
 
 //-----------------------------------------------------------------------------
@@ -122,8 +125,6 @@ bool ImprovedDPShadowMap::_IsDrawingAllowed()
 
 glm::mat4 ImprovedDPShadowMap::_GetLightViewMatrix( int _i )
 {	
-	m_zoom[_i] = 1.0;
-
 	float z_direction = 1.0;
 	if(_i == 1)
 		z_direction = -1.0;  
@@ -144,11 +145,13 @@ glm::mat4 ImprovedDPShadowMap::_GetLightViewMatrix( int _i )
 	m_zoom[_i] = dp_zoomcut.x/(dp_zoomcut.y + 1.0f);
 
 	//-- Call parent method
-	return glm::lookAt(
+	if( IsEnabled() )
+		return glm::lookAt(
 		m_pLight->GetPos(), 
 		look_point, 
 		glm::vec3(0.0f, 1.0f, 0.0f) );
-	//return DPShadowMap::_GetLightViewMatrix( _i );
+	else
+		return DPShadowMap::_GetLightViewMatrix( _i );
 }
 
 //-----------------------------------------------------------------------------
@@ -214,6 +217,10 @@ void ImprovedDPShadowMap::PreRender()
 		mat->SetUniform("ZOOM[0]", m_zoom[0] );
 		mat->SetUniform("ZOOM[1]", m_zoom[1] );
 	}
+
+	MaterialPtr mat_aliasError = material_manager->GetMaterial( "mat_aliasError" );
+	mat_aliasError->SetUniform("ZOOM[0]", m_zoom[0] );
+	mat_aliasError->SetUniform("ZOOM[1]", m_zoom[1] );
 }
 
 //-----------------------------------------------------------------------------

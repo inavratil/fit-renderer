@@ -6,7 +6,8 @@
 
 DPSMApp::DPSMApp(void) :
 	m_param_is_drawSM_enabled( false ),
-	m_param_is_draw_error_enabled( false )
+	m_param_is_draw_error_enabled( false ),
+	m_param_is_extension_enabled( true )
 {
 }
 
@@ -21,6 +22,9 @@ void DPSMApp::InitGUI()
 {
 	Application::InitGUI();
 
+	//enable method extension
+	TwAddVarRW( m_gui, "method_enabled", TW_TYPE_BOOLCPP, &m_param_is_extension_enabled, 
+               " label='Extension enabled' group='DPSM' key=v ");
 	//show shadow maps
 	TwAddVarRW( m_gui, "drawSM", TW_TYPE_BOOLCPP, &m_param_is_drawSM_enabled, 
                " label='Show shadow maps' group='DPSM' key=t ");
@@ -71,6 +75,11 @@ void DPSMApp::UpdateScene()
 
 	m_shadow_technique	->	SetDrawShadowMap	( m_param_is_drawSM_enabled );
 	m_shadow_technique	->	SetDrawAliasError	( m_param_is_draw_error_enabled );
+
+	if( m_param_is_extension_enabled )
+		m_shadow_technique->Enable();
+	else
+		m_shadow_technique->Disable();
 }
 
 //-----------------------------------------------------------------------------

@@ -13,6 +13,7 @@ class DPSMApp : public Application
 protected:
 	bool			m_param_is_drawSM_enabled;
 	bool			m_param_is_draw_error_enabled;
+	bool			m_param_is_extension_enabled;
 
 	ImprovedDPShadowMap*		m_shadow_technique;
 //-----------------------------------------------------------------------------
