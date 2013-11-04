@@ -10,7 +10,7 @@
 class TCam
 {
 public:
-	TCam() {}
+	TCam(){}
 	~TCam(){}
 
 	glm::vec3 pos;

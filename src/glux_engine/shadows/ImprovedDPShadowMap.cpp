@@ -125,6 +125,9 @@ bool ImprovedDPShadowMap::_IsDrawingAllowed()
 
 glm::mat4 ImprovedDPShadowMap::_GetLightViewMatrix( int _i )
 {	
+	if( !IsEnabled() )
+		return DPShadowMap::_GetLightViewMatrix( _i );
+
 	float z_direction = 1.0;
 	if(_i == 1)
 		z_direction = -1.0;  
@@ -137,7 +140,8 @@ glm::mat4 ImprovedDPShadowMap::_GetLightViewMatrix( int _i )
 
 	//TODO: when light is inside frustum it is better if paraboloid is aimed directly to camera position
 	if(m_in_frustum)
-		look_point = glm::vec3( z_direction * glm::inverse(cam_view_matrix) * glm::vec4(0.0f, 0.0f, -1.0, 1.0f) ); 
+		//look_point = glm::vec3( z_direction * glm::inverse(cam_view_matrix) * glm::vec4(0.0f, 0.0f, -1.0, 1.0f) ); 
+		look_point = m_pLight->GetPos() + glm::vec3(-z_direction*m_scene->GetCameraPtr()->GetFarPlane(), 0.0f, 0.0f );
 
 	//map 0-180 range of FOV into paraboloid zoom
 	glm::vec2 dp_zoomcut = glm::vec2( glm::tan( glm::radians(m_FOV/2.0f) ), 1.0f );
@@ -145,13 +149,13 @@ glm::mat4 ImprovedDPShadowMap::_GetLightViewMatrix( int _i )
 	m_zoom[_i] = dp_zoomcut.x/(dp_zoomcut.y + 1.0f);
 
 	//-- Call parent method
-	if( IsEnabled() )
-		return glm::lookAt(
+
+	return glm::lookAt(
 		m_pLight->GetPos(), 
 		look_point, 
 		glm::vec3(0.0f, 1.0f, 0.0f) );
-	else
-		return DPShadowMap::_GetLightViewMatrix( _i );
+
+
 }
 
 //-----------------------------------------------------------------------------

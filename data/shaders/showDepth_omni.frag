@@ -9,6 +9,6 @@ uniform float far_plane;
 void main()
 {
     float depth = texture(show_depth_dpShadowA, vec3(fragTexCoord, index)).r;
-    out_fragData = vec4(depth );
+    out_fragData = vec4(10.0*depth );
 }
 

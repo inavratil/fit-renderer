@@ -73,9 +73,11 @@ glm::mat4 TCamera::UpdateMatrix()
 ****************************************************************************************************/
 void TCamera::Save()
 {
-    ofstream fout("camera.ini");
+	ofstream fout("camera.ini", ios::in | ios::app );
     if(!fout){ cerr<<"Can't save camera position"; return; }
     fout<<"POS: "<<m_pos.x<<","<<m_pos.y<<","<<m_pos.z<<"\n";
+	fout<<"LOOK: "<<m_look.x<<","<<m_look.y<<","<<m_look.z<<"\n";
+	fout<<"UP: "<<m_up.x<<","<<m_up.y<<","<<m_up.z<<"\n";
     fout.close();
 }
 

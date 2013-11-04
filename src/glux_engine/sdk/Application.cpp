@@ -209,6 +209,7 @@ void Application::MainLoop()
     int time_now, time_nextMS, time_nextS, last_keypress = 0;
     time_now = time_nextMS = time_nextS = SDL_GetTicks();
 
+	HRTimer timer;
     while(true)
     {
 
@@ -229,7 +230,8 @@ void Application::MainLoop()
         }
 
 		//TODO: ma/musi to opravdu byt tady??
-		m_scene->UpdateCamera();
+		//m_scene->UpdateCamera();
+		m_scene->UpdateAnimationCamera( timer.GetElapsedTimeMilliseconds() );
 		UpdateScene();
 
         //call drawing functions
@@ -440,7 +442,7 @@ void Application::KeyInput( SDLKey _key, unsigned char _type )
 //        m_scene->RotateCameraAbs(rot.x, A_X);
 //        m_scene->RotateCameraAbs(rot.y, A_Y);
 //    }
-	m_scene->UpdateCamera();
+	//m_scene->UpdateCamera();
 
 	//cout<<"LIGHT: "<<lpos1.x<<","<<lpos1.y<<","<<lpos1.z<<endl;
     //s->PrintCamera();

@@ -23,6 +23,7 @@
 #include "light.h"
 #include "shadows/IShadowTechnique.h"
 #include "sdk/SimplePass.h"
+#include "sdk/CameraAnimation.h"
 
 const int align = sizeof(glm::vec4);      //BUG: ATI Catalyst 10.12 drivers align uniform block values to vec4
 
@@ -68,6 +69,8 @@ protected:
 
     ///scene camera
     TCamera *m_cam;
+	//-- animation camera
+	CameraAnimation				m_cam_animation;
 
     ///number of multisaples in antialiasing
     GLint m_msamples;
@@ -213,7 +216,7 @@ public:
 
 	glm::mat4 GetViewMatrix()
 	{
-		return m_cam->GetMatrix();
+		return m_viewMatrix; //m_cam->GetMatrix();
 	}
 
 	glm::mat4 GetProjMatrix()
@@ -268,6 +271,19 @@ public:
         m_viewMatrix = m_cam->Load();
         UpdateCameraUniform();
     }
+
+	void SetAnimationCamera( std::vector<TCam> _keyframes )
+	{
+		m_cam_animation.BuildPath( _keyframes );
+	}
+
+	void UpdateAnimationCamera( unsigned int miliseconds )
+	{
+		m_cam_animation.Update( miliseconds );
+		m_viewMatrix = m_cam_animation.getCurrentCam().getView();
+		UpdateCameraUniform();
+	}
+
 
 
 /////////////////////////////////////////// LIGHTS ////////////////////////////////////////
