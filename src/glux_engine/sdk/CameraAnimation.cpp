@@ -3,7 +3,7 @@
 
 CameraAnimation::CameraAnimation(void)
 {
-	pathSteps = 2000;
+	pathSteps = 5000;
 	pathIndex = 0;
 }
 
