@@ -189,6 +189,8 @@ void DPShadowMap::PreRender()
 	mat_aliasError->SetUniform("lightModelView[0]", lightViewMatrix[0]);
 	mat_aliasError->SetUniform("lightModelView[1]", lightViewMatrix[1]);
 	mat_aliasError->SetUniform("near_far", glm::vec2(SHADOW_NEAR, SHADOW_FAR));
+	//mat_aliasError->SetUniform("ZOOM[0]", 1.0 );
+	//mat_aliasError->SetUniform("ZOOM[1]", 1.0 );
 }
 
 //-----------------------------------------------------------------------------
