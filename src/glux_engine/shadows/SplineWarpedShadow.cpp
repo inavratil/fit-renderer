@@ -9,7 +9,7 @@
 #include "sdk/SimplePass.h"
 
 //#define DEBUG_DRAW 
-//#define GRADIENT_METHOD
+#define GRADIENT_METHOD
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -547,8 +547,8 @@ void SplineWarpedShadow::PreRender()
 		}
 
 #ifdef GRADIENT_METHOD
-		SetUniform("mat_get_2Dfunc_values", "range", func_range );	
-		RenderPass("mat_get_2Dfunc_values");
+		material_manager->GetMaterial( "mat_get_2Dfunc_values" )->SetUniform( "range", func_range );	
+		m_scene->RenderPass("mat_get_2Dfunc_values");
 #else
 		glBindTexture( GL_TEXTURE_2D, texture_cache->Get( "MTEX_2Dfunc_values" ) );
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, this->GetControlPointsCount(), this->GetControlPointsCount(), 0, GL_RGBA, GL_FLOAT, g_precomputed_diffs);

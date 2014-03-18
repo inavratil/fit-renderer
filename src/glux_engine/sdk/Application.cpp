@@ -230,8 +230,8 @@ void Application::MainLoop()
         }
 
 		//TODO: ma/musi to opravdu byt tady??
-		//m_scene->UpdateCamera();
-		m_scene->UpdateAnimationCamera( timer.GetElapsedTimeMilliseconds() );
+		m_scene->UpdateCamera();
+		//m_scene->UpdateAnimationCamera( timer.GetElapsedTimeMilliseconds() );
 		UpdateScene();
 
         //call drawing functions
